@@ -21,4 +21,4 @@ The sources are released under the GPL3 licence.
 - **Cairo, libPNG, libZ, Freetype and Pixman libs port**
 
 # Screenshot v0.7.1
-![](http://www.meetixos.org/wp-content/uploads/2017/10/Screenshot_20171023_171358-768x611.png)
+![](http://www.meetixos.org/wp-content/uploads/2017/11/Screenshot_20171023_171358-768x577.png)
