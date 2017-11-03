@@ -64,7 +64,8 @@ void printNode(FsDirectoryEntry *node, bool all, bool list)
 		if (node->type == FS_NODE_TYPE_FILE)
 		{
 			// open the file
-			uint64_t flen = Flength(node->name);
+			File_t file = OpenF(node->name, O_RDONLY);
+			uint64_t flen = Length(file);
 			println("%-5d %3d %7s %s", node->nodeID, flen, getStrNodeType(node->type), node->name);
 		}
 		else println("%-5d %7s %s", node->nodeID, getStrNodeType(node->type), node->name);
@@ -76,7 +77,8 @@ void printNode(FsDirectoryEntry *node, bool all, bool list)
 		if (node->type == FS_NODE_TYPE_FILE)
 		{
 			// open the file
-			uint64_t flen = Flength(node->name);
+			File_t file = OpenF(node->name, O_RDONLY);
+			uint64_t flen = Length(file);
 			println("%3s %10s %d", getNodeTypeSymbol(node->type), node->name, flen);
 		}
 

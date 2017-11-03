@@ -63,9 +63,6 @@ int main(int argc, const char *argv[])
     // if we haven't to show the help
     if (!showHelp)
     {
-        // mode format
-        char format[3];
-
         // file descriptor opened
         File_t file = FD_NONE;
 
@@ -76,10 +73,6 @@ int main(int argc, const char *argv[])
         // check if file is opened, else exit
         if (file != -1)
         {
-            // create format from format flags
-            if (strmode) strcpy(format, "%s");
-            else if (examode) strcpy(format, "%x");
-
             // allocate buffer with length of file
             uint32_t length = Length(file);
             uint8_t buffer[length];
@@ -92,8 +85,9 @@ int main(int argc, const char *argv[])
                 return 1;
             }
 
-            // now print on screen
-            printf(format, buffer);
+            // print on screen with the format provided
+            if (strmode) printf("%s", buffer);
+            else if (examode) printf("%x", buffer);
 
             // close
             Close(file);
