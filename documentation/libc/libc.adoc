@@ -1,0 +1,49 @@
+# libc Documentation
+:toc: left
+
+include::../common/homelink.adoc[]
+
+:numbered:
+
+Stato di implementazione
+------------------------
+La libreria C è quella del Ghost Kernel, verrà riscritta prossimamente dal Team MeetiX OS.
+
+[options="header"]
+|===============================================================================
+| File			| Definizioni					| Implementazione
+| `assert.h`		| ✓								| ✓
+| `complex.h`		| ✓								| _Non implementato_
+| `ctype.h`			| ✓								| ✓
+| `dir.h`			| _non definito_					| ✓
+| `dirent.h`		| ✓								| _Non implementato_
+| `dlfcn.h`			| _non definito_					| ✓
+| `endian.h`		| ✓								| ✓
+| `errno.h`			| ✓								| ✓
+| `fcntl.h`			| _Parzialmente definito_			| _Parzialmente implementato_
+| `fenv.h`			| ✓								| _Non implementato_
+| `file.h`			| ✓								| ✓
+| `float.h`			| ✓								| _Non implementato_
+| `inttypes.h`		| ✓								| _Non implementato_
+| `libgen.h`		| _Parzialmente definito_			| ✓
+| `limits.h`		| ✓								| ✓
+| `locale.h`		| ✓								| _Non implementato_
+| `malloc.h`		| ✓								| ✓
+| `math.h`			| ✓								| ✓ (musl)
+| `sched.h`			| _Parzialmente definito_			| ✓
+| `setjmp.h`		| ✓								| ✓
+| `signal.h`		| ✓								| ✓
+| `stdalign.h`		| ✓								| ✓
+| `stdbool.h`		| ✓								| ✓
+| `stdint.h`		| ✓								| ✓
+| `stdio.h`			| ✓								| _Parzialmente implementato_
+| `stdlib.h`		| ✓								| _Parzialmente implementato_
+| `string.h`		| ✓								| _Parzialmente implementato_
+| `strings.h`		| _Parzialmente definito_			| ✓
+| `tgmath.h`		| ✓								| ✓
+| `time.h`			| ✓								| _Non implementato_
+| `unistd.h`		| _Parzialmente definito_			| _Parzialmente implementato_
+| `wchar.h`			| ✓								| _Non implementato_
+| `wctype.h`		| ✓								| _Non implementato_
+|===============================================================================
+

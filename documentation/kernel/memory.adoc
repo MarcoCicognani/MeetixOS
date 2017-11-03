@@ -1,0 +1,68 @@
+# Memory layout documentation
+:toc: left
+:last-update-label!:
+
+include::../common/homelink.adoc[]
+
+About
+-----
+Questa sezione descrive la formattazione della memoria e la sua gestione.
+
+Address spaces
+--------------
+Ogni <<threads#Processes,processo>> ha il suo spazio di indirizzamento personale. Tutti i thread appartenenti a un processo quindi condividono lo stesso spazio di indirizzamento e le stesse regioni di memoria.
+
+
+[[LowerMemory]]
+Lower memory
+------------
+
+[[Userspace]]
+User space
+----------
+Lo UserSpace è un area di memoria virtuale ove è possibile accedere con un processo utente.
+
+La formattazione di quest'area di memoria è così formata.
+
+[options="header"]
+|===============================================================================
+| Range di indirizzi				| Description
+| 0x00100000 - 0x80000000	| Il programma eseguibile è caricato in quest'area.
+	Subito dopo l'ultima pagina utilizzata dal programma eseguibile del processo, il processo alloca il suo heap
+e può eventualmente espandersi fino alla fine di questa zona
+| 0x80000000 - 0xA0000000	| _Ancora non usato_
+| 0xA0000000 - 0xC0000000	| Area dei "limiti virtuali". Questa zona è gestita
+dall'allocatore del kernel che gestisce gli intervalli di indirizzi all'interno della memoria. Questi
+intervalli di indirizzi sono utilizzati per varie cose: gli stack userspace,
+allocazione di memoria condivisa, memoria di storage locale per i thread e altro.
+|===============================================================================
+
+[[Kernelspace]]
+Kernel space
+------------
+
+
+
+[[Stacks]]
+Stacks
+------
+Ogni thread ha due stack: Uno stack user space e uno kernel space.
+
+Kernel space stack
+------------------
+Lo stack kernelspace è quello dove il kernel opera durante la chiamata di sistema e dove lo stato del thread viene memorizzato durante gli interrupt. È
+assegnato staticamente a 1 pagina e mappato nel <<Kernelspace, kernelspace>>.
+E non è accessibile dal codice userspace.
+
+User space stack
+----------------
+Lo stack userspace è quello ove l'applicazione opera. Durante la creazione di un thread, un intervallo di indirizzi virtuali di 16 pagine è riservato e l'ultima pagina
+viene mappata come una pagina fisica. Lo stack inizia alla fine della pagina fisica.
+
+image::../diagrams/Stack-Initialization.png[]
+
+In questo modo lo stack cresce e diminuisce in modo dinamico senza riservare più memoria fisica
+di quanta ne sia necessaria. Quando si ha uno stack overflow, un errore di paginazione viene segnalato
+e il kernel gestisce la situazione con l'inserimento di una nuova pagina fisica.
+
+image::../diagrams/Stack-Overflow.png[]
