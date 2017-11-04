@@ -17,59 +17,59 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
 #include "tests.h"
+#include <sched.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <sched.h>
 
 /**
- * show the usage of the command
+ * test the process heap allocating many
+ * sized pointer and then freeing it, last big pointer
+ * allocated is not been frees by the tester but by the kernel that dealloc the process
  */
-int usage(const char *cmdname)
+int testHeap(uint8_t verbose)
 {
-    println("%s command:", cmdname);
-    println("usage: %s [-v][test]", cmdname);
-    println("Avaible tests:");
-    println("\t--heap          [test the heap]");
-    println("\t--stack         [test the memory stack with recursive function and big local array]");
-    println("\t--thread        [test the native implementation of the MeetiX's threads]");
-    println("\t--pthread       [test the implementation of the Posix thread on MeetiX]");
-    println("\t--fs            [open many files and reads it]");
+    uint64_t *pointers[500];
+
+    // iterate 500 times
+    println("Allocate memory chuncks");
+    for (int i = 0; i < 500; i++)
+    {
+        uint32_t size = (sizeof(uint64_t) * i * 50);
+        if (verbose) println("Allocating %i bytes of heap", size);
+        pointers[i] = malloc(size);
+        sched_yield();
+    }
+
+    println("Freeing all memory allocated");
+    for (int i = 0; i < 500; i++)
+    {
+        if (verbose) println("Freeing %i bytes of memory", sizeof(uint64_t) * i * 50);
+        free(pointers[i]);
+        sched_yield();
+    }
+
+    // allocate a very big pointer and don't remove
+    uint32_t leaksize = sizeof(uint64_t) * 30000000;
+    if (verbose) println("allocating a leak of %i", leaksize);
+    uint64_t *leak = malloc(leaksize);
+    sleep(3);
+    println("Bye bye");
 
     return 0;
 }
 
 /**
- * main for stress test
+ * test the stack calling recursive himself
+ * for many times, then create a very big array
  */
-int main(int argc, const char *argv[])
+int i = 200;
+int testStack(uint8_t verbose)
 {
-    uint8_t verbose = true;
-
-    // create options
-    struct option longopts[] = {
-        { "heap", no_argument, 0, 'd' },
-        { "stack", no_argument, 0, 's' },
-        { "thread", no_argument, 0, 't' },
-        { "pthread", no_argument, 0, 'p' },
-        { "fs", no_argument, 0, 'f' },
-        { 0, 0, 0, 0 }
-    };
-
-    // parse args
-	char opt;
-	while ((opt = getoptlong(argc, argv, "vh?", longopts, NULL)) != EOF)
-	{
-		switch (opt)
-		{
-            case 'd': return testHeap(verbose);
-            case 's': return testStack(verbose);
-            case 't': return testThread(verbose);
-            case 'p': return testPosixThread(verbose);
-            case 'f': return testFilesystem(verbose);
-            case 'v': verbose = true;
-			case 'h': return usage(argv[0]);
-			case '?': return usage(argv[0]);
-		}
-	}
-
+    // create recursion
+    if (verbose) println("Recursion number %d", i);
+    if (--i > 0) return testStack(verbose);
+    uint64_t chunck[30000000];
     return 0;
 }

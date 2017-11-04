@@ -30,7 +30,7 @@ void ThreadSetupRoutine()
 	syscall(SYSCALL_GET_THREAD_ENTRY, (uint32_t) &data);
 
 	// copy to local functor
-	void (*userEntry)(void*) = (void(*)(void*)) (data.userEntry);
+	void (*userEntry)(void*) = (void(*)(void*))(data.userEntry);
 
 	// functor valid? execute thread body
 	if (userEntry) userEntry(data.userData);
