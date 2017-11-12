@@ -1,7 +1,7 @@
 # MeetiX OS
 **MeetiX OS** is an operating system for the intel x86 platform.
 The kernel of the system is mostly derived from the **Ghost Kernel** of **Max Schlüssel**, in fact, most of the features (at kernel level) are the same, for the moment.
-I called my derivation of the Ghost kernel "**EvangelionNG**", this bizarre name is a composite word, where Evangelion (**not the anime :-)**) means **Good News**
+I called my derivation of the Ghost kernel "**EvangelionNG**"; this bizarre name is a composite word, where Evangelion (**not the anime :-)**) means **Good News**
 and the appendix **NG** means **New Generation**, the resultant means of the name is ***New Generation of Good News***. The motives of this name date back to the birth of the project,
 where taken by enthusiasm, I decided to call "**MeetiX**" my own OS because it had to become something mythical in the eyes of those who used it (I was about 14 years old at the time),
 the kernel, instaed, must have been something superb too and bring new things to the already crowded and consolidated world of kernels.
@@ -32,15 +32,18 @@ The sources are released under the GPL3 licence.
 # Userspace Applications, Commands and Drivers
 On MeetiX OS the userspace executables are divided like
 **Applications**: applications are all the graphical programs avaible on the system, they are contained into the **/app/** directory.
+
 **Commands**: commands are all the command line programs avaible on the system, they are contained into the **/cmd/** directory.
+
 **Servers**: the servers, on the micro kernel architecture, are the userspace kernel modules and the drivers, the serves are container into the **/sys/eva/server/** directory.
 
 The system doesn't have many applications or drivers yet, but something to try there is:
+
 **Applications**
 - **calculator**: basic graphical calculator.
 - **CandyNote**: an incomplete text editor.
 - **CandyShell**: the default system terminal, includes a basic shell.
-- **CandyTerminal**: a nearly complete terminal that use the **mx** as shell.
+- **CandyTerminal**: a nearly complete terminal that use **mx** as shell.
 - **exec**: basic interface to start commands from the gui.
 - **Gurf**: basic game inspired by Simon game.
 - **MXLogin**: the gui login client.
