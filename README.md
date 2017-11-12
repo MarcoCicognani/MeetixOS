@@ -31,6 +31,7 @@ The sources are released under the GPL3 licence.
 ****
 # Userspace Applications, Commands and Drivers
 On MeetiX OS the userspace executables are divided like
+
 **Applications**: applications are all the graphical programs avaible on the system, they are contained into the **/app/** directory.
 
 **Commands**: commands are all the command line programs avaible on the system, they are contained into the **/cmd/** directory.
