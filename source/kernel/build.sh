@@ -125,7 +125,7 @@ function targetCompile()
 		if ( [ $headersHaveChanged -eq 1 ] || [ $changed -eq 1 ] ); then
 			out=`sourceToObject $file`
 			echo "[${GREEN}$COMPILER${RESET}] $file"
-			$COMPILER -c $file -o "$objdir/$out" $includes $CFLAGS
+			$COMPILER -c $file -o "$objdir/$out" $includes $CFLAGS &
 			failOnError
 			changes -s $file
 		fi
@@ -193,7 +193,7 @@ function targetQemu()
 ##
 function targetEva()
 {
-	#targetClean
+	targetClean
 	printf "${GREEN}Building: AP${RESET}\n"
 	targetCompileAPStartup
 	printf "\n${GREEN}Building: Shared Objects${RESET}\n"

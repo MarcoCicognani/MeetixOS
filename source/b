@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA #
 ##################################################################################
 
+. env.sh
 . $MEETIX_TOOLCHAIN_DIR/MXbase.sh
 
 # ovverride function for pushd and popd

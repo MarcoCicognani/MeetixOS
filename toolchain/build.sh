@@ -14,7 +14,6 @@ SYSROOT_BIN="$SYSROOT/bin"
 SYSROOT_INCLUDE="$SYSROOT/include"
 SYSROOT_LIB="$SYSROOT/lib"
 BUILD_DIR="build"
-BUILD_LOG="$(pwd)$BUILD_LOG"
 
 # define the base source
 REMOTE="https://www.meetixos.org"
@@ -224,15 +223,15 @@ then
 
     echo "[${GREEN}Configuring${RESET}] $AUTOMAKE_UNPACKED"
     pushd build/$AUTOMAKE_UNPACKED
-    ./configure --prefix=$AUTOMAKE_PREFIX >>MeetiX.log 2>&1
+    ./configure --prefix=$AUTOMAKE_PREFIX
     failOnError
 
     echo "[${GREEN}Building${RESET}] $AUTOMAKE_UNPACKED"
-    make $MULTITHREAD >>MeetiX.log 2>&1
+    make $MULTITHREAD
     failOnError
 
     echo "[${GREEN}Installing${RESET}] $AUTOMAKE_UNPACKED"
-    make install >>MeetiX.log 2>&1
+    make install
     failOnError
 
     popd
@@ -253,15 +252,15 @@ then
 
     echo "[${GREEN}Configuring${RESET}] $AUTOCONF_UNPACKED"
     pushd build/$AUTOCONF_UNPACKED
-    ./configure --prefix=$AUTOCONF_PREFIX >>MeetiX.log 2>&1
+    ./configure --prefix=$AUTOCONF_PREFIX
     failOnError
 
     echo "[${GREEN}Building${RESET}] $AUTOCONF_UNPACKED"
-    make $MULTITHREAD >>MeetiX.log 2>&1
+    make $MULTITHREAD
     failOnError
 
     echo "[${GREEN}Installing${RESET}] $AUTOCONF_UNPACKED"
-    make install >>MeetiX.log 2>&1
+    make install
     failOnError
 
     popd
@@ -318,17 +317,17 @@ fi
 if [ $STEP_PATCH == "1" ];
 then
 	echo "[${GREEN}Patching${RESET}] $GCC_UNPACKED"
-	$PATCH -d build/$GCC_UNPACKED -p 1 < $GCC_PATCH	                >>MeetiX.log 2>&1
+	$PATCH -d build/$GCC_UNPACKED -p 1 < $GCC_PATCH
 	pushd "build/$GCC_UNPACKED/libstdc++-v3"
 	echo "[${GREEN}$AUTOCONF_UNPACKED${RESET}] libstdc++-v3"
-	$AUTOCONF >>MeetiX.log 2>&1
+	$AUTOCONF
 	popd
 
 	echo "[${GREEN}Patching${RESET}] $BINUTILS_UNPACKED"
-	$PATCH -d build/$BINUTILS_UNPACKED -p 1 < $BINUTILS_PATCH		>>MeetiX.log 2>&1
+	$PATCH -d build/$BINUTILS_UNPACKED -p 1 < $BINUTILS_PATCH
 	pushd "build/$BINUTILS_UNPACKED/ld"
 	echo "[${GREEN}$AUTOMAKE_UNPACKED${RESET}] ld"
-	$AUTOMAKE >>MeetiX.log 2>&1
+	$AUTOMAKE
 	popd
 	echo ""
 
@@ -350,19 +349,19 @@ popd
 # Build tools
 echo "[${GREEN}Building${RESET}] changes"
 pushd "$TOOLCHAIN_BASE/libsource/tools/changes"
-    CC=$CXX bash build.sh all		>>MeetiX.log 2>&1
+    CC=$CXX bash build.sh all
     failOnError
 popd
 
 echo "[${GREEN}Building${RESET}] ramdisk-writer"
 pushd "$TOOLCHAIN_BASE/libsource/tools/ramdisk-writer"
-    CC=$CXX bash build.sh all		>>MeetiX.log 2>&1
+    CC=$CXX bash build.sh all
     failOnError
 popd
 
 echo "[${GREEN}Installing${RESET}] pkg-config"
 pushd "$TOOLCHAIN_BASE/libsource/tools/pkg-config"
-    bash build.sh						>>MeetiX.log 2>&1
+    bash build.sh
     failOnError
 popd
 
@@ -371,7 +370,7 @@ popd
 echo "[${GREEN}Installing${RESET}] library headers"
 export KERNEL_INC=`pwd`"/../source/kernel/inc"
 pushd "$TOOLCHAIN_BASE/libsource/libs"
-    bash build.sh "header" $KERNEL_INC >>MeetiX.log 2>&1
+    bash build.sh "header" $KERNEL_INC
     failOnError
 popd
 
@@ -385,15 +384,15 @@ then
 	pushd $BUILD_BINUTILS
 
 	echo "[${GREEN}Configuring${RESET}] $BINUTILS_UNPACKED"
-	../$BINUTILS_UNPACKED/configure --target=$TARGET --prefix=$TOOLCHAIN_BASE --disable-nls --disable-werror --with-sysroot=$SYSROOT >>MeetiX.log 2>&1
+	../$BINUTILS_UNPACKED/configure --target=$TARGET --prefix=$TOOLCHAIN_BASE --disable-nls --disable-werror --with-sysroot=$SYSROOT
 	failOnError
 
 	echo "[${GREEN}Building${RESET}] $BINUTILS_UNPACKED"
-	make all $MULTITHREAD			   >>MeetiX.log 2>&1
+	make all $MULTITHREAD
 	failOnError
 
 	echo "[${GREEN}Installing${RESET}] $BINUTILS_UNPACKED"
-	make install						>>MeetiX.log 2>&1
+	make install
 	failOnError
 
 	popd
@@ -412,23 +411,23 @@ then
 	pushd $BUILD_GCC
 
 	echo "[${GREEN}Configuring${RESET}] $GCC_UNPACKED"
-	../$GCC_UNPACKED/configure --target=$TARGET --prefix=$TOOLCHAIN_BASE --enable-languages=c,c++ --with-sysroot=$SYSROOT --disable--libssp --with-native-system-header-dir="/include" >>MeetiX.log 2>&1
+	../$GCC_UNPACKED/configure --target=$TARGET --prefix=$TOOLCHAIN_BASE --enable-languages=c,c++ --with-sysroot=$SYSROOT --disable--libssp --with-native-system-header-dir="/include"
 	failOnError
 
 	echo "[${GREEN}Building${RESET}] core"
-	make all-gcc $MULTITHREAD			>>MeetiX.log 2>&1
+	make all-gcc $MULTITHREAD
 	failOnError
 
 	echo "[${GREEN}Installing${RESET}] core"
-	make install-gcc					>>MeetiX.log 2>&1
+	make install-gcc
 	failOnError
 
     echo "[${GREEN}Building${RESET}] libgcc"
-	make all-target-libgcc $MULTITHREAD	>>MeetiX.log 2>&1
+	make all-target-libgcc $MULTITHREAD
 	failOnError
 
     echo "[${GREEN}Installing${RESET}] libgcc"
-	make install-target-libgcc			>>MeetiX.log 2>&1
+	make install-target-libgcc
 	failOnError
 	popd
 	echo ""
@@ -438,34 +437,35 @@ fi
 
 # add to path the compilers dir
 echo "[${GREEN}PATH${RESET}] $TOOLCHAIN_BASE/bin/"
-echo "export PATH=$PATH:$TOOLCHAIN_BASE/bin/" >>$HOME/.bash_profile
-echo "export MEETIX_TOOLCHAIN_DIR=$TOOLCHAIN_BASE" >>$HOME/.bash_profile
-echo "export MEETIX_LIB=$MEETIX_TOOLCHAIN_DIR/libsource/libs" >>$HOME/.bash_profile
-echo "export MEETIX_LINK_STD=static" >>$HOME/.bash_profile
+echo "export PATH=\$PATH:$TOOLCHAIN_BASE/bin" >../source/env.sh
+echo "export MEETIX_TOOLCHAIN_DIR=$TOOLCHAIN_BASE" >>../source/env.sh
+echo "export MEETIX_LIB=$MEETIX_TOOLCHAIN_DIR/libsource/libs" >>../source/env.sh
+echo "export MEETIX_LINK_STD=static" >>../source/env.sh
+
 
 # load as effective changes the new environment variables
-source $HOME/.bash_profile
+source ../source/env.sh
 
 # Build C library
 pushd "$TOOLCHAIN_BASE/libsource/libs"
 echo "[${GREEN}Building${RESET}] libc"
-bash build.sh "c"						    >>MeetiX.log 2>&1
+bash build.sh "c"
 failOnError
 
 # Build kernel api library
 echo "[${GREEN}Building${RESET}] kernel api"
-bash build.sh "api" KERNEL_INC			    >>MeetiX.log 2>&1
+bash build.sh "api" KERNEL_INC
 failOnError
 popd
 
 # Build libstdc++-v3
 echo "[${GREEN}Building${RESET}] libstdc++-v3"
 pushd "build/build-gcc"
-make all-target-libstdc++-v3 $MULTITHREAD	>>MeetiX.log 2>&1
+make all-target-libstdc++-v3 $MULTITHREAD
 failOnError
 
 echo "[${GREEN}Installing${RESET}] libstdc++-v3"
-make install-target-libstdc++-v3	        >>MeetiX.log 2>&1
+make install-target-libstdc++-v3
 failOnError
 popd
 
@@ -476,23 +476,23 @@ then
     pushd "$TOOLCHAIN_BASE/libsource/ports"
 
     echo "[${GREEN}Building${RESET}] zlib"
-    bash port.sh "zlib"                >>MeetiX.log 2>&1
+    bash port.sh "zlib"
     failOnError
 
     echo "[${GREEN}Building${RESET}] pixman"
-    bash port.sh "pixman"                >>MeetiX.log 2>&1
+    bash port.sh "pixman"
     failOnError
 
     echo "[${GREEN}Building${RESET}] libpng"
-    bash port.sh "libpng"                >>MeetiX.log 2>&1
+    bash port.sh "libpng"
     failOnError
 
     echo "[${GREEN}Building${RESET}] freetype"
-    bash port.sh "freetype"                >>MeetiX.log 2>&1
+    bash port.sh "freetype"
     failOnError
 
     echo "[${GREEN}Building${RESET}] cairo"
-    bash port.sh "cairo"                >>MeetiX.log 2>&1
+    bash port.sh "cairo"
     failOnError
 
     popd
@@ -504,37 +504,35 @@ fi
 # build graphics library
 echo "[${GREEN}Building${RESET}] libGraphics"
 pushd "$TOOLCHAIN_BASE/libsource/libs"
-bash build.sh "graphic"              >>MeetiX.log 2>&1
+bash build.sh "graphic"
 failOnError
 
 # build gui library
 echo "[${GREEN}Building${RESET}] libGui"
-bash build.sh "gui"                  >>MeetiX.log 2>&1
+bash build.sh "gui"
 failOnError
 
 # build io library
 echo "[${GREEN}Building${RESET}] libIo"
-bash build.sh "io"                   >>MeetiX.log 2>&1
+bash build.sh "io"
 failOnError
 
 # build tasking library
 echo "[${GREEN}Building${RESET}] libTasking"
-bash build.sh "tasking"              >>MeetiX.log 2>&1
+bash build.sh "tasking"
 failOnError
 
 # build utils library
 echo "[${GREEN}Building${RESET}] libUtils"
-bash build.sh "utils"                >>MeetiX.log 2>&1
+bash build.sh "utils"
 failOnError
 popd
 
 # clean
 echo ""
 echo "[${GREEN}Cleaning${RESET}]"
-rm "MeetiX.log"
 rm -rf "build"
 rm -rf "$TOOLCHAIN_BASE/ports/build"
-find $TOOLCHAIN_BASE -name "MeetiX.log" -type f -delete
 
 # set user as owner of the TOOLCHAIN_BASE directory
 echo "[${GREEN}Set $SUDO_USER as owner of $TOOLCHAIN_BASE${RESET}]"

@@ -44,7 +44,7 @@ function targetClean()
 {
 	remove $ARTIFACT_LOCAL
 	cleanDirectory $OBJ
-	changes "--clear"
+	changes --clear
 }
 
 ##
@@ -100,6 +100,7 @@ function targetCleanTarget()
 function targetInstall()
 {
 	echo "[${RED}install${RESET}]" $ARTIFACT_LOCAL
+	mkdir -p $(dirname $ARTIFACT_TARGET)
 	cp $ARTIFACT_LOCAL $ARTIFACT_TARGET
 }
 
@@ -109,6 +110,7 @@ echo "${GREEN}Building: $ARTIFACT_NAME${RESET}"
 # execute targets
 if [[ $TARGET == "all" ]]; then
 	setBuildTarget
+	targetClean
 	targetCompile
 	targetLink
 	targetInstall

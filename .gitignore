@@ -1,0 +1,16 @@
+# toolchain ignores
+toolchain/MeetiXOSProject
+toolchain/build
+toolchain/i686/**.tar.*
+
+# source ignores
+source/env.sh
+source/**/bin
+source/**/obj
+source/**/.changes
+source/**/EvaLoader
+source/**/EvangelionNG
+source/MXfs/cmd/*
+source/MXfs/sys/eva/module/*
+source/MXfs/sys/eva/server/*
+source/MeetiXOS.iso
