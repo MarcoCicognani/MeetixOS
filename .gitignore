@@ -1,7 +1,10 @@
 # toolchain ignores
 toolchain/MeetiXOSProject
+toolchain/Local
 toolchain/build
 toolchain/i686/**.tar.*
+
+**/.changes
 
 # source ignores
 source/env.sh

@@ -4,7 +4,7 @@ echo "${GREEN}MeetiX OS port installer script${RESET}"
 
 PACKAGE="$1"
 BUILD_ROOT="build"
-HOST="i686-mx"
+HOST="i686-pc-meetix"
 REQUIRES_INSTALL_IN_SOURCE_DIR=0
 
 echo "> ${GREEN}building package${RESET} '$PACKAGE'"

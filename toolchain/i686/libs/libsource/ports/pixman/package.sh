@@ -16,8 +16,8 @@ function portUnpack()
 ##
 function portInstall()
 {
-	export PKG_CONFIG=mx-pkg-config.sh
+	export PKG_CONFIG=meetix-pkg-config.sh
 	../$UNPACKED_DIR/configure --host=$HOST --prefix=$PREFIX
-	make
+	make -j8
 	make DESTDIR=$SYSROOT install
 }

@@ -77,8 +77,8 @@ ARTIFACT_NAME_GRAPHIC=$ARTIFACT_NAME"graphics"
 ARTIFACT_EXTENSION=""
 
 # compiler option
-AR="i686-mx-ar"
-ASSEMBLER="i686-mx-as"
+AR="i686-pc-meetix-ar"
+ASSEMBLER="i686-pc-meetix-as"
 COMPILER=""
 CFLAGS=""
 
@@ -285,7 +285,7 @@ function buildCrts()
 ##
 function buildLibApi()
 {
-	COMPILER="i686-mx-gcc"
+	COMPILER="i686-pc-meetix-gcc"
 	CFLAGS="-I$INC_API"
 	local LIB_TYPE=$(getLibType $1)
 	compile $INC_API $SRC_API $OBJ_API
@@ -299,7 +299,7 @@ function buildLibApi()
 function buildLibC()
 {
 	# build the main libc
-	COMPILER="i686-mx-gcc"
+	COMPILER="i686-pc-meetix-gcc"
 	CFLAGS="-std=c11 -I$INC_C -I$INC_API -I$SRC_C/musl -Wno-narrowing"
 	local LIB_TYPE=$(getLibType $1)
 	compile $INC_C $SRC_C $OBJ_C
@@ -325,7 +325,7 @@ function buildLibC()
 ##
 function buildLibGraphics()
 {
-	COMPILER="i686-mx-g++"
+	COMPILER="i686-pc-meetix-g++"
 	CFLAGS="-std=c++11 -I$SYSROOT_INCLUDE/freetype2 -I$INC_GRAPHIC -I$SRC_GRAPHIC"
 	local LIB_TYPE=$(getLibType $1)
 	compile $INC_GRAPHIC $SRC_GRAPHIC $OBJ_GRAPHIC
@@ -338,7 +338,7 @@ function buildLibGraphics()
 ##
 function buildLibGui()
 {
-	COMPILER="i686-mx-g++"
+	COMPILER="i686-pc-meetix-g++"
 	CFLAGS="-std=c++11 -I$SYSROOT_INCLUDE/freetype2 -I$INC_GUI -I$SRC_GUI"
 	local LIB_TYPE=$(getLibType $1)
 	compile $INC_GUI $SRC_GUI $OBJ_GUI
@@ -351,7 +351,7 @@ function buildLibGui()
 ##
 function buildLibIO()
 {
-	COMPILER="i686-mx-g++"
+	COMPILER="i686-pc-meetix-g++"
 	CFLAGS="-std=c++11 -I$SYSROOT_INCLUDE/freetype2 -I$INC_IO -I$SRC_IO"
 	local LIB_TYPE=$(getLibType $1)
 	compile $INC_IO $SRC_IO $OBJ_IO
@@ -364,7 +364,7 @@ function buildLibIO()
 ##
 function buildLibDriver()
 {
-	COMPILER="i686-mx-g++"
+	COMPILER="i686-pc-meetix-g++"
 	CFLAGS="-std=c++11 -I$SYSROOT_INCLUDE/freetype2 -I$INC_DRIVER -I$SRC_DRIVER"
 	local LIB_TYPE=$(getLibType $1)
 	compile $INC_DRIVER $SRC_DRIVER $OBJ_DRIVER
@@ -377,7 +377,7 @@ function buildLibDriver()
 ##
 function buildLibTasking()
 {
-	COMPILER="i686-mx-g++"
+	COMPILER="i686-pc-meetix-g++"
 	CFLAGS="-std=c++11 -I$SYSROOT_INCLUDE/freetype2 -I$INC_TASKING -I$SRC_TASKING"
 	local LIB_TYPE=$(getLibType $1)
 	compile $INC_TASKING $SRC_TASKING $OBJ_TASKING
@@ -390,7 +390,7 @@ function buildLibTasking()
 ##
 function buildLibUtils()
 {
-	COMPILER="i686-mx-g++"
+	COMPILER="i686-pc-meetix-g++"
 	CFLAGS="-std=c++1y -I$SYSROOT_INCLUDE/freetype2 -I$INC_UTILS -I$SRC_UTILS"
 	local LIB_TYPE=$(getLibType $1)
 	compile $INC_UTILS $SRC_UTILS $OBJ_UTILS

@@ -46,6 +46,9 @@ typedef uint32_t mode_t;
 // TODO
 #define S_ISREG(mode)	1
 #define S_ISDIR(mode)	0
+#define S_ISCHR(mode)	0
+#define S_ISBLK(mode)	0
+#define S_ISFIFO(mode)	0
 
 struct stat 
 {

@@ -17,9 +17,9 @@ function portUnpack()
 function portInstall()
 {
 	export CFLAGS="-DCAIRO_NO_MUTEX=1"
-	export PKG_CONFIG=mx-pkg-config.sh
+	export PKG_CONFIG=meetix-pkg-config.sh
 
 	../$UNPACKED_DIR/configure --disable-shared --host=$HOST --prefix=$PREFIX --enable-xlib=no
-	make
+	make -j8
 	make DESTDIR=$SYSROOT install
 }

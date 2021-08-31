@@ -17,9 +17,9 @@ function portUnpack()
 ##
 function portInstall()
 {
-	export CC=i686-mx-gcc
-	export AR=i686-mx-ar
+	export CC=i686-pc-meetix-gcc
+	export AR=i686-pc-meetix-ar
 	../$UNPACKED_DIR/configure --static --prefix=$PREFIX
-	make
+	make -j8
 	make DESTDIR=$SYSROOT install
 }

@@ -56,7 +56,7 @@ target_install()
 	failOnError
 	list $ARTIFACT
 
-	sudo rm $BIN/*.o
+	rm $BIN/*.o
 }
 
 

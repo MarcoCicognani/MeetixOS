@@ -2,23 +2,20 @@
 # MeetiX common build functionality
 
 # global colors
-RED=`tput setaf 1`
-GREEN=`tput setaf 2`
-CYAN=`tput setaf 6`
-RESET=`tput sgr0`
-
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+CYAN=$(tput setaf 6)
+RESET=$(tput sgr0)
 
 #
 # Prints a header
 #
-function headline()
-{
-	printf "${RED}$1${RESET}"
+headline() {
+    printf "${RED}$1${RESET}\n"
 }
 
-function targetHeadline()
-{
-	printf "${RED}TARGET: \e[0;7m$1\e[0m\n\n"
+targetHeadline() {
+    printf "${RED}TARGET: \e[0;7m$1\e[0m\n\n"
 }
 
 #
@@ -26,9 +23,8 @@ function targetHeadline()
 #
 #   with CC "g++"
 #
-function with()
-{
-	if [ -z "${!1}" ]; then eval $1='$2'; fi
+with() {
+    if [ -z "${!1}" ]; then eval $1='$2'; fi
 }
 
 #
@@ -36,13 +32,11 @@ function with()
 #
 #   requireTool "g++"
 #
-function requireTool()
-{
-	if ! type "$1" >/dev/null 2>&1
-	then
-		>&2 echo "error: missing required tool '$1'"
-		exit 1
-	fi
+requireTool() {
+    if ! type "$1" >/dev/null 2>&1; then
+        echo >&2 "error: missing required tool '$1'"
+        exit 1
+    fi
 }
 
 #
@@ -50,9 +44,8 @@ function requireTool()
 #
 #   list "example.txt"
 #
-function list()
-{
-	headline " - '$1'"
+list() {
+    headline " - '$1'"
 }
 
 #
@@ -60,14 +53,12 @@ function list()
 #
 #   cleanDirectory "bin"
 #
-function cleanDirectory()
-{
-	echo "[${RED}cleaning directory${RESET}] "$1
-	if [ -d "$1" ]
-	then
-		rm -rf $1
-	fi
-	mkdir "$1"
+cleanDirectory() {
+    echo "[${RED}cleaning directory${RESET}] "$1
+    if [ -d "$1" ]; then
+        rm -rf $1
+    fi
+    mkdir "$1"
 }
 
 #
@@ -75,13 +66,11 @@ function cleanDirectory()
 #
 #	remove "file.txt"
 #
-function remove()
-{
-	echo "[${RED}removing${RESET}] "$1
-	if [ -e "$1" ]
-	then
-		rm $1 2&> /dev/null
-	fi
+remove() {
+    echo "[${RED}removing${RESET}] "$1
+    if [ -e "$1" ]; then
+        rm $1 2 &>/dev/null
+    fi
 }
 
 #
@@ -90,12 +79,11 @@ function remove()
 #   $CC -c ...
 #   failOnError
 #
-function failOnError()
-{
-	if [[ $? != 0 ]]; then
-		echo "${RED}Build failed${RESET}"
-		exit 1
-	fi
+failOnError() {
+    if [[ $? != 0 ]]; then
+        echo "${RED}Build failed${RESET}"
+        exit 1
+    fi
 }
 
 #
@@ -103,13 +91,12 @@ function failOnError()
 #
 #   sourceToObject "src/myclass.cpp"
 #
-function sourceToObject()
-{
-	echo $1.o | sed "s/\//_/g"
+sourceToObject() {
+    echo $1.o | sed "s/\//_/g"
 }
 
 # Global variables
-with TOOLCHAIN_BASE	$MEETIX_TOOLCHAIN_DIR
+with TOOLCHAIN_BASE $MEETIX_TOOLCHAIN_DIR
 SYSROOT=$TOOLCHAIN_BASE
 SYSROOT_BIN="$SYSROOT/bin"
 SYSROOT_INCLUDE="$SYSROOT/include"

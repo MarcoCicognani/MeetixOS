@@ -58,11 +58,11 @@ function clean()
 function install()
 {
 	echo "installing to '$INSTALL_TARGET':"
-	sudo mv $ARTIFACT $INSTALL_TARGET
+	mv $ARTIFACT $INSTALL_TARGET
 	failOnError
 	list $ARTIFACT
 
-	sudo rm $BIN/*.o
+	rm $BIN/*.o
 }
 
 # execute the command provided

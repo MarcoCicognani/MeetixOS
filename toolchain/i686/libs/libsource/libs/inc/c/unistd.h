@@ -68,6 +68,8 @@ extern int opterr;
  */
 extern int optopt;
 
+int chdir(const char* path);
+
 /**
  * POSIX wrapper for <Read>
  */

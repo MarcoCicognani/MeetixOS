@@ -17,6 +17,6 @@ function portUnpack()
 function portInstall()
 {
 	../$UNPACKED_DIR/configure --host=$HOST --prefix=$PREFIX --with-png=no --with-zlib=no --with-harfbuzz=no
-	make
+	make -j8
 	make DESTDIR=$SYSROOT install
 }

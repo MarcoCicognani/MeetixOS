@@ -28,7 +28,7 @@ BIN="bin"
 SRC_EVALD="EvaLoader"
 SRC_EVANG="EvangelionNG"
 SRC_SHARED="EvaShared"
-INC_LIBGCC="$MEETIX_TOOLCHAIN_DIR/lib/gcc/i686-mx/4.9.1/include"
+INC_LIBGCC="$MEETIX_TOOLCHAIN_DIR/lib/gcc/i686-pc-meetix/11.2.0/include"
 
 # object dir
 OBJ_SHARED=$BIN"/obj-evashared"
@@ -56,7 +56,7 @@ AP_STARTUP_OBJ=$BIN"/smpstart.o"
 AP_STARTUP_TGT="../MXfs/sys/eva/module/smpstart.eko"
 
 # compiler
-COMPILER="i686-mx-g++"
+COMPILER="i686-pc-meetix-g++"
 
 # compile flags
 LDFLAGS="-nostdlib -nostartfiles"
@@ -156,7 +156,7 @@ function targetLink()
 	objects=$3
 	echo "[${CYAN}link${RESET}] $artifact"
 
-	i686-mx-ld $LD_FLAGS -o $artifact -T $script $objects
+	i686-pc-meetix-ld $LD_FLAGS -o $artifact -T$script $objects
 	failOnError
 }
 
@@ -203,8 +203,14 @@ function targetEva()
 	printf "\n${GREEN}Building: EvangelionNG Kernel${RESET}\n"
 	targetCompile $SRC_EVANG $OBJ_EVANG "-I$INC -I$INC_LIBGCC -I$SRC_SHARED -I$SRC_EVANG"
 
-	targetLink $ARTIFACT_EVALD $LINKSCRIPT_LOADER "$OBJ_EVALD/* $OBJ_SHARED/*"
-	targetLink $ARTIFACT_EVANG $LINKSCRIPT_KERNEL "$OBJ_EVANG/* $OBJ_SHARED/*"
+	local LOADER_OBJS="$(find $OBJ_EVALD $OBJ_SHARED -iname *.o)"
+	local KERNEL_OBJS="$(find $OBJ_EVANG $OBJ_SHARED -iname *.o)"
+	echo $LOADER_OBJS
+	echo
+	echo $KERNEL_OBJS
+
+	targetLink $ARTIFACT_EVALD $LINKSCRIPT_LOADER "$LOADER_OBJS"
+	targetLink $ARTIFACT_EVANG $LINKSCRIPT_KERNEL "$KERNEL_OBJS"
 }
 
 ##
