@@ -32,6 +32,8 @@ void MXinterpreter::interpret(LsDocument *script)
 	{
 		string command = stat->pairs[0]->key;
 
+        Log("Parsing statement");
+
 		if (command == "printf") print(stat);
 		else if (command == "driver") driver(stat);
 		else if (command == "exec") exec(stat);
@@ -50,8 +52,8 @@ void MXinterpreter::interpret(LsDocument *script)
  */
 void MXinterpreter::print(LsStatement *stat)
 {
-	cout << stat->pairs[0]->value << endl;
-	Utils::log(stat->pairs[0]->value.c_str());
+	// cout << stat->pairs[0]->value << endl;
+	// Utils::log(stat->pairs[0]->value.c_str());
 }
 
 

@@ -19,6 +19,7 @@
 #include <mx.hpp>
 #include <iostream>
 #include <map>
+#include <utils/utils.hpp>
 
 using namespace std;
 
@@ -27,6 +28,8 @@ using namespace std;
  */
 int main(int argc, char *argv[])
 {
+    Utils::log("MeetiX Shell");
+
 	// create object to class
 	MXShell *shell = new MXShell();
 
@@ -38,6 +41,7 @@ int main(int argc, char *argv[])
 
 	// deleting pointer
 	delete shell;
+    return 0;
 }
 
 
@@ -48,6 +52,9 @@ void MXShell::initialize(int argc, char *argv[])
 {
 	loadEnvironment();
 	mode = parseArguments(argc, argv);
+    for (auto i = 0; i < argc; ++i) {
+        Utils::log("[MXShell] : argv[%d] = '%s'", i, argv[i]);
+    }
 }
 
 
@@ -96,15 +103,25 @@ OperativeMode MXShell::parseArguments(int argc, char *argv[])
  */
 void MXShell::startRoutine()
 {
+    Utils::log("MXShell::startRoutine() - mode = %d", static_cast<int>(mode));
+
 	// run selected mode from arguments
-	if (mode == SHELL_MODE_SHELL || mode == SHELL_MODE_SHELL_SHORT) shellMode(environment);
-	else if (mode == SHELL_MODE_SCRIPT || mode == SHELL_MODE_SCRIPT_SHORT) scriptMode();
-	else if (mode == SHELL_MODE_ENVIRONMENT_GET || mode == SHELL_MODE_ENVIRONMENT_GET_SHORT) environmentMode("get");
-	else if (mode == SHELL_MODE_ENVIRONMENT_SET || mode == SHELL_MODE_ENVIRONMENT_SET_SHORT) environmentMode("set");
-	else if (mode == SHELL_MODE_COMMAND || mode == SHELL_MODE_COMMAND_SHORT) commandMode();
-	else if (mode == SHELL_MODE_HELP || mode == SHELL_MODE_HELP_SHORT) explainHelp();
-	else if (mode == SHELL_MODE_VERSION || mode == SHELL_MODE_VERSION_SHORT) cout << "MeetiX OS Shell Version: " << VERSION_MAJOR << VERSION_MINOR << VERSION_PATCH << endl;
-	else if (mode == SHELL_MODE_NULL) cerr << "Invalid mode argument provided" << endl;
+	if (mode == SHELL_MODE_SHELL || mode == SHELL_MODE_SHELL_SHORT)
+        shellMode(environment);
+	else if (mode == SHELL_MODE_SCRIPT || mode == SHELL_MODE_SCRIPT_SHORT)
+        scriptMode();
+	else if (mode == SHELL_MODE_ENVIRONMENT_GET || mode == SHELL_MODE_ENVIRONMENT_GET_SHORT)
+        environmentMode("get");
+	else if (mode == SHELL_MODE_ENVIRONMENT_SET || mode == SHELL_MODE_ENVIRONMENT_SET_SHORT)
+        environmentMode("set");
+	else if (mode == SHELL_MODE_COMMAND || mode == SHELL_MODE_COMMAND_SHORT)
+        commandMode();
+	else if (mode == SHELL_MODE_HELP || mode == SHELL_MODE_HELP_SHORT)
+        explainHelp();
+	else if (mode == SHELL_MODE_VERSION || mode == SHELL_MODE_VERSION_SHORT)
+        cout << "MeetiX OS Shell Version: " << VERSION_MAJOR << VERSION_MINOR << VERSION_PATCH << endl;
+	else if (mode == SHELL_MODE_NULL)
+        cerr << "Invalid mode argument provided" << endl;
 }
 
 
@@ -113,15 +130,20 @@ void MXShell::startRoutine()
  */
 void MXShell::scriptMode()
 {
+    Utils::log("MXShell::scriptMode()");
+
 	// check if there are arguments provided
 	if (!argument.empty())
 	{
+        Utils::log("MXShell::scriptMode() -> fopen");
+
 		// load given script
 		FILE *scriptfile = fopen(argument.c_str(), "r");
 
 		// check if file exist
 		if (scriptfile == nullptr)
 		{
+            Utils::log("%s: file not found", argument.c_str());
 			cerr << argument << ": file not found" << endl;
 			return;
 		}
@@ -130,6 +152,7 @@ void MXShell::scriptMode()
 		scriptParser = new MXScriptParser(scriptfile);
 		LsDocument *document = scriptParser->document();
 
+        Utils::log("MXShell::scriptMode() - interpret");
 		// call interpreter
 		interpreter->interpret(document);
 
@@ -141,7 +164,10 @@ void MXShell::scriptMode()
 	}
 
 	// show error if no file provided
-	else cerr << "no filename provided" << endl;
+	else {
+        Utils::log("no filename provided", argument.c_str());
+        cerr << "no filename provided" << endl;
+    }
 }
 
 

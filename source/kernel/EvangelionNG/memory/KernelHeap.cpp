@@ -55,6 +55,10 @@ void operator delete(void *m)
 	KernelHeap::free(m);
 }
 
+void operator delete(void* m, unsigned long) {
+    KernelHeap::free(m);
+}
+
 /**
  * delete[] implementation
  */

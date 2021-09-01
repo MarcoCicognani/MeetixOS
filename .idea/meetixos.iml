@@ -1,7 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="CPP_MODULE" version="4">
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/toolchain/Local" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/applications/calculator/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/applications/CandyNote/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/applications/CandyShell/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/applications/CandyTerminal/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/applications/exec/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/applications/Gurf/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/applications/MXLogin/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/applications/OsmosUI/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/applications/UItweak/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/applications/welcome/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/cp/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/cpudet/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/echo/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/ename/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/find/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/fspech/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/gzip/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/idle/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/js/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/kill/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/ls/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/mx/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/ntf/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/pcitool/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/power/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/ps/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/rd/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/stress/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/ts/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/commands/wr/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/servers/ps2/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/servers/spawner/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/servers/time/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/servers/vbe/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/userspace/servers/zipNET/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/source/kernel/bin" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

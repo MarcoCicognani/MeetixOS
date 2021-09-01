@@ -7,7 +7,7 @@ INC="src"
 OBJ="obj"
 ARTIFACT_NAME="welcome"
 ARTIFACT_TYPE="application"
-COMPILER="i686-mx-g++"
+COMPILER="i686-pc-meetix-g++"
 CFLAGS="-std=c++11 -I$SRC"
 LDFLAGS=""
 

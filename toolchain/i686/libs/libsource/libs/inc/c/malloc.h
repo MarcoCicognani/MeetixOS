@@ -22,6 +22,8 @@
 #include "eva/common.h"
 #include <stddef.h>
 
+#define _GLIBCXX_HAVE_ALIGNED_ALLOC 1
+
 __BEGIN_C
 
 /**

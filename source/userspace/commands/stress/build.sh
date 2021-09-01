@@ -7,7 +7,7 @@ INC="src"
 OBJ="obj"
 ARTIFACT_NAME="stress"
 ARTIFACT_TYPE="command"
-COMPILER="i686-mx-gcc"
+COMPILER="i686-pc-meetix-gcc"
 CFLAGS="-std=c11 -I$INC"
 LDFLAGS=""
 

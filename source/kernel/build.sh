@@ -60,7 +60,7 @@ COMPILER="i686-pc-meetix-g++"
 
 # compile flags
 LDFLAGS="-nostdlib -nostartfiles"
-CFLAGS="-std=c++11 -D_ARCH_X86_=1 -Wall -Wunused-variable -Wno-unused-but-set-variable -ffreestanding -fno-exceptions -fno-rtti"
+CFLAGS="-std=c++11 -D_ARCH_X86_=1 -Wall -Wno-address-of-packed-member -Wunused-variable -Wno-unused-but-set-variable -ffreestanding -fno-exceptions -fno-rtti"
 
 # qemu and ramdisk writer
 QEMU="qemu-system-x86_64"
@@ -176,8 +176,9 @@ function targetRamdisk()
 function targetMakeISO()
 {
 	echo "[${CYAN}build${RESET}] $ISO_TGT"
-	mkisofs -R -b boot/grub/i386-pc/eltorito.img -c boot.catalog -no-emul-boot -boot-load-size 32 -boot-info-table -o $ISO_TGT $ISO_SRC >> /dev/null 2>&1
+    mkisofs -R -b boot/grub/i386-pc/eltorito.img -c boot.catalog -no-emul-boot -boot-load-size 32 -boot-info-table -o $ISO_TGT $ISO_SRC 2>&1
 	failOnError
+
 }
 
 ##
@@ -185,7 +186,7 @@ function targetMakeISO()
 ##
 function targetQemu()
 {
-	$QEMU -M accel=kvm:tcg -vga vmware -serial stdio -m 512M -cdrom $ISO_TGT
+	$QEMU -enable-kvm -cpu host -vga vmware -serial stdio -m 512M -cdrom $ISO_TGT
 }
 
 ##
@@ -203,14 +204,8 @@ function targetEva()
 	printf "\n${GREEN}Building: EvangelionNG Kernel${RESET}\n"
 	targetCompile $SRC_EVANG $OBJ_EVANG "-I$INC -I$INC_LIBGCC -I$SRC_SHARED -I$SRC_EVANG"
 
-	local LOADER_OBJS="$(find $OBJ_EVALD $OBJ_SHARED -iname *.o)"
-	local KERNEL_OBJS="$(find $OBJ_EVANG $OBJ_SHARED -iname *.o)"
-	echo $LOADER_OBJS
-	echo
-	echo $KERNEL_OBJS
-
-	targetLink $ARTIFACT_EVALD $LINKSCRIPT_LOADER "$LOADER_OBJS"
-	targetLink $ARTIFACT_EVANG $LINKSCRIPT_KERNEL "$KERNEL_OBJS"
+	targetLink $ARTIFACT_EVALD $LINKSCRIPT_LOADER "$OBJ_EVALD/* $OBJ_SHARED/*"
+	targetLink $ARTIFACT_EVANG $LINKSCRIPT_KERNEL "$OBJ_EVANG/* $OBJ_SHARED/*"
 }
 
 ##
@@ -237,24 +232,17 @@ targetHeadline $TARGET
 if [[ $TARGET == "repack" ]]; then
 	targetRepack
 	targetQemu
-	clear
-
 elif [[ $TARGET == "eva" ]]; then
 	targetEva
-
 elif [[ $TARGET == "ramdisk" ]]; then
 	targetRamdisk
 	clear
-
 elif [[ $TARGET == "vbox" ]]; then
 	targetVbox
-
 elif [[ $TARGET == "qemu" ]]; then
 	targetQemu
-
 elif [[ $TARGET == "clean" ]]; then
 	targetClean
-
 else
 	echo "unknown target: '$TARGET'"
 	exit 1
