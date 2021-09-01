@@ -1,0 +1,7 @@
+add_subdirectory(API)
+add_subdirectory(C)
+add_subdirectory(Graphics)
+add_subdirectory(GUI)
+add_subdirectory(IO)
+add_subdirectory(Tasking)
+add_subdirectory(Utils)

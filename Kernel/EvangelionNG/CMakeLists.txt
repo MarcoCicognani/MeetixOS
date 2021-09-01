@@ -1,0 +1,84 @@
+set(ASM_SOURCES
+        system/interrupts/handling/InterruptStubs.asm
+        system/interrupts/descriptors/IdtMounter.asm
+        system/processor.asm)
+set_source_files_properties(${ASM_SOURCES} PROPERTIES LANGUAGE ASM_NASM)
+
+add_executable(EvangelionNG
+               EvangelionNG.cpp
+               filesystem/FsDelegateTasked.cpp
+               filesystem/FsDelegatePipe.cpp
+               filesystem/FsDelegateRamdisk.cpp
+               filesystem/FsTransactionHandlerGetLength.cpp
+               filesystem/FsTransactionHandlerWrite.cpp
+               filesystem/FsTransactionHandlerDiscovery.cpp
+               filesystem/FsTransactionHandlerClose.cpp
+               filesystem/FsTransactionHandlerReadDirectory.cpp
+               filesystem/FsTransactionHandlerOpen.cpp
+               filesystem/pipes.cpp
+               filesystem/FsTransactionStore.cpp
+               filesystem/FsDescriptors.cpp
+               filesystem/FsTransactionHandlerRead.cpp
+               filesystem/FsTransactionHandlerDirectoryRefresh.cpp
+               filesystem/FsNode.cpp
+               filesystem/FsDelegateMount.cpp
+               filesystem/filesystem.cpp
+               memory/LowerHeap.cpp
+               memory/collections/AddressStack.cpp
+               memory/collections/AddressRangePool.cpp
+               memory/physical/PPallocator.cpp
+               memory/physical/PPreferenceTracker.cpp
+               memory/AddressSpace.cpp
+               memory/gdt/GdtManager.cpp
+               memory/allocators/ChunkAllocator.cpp
+               memory/TemporaryPagingUtil.cpp
+               memory/KernelHeap.cpp
+               init.cpp
+               ramdisk/ramdisk.cpp
+               calls/SyscallHandlerVm86.cpp
+               calls/SyscallHandlerMemory.cpp
+               calls/SyscallHandlerInfo.cpp
+               calls/SyscallHandlerLog.cpp
+               calls/SyscallHandler.cpp
+               calls/SyscallHandlerMessaging.cpp
+               calls/SyscallHandlerFilesystem.cpp
+               calls/SyscallHandlerRamdisk.cpp
+               calls/SyscallHandlerSpawning.cpp
+               calls/SyscallHandlerTasking.cpp
+               calls/SyscallHandlerServer.cpp
+               utils/string.cpp
+               logger/logger.cpp
+               tasking/tasking.cpp
+               tasking/thread.cpp
+               tasking/process.cpp
+               tasking/ThreadManager.cpp
+               tasking/communication/MessageController.cpp
+               tasking/scheduling/scheduler.cpp
+               debug/DebugInterfaceKernel.cpp
+               executable/Elf32Loader.cpp
+               system/interrupts/handling/InterruptExceptionHandler.cpp
+               system/interrupts/handling/InterruptDispatcher.cpp
+               system/interrupts/handling/InterruptRequestHandler.cpp
+               system/interrupts/ioapic.cpp
+               system/interrupts/lapic.cpp
+               system/interrupts/IoapicManager.cpp
+               system/interrupts/descriptors/ivt.cpp
+               system/interrupts/descriptors/idt.cpp
+               system/interrupts/pic.cpp
+               system/processor.cpp
+               system/system.cpp
+               system/smp/smp.cpp
+               system/smp/GlobalLock.cpp
+               system/smp/GlobalRecursiveLock.cpp
+               system/pci/pci.cpp
+               system/timing/pit.cpp
+               system/acpi/RsdpLookupUtil.cpp
+               system/acpi/acpi.cpp
+               system/acpi/AcpiEntry.cpp
+               system/acpi/madt.cpp
+               vm86/Virtual8086Monitor.cpp
+               ${ASM_SOURCES})
+
+target_include_directories(EvangelionNG PRIVATE inc . ../EvaShared)
+target_link_libraries(EvangelionNG EvaShared)
+target_link_options(EvangelionNG PRIVATE LINKER:-T ${CMAKE_CURRENT_SOURCE_DIR}/../extra/link-kernel.ld -nostdlib -nostartfiles)

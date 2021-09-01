@@ -1,0 +1,9 @@
+add_library(Utils
+            STATIC
+            arguments.cpp
+            fparser.cpp
+            ipcstream.cpp
+            time.cpp
+            sha2.cpp
+            environment.cpp
+            utils.cpp)
