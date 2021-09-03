@@ -1,0 +1,5 @@
+add_subdirectory(Ps2)
+add_subdirectory(Spawner)
+add_subdirectory(Time)
+add_subdirectory(VBE)
+add_subdirectory(ZipNET)

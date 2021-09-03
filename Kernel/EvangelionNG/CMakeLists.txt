@@ -79,6 +79,6 @@ add_executable(EvangelionNG
                vm86/Virtual8086Monitor.cpp
                ${ASM_SOURCES})
 
-target_include_directories(EvangelionNG PRIVATE inc . ../EvaShared)
+target_include_directories(EvangelionNG PRIVATE . ../EvaShared)
 target_link_libraries(EvangelionNG EvaShared)
 target_link_options(EvangelionNG PRIVATE LINKER:-T ${CMAKE_CURRENT_SOURCE_DIR}/../extra/link-kernel.ld -nostdlib -nostartfiles)

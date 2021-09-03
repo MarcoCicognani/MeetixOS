@@ -18,4 +18,4 @@ add_library(EvaShared
             utils/string.cpp
             video/ConsoleVideo.cpp
             video/PrettyBoot.cpp)
-target_include_directories(EvaShared PRIVATE inc .)
+target_include_directories(EvaShared PRIVATE .)

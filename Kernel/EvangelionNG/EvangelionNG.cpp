@@ -23,38 +23,35 @@
  * * * * */
 
 #include "EvangelionNG.hpp"
-#include "kernelloader/SetupInformation.hpp"
-#include "multiboot/MultibootUtil.hpp"
 
 #include "eva/stdint.h"
-#include "logger/logger.hpp"
-#include "video/ConsoleVideo.hpp"
-#include "video/PrettyBoot.hpp"
-
+#include "executable/Elf32Loader.hpp"
 #include "filesystem/filesystem.hpp"
+#include "kernelloader/SetupInformation.hpp"
+#include "logger/logger.hpp"
+#include "memory/AddressSpace.hpp"
+#include "memory/collections/AddressRangePool.hpp"
+#include "memory/collections/AddressStack.hpp"
+#include "memory/constants.hpp"
+#include "memory/gdt/GdtManager.hpp"
+#include "memory/KernelHeap.hpp"
+#include "memory/LowerHeap.hpp"
+#include "memory/paging.hpp"
+#include "memory/physical/PPallocator.hpp"
+#include "memory/TemporaryPagingUtil.hpp"
+#include "multiboot/MultibootUtil.hpp"
 #include "system/BiosDataArea.hpp"
 #include "system/pci/pci.hpp"
 #include "system/serial/SerialPort.hpp"
 #include "system/smp/GlobalLock.hpp"
 #include "system/system.hpp"
 #include "tasking/tasking.hpp"
-
-#include "memory/AddressSpace.hpp"
-#include "memory/KernelHeap.hpp"
-#include "memory/LowerHeap.hpp"
-#include "memory/TemporaryPagingUtil.hpp"
-#include "memory/collections/AddressStack.hpp"
-#include "memory/constants.hpp"
-#include "memory/gdt/GdtManager.hpp"
-#include "memory/paging.hpp"
-#include "memory/physical/PPallocator.hpp"
-
-#include "executable/Elf32Loader.hpp"
-#include "memory/collections/AddressRangePool.hpp"
+#include "video/ConsoleVideo.hpp"
+#include "video/PrettyBoot.hpp"
 
 // scoping of static internal kernel class properties
-AddressRangePool *EvaKernel::evaKernelRangePool;
-Ramdisk *EvaKernel::ramdisk;
+AddressRangePool* EvaKernel::evaKernelRangePool;
+Ramdisk*          EvaKernel::ramdisk;
 
 // locker for initialization routines
 static GlobalLock BspSetupLock;
@@ -72,54 +69,55 @@ static GlobalLock systemProcessSpawnLock;
  *
  * @param info:		the info provided by the loader
  */
-void EvaKernel::preSetup(SetupInformation *info) {
-  // initialize the serial com port for kernel logging
-  ComPortInformation comPortInfo = biosDataArea->comPortInfo;
-  if (comPortInfo.com1 > 0) {
-    SerialPort::initializePort(comPortInfo.com1,
-                               false); // Initialize in poll mode
-    Logger::enableSerialPortLogging();
-    DebugInterface::initialize(comPortInfo.com1);
-  }
+void EvaKernel::preSetup(SetupInformation* info) {
+    // initialize the serial com port for kernel logging
+    ComPortInformation comPortInfo = biosDataArea->comPortInfo;
+    if ( comPortInfo.com1 > 0 ) {
+        SerialPort::initializePort(comPortInfo.com1,
+                                   false); // Initialize in poll mode
+        Logger::enableSerialPortLogging();
+        DebugInterface::initialize(comPortInfo.com1);
+    }
 
-  else
-    Logger::println("%! COM1 port not available for serial debug output",
-                    "logger");
+    else
+        Logger::println("%! COM1 port not available for serial debug output", "logger");
 
-  // print the kernel header information
-  printHeader(info);
+    // print the kernel header information
+    printHeader(info);
 
-  // initialize the phisical allocator from start bitmappig of the loader
-  PRETTY_BOOT_STATUS("Checking available memory", 20, GREEN);
-  PPallocator::initializeFromBitmap(info->bitmapStart, info->bitmapEnd);
+    // initialize the phisical allocator from start bitmappig of the loader
+    PRETTY_BOOT_STATUS("Checking available memory", 20, GREEN);
+    PPallocator::initializeFromBitmap(info->bitmapStart, info->bitmapEnd);
 
-  // initialize the heap with provided info of the loader
-  KernelHeap::initialize(info->heapStart, info->heapEnd);
+    // initialize the heap with provided info of the loader
+    KernelHeap::initialize(info->heapStart, info->heapEnd);
 
-  // serach from loaded modules the ramdisk file
-  PRETTY_BOOT_STATUS("Searching ramdisk module", 30, GREEN);
-  MultibootModule *ramDiskModule =
-      MultibootUtils::findModule(info->multibootInformation, "/boot/MXfs.img");
-  if (!ramDiskModule)
-    panic("%! ramdisk MXfs.img does not exist", "Eva Kernel");
+    // serach from loaded modules the ramdisk file
+    PRETTY_BOOT_STATUS("Searching ramdisk module", 30, GREEN);
+    MultibootModule* ramDiskModule
+        = MultibootUtils::findModule(info->multibootInformation, "/boot/MXfs.img");
+    if ( !ramDiskModule )
+        panic("%! ramdisk MXfs.img does not exist", "Eva Kernel");
 
-  // create the memory address ranges
-  PRETTY_BOOT_STATUS("Initializing kernel rande pool", 35, GREEN);
-  EvaKernel::evaKernelRangePool = new AddressRangePool();
-  EvaKernel::evaKernelRangePool->initialize(CONST_KERNEL_VIRTUAL_RANGES_START,
-                                            CONST_KERNEL_VIRTUAL_RANGES_END);
+    // create the memory address ranges
+    PRETTY_BOOT_STATUS("Initializing kernel rande pool", 35, GREEN);
+    EvaKernel::evaKernelRangePool = new AddressRangePool();
+    EvaKernel::evaKernelRangePool->initialize(CONST_KERNEL_VIRTUAL_RANGES_START,
+                                              CONST_KERNEL_VIRTUAL_RANGES_END);
 
-  // load the ramdisk and get it's size
-  PRETTY_BOOT_STATUS("Loading ramdisk", 40, GREEN);
-  uint32_t rmdiskSize = loadRamdisk(ramDiskModule);
+    // load the ramdisk and get it's size
+    PRETTY_BOOT_STATUS("Loading ramdisk", 40, GREEN);
+    uint32_t rmdiskSize = loadRamdisk(ramDiskModule);
 
-  // get the avaible physical memory in kb
-  uint32_t avbmm = (PPallocator::getInitialAmount() * PAGE_SIZE / 1024);
+    // get the avaible physical memory in kb
+    uint32_t avbmm = (PPallocator::getInitialAmount() * PAGE_SIZE / 1024);
 
-  // print a log with total physical memory avaible
-  logInfo("%! total physical memory: %iKB", "Eva Kernel", avbmm + rmdiskSize);
-  logInfo("%! %iMB avaible for the system, %iMB used by ramdisk", "Eva Kernel",
-          avbmm / 1024, rmdiskSize / 1024);
+    // print a log with total physical memory avaible
+    logInfo("%! total physical memory: %iKB", "Eva Kernel", avbmm + rmdiskSize);
+    logInfo("%! %iMB avaible for the system, %iMB used by ramdisk",
+            "Eva Kernel",
+            avbmm / 1024,
+            rmdiskSize / 1024);
 }
 
 /**
@@ -127,29 +125,27 @@ void EvaKernel::preSetup(SetupInformation *info) {
  *
  * @param info:		the info provided by the loader
  */
-void EvaKernel::printHeader(SetupInformation *info) {
-  // Print header
-  ConsoleVideo::clear();
-  ConsoleVideo::setColor(32);
-  logInfon("EvangelionNG Kernel");
-  ConsoleVideo::setColor(0x0F);
-  logInfo(" Version %i.%i.%i.%c", VERSION_MAJOR, VERSION_MINOR, VERSION_SUB,
-          VERSION_PATCH);
-  logInfo("");
-  logInfo("  Copyright (C) 2017, MeetiX OS Project");
-  logInfo("");
-  logInfo("%! loading", "Pre Setup");
+void EvaKernel::printHeader(SetupInformation* info) {
+    // Print header
+    ConsoleVideo::clear();
+    ConsoleVideo::setColor(32);
+    logInfon("EvangelionNG Kernel");
+    ConsoleVideo::setColor(0x0F);
+    logInfo(" Version %i.%i.%i.%c", VERSION_MAJOR, VERSION_MINOR, VERSION_SUB, VERSION_PATCH);
+    logInfo("");
+    logInfo("  Copyright (C) 2017, MeetiX OS Project");
+    logInfo("");
+    logInfo("%! loading", "Pre Setup");
 
-  // Print setup information
-  logDebug("%! setup information:", "Pre Setup");
-  logDebug("%#   reserved: %h - %h", info->kernelImageStart,
-           info->kernelImageEnd);
-  logDebug("%#   stack:    %h - %h", info->stackStart, info->stackEnd);
-  logDebug("%#   bitmap:   %h - %h", info->bitmapStart, info->bitmapEnd);
-  logDebug("%#   heap:     %h - %h", info->heapStart, info->heapEnd);
-  logDebug("%#   mbstruct: %h", info->multibootInformation);
-  logDebug("%! started", "Eva Kernel");
-  logDebug("%! got setup information at %h", "Eva Kernel", info);
+    // Print setup information
+    logDebug("%! setup information:", "Pre Setup");
+    logDebug("%#   reserved: %h - %h", info->kernelImageStart, info->kernelImageEnd);
+    logDebug("%#   stack:    %h - %h", info->stackStart, info->stackEnd);
+    logDebug("%#   bitmap:   %h - %h", info->bitmapStart, info->bitmapEnd);
+    logDebug("%#   heap:     %h - %h", info->heapStart, info->heapEnd);
+    logDebug("%#   mbstruct: %h", info->multibootInformation);
+    logDebug("%! started", "Eva Kernel");
+    logDebug("%! got setup information at %h", "Eva Kernel", info);
 }
 
 /**
@@ -160,41 +156,38 @@ void EvaKernel::printHeader(SetupInformation *info) {
  * @param ramdiskModule:	the multiboot module that be used as ramdisk
  * @return the size of the ramdisk in KB
  */
-uint32_t EvaKernel::loadRamdisk(MultibootModule *ramdiskModule) {
-  // align the pages to get module size
-  int ramdiskPages =
-      PAGE_ALIGN_UP(ramdiskModule->moduleEnd - ramdiskModule->moduleStart) /
-      PAGE_SIZE;
+uint32_t EvaKernel::loadRamdisk(MultibootModule* ramdiskModule) {
+    // align the pages to get module size
+    int ramdiskPages
+        = PAGE_ALIGN_UP(ramdiskModule->moduleEnd - ramdiskModule->moduleStart) / PAGE_SIZE;
 
-  // allocate memory to a new virtual address
-  VirtualAddress ramdiskNewLocation =
-      EvaKernel::evaKernelRangePool->allocate(ramdiskPages);
+    // allocate memory to a new virtual address
+    VirtualAddress ramdiskNewLocation = EvaKernel::evaKernelRangePool->allocate(ramdiskPages);
 
-  // not enough memory, Panic
-  if (!ramdiskNewLocation)
-    panic("%! not enough virtual space for ramdisk remapping", "Eva Kernel");
+    // not enough memory, Panic
+    if ( !ramdiskNewLocation )
+        panic("%! not enough virtual space for ramdisk remapping", "Eva Kernel");
 
-  // copy the module on kernel physical memory
-  for (int i = 0; i < ramdiskPages; i++) {
-    VirtualAddress virt = ramdiskNewLocation + i * PAGE_SIZE;
-    PhysicalAddress phys = AddressSpace::virtualToPhysical(
-        ramdiskModule->moduleStart + i * PAGE_SIZE);
-    AddressSpace::map(virt, phys, DEFAULT_KERNEL_TABLE_FLAGS,
-                      DEFAULT_KERNEL_PAGE_FLAGS);
-  }
+    // copy the module on kernel physical memory
+    for ( int i = 0; i < ramdiskPages; i++ ) {
+        VirtualAddress  virt = ramdiskNewLocation + i * PAGE_SIZE;
+        PhysicalAddress phys
+            = AddressSpace::virtualToPhysical(ramdiskModule->moduleStart + i * PAGE_SIZE);
+        AddressSpace::map(virt, phys, DEFAULT_KERNEL_TABLE_FLAGS, DEFAULT_KERNEL_PAGE_FLAGS);
+    }
 
-  // adjust module range
-  ramdiskModule->moduleEnd = ramdiskNewLocation + (ramdiskModule->moduleEnd -
-                                                   ramdiskModule->moduleStart);
-  ramdiskModule->moduleStart = ramdiskNewLocation;
+    // adjust module range
+    ramdiskModule->moduleEnd
+        = ramdiskNewLocation + (ramdiskModule->moduleEnd - ramdiskModule->moduleStart);
+    ramdiskModule->moduleStart = ramdiskNewLocation;
 
-  // create the ramdisk and load the module
-  EvaKernel::ramdisk = new Ramdisk();
-  EvaKernel::ramdisk->load(ramdiskModule);
-  logInfo("%! ramdisk mounted", "Eva Kernel");
+    // create the ramdisk and load the module
+    EvaKernel::ramdisk = new Ramdisk();
+    EvaKernel::ramdisk->load(ramdiskModule);
+    logInfo("%! ramdisk mounted", "Eva Kernel");
 
-  // return the ramdisk size as kilobytes
-  return ramdiskPages * PAGE_SIZE / 1024;
+    // return the ramdisk size as kilobytes
+    return ramdiskPages * PAGE_SIZE / 1024;
 }
 
 /**
@@ -204,21 +197,21 @@ uint32_t EvaKernel::loadRamdisk(MultibootModule *ramdiskModule) {
  *
  * @param info the setup information provided by the kernel loader
  */
-void EvaKernel::run(SetupInformation *info) {
-  PRETTY_BOOT_STATUS("Running pre setup", 15, GREEN);
-  preSetup(info);
+void EvaKernel::run(SetupInformation* info) {
+    PRETTY_BOOT_STATUS("Running pre setup", 15, GREEN);
+    preSetup(info);
 
-  logDebug("%! unmapping old address space area", "Eva Kernel");
-  PRETTY_BOOT_STATUS("Unmapping old address space area", 41, GREEN);
+    logDebug("%! unmapping old address space area", "Eva Kernel");
+    PRETTY_BOOT_STATUS("Unmapping old address space area", 41, GREEN);
 
-  // unmap info and loader
-  PhysicalAddress initialPdPhysical = info->initialPageDirectoryPhysical;
-  for (VirtualAddress i = CONST_LOWER_MEMORY_END; i < CONST_KERNEL_AREA_START;
-       i = i + PAGE_SIZE)
-    AddressSpace::unmap(i);
+    // unmap info and loader
+    PhysicalAddress initialPdPhysical = info->initialPageDirectoryPhysical;
+    for ( VirtualAddress i = CONST_LOWER_MEMORY_END; i < CONST_KERNEL_AREA_START;
+          i                = i + PAGE_SIZE )
+        AddressSpace::unmap(i);
 
-  // begin basic system initialization
-  runBasicSystemPackage(initialPdPhysical);
+    // begin basic system initialization
+    runBasicSystemPackage(initialPdPhysical);
 }
 
 /**
@@ -227,110 +220,109 @@ void EvaKernel::run(SetupInformation *info) {
  * @param initialPdPhysical:	the physical page where initialize
  */
 void EvaKernel::runBasicSystemPackage(PhysicalAddress initialPdPhysical) {
-  // initialize the paging
-  PRETTY_BOOT_STATUS("Initializing Paging", 42, GREEN);
-  TemporaryPagingUtil::initialize();
+    // initialize the paging
+    PRETTY_BOOT_STATUS("Initializing Paging", 42, GREEN);
+    TemporaryPagingUtil::initialize();
 
-  // initialize lower heap
-  PRETTY_BOOT_STATUS("Initializing Lower Heap", 44, GREEN);
-  LowerHeap::addArea(CONST_LOWER_HEAP_MEMORY_START,
-                     CONST_LOWER_HEAP_MEMORY_END);
+    // initialize lower heap
+    PRETTY_BOOT_STATUS("Initializing Lower Heap", 44, GREEN);
+    LowerHeap::addArea(CONST_LOWER_HEAP_MEMORY_START, CONST_LOWER_HEAP_MEMORY_END);
 
-  // lock the core
-  BspSetupLock.lock();
-  {
-    // initialize system backend
-    PRETTY_BOOT_STATUS("Initializing Basic System package", 45, GREEN);
-    System::initializeBasicSystemPackage(initialPdPhysical);
-
-    // initialize the Global Descriptor Table
-    // (AFTER the system, so BSP's id is available)
-    PRETTY_BOOT_STATUS("Initializing Global Descriptor Table", 50, GREEN);
-    GdtManager::prepare();
-    GdtManager::initialize();
-
-    // initialize multitasking interface
-    PRETTY_BOOT_STATUS("Initializing multitasking", 70, GREEN);
-    Tasking::initialize();
-    Tasking::enableForThisCore();
-
-    // initialize the FileSystem
-    PRETTY_BOOT_STATUS("Initializing FileSystem", 80, GREEN);
-    FileSystem::initialize();
-
-    // scan the pci devices
-    PRETTY_BOOT_STATUS("Scanning pci devices", 85, GREEN);
-    Pci::initialize();
-
-    // spawn initial processes
-    PRETTY_BOOT_STATUS("Loading basic binaries", 95, GREEN);
+    // lock the core
+    BspSetupLock.lock();
     {
-      PRETTY_BOOT_STATUS("Load Idle process", 97, GREEN);
-      loadSystemProcess("/cmd/idle", THREAD_PRIORITY_IDLE);
+        // initialize system backend
+        PRETTY_BOOT_STATUS("Initializing Basic System package", 45, GREEN);
+        System::initializeBasicSystemPackage(initialPdPhysical);
 
-      PRETTY_BOOT_STATUS("Load Init process", 99, GREEN);
-      loadSystemProcess("/sys/eva/server/spawner.sv", THREAD_PRIORITY_NORMAL);
+        // initialize the Global Descriptor Table
+        // (AFTER the system, so BSP's id is available)
+        PRETTY_BOOT_STATUS("Initializing Global Descriptor Table", 50, GREEN);
+        GdtManager::prepare();
+        GdtManager::initialize();
+
+        // initialize multitasking interface
+        PRETTY_BOOT_STATUS("Initializing multitasking", 70, GREEN);
+        Tasking::initialize();
+        Tasking::enableForThisCore();
+
+        // initialize the FileSystem
+        PRETTY_BOOT_STATUS("Initializing FileSystem", 80, GREEN);
+        FileSystem::initialize();
+
+        // scan the pci devices
+        PRETTY_BOOT_STATUS("Scanning pci devices", 85, GREEN);
+        Pci::initialize();
+
+        // spawn initial processes
+        PRETTY_BOOT_STATUS("Loading basic binaries", 95, GREEN);
+        {
+            PRETTY_BOOT_STATUS("Load Idle process", 97, GREEN);
+            loadSystemProcess("/cmd/idle", THREAD_PRIORITY_IDLE);
+
+            PRETTY_BOOT_STATUS("Load Init process", 99, GREEN);
+            loadSystemProcess("/sys/eva/server/spawner.sv", THREAD_PRIORITY_NORMAL);
+        }
+        PRETTY_BOOT_STATUS("Starting Userspace", 100, GREEN);
     }
-    PRETTY_BOOT_STATUS("Starting Userspace", 100, GREEN);
-  }
-  BspSetupLock.unlock();
-  // unlock locker
+    BspSetupLock.unlock();
+    // unlock locker
 
-  // wait for other core initialization
-  coreNumber = System::getNumberOfProcessors() - 1;
-  logInfo("%! waiting for %i application processors", "Eva Kernel", coreNumber);
-  while (coreNumber > 0)
-    asm("pause");
+    // wait for other core initialization
+    coreNumber = System::getNumberOfProcessors() - 1;
+    logInfo("%! waiting for %i application processors", "Eva Kernel", coreNumber);
+    while ( coreNumber > 0 )
+        asm("pause");
 
-  // initialization ended, leave, wait for firt scheduler call
-  logInfo("%! leaving initialization", "Eva Kernel");
-  asm("sti");
-  while (true)
-    asm("hlt");
+    // initialization ended, leave, wait for firt scheduler call
+    logInfo("%! leaving initialization", "Eva Kernel");
+    asm("sti");
+    while ( true )
+        asm("hlt");
 }
 
 /**
  * AP setup routine
  */
 void EvaKernel::runAdvancedSystemPackage() {
-  // lock core
-  ApSetupLock.lock();
-  {
-    PRETTY_BOOT_STATUS("Initializing Advanged System package", 100, RED);
+    // lock core
+    ApSetupLock.lock();
+    {
+        PRETTY_BOOT_STATUS("Initializing Advanged System package", 100, RED);
 
-    // wait bsp setup end
-    logInfo("%! waiting for bsp to finish setup", "Eva AP");
-    BspSetupLock.lock();
-    BspSetupLock.unlock();
+        // wait bsp setup end
+        logInfo("%! waiting for bsp to finish setup", "Eva AP");
+        BspSetupLock.lock();
+        BspSetupLock.unlock();
 
-    // initialize the Global Descriptor Table for this core
-    GdtManager::initialize();
+        // initialize the Global Descriptor Table for this core
+        GdtManager::initialize();
 
-    // initialize system backend
-    System::initializeAdvancedPackage();
+        // initialize system backend
+        System::initializeAdvancedPackage();
 
-    // create the scheduler for this core
-    Tasking::enableForThisCore();
+        // create the scheduler for this core
+        Tasking::enableForThisCore();
 
-    // spawn the idle process
-    loadSystemProcess("/cmd/idle", THREAD_PRIORITY_IDLE);
+        // spawn the idle process
+        loadSystemProcess("/cmd/idle", THREAD_PRIORITY_IDLE);
 
-    // decrease the core count to initialize
-    --coreNumber;
-  }
-  ApSetupLock.unlock();
-  // unlock core
+        // decrease the core count to initialize
+        --coreNumber;
+    }
+    ApSetupLock.unlock();
+    // unlock core
 
-  // wait other initialization
-  logInfo("%! waiting for %i application processors", "Eva AP", coreNumber);
-  while (coreNumber > 0)
-    asm("pause");
+    // wait other initialization
+    logInfo("%! waiting for %i application processors", "Eva AP", coreNumber);
+    while ( coreNumber > 0 )
+        asm("pause");
 
-  // initialization ended, leave, wait for firt scheduler call
-  logInfo("%! leaving initialization", "Eva AP");
-  asm("sti");
-  while (true)
-    asm("hlt");
+    // initialization ended, leave, wait for firt scheduler call
+    logInfo("%! leaving initialization", "Eva AP");
+    asm("sti");
+    while ( true )
+        asm("hlt");
 }
 
 /**
@@ -339,36 +331,39 @@ void EvaKernel::runAdvancedSystemPackage() {
  * @param path:			the ramdisk path to the binary
  * @param priority:		the thread priority to assign
  */
-void EvaKernel::loadSystemProcess(const char *binaryPath,
-                                  ThreadPriority priority) {
-  // lock, only once can spawn processes
-  systemProcessSpawnLock.lock();
+void EvaKernel::loadSystemProcess(const char* binaryPath, ThreadPriority priority) {
+    // lock, only once can spawn processes
+    systemProcessSpawnLock.lock();
 
-  // spawn the new process
-  Thread *systemProcess;
-  Elf32SpawnStatus status = Elf32Loader::spawnFromRamdisk(
-      binaryPath, SECURITY_LEVEL_KERNEL, &systemProcess, true, priority);
-  switch (status) {
-  case Elf32SpawnStatus::SUCCESSFUL:
-    logInfo("%! successful spawned \"%s\"", "sysproc", binaryPath);
-    break;
-  case Elf32SpawnStatus::FILE_NOT_FOUND:
-    panic("%! \"%s\" not found", "Eva Kernel", binaryPath);
-    break;
-  case Elf32SpawnStatus::VALIDATION_ERROR:
-    panic("%! \"%s\" is not a valid elf32 binary", "Eva Kernel", binaryPath);
-    break;
-  case Elf32SpawnStatus::PROCESS_CREATION_FAILED:
-    panic("%! \"%s\" could not be loaded, error creating process", "Eva Kernel",
-          binaryPath);
-    break;
-  default:
-    panic("%! \"%s\" could not be loaded", "Eva Kernel", binaryPath);
-    break;
-  }
+    // spawn the new process
+    Thread*          systemProcess;
+    Elf32SpawnStatus status = Elf32Loader::spawnFromRamdisk(binaryPath,
+                                                            SECURITY_LEVEL_KERNEL,
+                                                            &systemProcess,
+                                                            true,
+                                                            priority);
+    switch ( status ) {
+        case Elf32SpawnStatus::SUCCESSFUL:
+            logInfo("%! successful spawned \"%s\"", "sysproc", binaryPath);
+            break;
+        case Elf32SpawnStatus::FILE_NOT_FOUND:
+            panic("%! \"%s\" not found", "Eva Kernel", binaryPath);
+            break;
+        case Elf32SpawnStatus::VALIDATION_ERROR:
+            panic("%! \"%s\" is not a valid elf32 binary", "Eva Kernel", binaryPath);
+            break;
+        case Elf32SpawnStatus::PROCESS_CREATION_FAILED:
+            panic("%! \"%s\" could not be loaded, error creating process",
+                  "Eva Kernel",
+                  binaryPath);
+            break;
+        default:
+            panic("%! \"%s\" could not be loaded", "Eva Kernel", binaryPath);
+            break;
+    }
 
-  // unlock resource
-  systemProcessSpawnLock.unlock();
+    // unlock resource
+    systemProcessSpawnLock.unlock();
 }
 
 /**
@@ -379,26 +374,25 @@ void EvaKernel::loadSystemProcess(const char *binaryPath,
  * g_logger class understands
  * @param ...:			variable arguments for the message
  */
-void EvaKernel::panic(const char *msg, ...) {
-  // other logs are unpermited
-  Logger::manualLock();
+void EvaKernel::panic(const char* msg, ...) {
+    // other logs are unpermited
+    Logger::manualLock();
 
-  // write the panic header
-  logInfo("%*%! an unrecoverable error has occured. reason:", 0x0C,
-          "Eva Error");
+    // write the panic header
+    logInfo("%*%! an unrecoverable error has occured. reason:", 0x0C, "Eva Error");
 
-  // print the provided arguments
-  va_list valist;
-  va_start(valist, msg);
-  Logger::printFormatted(msg, valist);
-  va_end(valist);
-  Logger::printCharacter('\n');
+    // print the provided arguments
+    va_list valist;
+    va_start(valist, msg);
+    Logger::printFormatted(msg, valist);
+    va_end(valist);
+    Logger::printCharacter('\n');
 
-  // unlock the Logger
-  Logger::manualUnlock();
+    // unlock the Logger
+    Logger::manualUnlock();
 
-  // halt the system
-  asm("cli");
-  while (true)
-    asm("hlt");
+    // halt the system
+    asm("cli");
+    while ( true )
+        asm("hlt");
 }
