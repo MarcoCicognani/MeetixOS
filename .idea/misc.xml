@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
+  <component name="CidrRootsConfiguration">
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/Build" />
+      <file path="$PROJECT_DIR$/Build/Ports" />
+      <file path="$PROJECT_DIR$/Build/Release" />
+      <file path="$PROJECT_DIR$/Libs/Include/cairo" />
+      <file path="$PROJECT_DIR$/Libs/Include/freetype2" />
+      <file path="$PROJECT_DIR$/Libs/Include/pixman-1" />
+      <file path="$PROJECT_DIR$/Toolchain/Local" />
+      <file path="$PROJECT_DIR$/Toolchain/Tarballs" />
+    </excludeRoots>
+  </component>
 </project>

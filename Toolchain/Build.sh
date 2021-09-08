@@ -115,11 +115,13 @@ BUILD_BINUTILS=$BUILD_DIR/Binutils
 mkdir -p $BUILD_BINUTILS || exit 1
 dir_push $BUILD_BINUTILS
     echo "Configuring ${GREEN}$BINUTILS_UNPACKED${RESET}"
-    ../$BINUTILS_UNPACKED/configure --target=$TARGET             \
-                                    --prefix="$TOOLCHAIN_PREFIX" \
-                                    --disable-nls                \
-                                    --disable-werror             \
-                                    --with-sysroot="$TOOLCHAIN_PREFIX" || exit 1
+    CFLAGS="-g0 -O2 -mtune=native"                                   \
+    CXXFLAGS="-g0 -O2 -mtune=native"                                 \
+        ../$BINUTILS_UNPACKED/configure --target=$TARGET             \
+                                        --prefix="$TOOLCHAIN_PREFIX" \
+                                        --disable-nls                \
+                                        --disable-werror             \
+                                        --with-sysroot="$TOOLCHAIN_PREFIX" || exit 1
 
     echo "Building ${GREEN}$BINUTILS_UNPACKED${RESET}"
     make $MAKE_JOBS all || exit 1
@@ -133,10 +135,12 @@ BUILD_GCC=$BUILD_DIR/Gcc
 mkdir -p $BUILD_GCC || exit 1
 dir_push $BUILD_GCC
     echo "Configuring ${GREEN}$GCC_UNPACKED${RESET}"
-    ../$GCC_UNPACKED/configure --target=$TARGET             \
-                               --prefix="$TOOLCHAIN_PREFIX" \
-                               --enable-languages=c,c++     \
-                               --with-sysroot="$TOOLCHAIN_PREFIX" || exit 1
+    CFLAGS="-g0 -O2 -mtune=native"                              \
+    CXXFLAGS="-g0 -O2 -mtune=native"                            \
+        ../$GCC_UNPACKED/configure --target=$TARGET             \
+                                   --prefix="$TOOLCHAIN_PREFIX" \
+                                   --enable-languages=c,c++     \
+                                   --with-sysroot="$TOOLCHAIN_PREFIX" || exit 1
 
     echo "Building ${GREEN}$GCC_UNPACKED${RESET}"
     make $MAKE_JOBS all-gcc || exit 1
