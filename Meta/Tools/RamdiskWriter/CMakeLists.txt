@@ -1,3 +1,8 @@
+cmake_minimum_required(VERSION 3.18)
+project(RamdiskWriterTool)
+
+set(TOOLCHAIN_BIN ${CMAKE_SOURCE_DIR}/../../../Toolchain/Local/bin)
+
 add_executable(RamdiskWriter RamdiskWriter.cpp)
 add_custom_command(
     TARGET RamdiskWriter

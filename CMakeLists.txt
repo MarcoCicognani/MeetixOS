@@ -7,6 +7,7 @@ set(TOOLCHAIN_TRIPLET i686-pc-meetix)
 set(TOOLCHAIN_ROOT ${CMAKE_SOURCE_DIR}/Toolchain/Local)
 set(TOOLCHAIN_BIN ${TOOLCHAIN_ROOT}/bin)
 set(TOOLCHAIN_INCLUDE ${TOOLCHAIN_ROOT}/include)
+set(TOOLCHAIN_LIB ${TOOLCHAIN_ROOT}/lib)
 
 # Define compilers
 set(CMAKE_C_COMPILER ${TOOLCHAIN_BIN}/${TOOLCHAIN_TRIPLET}-gcc)
@@ -26,4 +27,3 @@ include_directories(Libs/Include)
 add_subdirectory(Kernel)
 add_subdirectory(Libs)
 add_subdirectory(Userspace)
-add_subdirectory(Meta/Tools/RamdiskWriter)

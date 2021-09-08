@@ -105,9 +105,19 @@ echo "Patching ${GREEN}$GCC_UNPACKED${RESET}"
 patch -d $BUILD_DIR/$GCC_UNPACKED -p 1 <$GCC_PATCH || exit 1
 
 # Build tools
-echo "Building ${GREEN}pkg-config tool${RESET}"
+echo "Building ${GREEN}PackageConfig tool${RESET}"
 dir_push ../Meta/Tools/PackageConfig
-bash Build.sh || exit 1
+    bash Build.sh || exit 1
+dir_pop
+
+echo "Building ${GREEN}RamdiskWriter tool${RESET}"
+dir_push ..
+    mkdir -p Build/Release/Meta/Tools || exit 1
+    dir_push Build/Release/Meta/Tools
+        cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../../../../Meta/Tools/RamdiskWriter || exit 1
+
+        ninja || exit 1
+    dir_pop
 dir_pop
 
 # Build binutils
@@ -156,20 +166,17 @@ dir_push $BUILD_GCC
 dir_pop
 
 # Configure CMake then build C and API library
-dir_push ..
-    mkdir -p Build/{Release,Debug} || exit 1
-    dir_push Build/Release
-        cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../.. || exit 1
+dir_push ../Build/Release
+    cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../.. || exit 1
 
-        echo "Building ${GREEN}CRTs${RESET}"
-        ninja crt0 crti crtn || exit 1
+    echo "Building ${GREEN}CRTs${RESET}"
+    ninja crt0 crti crtn || exit 1
 
-        echo "Building ${GREEN}libApi${RESET}"
-        ninja Api || exit 1
+    echo "Building ${GREEN}libApi${RESET}"
+    ninja Api || exit 1
 
-        echo "Building ${GREEN}libC${RESET}"
-        ninja C || exit 1
-    dir_pop
+    echo "Building ${GREEN}libC${RESET}"
+    ninja C || exit 1
 dir_pop
 
 # Build GCC libstdc++-v3

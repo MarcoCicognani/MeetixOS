@@ -30,5 +30,4 @@ add_executable(ZipNET.sv
                output/VbeVideoOutput.cpp
                events/EventProcessor.cpp)
 target_include_directories(ZipNET.sv PRIVATE . ${TOOLCHAIN_INCLUDE}/freetype2)
-target_link_libraries(ZipNET.sv Graphics GUI IO Utils Tasking)
-target_link_options(ZipNET.sv PRIVATE -lcairo -lfreetype -lpixman-1 -lpng -lz)
+target_link_libraries(ZipNET.sv Graphics GUI IO Utils Tasking LibCairo LibFreeType LibPixman LibPNG LibZ)
