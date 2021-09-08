@@ -112,9 +112,9 @@ dir_pop
 
 echo "Building ${GREEN}RamdiskWriter tool${RESET}"
 dir_push ..
-    mkdir -p Build/Release/Meta/Tools || exit 1
-    dir_push Build/Release/Meta/Tools
-        cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../../../../Meta/Tools/RamdiskWriter || exit 1
+    mkdir -p Build/Release/Meta/Tools/RamdiskWriter || exit 1
+    dir_push Build/Release/Meta/Tools/RamdiskWriter
+        cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../../../../../Meta/Tools/RamdiskWriter || exit 1
 
         ninja || exit 1
     dir_pop
