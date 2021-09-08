@@ -12,5 +12,8 @@ port_build() {
         ../$UNPACKED_DIR/configure --static --prefix="$TOOLCHAIN_ROOT" || exit 1
 
     make -j$BUILD_JOBS || exit 1
-    make -j$BUILD_JOBS DESTDIR="$TOOLCHAIN_ROOT/lib" install || exit 1
+    make -j$BUILD_JOBS install || exit 1
+
+    ln -fs "$TOOLCHAIN_ROOT/include/zconf.h" "$SOURCE_DIR/Libs/Include/zconf.h"
+    ln -fs "$TOOLCHAIN_ROOT/include/zlib.h" "$SOURCE_DIR/Libs/Include/zlib.h"
 }

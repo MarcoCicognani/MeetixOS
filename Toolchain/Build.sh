@@ -77,6 +77,7 @@ require_tool ninja
 # Safe creation of build dir
 echo "Building toolchain into ${GREEN}$(realpath $BUILD_DIR)${RESET}"
 mkdir -p $BUILD_DIR || exit 1
+mkdir -p $TARBALLS_DIR || exit 1
 
 # Download the tarballs
 dir_push $TARBALLS_DIR
@@ -157,7 +158,7 @@ dir_push ..
         cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../.. || exit 1
 
         echo "Building ${GREEN}CRTs${RESET}"
-        ninja crt0 crti crtn|| exit 1
+        ninja crt0 crti crtn || exit 1
 
         echo "Building ${GREEN}libApi${RESET}"
         ninja Api || exit 1

@@ -6,8 +6,9 @@ GREEN=$(tput setaf 2)
 RESET=$(tput sgr0)
 
 PACKAGE=$1
-BUILD_ROOT=../Build/Ports
-TOOLCHAIN_ROOT="$(realpath ../Toolchain/Local)"
+SOURCE_DIR=$(realpath ..)
+BUILD_ROOT="$SOURCE_DIR/Build/Ports"
+TOOLCHAIN_ROOT="$SOURCE_DIR/Toolchain/Local"
 BUILD_IN_SOURCE_DIR=0
 
 # Fails with the given error message and exits
@@ -18,7 +19,7 @@ fail() {
 
 # Use the amount of CPUs as JOB_COUNT
 if [ -f "/proc/cpuinfo" ]; then
-    BUILD_JOBS=$(grep -c '^processor[[:space:]]*:' < "/proc/cpuinfo")
+    BUILD_JOBS=$(grep -c '^processor[[:space:]]*:' </proc/cpuinfo)
 else
     BUILD_JOBS=1
 fi

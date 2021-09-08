@@ -1,4 +1,4 @@
-REMOTE_ARCHIVE="https://www.meetixos.org/libs/ports/freetype-2.5.3.tar.gz"
+REMOTE_ARCHIVE=https://www.meetixos.org/libs/ports/freetype-2.5.3.tar.gz
 UNPACKED_DIR=freetype-2.5.3
 ARCHIVE=freetype-2.5.3.tar.gz
 
@@ -12,6 +12,9 @@ port_build() {
                                --with-png=no              \
                                --with-zlib=no             \
                                --with-harfbuzz=no || exit 1
+
     make -j$BUILD_JOBS || exit 1
-    make -j$BUILD_JOBS DESTDIR="$TOOLCHAIN_ROOT/lib" install || exit 1
+    make -j$BUILD_JOBS install || exit 1
+
+    ln -sf "$TOOLCHAIN_ROOT/include/freetype2" "$SOURCE_DIR/Libs/Include/freetype2"
 }

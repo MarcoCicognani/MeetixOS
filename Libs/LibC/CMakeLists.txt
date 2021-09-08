@@ -569,4 +569,5 @@ target_include_directories(C PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/musl)
 add_custom_command(
         TARGET C
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:C> ${TOOLCHAIN_ROOT}/lib/libc.a
+        COMMAND ${CMAKE_COMMAND} -E touch ${TOOLCHAIN_ROOT}/lib/libm.a
 )
