@@ -66,7 +66,7 @@ std::string trim(std::string& str) {
     if ( str.length() > 0 ) {
         size_t first = str.find_first_not_of(" \r\n\t");
         size_t last  = str.find_last_not_of(" \r\n\t");
-        return str.substr(first, (last - first + 1));
+        return str.substr(first, last - first + 1);
     }
     return str;
 }
