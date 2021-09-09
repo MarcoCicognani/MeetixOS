@@ -29,10 +29,10 @@ add_subdirectory(Userspace)
 
 # Custom targets for build ISO and run it
 add_custom_target(Repack
-                  COMMAND Meta/Repack.sh --out-dir=${CMAKE_BINARY_DIR}
-                  DEPENDS install
-                  USES_TERMINAL)
+        COMMAND Meta/Scripts/Repack.sh --out-dir=${CMAKE_BINARY_DIR}
+        DEPENDS install
+        USES_TERMINAL)
 add_custom_target(Run
-                  COMMAND Meta/Run.sh --image-dir=${CMAKE_BINARY_DIR}
-                  DEPENDS Repack
-                  USES_TERMINAL)
+        COMMAND Meta/Scripts/Run.sh --image-dir=${CMAKE_BINARY_DIR}
+        DEPENDS Repack
+        USES_TERMINAL)
