@@ -1,4 +1,4 @@
-add_library(Api
+add_library(LibApi
             STATIC
             WriteTlsMasterForProcess.c
             Spawn.c
@@ -90,6 +90,6 @@ add_library(Api
             CliArgsRelease.c
             syscall.c)
 add_custom_command(
-    TARGET Api
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Api> ${TOOLCHAIN_ROOT}/lib/libapi.a
+    TARGET LibApi
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibApi> ${TOOLCHAIN_ROOT}/lib/libapi.a
 )
