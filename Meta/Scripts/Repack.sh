@@ -17,3 +17,5 @@ for CMD_ARG in "$@"; do
             ;;
     esac
 done
+
+echo DONE
