@@ -52,8 +52,8 @@ int main(int argc, char** argv) {
 
 std::string trim(std::string& str) {
     if ( str.length() > 0 ) {
-        auto first = str.find_first_not_of(" \r\n\t");
-        auto last  = str.find_last_not_of(" \r\n\t");
+        auto first = str.find_first_not_of(" \n\t");
+        auto last  = str.find_last_not_of(" \n\t");
 
         return str.substr(first, last - first + 1);
     }
@@ -82,14 +82,14 @@ void RamdiskWriter::create(const std::string& source_path, const std::string& ta
         m_out_file.open(target_path, std::ios::out | std::ios::binary | std::ios::trunc);
 
         if ( m_out_file.is_open() ) {
-            std::cout << "Packing " << source_path << "/ to " << target_path << std::endl;
+            std::cout << "-- Packing: " << source_path << "/ to " << target_path << std::endl;
 
             /* write this directory recursively */
             auto cursor_pos = m_out_file.tellp();
             write_recursive(source_path, source_path, "", 0, 0, false);
             auto written_bytes = m_out_file.tellp() - cursor_pos;
 
-            std::cout << target_path << " successfully created, written ";
+            std::cout << "-- Done: " << target_path << " successfully created, written ";
             if ( written_bytes >= 1024 * 1024 ) {
                 std::cout << written_bytes / 1024 / 1024 << "MiB";
             } else if ( written_bytes >= 1024 ) {
@@ -124,7 +124,7 @@ void RamdiskWriter::write_recursive(const std::string& base_path,
             auto find_res = path.find(part);
 
             if ( find_res != std::string::npos && find_res == path.length() - part.length() ) {
-                std::cout << "  Skipping: " << path << std::endl;
+                std::cout << "-- Skipping: " << path << std::endl;
                 return;
             }
         }
@@ -135,7 +135,7 @@ void RamdiskWriter::write_recursive(const std::string& base_path,
             auto abs_path_part = base_path + "/" + part;
 
             if ( !path.find(abs_path_part) ) {
-                std::cout << "  Skipping: " << path << std::endl;
+                std::cout << "-- Skipping: " << path << std::endl;
                 return;
             }
         }
@@ -143,7 +143,7 @@ void RamdiskWriter::write_recursive(const std::string& base_path,
         /* full path ignore */
         auto abs_path = base_path + "/" + ignore;
         if ( abs_path == path ) {
-            std::cout << "  Skipping: " << path << std::endl;
+            std::cout << "-- Skipping: " << path << std::endl;
             return;
         }
     }
@@ -152,7 +152,7 @@ void RamdiskWriter::write_recursive(const std::string& base_path,
     auto       buffer_ptr  = new char[BUFFER_SIZE];
     auto       entry_id    = m_next_id++;
 
-    std::cout << "Packing: " << (is_file ? "File" : "Dir") << ": '" << path
+    std::cout << "-- Packing: " << (is_file ? "File" : "Dir ") << ": '" << path
               << "' with ID: " << entry_id << std::endl;
 
     /* skip root entry */

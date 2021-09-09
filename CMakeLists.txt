@@ -37,8 +37,12 @@ add_subdirectory(Userspace)
 
 # Custom targets for build ISO and run it
 add_custom_target(repack
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Meta/Boot ${ISO_IMAGE_INSTALL_ROOT}/boot/grub
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Root ${RD_IMAGE_INSTALL_ROOT}
-        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Repack.sh --out-dir=${CMAKE_BINARY_DIR} --image-root=${IMAGE_INSTALL_ROOT} --rd-image-root=${RD_IMAGE_INSTALL_ROOT}
+        COMMAND ${CMAKE_COMMAND} -E env TOOLCHAIN_BIN=${TOOLCHAIN_BIN}
+                    ${CMAKE_SOURCE_DIR}/Meta/Scripts/Repack.sh --out-dir=${CMAKE_BINARY_DIR}
+                                                               --iso-root=${ISO_IMAGE_INSTALL_ROOT}
+                                                               --ramdisk-root=${RD_IMAGE_INSTALL_ROOT}
         DEPENDS install
         USES_TERMINAL)
 add_custom_target(run
