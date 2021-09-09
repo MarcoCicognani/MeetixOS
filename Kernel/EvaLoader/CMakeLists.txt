@@ -16,3 +16,5 @@ add_executable(EvaLoader
 target_include_directories(EvaLoader PRIVATE . ../EvaShared)
 target_link_libraries(EvaLoader EvaShared)
 target_link_options(EvaLoader PRIVATE LINKER:-T ${CMAKE_CURRENT_SOURCE_DIR}/../extra/link-loader.ld -nostdlib -nostartfiles)
+
+install(TARGETS EvaLoader DESTINATION ${ISO_IMAGE_INSTALL_ROOT}/boot)

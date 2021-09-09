@@ -82,3 +82,5 @@ add_executable(EvangelionNG
 target_include_directories(EvangelionNG PRIVATE . ../EvaShared)
 target_link_libraries(EvangelionNG EvaShared)
 target_link_options(EvangelionNG PRIVATE LINKER:-T ${CMAKE_CURRENT_SOURCE_DIR}/../extra/link-kernel.ld -nostdlib -nostartfiles)
+
+install(TARGETS EvangelionNG DESTINATION ${ISO_IMAGE_INSTALL_ROOT}/boot)

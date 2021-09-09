@@ -23,10 +23,12 @@ set(CMAKE_ASM_NASM_COMPILER nasm)
 set(CMAKE_ASM_NASM_COMPILE_OBJECT "${CMAKE_ASM_NASM_COMPILER} -f elf -o <OBJECT> -s <SOURCE>")
 
 set(IMAGE_INSTALL_ROOT ${CMAKE_BINARY_DIR}/Image)
+set(ISO_IMAGE_INSTALL_ROOT ${IMAGE_INSTALL_ROOT}/ISO)
 set(RD_IMAGE_INSTALL_ROOT ${IMAGE_INSTALL_ROOT}/Root)
 set(RD_IMAGE_INSTALL_APPS ${RD_IMAGE_INSTALL_ROOT}/Apps)
 set(RD_IMAGE_INSTALL_BINS ${RD_IMAGE_INSTALL_ROOT}/Bins)
-set(RD_IMAGE_INSTALL_SERVERS ${RD_IMAGE_INSTALL_ROOT}/MeetiX/Servers)
+set(RD_IMAGE_INSTALL_SERVERS ${RD_IMAGE_INSTALL_ROOT}/MeetiX/Kernel/Servers)
+set(RD_IMAGE_INSTALL_MODULES ${RD_IMAGE_INSTALL_ROOT}/MeetiX/Kernel/Modules)
 
 # Project sub-directories
 add_subdirectory(Kernel)
@@ -34,14 +36,12 @@ add_subdirectory(Libs)
 add_subdirectory(Userspace)
 
 # Custom targets for build ISO and run it
-add_custom_target(pre-install
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Root ${RD_IMAGE_INSTALL_ROOT}
-        USES_TERMINAL)
 add_custom_target(repack
-        COMMAND Meta/Scripts/Repack.sh --out-dir=${CMAKE_BINARY_DIR} --image-root=${IMAGE_INSTALL_ROOT} --rd-image-root=${RD_IMAGE_INSTALL_ROOT}
-        DEPENDS pre-install install
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Root ${RD_IMAGE_INSTALL_ROOT}
+        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Repack.sh --out-dir=${CMAKE_BINARY_DIR} --image-root=${IMAGE_INSTALL_ROOT} --rd-image-root=${RD_IMAGE_INSTALL_ROOT}
+        DEPENDS install
         USES_TERMINAL)
 add_custom_target(run
-        COMMAND Meta/Scripts/Run.sh --image-dir=${CMAKE_BINARY_DIR}
+        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Run.sh --image-dir=${CMAKE_BINARY_DIR}
         DEPENDS repack
         USES_TERMINAL)
