@@ -16,7 +16,8 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "power.hpp"
+#include "Power.hpp"
+
 #include <eva/utils/local.hpp>
 #include <signal.h>
 #include <stdio.h>

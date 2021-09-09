@@ -24,6 +24,9 @@
 
 #include "spawner.hpp"
 
+#include "Elf32Loader.hpp"
+#include "Power.hpp"
+
 #include <eva/bytewise.h>
 #include <fcntl.h>
 #include <io/files/futils.hpp>
@@ -34,9 +37,6 @@
 #include <utils/environment.hpp>
 #include <utils/utils.hpp>
 #include <vector>
-
-#include "Elf32Loader.hpp"
-#include "power.hpp"
 
 /**
  *

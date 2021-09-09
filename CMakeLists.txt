@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18.4)
 project(MeetiXOS C CXX ASM)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 
 # Triplet and installation directory for toolchains
 set(TOOLCHAIN_TRIPLET i686-pc-meetix)
