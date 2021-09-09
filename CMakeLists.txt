@@ -22,8 +22,6 @@ set(CMAKE_CXXFILT ${TOOLCHAIN_BIN}/${TOOLCHAIN_TRIPLET}-c++filt)
 set(CMAKE_ASM_NASM_COMPILER nasm)
 set(CMAKE_ASM_NASM_COMPILE_OBJECT "${CMAKE_ASM_NASM_COMPILER} -f elf -o <OBJECT> -s <SOURCE>")
 
-include_directories(Libs/Include)
-
 add_subdirectory(Kernel)
 add_subdirectory(Libs)
 add_subdirectory(Userspace)
