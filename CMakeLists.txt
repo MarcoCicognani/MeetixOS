@@ -28,6 +28,8 @@ add_subdirectory(Libs)
 add_subdirectory(Userspace)
 
 # Custom targets for build ISO and run it
+add_custom_target(PreInstall
+        )
 add_custom_target(Repack
         COMMAND Meta/Scripts/Repack.sh --out-dir=${CMAKE_BINARY_DIR}
         DEPENDS install
