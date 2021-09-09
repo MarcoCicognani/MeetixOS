@@ -18,58 +18,38 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef _RAMDISK_WRITER_
-#define _RAMDISK_WRITER_
+#pragma once
 
+#include <cstdint>
 #include <fstream>
-#include <list>
-#include <stdint.h>
 #include <string>
-
-#define VERSION_MAJOR 1
-#define VERSION_MINOR 1
+#include <vector>
 
 /**
- * class to create formatted ramdisk readable by ramdisk driver
+ * @brief Creates a custom format ramdisk with the MeetiX kernel is able to read and write
  */
 class RamdiskWriter {
-private:
-  /**
-   * internal infos
-   */
-  int idCounter;                  // the current file id
-  std::ofstream out;              // the output file
-  std::list<std::string> ignores; // the list of ignorable files
-
-  /**
-   * write each file on a output file
-   *
-   * @param basePath:		 the base path of a file
-   * @param path:			 the absolute path of the file
-   * @param name:			 the filename
-   * @param contentLength: the content length in bytes of the file
-   * @param parentId:		 the id of the parent
-   * @param isFile:		 flag to check if current entry is a file or a
-   * directory
-   */
-  void writeRecursive(const std::string &basePath, const std::string &path,
-                      const std::string &name, uint32_t contentLength,
-                      uint32_t parentId, bool isFile);
-
 public:
-  /**
-   * standard constructor
-   */
-  RamdiskWriter() : idCounter(0) {}
+    RamdiskWriter() = default;
 
-  /**
-   * create a ramdisk file from a source path
-   *
-   * @param sourcePath:		the path where the tool take entryes to create the
-   * output file
-   * @param targetPath:		the path where the tool write the output file
-   */
-  void create(const std::string &sourcePath, const std::string &targetPath);
+    /**
+     * @brief Recursively creates the ramdisk image packing the files and the directories found into
+     * source_path into a file referenced by target_path
+     * @param source_path The source directory to pack
+     * @param target_path The target file where the ramdisk is generated
+     */
+    void create(const std::string& source_path, const std::string& target_path);
+
+private:
+    void write_recursive(const std::string& base_path,
+                         const std::string& path,
+                         const std::string& name,
+                         uint32_t           content_length,
+                         uint32_t           parent_id,
+                         bool               is_file);
+
+private:
+    int                      m_next_id{ 0 };
+    std::ofstream            m_out_file{};
+    std::vector<std::string> m_ignores{ std::string{ "*.keep" } };
 };
-
-#endif

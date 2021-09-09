@@ -21,32 +21,27 @@
 #include "RamdiskWriter.hpp"
 
 #include <algorithm>
-#include <dirent.h>
+#include <cstring>
+#include <filesystem>
 #include <iostream>
-#include <list>
-#include <sstream>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 
-int main(int argc, char* argv[]) {
-    // create ramdisk object
-    RamdiskWriter ramdisk_writer;
+/**
+ * @brief Creates a custom format ramdisk with the MeetiX kernel is able to read and write
+ */
+int main(int argc, char** argv) {
     if ( argc == 2 ) {
         if ( strcmp(argv[1], "--help") == 0 ) {
-            std::cout << '\n';
-            std::cout << "NAME\n";
-            std::cout << "\tMeetiX OS Ramdisk Writer, by  Max Schlüssel\n\n";
+            std::cout << "Ramdisk Writer Tool\n\n";
             std::cout << "DESCRIPTION\n";
             std::cout << "\tGenerates a ramdisk image from a given source folder.\n\n";
             std::cout << "SYNTAX\n";
-            std::cout << "\tPath/To/SourceDir Path/To/TargetFileName" << std::endl;
+            std::cout << "\tRamdiskWriter Path/To/SourceDir Path/To/TargetFileName" << std::endl;
         } else {
             std::cerr << "error: unrecognized command line option '" << argv[1] << std::endl;
         }
         return 1;
     } else if ( argc == 3 ) {
+        RamdiskWriter ramdisk_writer;
         ramdisk_writer.create(argv[1], argv[2]);
         return 0;
     } else {
@@ -55,231 +50,189 @@ int main(int argc, char* argv[]) {
     }
 }
 
-/**
- * trim the provided string
- *
- * @param str:		the string to trim
- * @return:			the trimmed string or the same string
- */
 std::string trim(std::string& str) {
-    // the string have to valid
     if ( str.length() > 0 ) {
-        size_t first = str.find_first_not_of(" \r\n\t");
-        size_t last  = str.find_last_not_of(" \r\n\t");
+        auto first = str.find_first_not_of(" \r\n\t");
+        auto last  = str.find_last_not_of(" \r\n\t");
+
         return str.substr(first, last - first + 1);
     }
     return str;
 }
 
-/**
- * create a ramdisk file from a source path
- *
- * @param sourcePath:		the path where the tool take entryes to create
- * the output file
- * @param targetPath:		the path where the tool write the output file
- */
-void RamdiskWriter::create(const std::string& sourcePath, const std::string& targetPath) {
-    // read .rdignore if it exists
-    std::ifstream rdignore(sourcePath + "/.rdignore");
-    if ( rdignore.is_open() ) {
+void RamdiskWriter::create(const std::string& source_path, const std::string& target_path) {
+    /* check whether the directory contains a .read_ignore, then safe the content */
+    auto read_ignore_path   = source_path + "/.read_ignore";
+    auto read_ignore_stream = std::ifstream{ read_ignore_path };
+
+    if ( read_ignore_stream.is_open() ) {
+        /* put into m_ignores the path to the file itself */
+        m_ignores.push_back(read_ignore_path);
+
+        /* collect all the other ignores */
         std::string line;
-        while ( getline(rdignore, line) )
-            if ( line.length() > 0 )
-                ignores.push_back(trim(line));
+        while ( getline(read_ignore_stream, line) )
+            if ( line.length() > 0 ) {
+                m_ignores.push_back(trim(line));
+            }
     }
 
-    // try the writing recursive
+    /* try the writing recursive */
     try {
-        // open the targetPath file
-        out.open(targetPath, std::ios::out | std::ios::binary);
+        m_out_file.open(target_path, std::ios::out | std::ios::binary | std::ios::trunc);
 
-        // check open success
-        if ( out.good() ) {
-            // show the current status
-            std::cout << "status: packing folder \"" << sourcePath << "\" to file \"" << targetPath
-                      << "\":" << std::endl;
+        if ( m_out_file.is_open() ) {
+            std::cout << "Packing " << source_path << "/ to " << target_path << std::endl;
 
-            int64_t pos = out.tellp();
-            writeRecursive(sourcePath, sourcePath, "", 0, 0, false);
-            int64_t written = out.tellp() - pos;
+            /* write this directory recursively */
+            auto cursor_pos = m_out_file.tellp();
+            write_recursive(source_path, source_path, "", 0, 0, false);
+            auto written_bytes = m_out_file.tellp() - cursor_pos;
 
-            std::cout << "status: \"" << targetPath << "\" successfully created, wrote " << written
-                      << " bytes" << std::endl;
+            std::cout << target_path << " successfully created, written ";
+            if ( written_bytes >= 1024 * 1024 ) {
+                std::cout << written_bytes / 1024 / 1024 << "MiB";
+            } else if ( written_bytes >= 1024 ) {
+                std::cout << written_bytes / 1024 << "KiB";
+            } else {
+                std::cout << written_bytes << "Bytes";
+            }
+            std::cout << std::endl;
+        } else {
+            std::cerr << "Error: Unable to write to '" << target_path << "'" << std::endl;
         }
-
-        // an error was occoured
-        else
-            std::cerr << "error: could not write to file '" << targetPath << "'" << std::endl;
-
     } catch ( std::exception& e ) {
-        std::cerr << "error: an error occured while creating the ramdisk: " << e.what()
-                  << std::endl;
+        std::cerr << "Error: Unable to write ramdisk image: Cause: " << e.what() << std::endl;
     }
 
-    // close file if is opened
-    if ( out.is_open() )
-        out.close();
+    /* cleanup */
+    if ( m_out_file.is_open() )
+        m_out_file.close();
 }
 
-/**
- * write each file on a output file
- *
- * @param basePath:		 the base path of a file
- * @param path:			 the absolute path of the file
- * @param name:			 the filename
- * @param contentLength: the content length in bytes of the file
- * @param parentId:		 the id of the parent
- * @param isFile:		 flag to check if current entry is a file or a
- * directory
- */
-void RamdiskWriter::writeRecursive(const std::string& basePath,
-                                   const std::string& path,
-                                   const std::string& name,
-                                   uint32_t           contentLength,
-                                   uint32_t           parentId,
-                                   bool               isFile) {
-    // check whether to skip the file
-    std::string basePathStr(basePath);
-    std::string pathStr(path);
-    for ( std::string ign : ignores ) {
-        // starts with star?
-        if ( !ign.find("*") ) {
-            std::string part = ign.substr(1);
-            if ( pathStr.find(part) == pathStr.length() - part.length() ) {
-                std::cout << "  skipping: " << path << std::endl;
+void RamdiskWriter::write_recursive(const std::string& base_path,
+                                    const std::string& path,
+                                    const std::string& name,
+                                    uint32_t           content_length,
+                                    uint32_t           parent_id,
+                                    bool               is_file) {
+    /* skip files to ignore */
+    for ( const auto& ignore : m_ignores ) {
+        /* check for pre-pended globbing */
+        if ( !ignore.find('*') ) {
+            auto part     = ignore.substr(1);
+            auto find_res = path.find(part);
+
+            if ( find_res != std::string::npos && find_res == path.length() - part.length() ) {
+                std::cout << "  Skipping: " << path << std::endl;
                 return;
             }
         }
 
-        // ends with star?
-        if ( ign.find("*") == ign.length() - 1 ) {
-            std::string part             = ign.substr(0, ign.length() - 1);
-            std::string absolutePartPath = basePathStr + "/" + part;
+        /* check for appended globbing */
+        if ( ignore.find('*') == ignore.length() - 1 ) {
+            auto part          = ignore.substr(0, ignore.length() - 1);
+            auto abs_path_part = base_path + "/" + part;
 
-            if ( pathStr.find(absolutePartPath) == 0 ) {
-                std::cout << "  skipping: " << path << std::endl;
+            if ( !path.find(abs_path_part) ) {
+                std::cout << "  Skipping: " << path << std::endl;
                 return;
             }
         }
 
-        // full paths
-        std::string absolutePath = basePathStr + "/" + ign;
-        if ( absolutePath == pathStr ) {
-            std::cout << "  skipping: " << path << std::endl;
+        /* full path ignore */
+        auto abs_path = base_path + "/" + ignore;
+        if ( abs_path == path ) {
+            std::cout << "  Skipping: " << path << std::endl;
             return;
         }
     }
 
-    uint32_t bufferSize = 0x10000;
-    char*    buffer     = new char[bufferSize];
-    uint32_t entryId    = idCounter++;
+    const auto BUFFER_SIZE = 0x10000;
+    auto       buffer_ptr  = new char[BUFFER_SIZE];
+    auto       entry_id    = m_next_id++;
 
-    std::stringstream msg;
-    msg << "Packing: " << entryId << ": " << path << (isFile ? "" : "/");
-    std::cout << msg.str() << std::endl;
+    std::cout << "Packing: " << (is_file ? "File" : "Dir") << ": '" << path
+              << "' with ID: " << entry_id << std::endl;
 
-    // Root must not be written
-    if ( entryId > 0 ) {
-        // file or folder
-        buffer[0] = isFile ? 1 : 0;
-        out.write(buffer, 1);
+    /* skip root entry */
+    if ( entry_id > 0 ) {
+        /* write entry-type 0 -> directory, 1 -> file */
+        buffer_ptr[0] = is_file ? 1 : 0;
+        m_out_file.write(buffer_ptr, 1);
 
-        // id
-        buffer[0] = ((entryId >> 0) & 0xFF);
-        buffer[1] = ((entryId >> 8) & 0xFF);
-        buffer[2] = ((entryId >> 16) & 0xFF);
-        buffer[3] = ((entryId >> 24) & 0xFF);
-        out.write(buffer, 4);
+        /* entry id */
+        buffer_ptr[0] = static_cast<char>((entry_id >> 0) & 0xFF);
+        buffer_ptr[1] = static_cast<char>((entry_id >> 8) & 0xFF);
+        buffer_ptr[2] = static_cast<char>((entry_id >> 16) & 0xFF);
+        buffer_ptr[3] = static_cast<char>((entry_id >> 24) & 0xFF);
+        m_out_file.write(buffer_ptr, 4);
 
-        // parent id
-        buffer[0] = ((parentId >> 0) & 0xFF);
-        buffer[1] = ((parentId >> 8) & 0xFF);
-        buffer[2] = ((parentId >> 16) & 0xFF);
-        buffer[3] = ((parentId >> 24) & 0xFF);
-        out.write(buffer, 4);
+        /* parent id */
+        buffer_ptr[0] = static_cast<char>((parent_id >> 0) & 0xFF);
+        buffer_ptr[1] = static_cast<char>((parent_id >> 8) & 0xFF);
+        buffer_ptr[2] = static_cast<char>((parent_id >> 16) & 0xFF);
+        buffer_ptr[3] = static_cast<char>((parent_id >> 24) & 0xFF);
+        m_out_file.write(buffer_ptr, 4);
 
-        // name length
-        int32_t namelen = name.length();
-        buffer[0]       = ((namelen >> 0) & 0xFF);
-        buffer[1]       = ((namelen >> 8) & 0xFF);
-        buffer[2]       = ((namelen >> 16) & 0xFF);
-        buffer[3]       = ((namelen >> 24) & 0xFF);
-        out.write(buffer, 4);
+        /* name len */
+        auto name_len = name.length();
+        buffer_ptr[0] = static_cast<char>((name_len >> 0) & 0xFF);
+        buffer_ptr[1] = static_cast<char>((name_len >> 8) & 0xFF);
+        buffer_ptr[2] = static_cast<char>((name_len >> 16) & 0xFF);
+        buffer_ptr[3] = static_cast<char>((name_len >> 24) & 0xFF);
+        m_out_file.write(buffer_ptr, 4);
 
-        // name
-        memcpy(buffer, name.c_str(), namelen);
-        out.write(buffer, namelen);
+        /* write the name */
+        m_out_file.write(name.c_str(), static_cast<std::streamsize>(name_len));
     }
 
-    // write a file
-    if ( isFile ) {
-        // if (strcmp(basename(path.c_str()), ".directory") != 0)
-        {
-            // file length
-            buffer[0] = ((contentLength >> 0) & 0xFF);
-            buffer[1] = ((contentLength >> 8) & 0xFF);
-            buffer[2] = ((contentLength >> 16) & 0xFF);
-            buffer[3] = ((contentLength >> 24) & 0xFF);
-            out.write(buffer, 4);
+    /* write the file */
+    if ( is_file ) {
+        /* write the file len */
+        buffer_ptr[0] = static_cast<char>((content_length >> 0) & 0xFF);
+        buffer_ptr[1] = static_cast<char>((content_length >> 8) & 0xFF);
+        buffer_ptr[2] = static_cast<char>((content_length >> 16) & 0xFF);
+        buffer_ptr[3] = static_cast<char>((content_length >> 24) & 0xFF);
+        m_out_file.write(buffer_ptr, 4);
 
-            // file content
-            std::ifstream fileInput;
-            fileInput.open(path, std::ios::in | std::ios::binary);
+        /* open the file-content */
+        std::ifstream input_file;
+        input_file.open(path, std::ios::in | std::ios::binary);
 
-            int32_t length;
-            while ( fileInput.good() ) {
-                fileInput.read(buffer, bufferSize);
-                length = fileInput.gcount();
-                out.write(buffer, length);
-            }
-
-            fileInput.close();
+        /* read & write-out the file-content */
+        while ( input_file.good() ) {
+            input_file.read(buffer_ptr, BUFFER_SIZE);
+            m_out_file.write(buffer_ptr, input_file.gcount());
         }
+
+        /* close the input file */
+        input_file.close();
     } else {
-        DIR*    directory;
-        dirent* entry;
-
-        if ( (directory = opendir(path.c_str())) != NULL ) {
-            while ( (entry = readdir(directory)) != NULL ) {
-                char entryPath[260];
-
-                std::stringstream str;
-                str << path << '/' << entry->d_name;
-
-                str >> entryPath;
-
-                struct stat s;
-                int32_t     statr = stat(entryPath, &s);
-                if ( !statr ) {
-                    if ( s.st_mode & S_IFREG )
-                        writeRecursive(basePath,
-                                       entryPath,
-                                       entry->d_name,
-                                       s.st_size,
-                                       entryId,
-                                       true);
-
-                    else if ( s.st_mode & S_IFDIR )
-                        if ( !(strcmp(entry->d_name, ".") == 0
-                               || strcmp(entry->d_name, "..") == 0) )
-                            writeRecursive(basePath, entryPath, entry->d_name, 0, entryId, false);
-                }
-
-                else {
-                    std::cerr << "error: could not read directory: '" << path << "'";
-                    break;
+        /* recursively iterate the directory content */
+        for ( auto& dir_entry : std::filesystem::directory_iterator{ path } ) {
+            if ( dir_entry.is_regular_file() ) {
+                write_recursive(base_path,
+                                dir_entry.path().string(),
+                                dir_entry.path().filename().string(),
+                                dir_entry.file_size(),
+                                entry_id,
+                                true);
+            } else if ( dir_entry.is_directory() ) {
+                if ( dir_entry.path().filename().string() != "."
+                     && dir_entry.path().filename().string() != ".." ) {
+                    write_recursive(base_path,
+                                    dir_entry.path().string(),
+                                    dir_entry.path().filename().string(),
+                                    0,
+                                    entry_id,
+                                    false);
                 }
             }
-
-            closedir(directory);
         }
-
-        else
-            std::cerr << "error: could not open directory: '" << path << "'";
     }
 
-    // entry done
-    out.flush();
-
-    delete[] buffer;
+    /* cleanup */
+    m_out_file.flush();
+    delete[] buffer_ptr;
 }
