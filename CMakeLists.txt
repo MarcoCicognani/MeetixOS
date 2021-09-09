@@ -22,6 +22,17 @@ set(CMAKE_CXXFILT ${TOOLCHAIN_BIN}/${TOOLCHAIN_TRIPLET}-c++filt)
 set(CMAKE_ASM_NASM_COMPILER nasm)
 set(CMAKE_ASM_NASM_COMPILE_OBJECT "${CMAKE_ASM_NASM_COMPILER} -f elf -o <OBJECT> -s <SOURCE>")
 
+# Project sub-directories
 add_subdirectory(Kernel)
 add_subdirectory(Libs)
 add_subdirectory(Userspace)
+
+# Custom targets for build ISO and run it
+add_custom_target(Repack
+                  COMMAND Meta/Repack.sh --out-dir=${CMAKE_BINARY_DIR}
+                  DEPENDS install
+                  USES_TERMINAL)
+add_custom_target(Run
+                  COMMAND Meta/Run.sh --image-dir=${CMAKE_BINARY_DIR}
+                  DEPENDS Repack
+                  USES_TERMINAL)
