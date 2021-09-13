@@ -1,4 +1,4 @@
 HOSTNAME="MeetiX_OS"
 VERSION="0.7.2"
-PATH="bin/"
+PATH="/Bins/"
 THEME="ff"

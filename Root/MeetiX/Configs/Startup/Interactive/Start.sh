@@ -1,10 +1,10 @@
 printf:"Starting video driver"
-driver:"/sys/eva/server/vbedriver.sv"
+driver:"/MeetiX/Kernel/Servers/VBE.sv"
 wait:"vbedriver"
 
 printf:"Starting zipNET windowserver"
-exec:"/sys/eva/server/zipNET"
+exec:"/MeetiX/Kernel/Servers/ZipNET.sv"
 wait:"zipNET/registration"
 
 printf:"Starting CandyGui"
-exec:"/app/OsmosUI/bin/OsmosUI"
+exec:"/Apps/OsmosUI/Bin/OsmosUI"

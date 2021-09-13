@@ -50,7 +50,7 @@ void init();
 /**
  * Receives incoming message requests.
  */
-void receiveRequests();
+[[noreturn]] void receiveRequests();
 
 /**
  *

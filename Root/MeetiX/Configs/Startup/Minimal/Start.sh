@@ -1,16 +1,16 @@
 printf:"Starting time driver"
-driver:"/sys/eva/server/time.sv"
+driver:"/MeetiX/Kernel/Servers/Time.sv"
 
 printf:"Starting ps2 driver"
-driver:"/sys/eva/server/ps2.sv"
+driver:"/MeetiX/Kernel/Servers/Ps2.sv"
 
 printf:"Starting video driver"
-driver:"/sys/eva/server/vbe.sv"
+driver:"/MeetiX/Kernel/Servers/VBE.sv"
 wait:"vbe"
 
 printf:"Starting zipNET windowserver"
-exec:"/sys/eva/server/zipNET.sv"
+exec:"/MeetiX/Kernel/Servers/ZipNET.sv"
 wait:"zipNET::registration"
 
 printf:"Starting MXLogin"
-exec:"/app/MXLogin/bin/MXLogin"
+exec:"/Apps/MXLogin/Bin/MXLogin"

@@ -85,39 +85,39 @@ void EvaKernel::preSetup(SetupInformation* info) {
     // print the kernel header information
     printHeader(info);
 
-    // initialize the phisical allocator from start bitmappig of the loader
+    // initialize the physical allocator from start bitmap of the loader
     PRETTY_BOOT_STATUS("Checking available memory", 20, GREEN);
     PPallocator::initializeFromBitmap(info->bitmapStart, info->bitmapEnd);
 
     // initialize the heap with provided info of the loader
     KernelHeap::initialize(info->heapStart, info->heapEnd);
 
-    // serach from loaded modules the ramdisk file
+    // search from loaded modules the ramdisk file
     PRETTY_BOOT_STATUS("Searching ramdisk module", 30, GREEN);
     MultibootModule* ramDiskModule
-        = MultibootUtils::findModule(info->multibootInformation, "/boot/MXfs.img");
+        = MultibootUtils::findModule(info->multibootInformation, "/boot/Ramdisk.img");
     if ( !ramDiskModule )
         panic("%! ramdisk MXfs.img does not exist", "Eva Kernel");
 
     // create the memory address ranges
-    PRETTY_BOOT_STATUS("Initializing kernel rande pool", 35, GREEN);
+    PRETTY_BOOT_STATUS("Initializing kernel range pool", 35, GREEN);
     EvaKernel::evaKernelRangePool = new AddressRangePool();
     EvaKernel::evaKernelRangePool->initialize(CONST_KERNEL_VIRTUAL_RANGES_START,
                                               CONST_KERNEL_VIRTUAL_RANGES_END);
 
     // load the ramdisk and get it's size
     PRETTY_BOOT_STATUS("Loading ramdisk", 40, GREEN);
-    uint32_t rmdiskSize = loadRamdisk(ramDiskModule);
+    uint32_t ramdisk_size = loadRamdisk(ramDiskModule);
 
-    // get the avaible physical memory in kb
-    uint32_t avbmm = (PPallocator::getInitialAmount() * PAGE_SIZE / 1024);
+    // get the available physical memory in kb
+    uint32_t avail_mem = (PPallocator::getInitialAmount() * PAGE_SIZE / 1024);
 
     // print a log with total physical memory avaible
-    logInfo("%! total physical memory: %iKB", "Eva Kernel", avbmm + rmdiskSize);
-    logInfo("%! %iMB avaible for the system, %iMB used by ramdisk",
+    logInfo("%! total physical memory: %iKB", "Eva Kernel", avail_mem + ramdisk_size);
+    logInfo("%! %iMB available for the system, %iMB used by ramdisk",
             "Eva Kernel",
-            avbmm / 1024,
-            rmdiskSize / 1024);
+            avail_mem / 1024,
+            ramdisk_size / 1024);
 }
 
 /**
@@ -206,8 +206,7 @@ void EvaKernel::run(SetupInformation* info) {
 
     // unmap info and loader
     PhysicalAddress initialPdPhysical = info->initialPageDirectoryPhysical;
-    for ( VirtualAddress i = CONST_LOWER_MEMORY_END; i < CONST_KERNEL_AREA_START;
-          i                = i + PAGE_SIZE )
+    for ( VirtualAddress i = CONST_LOWER_MEMORY_END; i < CONST_KERNEL_AREA_START; i += PAGE_SIZE )
         AddressSpace::unmap(i);
 
     // begin basic system initialization
@@ -258,10 +257,10 @@ void EvaKernel::runBasicSystemPackage(PhysicalAddress initialPdPhysical) {
         PRETTY_BOOT_STATUS("Loading basic binaries", 95, GREEN);
         {
             PRETTY_BOOT_STATUS("Load Idle process", 97, GREEN);
-            loadSystemProcess("/cmd/idle", THREAD_PRIORITY_IDLE);
+            loadSystemProcess("/Bins/Idle", THREAD_PRIORITY_IDLE);
 
             PRETTY_BOOT_STATUS("Load Init process", 99, GREEN);
-            loadSystemProcess("/sys/eva/server/spawner.sv", THREAD_PRIORITY_NORMAL);
+            loadSystemProcess("/MeetiX/Kernel/Servers/Spawner.sv", THREAD_PRIORITY_NORMAL);
         }
         PRETTY_BOOT_STATUS("Starting Userspace", 100, GREEN);
     }
@@ -288,7 +287,7 @@ void EvaKernel::runAdvancedSystemPackage() {
     // lock core
     ApSetupLock.lock();
     {
-        PRETTY_BOOT_STATUS("Initializing Advanged System package", 100, RED);
+        PRETTY_BOOT_STATUS("Initializing Advanced System package", 100, RED);
 
         // wait bsp setup end
         logInfo("%! waiting for bsp to finish setup", "Eva AP");
@@ -305,7 +304,7 @@ void EvaKernel::runAdvancedSystemPackage() {
         Tasking::enableForThisCore();
 
         // spawn the idle process
-        loadSystemProcess("/cmd/idle", THREAD_PRIORITY_IDLE);
+        loadSystemProcess("/Bins/Idle", THREAD_PRIORITY_IDLE);
 
         // decrease the core count to initialize
         --coreNumber;

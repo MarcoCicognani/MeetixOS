@@ -1,4 +1,4 @@
 printf:"Login Done"
 
 printf:"Starting CandyGui"
-exec:"/app/OsmosUI/bin/OsmosUI"
+exec:"/Apps/OsmosUI/Bin/OsmosUI"
