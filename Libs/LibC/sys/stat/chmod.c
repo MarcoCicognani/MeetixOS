@@ -18,15 +18,14 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "sys/stat.h"
-#include "stdint.h"
 #include "eva.h"
+#include "stdint.h"
+#include "sys/stat.h"
 
 /**
  *
  */
 int chmod(const char* pathname, mode_t mode) {
-
-	klog("warning: chmod(\"%s\", %i) not implemented", pathname, mode);
-	return 0;
+    klog("warning: chmod(\"%s\", %i) not implemented", pathname, mode);
+    return 0;
 }

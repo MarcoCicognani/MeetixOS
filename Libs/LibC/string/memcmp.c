@@ -18,28 +18,27 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
-#include "stdint.h"
 #include "eva.h"
+#include "stdint.h"
+#include "string.h"
 
 /**
  *
  */
 int memcmp(const void* mem_a, const void* mem_b, size_t len) {
+    __DEBUG_TRACE(memcmp);
 
-	__DEBUG_TRACE(memcmp);
+    const uint8_t* mem_a8 = (const uint8_t*)mem_a;
+    const uint8_t* mem_b8 = (const uint8_t*)mem_b;
 
-	const uint8_t* mem_a8 = (const uint8_t*) mem_a;
-	const uint8_t* mem_b8 = (const uint8_t*) mem_b;
+    for ( size_t i = 0; i < len; i++ ) {
+        if ( mem_a8[i] > mem_b8[i] ) {
+            return 1;
+        }
+        if ( mem_a8[i] < mem_b8[i] ) {
+            return -1;
+        }
+    }
 
-	for (size_t i = 0; i < len; i++) {
-		if (mem_a8[i] > mem_b8[i]) {
-			return 1;
-		}
-		if (mem_a8[i] < mem_b8[i]) {
-			return -1;
-		}
-	}
-
-	return 0;
+    return 0;
 }

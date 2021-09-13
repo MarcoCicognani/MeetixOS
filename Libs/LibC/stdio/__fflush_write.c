@@ -26,9 +26,8 @@
  *
  */
 int __fflush_write(FILE* stream) {
-
-	AtomicLock(&stream->lock);
-	int res = __fflush_write_unlocked(stream);
-	stream->lock = 0;
-	return res;
+    AtomicLock(&stream->lock);
+    int res      = __fflush_write_unlocked(stream);
+    stream->lock = 0;
+    return res;
 }

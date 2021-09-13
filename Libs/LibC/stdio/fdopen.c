@@ -18,29 +18,28 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
+#include "file.h"
+#include "stdint.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "stdint.h"
-#include "file.h"
-#include "unistd.h"
 #include "stdlib.h"
-#include "errno.h"
+#include "unistd.h"
 
 /**
  *
  */
-FILE* fdopen(int fd, const char *mode) {
+FILE* fdopen(int fd, const char* mode) {
+    // allocate file structure
+    FILE* file = (FILE*)calloc(sizeof(FILE), 1);
+    if ( file == NULL ) {
+        errno = ENOMEM;
+        return NULL;
+    }
 
-	// allocate file structure
-	FILE* file = (FILE*) calloc(sizeof(FILE), 1);
-	if (file == NULL) {
-		errno = ENOMEM;
-		return NULL;
-	}
-
-	// perform opening
-	if (__fdopen_static(fd, mode, file) == EOF) {
-		return NULL;
-	}
-	return file;
+    // perform opening
+    if ( __fdopen_static(fd, mode, file) == EOF ) {
+        return NULL;
+    }
+    return file;
 }

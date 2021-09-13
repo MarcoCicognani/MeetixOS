@@ -1,6 +1,5 @@
 #include <math.h>
 
-long lroundl(long double x)
-{
-	return roundl(x);
+long lroundl(long double x) {
+    return roundl(x);
 }

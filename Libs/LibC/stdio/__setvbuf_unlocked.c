@@ -18,52 +18,51 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "malloc.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "malloc.h"
 
 /**
  *
  */
 int __setvbuf_unlocked(FILE* stream, char* buf, int mode, size_t size) {
+    // free old buffer if library is owner
+    if ( (stream->buffer_mode != _IONBF) && (stream->buffer != NULL)
+         && (stream->flags & G_FILE_FLAG_BUFFER_OWNER_LIBRARY) ) {
+        free(stream->buffer);
+    }
 
-	// free old buffer if library is owner
-	if ((stream->buffer_mode != _IONBF) && (stream->buffer != NULL)
-			&& (stream->flags & G_FILE_FLAG_BUFFER_OWNER_LIBRARY)) {
-		free(stream->buffer);
-	}
+    // create buffer if necessary
+    if ( buf == NULL ) {
+        // normalize buffer size
+        if ( size == 0 ) {
+            size = BUFSIZ;
+        } else if ( size < BUFSIZMIN ) {
+            size = BUFSIZMIN;
+        }
 
-	// create buffer if necessary
-	if (buf == NULL) {
-		// normalize buffer size
-		if (size == 0) {
-			size = BUFSIZ;
-		} else if (size < BUFSIZMIN) {
-			size = BUFSIZMIN;
-		}
+        // allocate buffer memory
+        buf = (char*)malloc(size);
+        if ( buf == NULL ) {
+            return -1;
+        }
 
-		// allocate buffer memory
-		buf = (char*) malloc(size);
-		if (buf == NULL) {
-			return -1;
-		}
+        // set library as buffer owner
+        stream->flags |= G_FILE_FLAG_BUFFER_OWNER_LIBRARY;
+    } else {
+        // set user as buffer owner
+        stream->flags &= ~G_FILE_FLAG_BUFFER_OWNER_LIBRARY;
+    }
 
-		// set library as buffer owner
-		stream->flags |= G_FILE_FLAG_BUFFER_OWNER_LIBRARY;
-	} else {
-		// set user as buffer owner
-		stream->flags &= ~G_FILE_FLAG_BUFFER_OWNER_LIBRARY;
-	}
+    // set fields
+    stream->buffer                     = (uint8_t*)buf;
+    stream->buffer_mode                = mode;
+    stream->buffer_size                = size;
+    stream->buffered_bytes_read        = 0;
+    stream->buffered_bytes_read_offset = 0;
+    stream->buffered_bytes_write       = 0;
+    stream->flags |= G_FILE_FLAG_BUFFER_SET;
 
-	// set fields
-	stream->buffer = (uint8_t*) buf;
-	stream->buffer_mode = mode;
-	stream->buffer_size = size;
-	stream->buffered_bytes_read = 0;
-	stream->buffered_bytes_read_offset = 0;
-	stream->buffered_bytes_write = 0;
-	stream->flags |= G_FILE_FLAG_BUFFER_SET;
-
-	return 0;
+    return 0;
 }

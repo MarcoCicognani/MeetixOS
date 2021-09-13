@@ -18,18 +18,17 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "errno.h"
 
 /**
  *
  */
 void __clearerr_unlocked(FILE* stream) {
-
-	if (stream->impl_clearerr) {
-		stream->impl_clearerr(stream);
-	} else {
-		errno = ENOTSUP;
-	}
+    if ( stream->impl_clearerr ) {
+        stream->impl_clearerr(stream);
+    } else {
+        errno = ENOTSUP;
+    }
 }

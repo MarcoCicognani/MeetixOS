@@ -18,16 +18,15 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "errno.h"
 
 /**
  *
  */
 void clearerr(FILE* stream) {
-
-	AtomicLock(&stream->lock);
-	__clearerr_unlocked(stream);
-	stream->lock = 0;
+    AtomicLock(&stream->lock);
+    __clearerr_unlocked(stream);
+    stream->lock = 0;
 }

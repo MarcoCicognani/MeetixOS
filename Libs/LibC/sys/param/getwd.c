@@ -18,15 +18,14 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "sys/stat.h"
-#include "stdint.h"
 #include "eva.h"
+#include "stdint.h"
+#include "sys/stat.h"
 
 /**
  *
  */
-char *getwd(char *buf) 
-{
-	GetWorkingDirectory(buf);
-	return buf;
+char* getwd(char* buf) {
+    GetWorkingDirectory(buf);
+    return buf;
 }

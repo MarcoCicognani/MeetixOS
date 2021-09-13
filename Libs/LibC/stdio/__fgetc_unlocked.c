@@ -26,62 +26,60 @@
  *
  */
 int __fgetc_unlocked(FILE* stream) {
+    // if necessary, initialize stream buffer
+    if ( (stream->flags & G_FILE_FLAG_BUFFER_SET) == 0 ) {
+        if ( __setdefbuf_unlocked(stream) == EOF ) {
+            return EOF;
+        }
+    }
 
-	// if necessary, initialize stream buffer
-	if ((stream->flags & G_FILE_FLAG_BUFFER_SET) == 0) {
-		if (__setdefbuf_unlocked(stream) == EOF) {
-			return EOF;
-		}
-	}
+    // for unbuffered streams, perform direct write
+    if ( stream->buffer_mode == _IONBF ) {
+        uint8_t c8;
+        if ( __fread_unlocked(&c8, 1, 1, stream) != 1 ) {
+            return EOF;
+        }
+        return c8;
+    }
 
-	// for unbuffered streams, perform direct write
-	if (stream->buffer_mode == _IONBF) {
+    // if the last access was a write, flush it
+    if ( stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_WRITE ) {
+        if ( __fflush_write_unlocked(stream) == EOF ) {
+            return EOF;
+        }
+    }
 
-		uint8_t c8;
-		if (__fread_unlocked(&c8, 1, 1, stream) != 1) {
-			return EOF;
-		}
-		return c8;
-	}
+    // set direction
+    stream->flags |= G_FILE_FLAG_BUFFER_DIRECTION_READ;
 
-	// if the last access was a write, flush it
-	if (stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_WRITE) {
-		if (__fflush_write_unlocked(stream) == EOF) {
-			return EOF;
-		}
-	}
+    // check if buffer is empty
+    if ( stream->buffered_bytes_read_offset >= stream->buffered_bytes_read ) {
+        // keep some space for ungetc-calls to avoid moving memory
+        size_t unget_space = G_FILE_UNGET_PRESERVED_SPACE;
 
-	// set direction
-	stream->flags |= G_FILE_FLAG_BUFFER_DIRECTION_READ;
+        // if buffer is too small, leave no space
+        if ( unget_space >= stream->buffer_size ) {
+            unget_space = 0;
+        }
 
-	// check if buffer is empty
-	if (stream->buffered_bytes_read_offset >= stream->buffered_bytes_read) {
+        // fill buffer with data
+        ssize_t read = stream->impl_read(stream->buffer + unget_space,
+                                         stream->buffer_size - unget_space,
+                                         stream);
 
-		// keep some space for ungetc-calls to avoid moving memory
-		size_t unget_space = G_FILE_UNGET_PRESERVED_SPACE;
+        if ( read == 0 ) {
+            stream->flags |= G_FILE_FLAG_EOF;
+            return EOF;
 
-		// if buffer is too small, leave no space
-		if (unget_space >= stream->buffer_size) {
-			unget_space = 0;
-		}
+        } else if ( read == -1 ) {
+            stream->flags |= G_FILE_FLAG_ERROR;
+            return EOF;
+        }
 
-		// fill buffer with data
-		ssize_t read = stream->impl_read(stream->buffer + unget_space,
-				stream->buffer_size - unget_space, stream);
+        // set buffer fields
+        stream->buffered_bytes_read        = unget_space + read;
+        stream->buffered_bytes_read_offset = unget_space;
+    }
 
-		if (read == 0) {
-			stream->flags |= G_FILE_FLAG_EOF;
-			return EOF;
-
-		} else if (read == -1) {
-			stream->flags |= G_FILE_FLAG_ERROR;
-			return EOF;
-		}
-
-		// set buffer fields
-		stream->buffered_bytes_read = unget_space + read;
-		stream->buffered_bytes_read_offset = unget_space;
-	}
-
-	return stream->buffer[stream->buffered_bytes_read_offset++];
+    return stream->buffer[stream->buffered_bytes_read_offset++];
 }

@@ -26,6 +26,5 @@
  *
  */
 off_t __stdio_impl_tell(FILE* stream) {
-
-	return tell(stream->file_descriptor);
+    return tell(stream->file_descriptor);
 }

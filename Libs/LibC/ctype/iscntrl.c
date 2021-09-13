@@ -24,5 +24,5 @@
  *
  */
 int iscntrl(int c) {
-	return c >= 0 && c < 32;
+    return c >= 0 && c < 32;
 }

@@ -18,15 +18,14 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "stdint.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "stdlib.h"
-#include "stdint.h"
 
 /**
  *
  */
 void setbuf(FILE* stream, char* buf) {
-
-	setvbuf(stream, buf, buf == NULL ? _IONBF : _IOFBF, BUFSIZ);
+    setvbuf(stream, buf, buf == NULL ? _IONBF : _IOFBF, BUFSIZ);
 }

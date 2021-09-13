@@ -19,13 +19,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "sys/stat.h"
-#include "stdint.h"
+
 #include "eva.h"
+#include "stdint.h"
 
 /**
  *
  */
-int stat(const char *pathname, struct stat *buf) {
-
-	__NOT_IMPLEMENTED(stat)
+int stat(const char* pathname, struct stat* buf) {
+    __NOT_IMPLEMENTED(stat)
 }

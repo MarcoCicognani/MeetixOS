@@ -18,21 +18,21 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
-#include "eva/kernel.h"
 #include "errno.h"
+#include "eva/kernel.h"
+#include "unistd.h"
 
 /**
  * POSIX wrapper for <GetWorkingDirectory>
  */
-char *getcwd(char *buf, size_t size) 
-{
-	// performs syscall
-	GetWorkingDirectoryStatus stat = GetWorkingDirectoryL(buf, size);
-		
-	// check status
-	if (stat == GET_WORKING_DIRECTORY_SUCCESSFUL) return buf;
-	else if (stat == GET_WORKING_DIRECTORY_SIZE_EXCEEDED) errno = ERANGE;
-	return NULL;
-}
+char* getcwd(char* buf, size_t size) {
+    // performs syscall
+    GetWorkingDirectoryStatus stat = GetWorkingDirectoryL(buf, size);
 
+    // check status
+    if ( stat == GET_WORKING_DIRECTORY_SUCCESSFUL )
+        return buf;
+    else if ( stat == GET_WORKING_DIRECTORY_SIZE_EXCEEDED )
+        errno = ERANGE;
+    return NULL;
+}

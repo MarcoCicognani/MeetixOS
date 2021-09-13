@@ -18,37 +18,34 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "errno.h"
 
 /**
  *
  */
-FILE* __stdio_impl_reopen(const char* filename, const char* mode,
-		FILE* stream) {
+FILE* __stdio_impl_reopen(const char* filename, const char* mode, FILE* stream) {
+    // if no filename specified, attempt to change file mode
+    if ( filename == NULL ) {
+        // parse mode flags
+        int newmode = __parse_mode_flags(mode);
+        if ( newmode == EOF ) {
+            return NULL;
+        }
 
-	// if no filename specified, attempt to change file mode
-	if (filename == NULL) {
+        // TODO ask kernel to change the flags
+        stream->flags &= ~FILE_FLAGS_MODE_RANGE;
+        stream->flags |= newmode;
+        return stream;
+    }
 
-		// parse mode flags
-		int newmode = __parse_mode_flags(mode);
-		if (newmode == EOF) {
-			return NULL;
-		}
+    // close file
+    int close = __fclose_static_unlocked(stream);
+    if ( close != 0 ) {
+        return NULL;
+    }
 
-		// TODO ask kernel to change the flags
-		stream->flags &= ~FILE_FLAGS_MODE_RANGE;
-		stream->flags |= newmode;
-		return stream;
-	}
-
-	// close file
-	int close = __fclose_static_unlocked(stream);
-	if (close != 0) {
-		return NULL;
-	}
-
-	// open again
-	return __fopen_static(filename, mode, stream);
+    // open again
+    return __fopen_static(filename, mode, stream);
 }

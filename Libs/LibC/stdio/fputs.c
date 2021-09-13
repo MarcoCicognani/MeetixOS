@@ -25,16 +25,15 @@
  *
  */
 int fputs(const char* s, FILE* stream) {
+    // determine length of string
+    size_t len = strlen(s);
 
-	// determine length of string
-	size_t len = strlen(s);
+    // write string to stream
+    size_t written = fwrite(s, len, 1, stream);
 
-	// write string to stream
-	size_t written = fwrite(s, len, 1, stream);
-
-	// check if everything was written
-	if (written == len) {
-		return written;
-	}
-	return EOF;
+    // check if everything was written
+    if ( written == len ) {
+        return written;
+    }
+    return EOF;
 }

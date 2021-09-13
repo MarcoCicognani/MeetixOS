@@ -18,13 +18,12 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
 #include "eva/common.h"
+#include "unistd.h"
 
 /**
  * TODO
  */
-int access(const char *pathname, int mode) 
-{
-	__NOT_IMPLEMENTED(access);
+int access(const char* pathname, int mode) {
+    __NOT_IMPLEMENTED(access);
 }

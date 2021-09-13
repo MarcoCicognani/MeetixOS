@@ -18,14 +18,13 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdlib.h"
 #include "stdio.h"
+#include "stdlib.h"
 
 /**
  *
  */
 size_t mbstowcs(wchar_t* out, const char* s, size_t n) {
-
-	klog("warning: mbstowcs not implemented");
-	return 0;
+    klog("warning: mbstowcs not implemented");
+    return 0;
 }

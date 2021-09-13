@@ -18,9 +18,9 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
-#include "eva/kernel.h"
 #include "errno.h"
+#include "eva/kernel.h"
+#include "unistd.h"
 
 /**
  * POSIX wrapper for <Write>

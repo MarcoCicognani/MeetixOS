@@ -18,15 +18,14 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "sys/stat.h"
-#include "stdint.h"
 #include "eva.h"
+#include "stdint.h"
+#include "sys/stat.h"
 
 /**
  *
  */
-int mkdir(const char *path, mode_t mode) {
-
-	klog("warning: mkdir(%s, %i) is not implemented", path, mode);
-	return -1;
+int mkdir(const char* path, mode_t mode) {
+    klog("warning: mkdir(%s, %i) is not implemented", path, mode);
+    return -1;
 }

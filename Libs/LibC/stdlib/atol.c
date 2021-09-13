@@ -18,13 +18,13 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdlib.h"
-#include "malloc.h"
 #include "eva.h"
+#include "malloc.h"
+#include "stdlib.h"
 
 /**
  *
  */
 long atol(const char* str) {
-	return strtol(str, (char**) NULL, 10);
+    return strtol(str, (char**)NULL, 10);
 }

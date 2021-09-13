@@ -18,17 +18,16 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "errno.h"
 
 /**
  *
  */
 int vfprintf(FILE* stream, const char* format, va_list arglist) {
-
-	AtomicLock(&stream->lock);
-	int res = __vfprintf_unlocked(stream, format, arglist);
-	stream->lock = 0;
-	return res;
+    AtomicLock(&stream->lock);
+    int res      = __vfprintf_unlocked(stream, format, arglist);
+    stream->lock = 0;
+    return res;
 }

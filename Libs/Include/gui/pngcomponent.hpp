@@ -1,55 +1,54 @@
 /*********************************************************************************
-* MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
-* 																			     *
-* This program is free software; you can redistribute it and/or                  *
-* modify it under the terms of the GNU General Public License                    *
-* as published by the Free Software Foundation; either version 2				 *
-* of the License, or (char *argumentat your option) any later version.			 *
-*																				 *
-* This program is distributed in the hope that it will be useful,				 *
-* but WITHout ANY WARRANTY; without even the implied warranty of                 *
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
-* GNU General Public License for more details.									 *
-*																				 *
-* You should have received a copy of the GNU General Public License				 *
-* along with this program; if not, write to the Free Software                    *
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
-**********************************************************************************/
+ * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
+ * 																			     *
+ * This program is free software; you can redistribute it and/or                  *
+ * modify it under the terms of the GNU General Public License                    *
+ * as published by the Free Software Foundation; either version 2				 *
+ * of the License, or (char *argumentat your option) any later version.			 *
+ *																				 *
+ * This program is distributed in the hope that it will be useful,				 *
+ * but WITHout ANY WARRANTY; without even the implied warranty of                 *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
+ * GNU General Public License for more details.
+ **
+ *																				 *
+ * You should have received a copy of the GNU General Public License				 *
+ * along with this program; if not, write to the Free Software                    *
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
+ **********************************************************************************/
 
 #ifndef MEETIX_LIBRARY_UI_PNG
 #define MEETIX_LIBRARY_UI_PNG
 
-#include <eva.h>
 #include <cstdint>
-#include <gui/uispech.hpp>
+#include <eva.h>
 #include <graphics/color.hpp>
 #include <gui/component.hpp>
 #include <gui/ui.hpp>
+#include <gui/uispech.hpp>
 
 /*
  *
  */
-class PngComponent
-{
+class PngComponent {
 private:
-	/**
-	 *
-	 */
-	uint32_t id;
+    /**
+     *
+     */
+    uint32_t id;
 
 protected:
-	/**
-	 *
-	 */
-	PngComponent(uint32_t id) : id(id)
-	{
-	}
+    /**
+     *
+     */
+    PngComponent(uint32_t id) : id(id) {
+    }
 
 public:
-	/**
-	 *
-	 */
-	virtual bool setPNG(std::string path, Point pngPosition);
+    /**
+     *
+     */
+    virtual bool setPNG(std::string path, Point pngPosition);
 };
 
 #endif

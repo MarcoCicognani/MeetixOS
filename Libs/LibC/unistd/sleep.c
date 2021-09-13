@@ -18,13 +18,12 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
 #include "eva/common.h"
+#include "unistd.h"
 
 /**
  * POSIX wrapper for <Sleep>, but with seconds instead of milliseconds
  */
-unsigned sleep(unsigned seconds)
-{
-	Sleep(seconds * 1000);
+unsigned sleep(unsigned seconds) {
+    Sleep(seconds * 1000);
 }

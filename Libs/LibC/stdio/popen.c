@@ -24,6 +24,6 @@
 /**
  *
  */
-FILE *popen(const char* command, const char* mode) {
-	__NOT_IMPLEMENTED(popen);
+FILE* popen(const char* command, const char* mode) {
+    __NOT_IMPLEMENTED(popen);
 }

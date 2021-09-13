@@ -18,29 +18,26 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdlib.h"
-#include "stdint.h"
 #include "errno.h"
 #include "limits.h"
+#include "stdint.h"
+#include "stdlib.h"
 
 /**
  *
  */
-int atoi(const char *str) 
-{
-	long aslong = strtol(str, (char**) NULL, 10);
+int atoi(const char* str) {
+    long aslong = strtol(str, (char**)NULL, 10);
 
-	if (aslong > INT_MAX) 
-	{
-		errno = ERANGE;
-		return INT_MAX;
-	}
+    if ( aslong > INT_MAX ) {
+        errno = ERANGE;
+        return INT_MAX;
+    }
 
-	if (aslong < INT_MIN) 
-	{
-		errno = ERANGE;
-		return INT_MIN;
-	}
+    if ( aslong < INT_MIN ) {
+        errno = ERANGE;
+        return INT_MIN;
+    }
 
-	return (int) aslong;
+    return (int)aslong;
 }

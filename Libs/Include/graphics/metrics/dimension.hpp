@@ -20,9 +20,8 @@
 #ifndef MEETIX_LIBRARY_GRAPHICS_METRICS_DIMENSION
 #define MEETIX_LIBRARY_GRAPHICS_METRICS_DIMENSION
 
-#include <graphics/metrics/point.hpp>
-
 #include <cstdint>
+#include <graphics/metrics/point.hpp>
 
 /**
  * container class to manage dimension parameters

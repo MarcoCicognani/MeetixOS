@@ -18,8 +18,8 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "libgen.h"
 #include "eva.h"
+#include "libgen.h"
 #include "string.h"
 
 static char _statbuf[8];
@@ -27,52 +27,45 @@ static char _statbuf[8];
 /**
  *
  */
-char *basename(char *path)
-{
-	// return dot if null
-	if (path == NULL) 
-	{
-		_statbuf[0] = '.';
-		_statbuf[1] = 0;
-		return _statbuf;
-	}
+char* basename(char* path) {
+    // return dot if null
+    if ( path == NULL ) {
+        _statbuf[0] = '.';
+        _statbuf[1] = 0;
+        return _statbuf;
+    }
 
-	// get length of the path
-	size_t len = strlen(path);
+    // get length of the path
+    size_t len = strlen(path);
 
-	// return dot if empty
-	if (len == 0) 
-	{
-		_statbuf[0] = '.';
-		_statbuf[1] = 0;
-		return _statbuf;
-	}
+    // return dot if empty
+    if ( len == 0 ) {
+        _statbuf[0] = '.';
+        _statbuf[1] = 0;
+        return _statbuf;
+    }
 
-	// overwrite trailing slashes with nulls
-	char *last = path + len - 1;
-	while (last >= path && *last == '/') 
-	{
-		*last = 0;
-		--last;
-	}
+    // overwrite trailing slashes with nulls
+    char* last = path + len - 1;
+    while ( last >= path && *last == '/' ) {
+        *last = 0;
+        --last;
+    }
 
-	// if the entire path consisted of slashes, return slash
-	if (*path == 0) 
-	{
-		_statbuf[0] = '/';
-		_statbuf[1] = 0;
-		return _statbuf;
-	}
+    // if the entire path consisted of slashes, return slash
+    if ( *path == 0 ) {
+        _statbuf[0] = '/';
+        _statbuf[1] = 0;
+        return _statbuf;
+    }
 
-	// find base name part
-	char *rightmostSlash = strrchr(path, '/');
+    // find base name part
+    char* rightmostSlash = strrchr(path, '/');
 
-	if (rightmostSlash == NULL) 
-	{
-		// no slash found
-		return path;
-	}
+    if ( rightmostSlash == NULL ) {
+        // no slash found
+        return path;
+    }
 
-	return rightmostSlash + 1;
+    return rightmostSlash + 1;
 }
-

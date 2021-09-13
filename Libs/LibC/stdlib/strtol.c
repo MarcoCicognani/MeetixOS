@@ -20,68 +20,71 @@
 
 #include "assert.h"
 #include "ctype.h"
+#include "stdbool.h"
 #include "stddef.h"
 #include "string.h"
-#include "stdbool.h"
 
 /**
  *
  */
-long strtol(const char *str, char **endptr, int base)
-{
-	char c;
-	long i = 0;
-	uint8_t neg = false;
-	assert(str);
-	assert(!base || (base >= 2 && base <= 36));
+long strtol(const char* str, char** endptr, int base) {
+    char    c;
+    long    i   = 0;
+    uint8_t neg = false;
+    assert(str);
+    assert(!base || (base >= 2 && base <= 36));
 
-	// skip leading whitespace
-	while(isspace(*str))
-		str++;
+    // skip leading whitespace
+    while ( isspace(*str) )
+        str++;
 
-	// optional '-' or '+'
-	if (*str == '-')
-	{
-		neg = true;
-		str++;
-	}
+    // optional '-' or '+'
+    if ( *str == '-' ) {
+        neg = true;
+        str++;
+    }
 
-    else if (*str == '+') str++;
+    else if ( *str == '+' )
+        str++;
 
-	// determine base
-	if ((base == 16 || base == 0) && str[0] == '0' && str[1] == 'x')
-	{
-		str += 2;
-		base = 16;
-	}
+    // determine base
+    if ( (base == 16 || base == 0) && str[0] == '0' && str[1] == 'x' ) {
+        str += 2;
+        base = 16;
+    }
 
-    else if (base == 0 && str[0] == '0')
-	{
-		str++;
-		base = 8;
-	}
+    else if ( base == 0 && str[0] == '0' ) {
+        str++;
+        base = 8;
+    }
 
-    if (!base) base = 10;
+    if ( !base )
+        base = 10;
 
-	// read number
-	while ((c = *str))
-	{
-		char lc = tolower(c);
+    // read number
+    while ( (c = *str) ) {
+        char lc = tolower(c);
 
-		// check if its a digit that belongs to the number in specified base
-		if (base <= 10 && (!isdigit(c) || c - '0' >= base)) break;
-		if (base > 10 && (!isalnum(c) || (!isdigit(c) && (lc - 'a') >= base - 10))) break;
-		if (lc >= 'a') i = i * base + (lc - 'a') + 10;
-		else i = i * base + c - '0';
+        // check if its a digit that belongs to the number in specified base
+        if ( base <= 10 && (!isdigit(c) || c - '0' >= base) )
+            break;
+        if ( base > 10 && (!isalnum(c) || (!isdigit(c) && (lc - 'a') >= base - 10)) )
+            break;
+        if ( lc >= 'a' )
+            i = i * base + (lc - 'a') + 10;
+        else
+            i = i * base + c - '0';
 
         str++;
-	}
+    }
 
-	// switch sign?
-	if (neg) i = -i;
+    // switch sign?
+    if ( neg )
+        i = -i;
 
     // store end
-	if (endptr) *endptr = (char*)str;
+    if ( endptr )
+        *endptr = (char*)str;
 
     return i;
 }

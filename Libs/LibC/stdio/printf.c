@@ -24,11 +24,10 @@
 /**
  *
  */
-int printf(const char* format, ...) 
-{
-	va_list va;
-	va_start(va, format);
-	int res = vprintf(format, va);
-	va_end(va);
-	return res;
+int printf(const char* format, ...) {
+    va_list va;
+    va_start(va, format);
+    int res = vprintf(format, va);
+    va_end(va);
+    return res;
 }

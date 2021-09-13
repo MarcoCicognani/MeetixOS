@@ -34,10 +34,10 @@ void __fini_stdio();
 
 // open file list functionality
 extern FILE* __open_file_list;
-void __open_file_list_add(FILE* file);
-void __open_file_list_remove(FILE* file);
-void __open_file_list_lock();
-void __open_file_list_unlock();
+void         __open_file_list_add(FILE* file);
+void         __open_file_list_remove(FILE* file);
+void         __open_file_list_lock();
+void         __open_file_list_unlock();
 
 // closes the file, but does not delete the structure
 int __fclose_static(FILE* stream);
@@ -54,17 +54,15 @@ int __fflush_read_unlocked(FILE* file);
 
 // same as fopen/fdopen, but on existing FILE structure
 FILE* __fopen_static(const char* filename, const char* mode, FILE* file);
-int __fdopen_static(int fd, const char *mode, FILE* file);
+int   __fdopen_static(int fd, const char* mode, FILE* file);
 
 // applies default buffering to the stream
 int __setdefbuf_unlocked(FILE* stream);
 
-size_t __fwrite_unlocked(const void* ptr, size_t size, size_t nmemb,
-		FILE* stream);
-size_t __fread_unlocked(const void* ptr, size_t size, size_t nmemb,
-		FILE* stream);
+size_t __fwrite_unlocked(const void* ptr, size_t size, size_t nmemb, FILE* stream);
+size_t __fread_unlocked(const void* ptr, size_t size, size_t nmemb, FILE* stream);
 
-int __fseeko_unlocked(FILE* stream, off_t offset, int whence);
+int   __fseeko_unlocked(FILE* stream, off_t offset, int whence);
 off_t __ftello_unlocked(FILE* stream);
 
 int __fputc_unlocked(int c, FILE* stream);
@@ -78,18 +76,18 @@ int __vfprintf_unlocked(FILE* stream, const char* format, va_list arg);
 void __clearerr_unlocked(FILE* stream);
 
 // default implementations, always accessed as "unlocked"
-int __stdio_impl_close(FILE* stream);
+int     __stdio_impl_close(FILE* stream);
 ssize_t __stdio_impl_read(void* buf, size_t len, FILE* stream);
 ssize_t __stdio_impl_write(const void* buf, size_t len, FILE* stream);
-int __stdio_impl_seek(FILE* stream, off_t offset, int whence);
-off_t __stdio_impl_tell(FILE* stream);
-int __stdio_impl_fileno(FILE* stream);
-int __stdio_impl_close(FILE* stream);
-FILE* __stdio_impl_reopen(const char* filename, const char* mode, FILE* stream);
-int __stdio_impl_eof(FILE* stream);
-int __stdio_impl_error(FILE* stream);
-void __stdio_impl_seterr(FILE* stream);
-void __stdio_impl_clearerr(FILE* stream);
+int     __stdio_impl_seek(FILE* stream, off_t offset, int whence);
+off_t   __stdio_impl_tell(FILE* stream);
+int     __stdio_impl_fileno(FILE* stream);
+int     __stdio_impl_close(FILE* stream);
+FILE*   __stdio_impl_reopen(const char* filename, const char* mode, FILE* stream);
+int     __stdio_impl_eof(FILE* stream);
+int     __stdio_impl_error(FILE* stream);
+void    __stdio_impl_seterr(FILE* stream);
+void    __stdio_impl_clearerr(FILE* stream);
 
 __END_C
 

@@ -18,20 +18,19 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
 #include "stdint.h"
+#include "string.h"
 
 /**
  *
  */
 char* strncat(char* dest, const char* src, size_t n) {
+    char* d = dest + strlen(dest);
 
-	char* d = dest + strlen(dest);
+    for ( ; n-- && *src; ) {
+        *d++ = *src++;
+    }
 
-	for (; n-- && *src;) {
-		*d++ = *src++;
-	}
-
-	*d = 0;
-	return dest;
+    *d = 0;
+    return dest;
 }

@@ -18,23 +18,21 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
 off_t __ftello_unlocked(FILE* stream) {
-
-	long int res;
-	if (stream->impl_tell) {
-		res = stream->impl_tell(stream);
-	} else {
-		errno = ENOTSUP;
-		res = EOF;
-	}
-	return res;
+    long int res;
+    if ( stream->impl_tell ) {
+        res = stream->impl_tell(stream);
+    } else {
+        errno = ENOTSUP;
+        res   = EOF;
+    }
+    return res;
 }
-

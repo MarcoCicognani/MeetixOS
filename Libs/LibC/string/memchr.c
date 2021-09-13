@@ -19,25 +19,23 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "eva.h"
-#include "string.h"
 #include "stdint.h"
+#include "string.h"
 
 /**
  *
  */
 void* memchr(const void* mem, int value, size_t num) {
+    __DEBUG_TRACE(memchr);
 
-	__DEBUG_TRACE(memchr);
+    const uint8_t* mem8 = (uint8_t*)mem;
 
-	const uint8_t* mem8 = (uint8_t*) mem;
+    while ( num-- ) {
+        if ( *mem8 == (uint8_t)value ) {
+            return (void*)mem8;
+        }
+        ++mem8;
+    }
 
-	while (num--) {
-		if (*mem8 == (uint8_t) value) {
-			return (void*) mem8;
-		}
-		++mem8;
-	}
-
-	return NULL;
+    return NULL;
 }
-

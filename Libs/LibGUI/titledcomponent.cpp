@@ -1,233 +1,238 @@
 /*********************************************************************************
-* MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
-* 																			     *
-* This program is free software; you can redistribute it and/or                  *
-* modify it under the terms of the GNU General Public License                    *
-* as published by the Free Software Foundation; either version 2				 *
-* of the License, or (char *argumentat your option) any later version.			 *
-*																				 *
-* This program is distributed in the hope that it will be useful,				 *
-* but WITHout ANY WARRANTY; without even the implied warranty of                 *
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
-* GNU General Public License for more details.									 *
-*																				 *
-* You should have received a copy of the GNU General Public License				 *
-* along with this program; if not, write to the Free Software                    *
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
-**********************************************************************************/
+ * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
+ * 																			     *
+ * This program is free software; you can redistribute it and/or                  *
+ * modify it under the terms of the GNU General Public License                    *
+ * as published by the Free Software Foundation; either version 2				 *
+ * of the License, or (char *argumentat your option) any later version.			 *
+ *																				 *
+ * This program is distributed in the hope that it will be useful,				 *
+ * but WITHout ANY WARRANTY; without even the implied warranty of                 *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
+ * GNU General Public License for more details.
+ **
+ *																				 *
+ * You should have received a copy of the GNU General Public License				 *
+ * along with this program; if not, write to the Free Software                    *
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
+ **********************************************************************************/
 
 #include <eva.h>
 #include <eva/utils/local.hpp>
-#include <gui/uispech.hpp>
 #include <gui/titledcomponent.hpp>
 #include <gui/ui.hpp>
-#include <utils/valplacer.hpp>
-#include <eva/utils/local.hpp>
+#include <gui/uispech.hpp>
 #include <stdio.h>
+#include <utils/valplacer.hpp>
 
 /**
  *
  */
-bool TitledComponent::setTitle(std::string title)
-{
+bool TitledComponent::setTitle(std::string title) {
+    if ( !UiInitialized )
+        return false;
 
-	if (!UiInitialized) return false;
+    // send initialization request
+    MessageTransaction tx = GetMessageTxId();
 
-	// send initialization request
-	MessageTransaction tx = GetMessageTxId();
+    Local<UiComponentSetTitleRequest> request(new UiComponentSetTitleRequest());
+    request()->header.id = UI_PROTOCOL_SET_TITLE;
+    request()->id        = this->id;
 
-	Local<UiComponentSetTitleRequest> request(new UiComponentSetTitleRequest());
-	request()->header.id = UI_PROTOCOL_SET_TITLE;
-	request()->id = this->id;
+    // fill text (truncate if necessary)
+    size_t titleLen;
+    if ( title.length() >= UI_COMPONENT_TITLE_MAXIMUM )
+        titleLen = UI_COMPONENT_TITLE_MAXIMUM;
 
-	// fill text (truncate if necessary)
-	size_t titleLen;
-	if (title.length() >= UI_COMPONENT_TITLE_MAXIMUM) titleLen = UI_COMPONENT_TITLE_MAXIMUM;
+    else
+        titleLen = title.length();
+    memcpy(request()->title, title.c_str(), titleLen);
+    request()->title[titleLen] = 0;
 
-	else titleLen = title.length();
-	memcpy(request()->title, title.c_str(), titleLen);
-	request()->title[titleLen] = 0;
+    SendMessageT(UiDelegateTid, request(), sizeof(UiComponentSetTitleRequest), tx);
 
-	SendMessageT(UiDelegateTid, request(), sizeof(UiComponentSetTitleRequest), tx);
+    // read response
+    size_t  bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetTitleResponse);
+    uint8_t buffer[bufferSize];
 
-	// read response
-	size_t bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetTitleResponse);
-	uint8_t buffer[bufferSize];
+    if ( ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+        UiComponentSetTitleResponse* response
+            = (UiComponentSetTitleResponse*)MESSAGE_CONTENT(buffer);
+        if ( response->status == UI_PROTOCOL_SUCCESS )
+            return true;
+    }
 
-	if (ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL)
-	{
-		UiComponentSetTitleResponse *response = (UiComponentSetTitleResponse*) MESSAGE_CONTENT(buffer);
-		if (response->status == UI_PROTOCOL_SUCCESS) return true;
-	}
-
-	return false;
-
+    return false;
 }
 
 /**
  *
  */
-std::string TitledComponent::getTitle()
-{
+std::string TitledComponent::getTitle() {
+    if ( !UiInitialized )
+        return 0;
 
-	if (!UiInitialized) return 0;
+    // send initialization request
+    MessageTransaction tx = GetMessageTxId();
 
-	// send initialization request
-	MessageTransaction tx = GetMessageTxId();
+    UiComponentGetTitleRequest request;
+    request.header.id = UI_PROTOCOL_GET_TITLE;
+    request.id        = this->id;
+    SendMessageT(UiDelegateTid, &request, sizeof(UiComponentGetTitleRequest), tx);
 
-	UiComponentGetTitleRequest request;
-	request.header.id = UI_PROTOCOL_GET_TITLE;
-	request.id = this->id;
-	SendMessageT(UiDelegateTid, &request, sizeof(UiComponentGetTitleRequest), tx);
+    // read response
+    size_t         bufferSize = sizeof(MessageHeader) + sizeof(UiComponentGetTitleResponse);
+    Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
-	// read response
-	size_t bufferSize = sizeof(MessageHeader) + sizeof(UiComponentGetTitleResponse);
-	Local<uint8_t> buffer(new uint8_t[bufferSize]);
+    if ( ReceiveMessageT(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+        UiComponentGetTitleResponse* response
+            = (UiComponentGetTitleResponse*)MESSAGE_CONTENT(buffer());
+        if ( response->status == UI_PROTOCOL_SUCCESS )
+            return std::string(response->title);
+    }
 
-	if (ReceiveMessageT(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL)
-	{
-		UiComponentGetTitleResponse *response = (UiComponentGetTitleResponse*) MESSAGE_CONTENT(buffer());
-		if (response->status == UI_PROTOCOL_SUCCESS) return std::string(response->title);
-	}
-
-	return std::string();
+    return std::string();
 }
 
 /**
  *
  */
-bool TitledComponent::setGhostTitle(std::string title)
-{
-	if (!UiInitialized) return false;
+bool TitledComponent::setGhostTitle(std::string title) {
+    if ( !UiInitialized )
+        return false;
 
-	// send initialization request
-	MessageTransaction tx = GetMessageTxId();
+    // send initialization request
+    MessageTransaction tx = GetMessageTxId();
 
-	Local<UiComponentSetGhostTitleRequest> request(new UiComponentSetGhostTitleRequest());
-	request()->header.id = UI_PROTOCOL_SET_GHOST_TITLE;
-	request()->id = this->id;
+    Local<UiComponentSetGhostTitleRequest> request(new UiComponentSetGhostTitleRequest());
+    request()->header.id = UI_PROTOCOL_SET_GHOST_TITLE;
+    request()->id        = this->id;
 
-	// fill text (truncate if necessary)
-	size_t titleLen;
-	if (title.length() >= UI_COMPONENT_TITLE_MAXIMUM) titleLen = UI_COMPONENT_TITLE_MAXIMUM;
+    // fill text (truncate if necessary)
+    size_t titleLen;
+    if ( title.length() >= UI_COMPONENT_TITLE_MAXIMUM )
+        titleLen = UI_COMPONENT_TITLE_MAXIMUM;
 
-	else titleLen = title.length();
-	memcpy(request()->title, title.c_str(), titleLen);
-	request()->title[titleLen] = 0;
+    else
+        titleLen = title.length();
+    memcpy(request()->title, title.c_str(), titleLen);
+    request()->title[titleLen] = 0;
 
-	SendMessageT(UiDelegateTid, request(), sizeof(UiComponentSetGhostTitleRequest), tx);
+    SendMessageT(UiDelegateTid, request(), sizeof(UiComponentSetGhostTitleRequest), tx);
 
-	// read response
-	size_t bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetGhostTitleResponse);
-	uint8_t buffer[bufferSize];
+    // read response
+    size_t  bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetGhostTitleResponse);
+    uint8_t buffer[bufferSize];
 
-	if (ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL)
-	{
-		UiComponentSetGhostTitleResponse *response = (UiComponentSetGhostTitleResponse*) MESSAGE_CONTENT(buffer);
-		if (response->status == UI_PROTOCOL_SUCCESS) return true;
-	}
+    if ( ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+        UiComponentSetGhostTitleResponse* response
+            = (UiComponentSetGhostTitleResponse*)MESSAGE_CONTENT(buffer);
+        if ( response->status == UI_PROTOCOL_SUCCESS )
+            return true;
+    }
 
-	return false;
+    return false;
 }
 
 /*
  *
  */
-bool TitledComponent::setFont(std::string fontName)
-{
-	if (!UiInitialized) return false;
+bool TitledComponent::setFont(std::string fontName) {
+    if ( !UiInitialized )
+        return false;
 
-	// send initialization request
-	MessageTransaction tx = GetMessageTxId();
+    // send initialization request
+    MessageTransaction tx = GetMessageTxId();
 
-	Local<UiComponentSetTitleFontRequest> request(new UiComponentSetTitleFontRequest());
-	request()->header.id = UI_PROTOCOL_SET_TITLE_FONT;
-	request()->id = this->id;
+    Local<UiComponentSetTitleFontRequest> request(new UiComponentSetTitleFontRequest());
+    request()->header.id = UI_PROTOCOL_SET_TITLE_FONT;
+    request()->id        = this->id;
 
-	// copy
-	memcpy(request()->fontName, fontName.c_str(), fontName.length());
+    // copy
+    memcpy(request()->fontName, fontName.c_str(), fontName.length());
 
-	SendMessageT(UiDelegateTid, request(), sizeof(UiComponentSetTitleFontRequest), tx);
+    SendMessageT(UiDelegateTid, request(), sizeof(UiComponentSetTitleFontRequest), tx);
 
-	// read response
-	size_t bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetTitleFontResponse);
-	uint8_t buffer[bufferSize];
+    // read response
+    size_t  bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetTitleFontResponse);
+    uint8_t buffer[bufferSize];
 
-	if (ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL)
-	{
-		UiComponentSetTitleFontResponse *response = (UiComponentSetTitleFontResponse*) MESSAGE_CONTENT(buffer);
-		if (response->status == UI_PROTOCOL_SUCCESS) return true;
-	}
+    if ( ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+        UiComponentSetTitleFontResponse* response
+            = (UiComponentSetTitleFontResponse*)MESSAGE_CONTENT(buffer);
+        if ( response->status == UI_PROTOCOL_SUCCESS )
+            return true;
+    }
 
-	return false;
+    return false;
 }
 
 /*
  *
  */
-bool TitledComponent::setFontSize(int size)
-{
-	if (!UiInitialized) return false;
+bool TitledComponent::setFontSize(int size) {
+    if ( !UiInitialized )
+        return false;
 
-	// send initialization request
-	MessageTransaction tx = GetMessageTxId();
+    // send initialization request
+    MessageTransaction tx = GetMessageTxId();
 
-	UiSetFontSizeRequest request;
-	request.header.id = UI_PROTOCOL_SET_FONT_SIZE;
-	request.id = this->id;
-	request.size = size;
+    UiSetFontSizeRequest request;
+    request.header.id = UI_PROTOCOL_SET_FONT_SIZE;
+    request.id        = this->id;
+    request.size      = size;
 
-	SendMessageT(UiDelegateTid, &request, sizeof(UiSetFontSizeRequest), tx);
+    SendMessageT(UiDelegateTid, &request, sizeof(UiSetFontSizeRequest), tx);
 
-	// read response
-	size_t bufferSize = sizeof(MessageHeader) + sizeof(UiSetFontSizeResponse);
-	uint8_t buffer[bufferSize];
+    // read response
+    size_t  bufferSize = sizeof(MessageHeader) + sizeof(UiSetFontSizeResponse);
+    uint8_t buffer[bufferSize];
 
-	if (ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL)
-	{
-		UiSetFontSizeResponse *response = (UiSetFontSizeResponse*) MESSAGE_CONTENT(buffer);
+    if ( ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+        UiSetFontSizeResponse* response = (UiSetFontSizeResponse*)MESSAGE_CONTENT(buffer);
 
-		if (response->status == UI_PROTOCOL_SUCCESS) return true;
-	}
+        if ( response->status == UI_PROTOCOL_SUCCESS )
+            return true;
+    }
 
-	return false;
+    return false;
 }
 
 /*
  *
  */
-bool TitledComponent::setTitleAlignment(TextAlignment alignment)
-{
-	if (!UiInitialized) return false;
+bool TitledComponent::setTitleAlignment(TextAlignment alignment) {
+    if ( !UiInitialized )
+        return false;
 
-	// send initialization request
-	MessageTransaction tx = GetMessageTxId();
+    // send initialization request
+    MessageTransaction tx = GetMessageTxId();
 
-	UiSetTitleAlignmentRequest request;
-	request.header.id = UI_PROTOCOL_SET_TITLE_ALIGNMENT;
-	request.id = this->id;
-	request.alignment = alignment;
+    UiSetTitleAlignmentRequest request;
+    request.header.id = UI_PROTOCOL_SET_TITLE_ALIGNMENT;
+    request.id        = this->id;
+    request.alignment = alignment;
 
-	SendMessageT(UiDelegateTid, &request, sizeof(UiSetTitleAlignmentRequest), tx);
+    SendMessageT(UiDelegateTid, &request, sizeof(UiSetTitleAlignmentRequest), tx);
 
-	// read response
-	size_t bufferSize = sizeof(MessageHeader) + sizeof(UiSetTitleAlignmentResponse);
-	uint8_t buffer[bufferSize];
+    // read response
+    size_t  bufferSize = sizeof(MessageHeader) + sizeof(UiSetTitleAlignmentResponse);
+    uint8_t buffer[bufferSize];
 
-	if (ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL)
-	{
-		UiSetTitleAlignmentResponse *response = (UiSetTitleAlignmentResponse*) MESSAGE_CONTENT(buffer);
+    if ( ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+        UiSetTitleAlignmentResponse* response
+            = (UiSetTitleAlignmentResponse*)MESSAGE_CONTENT(buffer);
 
-		if (response->status == UI_PROTOCOL_SUCCESS) return true;
-	}
+        if ( response->status == UI_PROTOCOL_SUCCESS )
+            return true;
+    }
 
-	return false;
+    return false;
 }
 
 /**
  *
  */
-UiComponentID TitledComponent::getId()
-{
-	return id;
+UiComponentID TitledComponent::getId() {
+    return id;
 }

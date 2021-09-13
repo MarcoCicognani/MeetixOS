@@ -18,39 +18,34 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "eva.h"
 #include "dirent.h"
 #include "errno.h"
+#include "eva.h"
 #include "malloc.h"
 
 /**
  *
  */
-DIR* opendir(const char* path) 
-{
+DIR* opendir(const char* path) {
+    FsOpenDirectoryStatus stat;
+    FsDirectoryIterator*  iter = OpenDirectoryS(path, &stat);
 
-	FsOpenDirectoryStatus stat;
-	FsDirectoryIterator *iter = OpenDirectoryS(path, &stat);
+    if ( stat == FS_OPEN_DIRECTORY_SUCCESSFUL ) {
+        DIR* dir    = (DIR*)malloc(sizeof(DIR));
+        dir->entbuf = (dirent*)malloc(sizeof(dirent));
+        dir->iter   = iter;
+        return dir;
 
-	if (stat == FS_OPEN_DIRECTORY_SUCCESSFUL) 
-	{
-		DIR* dir = (DIR*) malloc(sizeof(DIR));
-		dir->entbuf = (dirent*) malloc(sizeof(dirent));
-		dir->iter = iter;
-		return dir;
+    }
 
-	} 
+    else if ( stat == FS_OPEN_DIRECTORY_NOT_FOUND ) {
+        errno = ENOTDIR;
 
-	else if (stat == FS_OPEN_DIRECTORY_NOT_FOUND) 
-	{
-		errno = ENOTDIR;
+    }
 
-	} 
+    else if ( stat == FS_OPEN_DIRECTORY_ERROR ) {
+        errno = EIO;
+    }
 
-	else if (stat == FS_OPEN_DIRECTORY_ERROR) 
-	{
-		errno = EIO;
-	}
-
-	return NULL;
+    return NULL;
 }

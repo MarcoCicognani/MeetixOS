@@ -18,100 +18,96 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
-size_t __fread_unlocked(const void* ptr, size_t size, size_t nmemb,
-		FILE* stream) {
+size_t __fread_unlocked(const void* ptr, size_t size, size_t nmemb, FILE* stream) {
+    // check for illegal arguments
+    if ( size == 0 || nmemb == 0 ) {
+        return 0;
+    }
 
-	// check for illegal arguments
-	if (size == 0 || nmemb == 0) {
-		return 0;
-	}
+    // check if stream is writable
+    if ( (stream->flags & FILE_FLAG_MODE_READ) == 0 ) {
+        errno = EBADF;
+        stream->flags |= G_FILE_FLAG_ERROR;
+        return EOF;
+    }
 
-	// check if stream is writable
-	if ((stream->flags & FILE_FLAG_MODE_READ) == 0) {
-		errno = EBADF;
-		stream->flags |= G_FILE_FLAG_ERROR;
-		return EOF;
-	}
+    // if necessary, initialize stream buffer
+    if ( (stream->flags & G_FILE_FLAG_BUFFER_SET) == 0 ) {
+        if ( __setdefbuf_unlocked(stream) == EOF ) {
+            return EOF;
+        }
+    }
 
-	// if necessary, initialize stream buffer
-	if ((stream->flags & G_FILE_FLAG_BUFFER_SET) == 0) {
-		if (__setdefbuf_unlocked(stream) == EOF) {
-			return EOF;
-		}
-	}
+    // unbuffered files perform direct read
+    if ( stream->buffer_mode == _IONBF ) {
+        // if the last access was a write, flush it
+        if ( stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_WRITE ) {
+            if ( __fflush_write_unlocked(stream) == EOF ) {
+                return EOF;
+            }
+        }
 
-	// unbuffered files perform direct read
-	if (stream->buffer_mode == _IONBF) {
+        // if stream has no read implementation, return with error
+        if ( stream->impl_read == NULL ) {
+            errno = EBADF;
+            stream->flags |= G_FILE_FLAG_ERROR;
+            return EOF;
+        }
 
-		// if the last access was a write, flush it
-		if (stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_WRITE) {
-			if (__fflush_write_unlocked(stream) == EOF) {
-				return EOF;
-			}
-		}
+        // set stream direction
+        stream->flags |= G_FILE_FLAG_BUFFER_DIRECTION_READ;
 
-		// if stream has no read implementation, return with error
-		if (stream->impl_read == NULL) {
-			errno = EBADF;
-			stream->flags |= G_FILE_FLAG_ERROR;
-			return EOF;
-		}
+        // remove end-of-file
+        stream->flags &= ~G_FILE_FLAG_EOF;
 
-		// set stream direction
-		stream->flags |= G_FILE_FLAG_BUFFER_DIRECTION_READ;
+        // perform reading
+        size_t res = 0;
 
-		// remove end-of-file
-		stream->flags &= ~G_FILE_FLAG_EOF;
+        size_t total = size * nmemb;
+        size_t done  = 0;
 
-		// perform reading
-		size_t res = 0;
+        while ( done < total ) {
+            // call read implementation
+            ssize_t read = stream->impl_read(&(((uint8_t*)ptr)[done]), total, stream);
 
-		size_t total = size * nmemb;
-		size_t done = 0;
+            if ( read == 0 ) {
+                stream->flags |= G_FILE_FLAG_EOF;
+                res = EOF;
+                break;
 
-		while (done < total) {
-			// call read implementation
-			ssize_t read = stream->impl_read(&(((uint8_t*) ptr)[done]), total,
-					stream);
+            } else if ( read == -1 ) {
+                stream->flags |= G_FILE_FLAG_ERROR;
+                res = EOF;
+                break;
+            }
 
-			if (read == 0) {
-				stream->flags |= G_FILE_FLAG_EOF;
-				res = EOF;
-				break;
+            done += read;
+        }
 
-			} else if (read == -1) {
-				stream->flags |= G_FILE_FLAG_ERROR;
-				res = EOF;
-				break;
-			}
+        return done / size;
+    }
 
-			done += read;
-		}
+    // for buffered streams, get char-by-char
+    uint8_t* buffer = (uint8_t*)ptr;
 
-		return done / size;
-	}
+    for ( size_t e = 0; e < nmemb; e++ ) {
+        size_t off = e * size;
+        for ( size_t b = 0; b < size; b++ ) {
+            int c = __fgetc_unlocked(stream);
+            if ( c == EOF ) {
+                return e;
+            }
+            buffer[off + b] = (uint8_t)c;
+        }
+    }
 
-	// for buffered streams, get char-by-char
-	uint8_t* buffer = (uint8_t*) ptr;
-
-	for (size_t e = 0; e < nmemb; e++) {
-		size_t off = e * size;
-		for (size_t b = 0; b < size; b++) {
-			int c = __fgetc_unlocked(stream);
-			if (c == EOF) {
-				return e;
-			}
-			buffer[off + b] = (uint8_t) c;
-		}
-	}
-
-	return nmemb;
+    return nmemb;
 }

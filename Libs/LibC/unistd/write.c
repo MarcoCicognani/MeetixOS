@@ -18,24 +18,27 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
-#include "eva/kernel.h"
 #include "errno.h"
+#include "eva/kernel.h"
+#include "unistd.h"
 
 /**
  * POSIX wrapper for <Write>
  */
-ssize_t write(int fd, const void* buf, size_t count) 
-{
-	// performs write
-	FsWriteStatus stat;
-	int32_t len = WriteS(fd, buf, count, &stat);
+ssize_t write(int fd, const void* buf, size_t count) {
+    // performs write
+    FsWriteStatus stat;
+    int32_t       len = WriteS(fd, buf, count, &stat);
 
-	// check return status
-	if (stat == FS_WRITE_SUCCESSFUL) return len;
-	else if (stat == FS_WRITE_INVALID_FD) errno = EBADF;
-	else if (stat == FS_WRITE_BUSY) errno = EIO;
-	else errno = EIO;
+    // check return status
+    if ( stat == FS_WRITE_SUCCESSFUL )
+        return len;
+    else if ( stat == FS_WRITE_INVALID_FD )
+        errno = EBADF;
+    else if ( stat == FS_WRITE_BUSY )
+        errno = EIO;
+    else
+        errno = EIO;
 
-	return -1;
+    return -1;
 }

@@ -62,32 +62,30 @@
  * Polynomial evaluator:
  *  P[0] x^n  +  P[1] x^(n-1)  +  ...  +  P[n]
  */
-long double __polevll(long double x, const long double *P, int n)
-{
-	long double y;
+long double __polevll(long double x, const long double* P, int n) {
+    long double y;
 
-	y = *P++;
-	do {
-		y = y * x + *P++;
-	} while (--n);
+    y = *P++;
+    do {
+        y = y * x + *P++;
+    } while ( --n );
 
-	return y;
+    return y;
 }
 
 /*
  * Polynomial evaluator:
  *  x^n  +  P[0] x^(n-1)  +  P[1] x^(n-2)  +  ...  +  P[n]
  */
-long double __p1evll(long double x, const long double *P, int n)
-{
-	long double y;
+long double __p1evll(long double x, const long double* P, int n) {
+    long double y;
 
-	n -= 1;
-	y = x + *P++;
-	do {
-		y = y * x + *P++;
-	} while (--n);
+    n -= 1;
+    y = x + *P++;
+    do {
+        y = y * x + *P++;
+    } while ( --n );
 
-	return y;
+    return y;
 }
 #endif

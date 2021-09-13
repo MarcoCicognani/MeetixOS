@@ -18,17 +18,16 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
 #include "errno.h"
-#include "eva/kernel.h"
 #include "eva.h"
+#include "eva/kernel.h"
+#include "string.h"
 
 /**
  *
  */
 int strcoll(const char* str_a, const char* str_b) {
-
-	__DEBUG_TRACE(strcoll);
-	// TODO
-	__NOT_IMPLEMENTED("strcoll");
+    __DEBUG_TRACE(strcoll);
+    // TODO
+    __NOT_IMPLEMENTED("strcoll");
 }

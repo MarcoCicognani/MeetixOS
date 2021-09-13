@@ -22,52 +22,51 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * *
  * * * * */
 
-#include <tasking/tasking.hpp>
-
-#include <EvangelionNG.hpp>
 #include <debug/DebugInterfaceKernel.hpp>
+#include <EvangelionNG.hpp>
 #include <logger/logger.hpp>
 #include <system/ProcessorState.hpp>
 #include <system/system.hpp>
-#include <tasking/ThreadManager.hpp>
 #include <tasking/scheduling/scheduler.hpp>
+#include <tasking/tasking.hpp>
+#include <tasking/ThreadManager.hpp>
 
 /**
  * cpu task schedulers instances
  */
-Scheduler **Tasking::schedulers;
+Scheduler** Tasking::schedulers;
 
 /**
  * registered kernel Servers
  */
-llist<Process *> *Tasking::servers;
+llist<Process*>* Tasking::servers;
 
 /**
  * initialize the interface creating
  * the space for schedulers of each cores
  */
 void Tasking::initialize() {
-  // create space for all schedulers
-  uint32_t numCores = System::getNumberOfProcessors();
-  schedulers = new Scheduler *[numCores];
+    // create space for all schedulers
+    uint32_t numCores = System::getNumberOfProcessors();
+    schedulers        = new Scheduler*[numCores];
 
-  // nullificate all pointers
-  for (uint32_t i = 0; i < numCores; i++)
-    schedulers[i] = 0;
+    // nullificate all pointers
+    for ( uint32_t i = 0; i < numCores; i++ )
+        schedulers[i] = 0;
 
-  // initializate the server list
-  servers = new llist<Process *>();
+    // initializate the server list
+    servers = new llist<Process*>();
 }
 
 /**
  * create the scheduler for the core that call this function
  */
 void Tasking::enableForThisCore() {
-  // create a new scheduler for this core
-  uint32_t coreID = System::currentProcessorId();
-  schedulers[coreID] = new Scheduler(coreID);
+    // create a new scheduler for this core
+    uint32_t coreID    = System::currentProcessorId();
+    schedulers[coreID] = new Scheduler(coreID);
 
-  logInfo("%! scheduler installed on core %i", "tasking", coreID);
+    logInfo("%! scheduler installed on core %i", "tasking", coreID);
 }
 
 /**
@@ -77,22 +76,22 @@ void Tasking::enableForThisCore() {
  * @param currentThread:	the thread to be forked
  * @return the new forked thread
  */
-Thread *Tasking::fork(Thread *currentThread) {
-  Thread *clone = 0;
+Thread* Tasking::fork(Thread* currentThread) {
+    Thread* clone = 0;
 
-  // only main thread can be forked
-  if (currentThread == currentThread->process->main) {
-    if (currentThread) {
-      clone = ThreadManager::fork(currentThread);
-      if (clone)
-        addTask(clone);
+    // only main thread can be forked
+    if ( currentThread == currentThread->process->main ) {
+        if ( currentThread ) {
+            clone = ThreadManager::fork(currentThread);
+            if ( clone )
+                addTask(clone);
+        }
     }
-  }
 
-  else
-    logInfo("%! tryed to fork a non main thread", "tasking");
+    else
+        logInfo("%! tryed to fork a non main thread", "tasking");
 
-  return clone;
+    return clone;
 }
 
 /**
@@ -102,39 +101,39 @@ Thread *Tasking::fork(Thread *currentThread) {
  * @param-opt enforceCurrentCore:	force the loading to the current
  * scheduler
  */
-void Tasking::addTask(Thread *task, bool enforceCurrentCore) {
-  Scheduler *target = 0;
+void Tasking::addTask(Thread* task, bool enforceCurrentCore) {
+    Scheduler* target = 0;
 
-  // Used by AP's for the idle binary
-  if (enforceCurrentCore)
-    target = currentScheduler();
+    // Used by AP's for the idle binary
+    if ( enforceCurrentCore )
+        target = currentScheduler();
 
-  else {
-    // Find core with lowest load
-    Scheduler *lowest = 0;
-    uint32_t lowestLoad = 0;
-    uint32_t processors = System::getNumberOfProcessors();
+    else {
+        // Find core with lowest load
+        Scheduler* lowest     = 0;
+        uint32_t   lowestLoad = 0;
+        uint32_t   processors = System::getNumberOfProcessors();
 
-    for (uint32_t i = 0; i < processors; i++) {
-      if (schedulers[i]) {
-        // Check if load is lower than others
-        uint32_t load = schedulers[i]->calculateLoad();
-        if (!lowest || load < lowestLoad) {
-          lowest = schedulers[i];
-          lowestLoad = load;
+        for ( uint32_t i = 0; i < processors; i++ ) {
+            if ( schedulers[i] ) {
+                // Check if load is lower than others
+                uint32_t load = schedulers[i]->calculateLoad();
+                if ( !lowest || load < lowestLoad ) {
+                    lowest     = schedulers[i];
+                    lowestLoad = load;
+                }
+            }
         }
-      }
+
+        target = lowest;
     }
 
-    target = lowest;
-  }
+    // Error check
+    if ( !target )
+        EvaKernel::panic("%! couldn't find scheduler to add task to", "tasking");
 
-  // Error check
-  if (!target)
-    EvaKernel::panic("%! couldn't find scheduler to add task to", "tasking");
-
-  // Assign task to scheduler
-  target->add(task);
+    // Assign task to scheduler
+    target->add(task);
 }
 
 /**
@@ -145,8 +144,8 @@ void Tasking::addTask(Thread *task, bool enforceCurrentCore) {
  * @param cpuState:		the cpu state to save
  * @return the thread object where is been saves the state
  */
-Thread *Tasking::save(ProcessorState *cpuState) {
-  return currentScheduler()->save(cpuState);
+Thread* Tasking::save(ProcessorState* cpuState) {
+    return currentScheduler()->save(cpuState);
 }
 
 /**
@@ -154,34 +153,38 @@ Thread *Tasking::save(ProcessorState *cpuState) {
  *
  * @return the new task to execute
  */
-Thread *Tasking::schedule() { return currentScheduler()->schedule(); }
+Thread* Tasking::schedule() {
+    return currentScheduler()->schedule();
+}
 
 /**
  * pushes the given thread to the top of the wait queue
  *
  * @param task:		the task to increase to
  */
-void Tasking::increaseWaitPriority(Thread *thread) {
-  currentScheduler()->increaseWaitPriority(thread);
+void Tasking::increaseWaitPriority(Thread* thread) {
+    currentScheduler()->increaseWaitPriority(thread);
 }
 
 /**
  * @returns the current task on the current core
  */
-Thread *Tasking::lastThread() { return currentScheduler()->lastThread(); }
+Thread* Tasking::lastThread() {
+    return currentScheduler()->lastThread();
+}
 
 /**
  * @returns the current scheduler on the current core
  */
-Scheduler *Tasking::currentScheduler() {
-  uint32_t coreID = System::currentProcessorId();
-  Scheduler *scheduler = schedulers[coreID];
+Scheduler* Tasking::currentScheduler() {
+    uint32_t   coreID    = System::currentProcessorId();
+    Scheduler* scheduler = schedulers[coreID];
 
-  // Error check
-  if (!scheduler)
-    EvaKernel::panic("%! no scheduler exists for core %i", "tasking", coreID);
+    // Error check
+    if ( !scheduler )
+        EvaKernel::panic("%! no scheduler exists for core %i", "tasking", coreID);
 
-  return scheduler;
+    return scheduler;
 }
 
 /**
@@ -190,18 +193,18 @@ Scheduler *Tasking::currentScheduler() {
  *
  * @param process:		the process of which the threads shall be killed
  */
-void Tasking::removeThreads(Process *process) {
-  // remove from the server list if is a server
-  if (process->isServer)
-    servers->erase(process);
+void Tasking::removeThreads(Process* process) {
+    // remove from the server list if is a server
+    if ( process->isServer )
+        servers->erase(process);
 
-  // remove other threads
-  uint32_t processors = System::getNumberOfProcessors();
-  for (uint32_t i = 0; i < processors; i++) {
-    Scheduler *scheduler = schedulers[i];
-    if (scheduler)
-      scheduler->removeThreads(process);
-  }
+    // remove other threads
+    uint32_t processors = System::getNumberOfProcessors();
+    for ( uint32_t i = 0; i < processors; i++ ) {
+        Scheduler* scheduler = schedulers[i];
+        if ( scheduler )
+            scheduler->removeThreads(process);
+    }
 }
 
 /**
@@ -211,25 +214,22 @@ void Tasking::removeThreads(Process *process) {
  * @param process:		the process to registrate
  * @return whether the operation success
  */
-uint8_t Tasking::addServer(Process *process) {
-  logDebug("%! Trying to registering a process as Server", "tasking");
+uint8_t Tasking::addServer(Process* process) {
+    logDebug("%! Trying to registering a process as Server", "tasking");
 
-  // don't re-register the process
-  if (!process->isServer) {
-    // find if there is another server with the same name
-    for (llist<Process *>::iterator it = servers->begin(); it != servers->end();
-         ++it)
-      if (String::equals(process->main->getIdentifier(),
-                         (*it)->main->getIdentifier()))
-        return false;
+    // don't re-register the process
+    if ( !process->isServer ) {
+        // find if there is another server with the same name
+        for ( llist<Process*>::iterator it = servers->begin(); it != servers->end(); ++it )
+            if ( String::equals(process->main->getIdentifier(), (*it)->main->getIdentifier()) )
+                return false;
 
-    // add to the list
-    process->isServer = true;
-    servers->add(process);
-    logDebug("%! Now '%s' is a server", "tasking",
-             process->main->getIdentifier());
-  }
-  return true;
+        // add to the list
+        process->isServer = true;
+        servers->add(process);
+        logDebug("%! Now '%s' is a server", "tasking", process->main->getIdentifier());
+    }
+    return true;
 }
 
 /**
@@ -238,50 +238,49 @@ uint8_t Tasking::addServer(Process *process) {
  * @param identifier:		the identifier of the server
  * @return the process descriptor or 0
  */
-Process *Tasking::getServer(const char *identifier) {
-  // find if there is another server with the same name
-  for (llist<Process *>::iterator it = servers->begin(); it != servers->end();
-       ++it)
-    if (String::equals(identifier, (*it)->main->getIdentifier()))
-      return *it;
+Process* Tasking::getServer(const char* identifier) {
+    // find if there is another server with the same name
+    for ( llist<Process*>::iterator it = servers->begin(); it != servers->end(); ++it )
+        if ( String::equals(identifier, (*it)->main->getIdentifier()) )
+            return *it;
 
-  return 0;
+    return 0;
 }
 
 /**
  * @return the thread descriptor from it's Tid
  */
-Thread *Tasking::getTaskById(uint32_t id) {
-  // parse each scheduler
-  uint32_t processors = System::getNumberOfProcessors();
-  for (uint32_t i = 0; i < processors; i++) {
-    // check always scheduler validity
-    if (schedulers[i]) {
-      Thread *task = schedulers[i]->getTaskById(id);
-      if (task)
-        return task;
+Thread* Tasking::getTaskById(uint32_t id) {
+    // parse each scheduler
+    uint32_t processors = System::getNumberOfProcessors();
+    for ( uint32_t i = 0; i < processors; i++ ) {
+        // check always scheduler validity
+        if ( schedulers[i] ) {
+            Thread* task = schedulers[i]->getTaskById(id);
+            if ( task )
+                return task;
+        }
     }
-  }
 
-  return 0;
+    return 0;
 }
 
 /**
  * @return the thread descriptor from it's name
  */
-Thread *Tasking::getTaskByIdentifier(const char *identifier) {
-  // parse each scheduler
-  uint32_t processors = System::getNumberOfProcessors();
-  for (uint32_t i = 0; i < processors; i++) {
-    // check always scheduler validity
-    if (schedulers[i]) {
-      Thread *task = schedulers[i]->getTaskByIdentifier(identifier);
-      if (task)
-        return task;
+Thread* Tasking::getTaskByIdentifier(const char* identifier) {
+    // parse each scheduler
+    uint32_t processors = System::getNumberOfProcessors();
+    for ( uint32_t i = 0; i < processors; i++ ) {
+        // check always scheduler validity
+        if ( schedulers[i] ) {
+            Thread* task = schedulers[i]->getTaskByIdentifier(identifier);
+            if ( task )
+                return task;
+        }
     }
-  }
 
-  return 0;
+    return 0;
 }
 
 /**
@@ -294,42 +293,40 @@ Thread *Tasking::getTaskByIdentifier(const char *identifier) {
  * @param preferredIdentifier:		identifier to adjust and set to target
  * @return the setupped identifier for the target
  */
-const char *Tasking::adjustTaskIdentifier(Thread *target, Thread *firstExist,
-                                          const char *preferredIdentifier) {
-  // legalize the identifier from illegal characters
-  String::replace((char *)preferredIdentifier, ':', '_');
+const char*
+Tasking::adjustTaskIdentifier(Thread* target, Thread* firstExist, const char* preferredIdentifier) {
+    // legalize the identifier from illegal characters
+    String::replace((char*)preferredIdentifier, ':', '_');
 
-  // find all task with this name and add to new
-  int lastNum = 1;
-  Thread *next = firstExist;
+    // find all task with this name and add to new
+    int     lastNum = 1;
+    Thread* next    = firstExist;
 
-  // iterate while find a valid task
-  while (next != 0) {
-    // create the identifier
-    const char *strnum = String::fromInt(lastNum, BASE_DECIMAL);
-    char nextID[String::length(preferredIdentifier) + String::length(strnum) +
-                1];
-    String::concat(preferredIdentifier, strnum, nextID);
+    // iterate while find a valid task
+    while ( next != 0 ) {
+        // create the identifier
+        const char* strnum = String::fromInt(lastNum, BASE_DECIMAL);
+        char        nextID[String::length(preferredIdentifier) + String::length(strnum) + 1];
+        String::concat(preferredIdentifier, strnum, nextID);
 
-    // remove the string and increase the num
-    delete strnum;
-    lastNum++;
+        // remove the string and increase the num
+        delete strnum;
+        lastNum++;
 
-    // get from schedulers
-    next = getTaskByIdentifier(nextID);
-  }
+        // get from schedulers
+        next = getTaskByIdentifier(nextID);
+    }
 
-  // now create the definitive indentifier
-  const char *effectivenum = String::fromInt(lastNum, BASE_DECIMAL);
-  char identifier[String::length(preferredIdentifier) +
-                  String::length(effectivenum) + 1];
-  String::concat(preferredIdentifier, effectivenum, identifier);
+    // now create the definitive indentifier
+    const char* effectivenum = String::fromInt(lastNum, BASE_DECIMAL);
+    char        identifier[String::length(preferredIdentifier) + String::length(effectivenum) + 1];
+    String::concat(preferredIdentifier, effectivenum, identifier);
 
-  // set the identifier
-  target->setIdentifier(identifier);
+    // set the identifier
+    target->setIdentifier(identifier);
 
-  // return the setupped identifier
-  return target->getIdentifier();
+    // return the setupped identifier
+    return target->getIdentifier();
 }
 
 /**
@@ -338,66 +335,70 @@ const char *Tasking::adjustTaskIdentifier(Thread *target, Thread *firstExist,
  * @param task:				the task that want a new name
  * @param newIdentifier:	the new identifier to be setted
  */
-bool Tasking::registerTaskForIdentifier(Thread *task, const char *newIdentifier,
-                                        char *selectedIdentifier) {
-  // first take the complete name
-  /*char completeName[STRING_IDENTIFIER_MAX_LENGTH];
+bool Tasking::registerTaskForIdentifier(Thread*     task,
+                                        const char* newIdentifier,
+                                        char*       selectedIdentifier) {
+    // first take the complete name
+    /*char completeName[STRING_IDENTIFIER_MAX_LENGTH];
 
-  // check thread type
-  if (task->type == THREAD_TYPE_SUB)
-  {
-          // get a duplicate of the name
-          char *previd = String::duplicate(task->getIdentifier());
-          uint32_t length = String::length(previd);
+    // check thread type
+    if (task->type == THREAD_TYPE_SUB)
+    {
+            // get a duplicate of the name
+            char *previd = String::duplicate(task->getIdentifier());
+            uint32_t length = String::length(previd);
 
-          // the thread name is already appended
-          if (previd[length - 1] != ':')
-          {
-                  // remove the thread name appendix
-                  uint32_t lastDoubleDot = String::lastIndexOf(previd, ':');
-                  uint32_t appendixLen = length - lastDoubleDot - 1;
-                  Memory::setWords(&previd[lastDoubleDot], '\0', appendixLen);
-          }
+            // the thread name is already appended
+            if (previd[length - 1] != ':')
+            {
+                    // remove the thread name appendix
+                    uint32_t lastDoubleDot = String::lastIndexOf(previd, ':');
+                    uint32_t appendixLen = length - lastDoubleDot - 1;
+                    Memory::setWords(&previd[lastDoubleDot], '\0', appendixLen);
+            }
 
-          // no name appended to root, concat and destroy duplicate
-          String::concat(previd, newIdentifier, completeName);
-          delete previd;
-  }
+            // no name appended to root, concat and destroy duplicate
+            String::concat(previd, newIdentifier, completeName);
+            delete previd;
+    }
 
-  // thread is a main or vm86
-  else String::copy(completeName, task->getIdentifier());
+    // thread is a main or vm86
+    else String::copy(completeName, task->getIdentifier());
 
-  // test name
-  if (*completeName != '\0')
-  {
-          // Check if someone else has this identifier
-          Thread *existing = getTaskByIdentifier(newIdentifier);
-          if (existing && existing != task)
-          {
-                  // show warning
-                  logWarn("%! task %i could not be registered as '%s', auto
-  adding a supplementary numeric id", "tasking", task->id, newIdentifier);
+    // test name
+    if (*completeName != '\0')
+    {
+            // Check if someone else has this identifier
+            Thread *existing = getTaskByIdentifier(newIdentifier);
+            if (existing && existing != task)
+            {
+                    // show warning
+                    logWarn("%! task %i could not be registered as '%s', auto
+    adding a supplementary numeric id", "tasking", task->id, newIdentifier);
 
-                  // we have to adjust the name
-                  if (selectedIdentifier) String::copy(selectedIdentifier,
-  adjustTaskIdentifier(task, existing, newIdentifier)); return false;
-          }
-  }*/
+                    // we have to adjust the name
+                    if (selectedIdentifier) String::copy(selectedIdentifier,
+    adjustTaskIdentifier(task, existing, newIdentifier)); return false;
+            }
+    }*/
 
-  // Check if someone else has this identifier
-  Thread *existing = getTaskByIdentifier(newIdentifier);
-  if (existing) {
-    logWarn("%! task %i could not be registered as '%s', name is used by %i",
-            "tasking", task->id, newIdentifier, existing->id);
-    return false;
-  }
+    // Check if someone else has this identifier
+    Thread* existing = getTaskByIdentifier(newIdentifier);
+    if ( existing ) {
+        logWarn("%! task %i could not be registered as '%s', name is used by %i",
+                "tasking",
+                task->id,
+                newIdentifier,
+                existing->id);
+        return false;
+    }
 
-  // Set the identifier
-  task->setIdentifier(newIdentifier);
+    // Set the identifier
+    task->setIdentifier(newIdentifier);
 
-  DEBUG_INTERFACE_TASK_SET_IDENTIFIER(task->id, newIdentifier);
-  logDebug("%! task %i registered as '%s'", "tasking", task->id, newIdentifier);
-  return true;
+    DEBUG_INTERFACE_TASK_SET_IDENTIFIER(task->id, newIdentifier);
+    logDebug("%! task %i registered as '%s'", "tasking", task->id, newIdentifier);
+    return true;
 }
 
 /**
@@ -407,30 +408,30 @@ bool Tasking::registerTaskForIdentifier(Thread *task, const char *newIdentifier,
  * @return the count of the task in all schedulers
  */
 uint32_t Tasking::count(ThreadType type) {
-  uint32_t total = 0;
-  uint32_t processors = System::getNumberOfProcessors();
+    uint32_t total      = 0;
+    uint32_t processors = System::getNumberOfProcessors();
 
-  // test first all schedulers
-  for (uint32_t i = 0; i < processors; i++)
-    if (!schedulers[i])
-      return total;
+    // test first all schedulers
+    for ( uint32_t i = 0; i < processors; i++ )
+        if ( !schedulers[i] )
+            return total;
 
-  // shift to check main type
-  if (type & THREAD_TYPE_MAIN)
-    for (uint32_t i = 0; i < processors; i++)
-      total += schedulers[i]->count(THREAD_TYPE_MAIN);
+    // shift to check main type
+    if ( type & THREAD_TYPE_MAIN )
+        for ( uint32_t i = 0; i < processors; i++ )
+            total += schedulers[i]->count(THREAD_TYPE_MAIN);
 
-  // shift to check vm86 type
-  if (type & THREAD_TYPE_VM86)
-    for (uint32_t i = 0; i < processors; i++)
-      total += schedulers[i]->count(THREAD_TYPE_VM86);
+    // shift to check vm86 type
+    if ( type & THREAD_TYPE_VM86 )
+        for ( uint32_t i = 0; i < processors; i++ )
+            total += schedulers[i]->count(THREAD_TYPE_VM86);
 
-  // shift to check sub type
-  if (type & THREAD_TYPE_SUB)
-    for (uint32_t i = 0; i < processors; i++)
-      total += schedulers[i]->count(THREAD_TYPE_SUB);
+    // shift to check sub type
+    if ( type & THREAD_TYPE_SUB )
+        for ( uint32_t i = 0; i < processors; i++ )
+            total += schedulers[i]->count(THREAD_TYPE_SUB);
 
-  return total;
+    return total;
 }
 
 /**
@@ -441,29 +442,29 @@ uint32_t Tasking::count(ThreadType type) {
  * @param type:		the type of task id to store on buffer
  * @return the count of copied ids
  */
-uint32_t Tasking::getTaskIDs(Tid *out, uint32_t len, ThreadType type) {
-  uint32_t pos = 0;
-  uint32_t processors = System::getNumberOfProcessors();
+uint32_t Tasking::getTaskIDs(Tid* out, uint32_t len, ThreadType type) {
+    uint32_t pos        = 0;
+    uint32_t processors = System::getNumberOfProcessors();
 
-  // test first all schedulers
-  for (uint32_t i = 0; i < processors; i++)
-    if (!schedulers[i])
-      return pos;
+    // test first all schedulers
+    for ( uint32_t i = 0; i < processors; i++ )
+        if ( !schedulers[i] )
+            return pos;
 
-  // shift to check main type
-  if (type & THREAD_TYPE_MAIN)
-    for (uint32_t i = 0; i < processors; i++)
-      pos += schedulers[i]->getTaskIDs(&out[pos], len - pos, THREAD_TYPE_MAIN);
+    // shift to check main type
+    if ( type & THREAD_TYPE_MAIN )
+        for ( uint32_t i = 0; i < processors; i++ )
+            pos += schedulers[i]->getTaskIDs(&out[pos], len - pos, THREAD_TYPE_MAIN);
 
-  // shift to check vm86 type
-  if (type & THREAD_TYPE_VM86)
-    for (uint32_t i = 0; i < processors; i++)
-      pos += schedulers[i]->getTaskIDs(&out[pos], len - pos, THREAD_TYPE_VM86);
+    // shift to check vm86 type
+    if ( type & THREAD_TYPE_VM86 )
+        for ( uint32_t i = 0; i < processors; i++ )
+            pos += schedulers[i]->getTaskIDs(&out[pos], len - pos, THREAD_TYPE_VM86);
 
-  // shift to check sub type
-  if (type & THREAD_TYPE_SUB)
-    for (uint32_t i = 0; i < processors; i++)
-      pos += schedulers[i]->getTaskIDs(&out[pos], len - pos, THREAD_TYPE_SUB);
+    // shift to check sub type
+    if ( type & THREAD_TYPE_SUB )
+        for ( uint32_t i = 0; i < processors; i++ )
+            pos += schedulers[i]->getTaskIDs(&out[pos], len - pos, THREAD_TYPE_SUB);
 
-  return pos;
+    return pos;
 }

@@ -18,18 +18,16 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
 #include "eva.h"
+#include "string.h"
 
-size_t strlen(const char *s) 
-{
-	__DEBUG_TRACE(strlen);
+size_t strlen(const char* s) {
+    __DEBUG_TRACE(strlen);
 
-	size_t len = 0;
-	while (s[len]) 
-	{
-		++len;
-	}
-	
-	return len;
+    size_t len = 0;
+    while ( s[len] ) {
+        ++len;
+    }
+
+    return len;
 }

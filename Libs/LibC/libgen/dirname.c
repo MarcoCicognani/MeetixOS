@@ -18,8 +18,8 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "libgen.h"
 #include "eva.h"
+#include "libgen.h"
 #include "string.h"
 
 static char _statbuf[8];
@@ -28,54 +28,52 @@ static char _statbuf[8];
  *
  */
 char* dirname(char* path) {
+    // return dot if null
+    if ( path == NULL ) {
+        _statbuf[0] = '.';
+        _statbuf[1] = 0;
+        return _statbuf;
+    }
 
-	// return dot if null
-	if (path == NULL) {
-		_statbuf[0] = '.';
-		_statbuf[1] = 0;
-		return _statbuf;
-	}
+    // get length of the path
+    size_t len = strlen(path);
 
-	// get length of the path
-	size_t len = strlen(path);
+    // return dot if empty
+    if ( len == 0 ) {
+        _statbuf[0] = '.';
+        _statbuf[1] = 0;
+        return _statbuf;
+    }
 
-	// return dot if empty
-	if (len == 0) {
-		_statbuf[0] = '.';
-		_statbuf[1] = 0;
-		return _statbuf;
-	}
+    // overwrite trailing slashes with nulls
+    char* last = path + len - 1;
+    while ( last >= path && *last == '/' ) {
+        *last = 0;
+        --last;
+    }
 
-	// overwrite trailing slashes with nulls
-	char* last = path + len - 1;
-	while (last >= path && *last == '/') {
-		*last = 0;
-		--last;
-	}
+    // if the entire path consisted of slashes, return slash
+    if ( *path == 0 ) {
+        _statbuf[0] = '/';
+        _statbuf[1] = 0;
+        return _statbuf;
+    }
 
-	// if the entire path consisted of slashes, return slash
-	if (*path == 0) {
-		_statbuf[0] = '/';
-		_statbuf[1] = 0;
-		return _statbuf;
-	}
+    // check for slash
+    char* rightmostSlash = strrchr(path, '/');
 
-	// check for slash
-	char* rightmostSlash = strrchr(path, '/');
+    if ( rightmostSlash == NULL ) {
+        _statbuf[0] = '.';
+        _statbuf[1] = 0;
+        return _statbuf;
+    }
 
-	if (rightmostSlash == NULL) {
-		_statbuf[0] = '.';
-		_statbuf[1] = 0;
-		return _statbuf;
-	}
+    // null-terminate at end
+    if ( rightmostSlash == path ) {
+        rightmostSlash[1] = 0;
+    } else {
+        rightmostSlash[0] = 0;
+    }
 
-	// null-terminate at end
-	if (rightmostSlash == path) {
-		rightmostSlash[1] = 0;
-	} else {
-		rightmostSlash[0] = 0;
-	}
-
-	return path;
+    return path;
 }
-

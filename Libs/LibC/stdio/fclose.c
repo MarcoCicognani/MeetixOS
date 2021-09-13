@@ -18,26 +18,25 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "file.h"
+#include "stdint.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "stdint.h"
 #include "stdlib.h"
-#include "file.h"
 #include "unistd.h"
 
 /**
  *
  */
 int fclose(FILE* stream) {
+    // close file
+    int res = __fclose_static(stream);
+    if ( res != 0 ) {
+        return EOF;
+    }
 
-	// close file
-	int res = __fclose_static(stream);
-	if (res != 0) {
-		return EOF;
-	}
+    // delete file
+    free(stream);
 
-	// delete file
-	free(stream);
-
-	return 0;
+    return 0;
 }

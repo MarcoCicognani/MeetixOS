@@ -19,21 +19,20 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "signal.h"
-#include "signal_internal.h"
+
 #include "eva/user.h"
+#include "signal_internal.h"
 
 /**
  *
  */
-sig_handler_t signal(int sig, sig_handler_t handler) 
-{
-	// check if default handler
-	if(handler == SIG_DFL) {
+sig_handler_t signal(int sig, sig_handler_t handler) {
+    // check if default handler
+    if ( handler == SIG_DFL ) {
+        if ( sig == SIGINT ) {
+            handler = sig_handler_SIG_INT;
+        }
+    }
 
-		if(sig == SIGINT) {
-			handler = sig_handler_SIG_INT;
-		}
-	}
-
-	return (sig_handler_t) RegisterSignalHandler(sig, (void*) handler);
+    return (sig_handler_t)RegisterSignalHandler(sig, (void*)handler);
 }

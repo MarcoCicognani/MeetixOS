@@ -18,30 +18,26 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdio.h"
-#include "stdint.h"
-#include "file.h"
-#include "unistd.h"
 #include "errno.h"
+#include "file.h"
+#include "stdint.h"
+#include "stdio.h"
+#include "unistd.h"
 
 /**
  *
  */
-FILE* freopen(const char* filename, const char* mode, FILE* stream) 
-{
+FILE* freopen(const char* filename, const char* mode, FILE* stream) {
+    AtomicLock(&stream->lock);
+    FILE* res;
+    if ( stream->impl_reopen ) {
+        res = stream->impl_reopen(filename, mode, stream);
+    }
 
-	AtomicLock(&stream->lock);
-	FILE* res;
-	if (stream->impl_reopen) 
-	{
-		res = stream->impl_reopen(filename, mode, stream);
-	} 
-
-	else 
-	{
-		errno = ENOTSUP;
-		res = NULL;
-	}
-	stream->lock = 0;
-	return res;
+    else {
+        errno = ENOTSUP;
+        res   = NULL;
+    }
+    stream->lock = 0;
+    return res;
 }

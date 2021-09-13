@@ -18,9 +18,10 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <eva.h>
-#include "stdlib.h"
 #include "../main_internal.h"
+#include "stdlib.h"
+
+#include <eva.h>
 
 /**
  * Global destructor routine
@@ -30,15 +31,14 @@ void _fini();
 /**
  *
  */
-void exit(int code) 
-{
-	// finalize libc
-	_FiniLibc();
+void exit(int code) {
+    // finalize libc
+    _FiniLibc();
 
-	// call global destructors
-	_fini();
+    // call global destructors
+    _fini();
 
-	// quit task
-	Exit(code);
-	__builtin_unreachable();
+    // quit task
+    Exit(code);
+    __builtin_unreachable();
 }

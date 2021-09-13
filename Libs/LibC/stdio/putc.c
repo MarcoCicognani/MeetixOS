@@ -18,19 +18,17 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
 int putc(int c, FILE* stream) {
-
-	AtomicLock(&stream->lock);
-	int res = __fputc_unlocked(c, stream);
-	stream->lock = 0;
-	return res;
+    AtomicLock(&stream->lock);
+    int res      = __fputc_unlocked(c, stream);
+    stream->lock = 0;
+    return res;
 }
-

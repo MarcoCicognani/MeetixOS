@@ -18,22 +18,23 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
-#include "eva/kernel.h"
 #include "errno.h"
+#include "eva/kernel.h"
+#include "unistd.h"
 
 /**
  * POSIX wrapper for <Close>
  */
-int close(int filedes) 
-{
-	// performs syscall
-	FsCloseStatus status = Close(filedes);
+int close(int filedes) {
+    // performs syscall
+    FsCloseStatus status = Close(filedes);
 
-	// check status
-	if (status == FS_CLOSE_SUCCESSFUL) return 0;
-	else if (status == FS_CLOSE_INVALID_FD) errno = EBADF;
-	else errno = EIO;
-	return -1;
+    // check status
+    if ( status == FS_CLOSE_SUCCESSFUL )
+        return 0;
+    else if ( status == FS_CLOSE_INVALID_FD )
+        errno = EBADF;
+    else
+        errno = EIO;
+    return -1;
 }
-

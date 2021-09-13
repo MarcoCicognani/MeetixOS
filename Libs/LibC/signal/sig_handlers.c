@@ -18,9 +18,9 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "eva.h"
 #include "signal.h"
 #include "signal_internal.h"
-#include "eva.h"
 #include "stdlib.h"
 
 /**
@@ -33,5 +33,5 @@ void sig_handler_SIG_IGN(int sig) {
  * Default SIGINT handler
  */
 void sig_handler_SIG_INT(int sig) {
-	exit(0);
+    exit(0);
 }

@@ -26,23 +26,22 @@
  *
  */
 int fflush(FILE* stream) {
+    // if no stream passed, flush all streams
+    if ( stream == NULL ) {
+        int ret = 0;
 
-	// if no stream passed, flush all streams
-	if (stream == NULL) {
-		int ret = 0;
+        FILE* ns = __open_file_list;
+        while ( ns ) {
+            ret |= fflush(ns);
+            ns = ns->next;
+        }
 
-		FILE* ns = __open_file_list;
-		while (ns) {
-			ret |= fflush(ns);
-			ns = ns->next;
-		}
+        return ret;
+    }
 
-		return ret;
-	}
-
-	// lock file and perform flush
-	AtomicLock(&stream->lock);
-	int res = __fflush_unlocked(stream);
-	stream->lock = 0;
-	return res;
+    // lock file and perform flush
+    AtomicLock(&stream->lock);
+    int res      = __fflush_unlocked(stream);
+    stream->lock = 0;
+    return res;
 }

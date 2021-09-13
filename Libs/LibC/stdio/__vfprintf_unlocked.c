@@ -18,29 +18,27 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
-static ssize_t vcbprintf_vfprintf_callback(void* param, const char* string,
-		size_t stringlen) {
-
-	return __fwrite_unlocked(string, 1, stringlen, (FILE*) param);
+static ssize_t vcbprintf_vfprintf_callback(void* param, const char* string, size_t stringlen) {
+    return __fwrite_unlocked(string, 1, stringlen, (FILE*)param);
 }
 
 /**
  *
  */
 int __vfprintf_unlocked(FILE* stream, const char* format, va_list arg) {
-	if ((stream->flags & FILE_FLAG_MODE_WRITE) == 0) {
-		errno = EBADF;
-		stream->flags |= G_FILE_FLAG_ERROR;
-		return EOF;
-	}
+    if ( (stream->flags & FILE_FLAG_MODE_WRITE) == 0 ) {
+        errno = EBADF;
+        stream->flags |= G_FILE_FLAG_ERROR;
+        return EOF;
+    }
 
-	return vcbprintf(stream, vcbprintf_vfprintf_callback, format, arg);
+    return vcbprintf(stream, vcbprintf_vfprintf_callback, format, arg);
 }

@@ -18,13 +18,13 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdlib.h"
-#include "malloc.h"
 #include "eva.h"
+#include "malloc.h"
+#include "stdlib.h"
 
 /**
  *
  */
 double atof(const char* str) {
-	return strtof(str, (char**) NULL);
+    return strtof(str, (char**)NULL);
 }

@@ -18,16 +18,14 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdlib.h"
 #include "errno.h"
-
 #include "stdio.h"
+#include "stdlib.h"
 
 /**
  *
  */
 int system(const char* command) {
-
-	klog("warning: system(\"%s\") is not implemented", command);
-	return 0;
+    klog("warning: system(\"%s\") is not implemented", command);
+    return 0;
 }

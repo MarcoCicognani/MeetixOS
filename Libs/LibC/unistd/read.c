@@ -18,24 +18,27 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
-#include "eva/kernel.h"
 #include "errno.h"
+#include "eva/kernel.h"
+#include "unistd.h"
 
 /**
  * POSIX wrapper for <Read>
  */
-ssize_t read(int fd, void *buf, size_t count) 
-{
-	// performs syscall
-	FsReadStatus stat;
-	int32_t len = ReadS(fd, buf, count, &stat);
+ssize_t read(int fd, void* buf, size_t count) {
+    // performs syscall
+    FsReadStatus stat;
+    int32_t      len = ReadS(fd, buf, count, &stat);
 
-	// check status
-	if (stat == FS_READ_SUCCESSFUL) return len;
-	else if (stat == FS_READ_INVALID_FD) errno = EBADF;
-	else if (stat == FS_READ_BUSY) errno = EIO;
-	else  errno = EIO;
+    // check status
+    if ( stat == FS_READ_SUCCESSFUL )
+        return len;
+    else if ( stat == FS_READ_INVALID_FD )
+        errno = EBADF;
+    else if ( stat == FS_READ_BUSY )
+        errno = EIO;
+    else
+        errno = EIO;
 
-	return -1;
+    return -1;
 }

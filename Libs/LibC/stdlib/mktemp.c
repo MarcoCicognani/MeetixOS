@@ -18,35 +18,34 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdlib.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
 char* mktemp(char* templ) {
+    if ( templ == NULL ) {
+        return templ;
+    }
 
-	if (templ == NULL) {
-		return templ;
-	}
+    size_t templlen = strlen(templ);
 
-	size_t templlen = strlen(templ);
+    if ( templlen < 6 ) {
+        templ[0] = 0;
+        return templ;
+    }
 
-	if (templlen < 6) {
-		templ[0] = 0;
-		return templ;
-	}
+    for ( int i = templlen - 6; i < templlen; i++ ) {
+        if ( templ[i] != 'X' ) {
+            errno    = EINVAL;
+            templ[0] = 0;
+            return templ;
+        }
 
-	for (int i = templlen - 6; i < templlen; i++) {
-		if (templ[i] != 'X') {
-			errno = EINVAL;
-			templ[0] = 0;
-			return templ;
-		}
+        templ[i] = 'a' + rand() % ('z' - 'a');
+    }
 
-		templ[i] = 'a' + rand() % ('z' - 'a');
-	}
-
-	return templ;
+    return templ;
 }

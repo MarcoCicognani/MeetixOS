@@ -26,5 +26,5 @@
  *
  */
 void __stdio_impl_clearerr(FILE* stream) {
-	stream->flags &= ~G_FILE_FLAG_ERROR;
+    stream->flags &= ~G_FILE_FLAG_ERROR;
 }

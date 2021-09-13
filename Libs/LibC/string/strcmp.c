@@ -18,31 +18,32 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
-#include "stdint.h"
 #include "eva.h"
+#include "stdint.h"
+#include "string.h"
 
 /**
  *
  */
-int strcmp(const char* str_a, const char* str_b) 
-{
-	__DEBUG_TRACE(strcmp);
+int strcmp(const char* str_a, const char* str_b) {
+    __DEBUG_TRACE(strcmp);
 
-	uint8_t* mem_a8 = (uint8_t*) str_a;
-	uint8_t* mem_b8 = (uint8_t*) str_b;
+    uint8_t* mem_a8 = (uint8_t*)str_a;
+    uint8_t* mem_b8 = (uint8_t*)str_b;
 
-	for (;; ++mem_a8, ++mem_b8) 
-	{
-		uint8_t a = *mem_a8;
-		uint8_t b = *mem_b8;
+    for ( ;; ++mem_a8, ++mem_b8 ) {
+        uint8_t a = *mem_a8;
+        uint8_t b = *mem_b8;
 
-		if (a == 0 && b == 0) return 0;
+        if ( a == 0 && b == 0 )
+            return 0;
 
-		else if (a < b) return -1;
+        else if ( a < b )
+            return -1;
 
-		else if (a > b) return 1;
-	}
+        else if ( a > b )
+            return 1;
+    }
 
-	return 0;
+    return 0;
 }

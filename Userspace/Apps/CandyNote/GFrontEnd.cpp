@@ -63,5 +63,5 @@ void GraphicFrontEnd_t::write(string message, string title) {
 }
 
 Keyboard::Info GraphicFrontEnd_t::readInput() {
-    return { };
+    return {};
 }

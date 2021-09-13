@@ -18,19 +18,18 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "eva.h"
 #include "dirent.h"
 #include "errno.h"
+#include "eva.h"
 #include "malloc.h"
 
 /**
  *
  */
-int closedir(DIR *dir) 
-{
-	CloseDirectory(dir->iter);
+int closedir(DIR* dir) {
+    CloseDirectory(dir->iter);
 
-	free(dir->entbuf);
-	free(dir);
-	return 0;
+    free(dir->entbuf);
+    free(dir);
+    return 0;
 }

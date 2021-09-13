@@ -18,23 +18,21 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
-#include "stdint.h"
 #include "eva.h"
+#include "stdint.h"
+#include "string.h"
 
 /**
  *
  */
-void* memcpy(void* dest, const void* src, size_t num) 
-{
-	__DEBUG_TRACE(memcpy);
+void* memcpy(void* dest, const void* src, size_t num) {
+    __DEBUG_TRACE(memcpy);
 
-	uint8_t* src_8 = (uint8_t*) src;
-	uint8_t* dest_8 = (uint8_t*) dest;
-	while (num--) 
-	{
-		*dest_8++ = *src_8++;
-	}
+    uint8_t* src_8  = (uint8_t*)src;
+    uint8_t* dest_8 = (uint8_t*)dest;
+    while ( num-- ) {
+        *dest_8++ = *src_8++;
+    }
 
-	return dest;
+    return dest;
 }

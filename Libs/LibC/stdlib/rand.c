@@ -18,23 +18,21 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 static uint64_t seed;
 
 /**
  *
  */
-void srand(unsigned s) 
-{
-	seed = s - 1;
+void srand(unsigned s) {
+    seed = s - 1;
 }
 
 /**
  *
  */
-int rand(void) 
-{
-	return (seed = 9418247712843950125ULL * seed + 1) >> 33;
+int rand(void) {
+    return (seed = 9418247712843950125ULL * seed + 1) >> 33;
 }

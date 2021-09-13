@@ -24,7 +24,6 @@
  *
  */
 char* setlocale(int category, const char* locale) {
-
-	// TODO
-	return NULL;
+    // TODO
+    return NULL;
 }

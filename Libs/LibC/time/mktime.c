@@ -23,7 +23,7 @@
 /**
  *
  */
-time_t mktime(struct tm *t) {
-	klog("warning: mktime %d not implemented", t);
-	return 0;
+time_t mktime(struct tm* t) {
+    klog("warning: mktime %d not implemented", t);
+    return 0;
 }

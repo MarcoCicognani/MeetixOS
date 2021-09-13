@@ -24,9 +24,9 @@
  *
  */
 int puts(const char* str) {
-	int ret = printf("%s\n", str);
-	if (ret < 0) {
-		return EOF;
-	}
-	return 1;
+    int ret = printf("%s\n", str);
+    if ( ret < 0 ) {
+        return EOF;
+    }
+    return 1;
 }

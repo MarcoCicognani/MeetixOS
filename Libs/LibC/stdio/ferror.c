@@ -18,22 +18,21 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdio.h"
 #include "errno.h"
+#include "stdio.h"
 
 /**
  *
  */
 int ferror(FILE* stream) {
-
-	AtomicLock(&stream->lock);
-	int res;
-	if (stream->impl_error) {
-		res = stream->impl_error(stream);
-	} else {
-		errno = ENOTSUP;
-		res = EOF;
-	}
-	stream->lock = 0;
-	return res;
+    AtomicLock(&stream->lock);
+    int res;
+    if ( stream->impl_error ) {
+        res = stream->impl_error(stream);
+    } else {
+        errno = ENOTSUP;
+        res   = EOF;
+    }
+    stream->lock = 0;
+    return res;
 }

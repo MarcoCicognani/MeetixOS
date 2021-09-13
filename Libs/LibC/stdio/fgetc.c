@@ -18,18 +18,17 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
-int fgetc(FILE *stream) 
-{
-	AtomicLock(&stream->lock);
-	int res = __fgetc_unlocked(stream);
-	stream->lock = 0;
-	return res;
+int fgetc(FILE* stream) {
+    AtomicLock(&stream->lock);
+    int res      = __fgetc_unlocked(stream);
+    stream->lock = 0;
+    return res;
 }

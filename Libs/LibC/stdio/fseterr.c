@@ -18,19 +18,18 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdio.h"
 #include "errno.h"
+#include "stdio.h"
 
 /**
  *
  */
 void fseterr(FILE* stream) {
-
-	AtomicLock(&stream->lock);
-	if (stream->impl_seterr) {
-		stream->impl_seterr(stream);
-	} else {
-		errno = ENOTSUP;
-	}
-	stream->lock = 0;
+    AtomicLock(&stream->lock);
+    if ( stream->impl_seterr ) {
+        stream->impl_seterr(stream);
+    } else {
+        errno = ENOTSUP;
+    }
+    stream->lock = 0;
 }

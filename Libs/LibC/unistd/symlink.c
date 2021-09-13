@@ -18,15 +18,14 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
-#include "eva/kernel.h"
 #include "errno.h"
+#include "eva/kernel.h"
+#include "unistd.h"
 
 /**
  * TODO
  */
-int symlink(const char* path1, const char* path2)
-{
-	klog("warning: symlink(%s, %s) is not implemented", path1, path2);
-	return -1;
+int symlink(const char* path1, const char* path2) {
+    klog("warning: symlink(%s, %s) is not implemented", path1, path2);
+    return -1;
 }

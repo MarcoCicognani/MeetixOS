@@ -18,17 +18,16 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "time.h"
 #include "errno.h"
 #include "eva/kernel.h"
 #include "string.h"
+#include "time.h"
 
 /**
  *
  */
-size_t strftime(char* ptr, size_t maxsize, const char* format, const struct tm* timeptr) 
-{
-	klog("warning: strftime(\"%s\") is not implemented", format);
-	strcpy(ptr, format);
-	return strlen(format);
+size_t strftime(char* ptr, size_t maxsize, const char* format, const struct tm* timeptr) {
+    klog("warning: strftime(\"%s\") is not implemented", format);
+    strcpy(ptr, format);
+    return strlen(format);
 }

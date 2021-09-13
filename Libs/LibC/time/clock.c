@@ -18,15 +18,13 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "time.h"
 #include "eva/kernel.h"
+#include "time.h"
 
 /**
  *
  */
 clock_t clock() {
-
-	// TODO
-	__NOT_IMPLEMENTED("clock")
+    // TODO
+    __NOT_IMPLEMENTED("clock")
 }
-

@@ -18,16 +18,16 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "time.h"
 #include "eva/kernel.h"
+#include "time.h"
 
 static struct tm timecontainer;
 
 /**
  *
  */
-struct tm *localtime(const time_t *time) {
-	time = 0;
-	klog("warning: localtime not implemented");
-	return &timecontainer;
+struct tm* localtime(const time_t* time) {
+    time = 0;
+    klog("warning: localtime not implemented");
+    return &timecontainer;
 }

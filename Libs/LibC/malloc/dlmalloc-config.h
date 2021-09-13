@@ -24,10 +24,10 @@
 /**
  * This is the configuration header for dlmalloc.
  */
-#define USE_LOCKS			1
-#define HAVE_MMAP			0
+#define USE_LOCKS 1
+#define HAVE_MMAP 0
 
-#define LACKS_SYS_MMAN_H	1
+#define LACKS_SYS_MMAN_H 1
 
 // TODO try these for error-checking:
 // #define DEBUG			1

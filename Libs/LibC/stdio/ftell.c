@@ -18,27 +18,24 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
 long int ftell(FILE* stream) {
-
-	return ftello(stream);
+    return ftello(stream);
 }
 
 /**
  *
  */
 off_t ftello(FILE* stream) {
-
-	AtomicLock(&stream->lock);
-	int res = __ftello_unlocked(stream);
-	stream->lock = 0;
-	return res;
+    AtomicLock(&stream->lock);
+    int res      = __ftello_unlocked(stream);
+    stream->lock = 0;
+    return res;
 }
-

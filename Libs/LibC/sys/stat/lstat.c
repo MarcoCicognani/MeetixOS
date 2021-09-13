@@ -18,15 +18,14 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "sys/stat.h"
-#include "stdint.h"
 #include "eva.h"
+#include "stdint.h"
+#include "sys/stat.h"
 
 /**
  *
  */
-int lstat(const char *pathname, struct stat *buf) {
-
-	klog("warning: lstat(%s, %x) not implemented", pathname, buf);
-	return 0;
+int lstat(const char* pathname, struct stat* buf) {
+    klog("warning: lstat(%s, %x) not implemented", pathname, buf);
+    return 0;
 }

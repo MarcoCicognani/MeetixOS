@@ -18,23 +18,21 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
 int __fseeko_unlocked(FILE* stream, off_t offset, int whence) {
-
-	int res;
-	if (stream->impl_seek) {
-		res = stream->impl_seek(stream, offset, whence);
-	} else {
-		errno = ENOTSUP;
-		res = EOF;
-	}
-	return res;
+    int res;
+    if ( stream->impl_seek ) {
+        res = stream->impl_seek(stream, offset, whence);
+    } else {
+        errno = ENOTSUP;
+        res   = EOF;
+    }
+    return res;
 }
-

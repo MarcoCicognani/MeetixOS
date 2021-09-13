@@ -18,48 +18,47 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdio.h"
-#include "stdio_internal.h"
 #include "errno.h"
 #include "inttypes.h"
+#include "stdio.h"
+#include "stdio_internal.h"
 #include "stdlib.h"
 
-uint8_t tmpnam_lock = 0;
-char* tmpnam_static = NULL;
-uint64_t tmpnam_next = 0;
+uint8_t  tmpnam_lock   = 0;
+char*    tmpnam_static = NULL;
+uint64_t tmpnam_next   = 0;
 
 /**
  *
  */
 char* tmpnam(char* buf) {
+    // lock tmpnam
+    AtomicLock(&tmpnam_lock);
 
-	// lock tmpnam
-	AtomicLock(&tmpnam_lock);
+    // set buffers
+    if ( buf == NULL ) {
+        // allocate the internal buffer if necessary
+        if ( tmpnam_static == NULL ) {
+            tmpnam_static = (char*)malloc(L_tmpnam);
 
-	// set buffers
-	if (buf == NULL) {
-		// allocate the internal buffer if necessary
-		if (tmpnam_static == NULL) {
-			tmpnam_static = (char*) malloc(L_tmpnam);
+            if ( tmpnam_static == NULL ) {
+                errno       = ENOMEM;
+                tmpnam_lock = 0;
+                return NULL;
+            }
+        }
 
-			if (tmpnam_static == NULL) {
-				errno = ENOMEM;
-				tmpnam_lock = 0;
-				return NULL;
-			}
-		}
+        // use internal buffer
+        buf = tmpnam_static;
+    }
 
-		// use internal buffer
-		buf = tmpnam_static;
-	}
+    // create temporary name
+    ++tmpnam_next;
+    pid_t pid;
+    snprintf(buf, L_tmpnam, "/sys/temp/%" PRIu64 "-%" PRIu64, tmpnam_next, pid);
 
-	// create temporary name
-	++tmpnam_next;
-	pid_t pid;
-	snprintf(buf, L_tmpnam, "/sys/temp/%" PRIu64 "-%" PRIu64, tmpnam_next, pid);
+    // unlock tmpnam
+    tmpnam_lock = 0;
 
-	// unlock tmpnam
-	tmpnam_lock = 0;
-
-	return buf;
+    return buf;
 }

@@ -18,36 +18,35 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "fcntl.h"
+#include "file.h"
+#include "stdint.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "stdint.h"
-#include "file.h"
 #include "unistd.h"
-#include "fcntl.h"
 
 /**
  *
  */
 FILE* __fopen_static(const char* filename, const char* mode, FILE* file) {
+    // open file
+    int flags = __parse_mode_flags(mode);
+    if ( flags == EOF ) {
+        return NULL;
+    }
 
-	// open file
-	int flags = __parse_mode_flags(mode);
-	if (flags == EOF) {
-		return NULL;
-	}
+    // perform actual open
+    int fd = open(filename, flags);
+    if ( fd == -1 ) {
+        return NULL;
+    }
 
-	// perform actual open
-	int fd = open(filename, flags);
-	if (fd == -1) {
-		return NULL;
-	}
+    // create file handle
+    if ( __fdopen_static(fd, mode, file) == 0 ) {
+        return file;
+    }
 
-	// create file handle
-	if (__fdopen_static(fd, mode, file) == 0) {
-		return file;
-	}
-
-	// if it failed, close file
-	close(fd);
-	return NULL;
+    // if it failed, close file
+    close(fd);
+    return NULL;
 }

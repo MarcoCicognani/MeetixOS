@@ -26,5 +26,5 @@
  *
  */
 int __stdio_impl_seek(FILE* stream, off_t offset, int whence) {
-	return lseek(stream->file_descriptor, offset, whence);
+    return lseek(stream->file_descriptor, offset, whence);
 }

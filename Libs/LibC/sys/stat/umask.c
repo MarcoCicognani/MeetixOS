@@ -24,7 +24,6 @@
  *
  */
 mode_t umask(mode_t mask) {
-
-	klog("warning: umask(%i) not implemented", mask);
-	return 0;
+    klog("warning: umask(%i) not implemented", mask);
+    return 0;
 }

@@ -18,39 +18,32 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
-#include "stdint.h"
 #include "eva.h"
+#include "stdint.h"
+#include "string.h"
 
 /**
  *
  */
-void* memmove(void* dest, const void* src, size_t num) 
-{
+void* memmove(void* dest, const void* src, size_t num) {
+    __DEBUG_TRACE(memmove);
 
-	__DEBUG_TRACE(memmove);
+    if ( dest > src ) {
+        uint8_t* src_8  = ((uint8_t*)src) + num - 1;
+        uint8_t* dest_8 = ((uint8_t*)dest) + num - 1;
+        while ( num-- ) {
+            *dest_8-- = *src_8--;
+        }
 
-	if (dest > src) 
-	{
-		uint8_t* src_8 = ((uint8_t*) src) + num - 1;
-		uint8_t* dest_8 = ((uint8_t*) dest) + num - 1;
-		while (num--) 
-		{
-			*dest_8-- = *src_8--;
-		}
+    }
 
-	} 
+    else {
+        uint8_t* src_8  = (uint8_t*)src;
+        uint8_t* dest_8 = (uint8_t*)dest;
+        while ( num-- ) {
+            *dest_8++ = *src_8++;
+        }
+    }
 
-	else 
-	{
-		uint8_t* src_8 = (uint8_t*) src;
-		uint8_t* dest_8 = (uint8_t*) dest;
-		while (num--) 
-		{
-			*dest_8++ = *src_8++;
-		}
-	}
-
-	return dest;
+    return dest;
 }
-

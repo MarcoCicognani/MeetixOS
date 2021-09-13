@@ -18,16 +18,14 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
-#include "eva/kernel.h"
 #include "errno.h"
+#include "eva/kernel.h"
+#include "unistd.h"
 
 /**
  * TODO
  */
-int fcntl(int fildes, int cmd, ...)
-{
-	klog("warning: fcntl is not implemented");
-	return -1;
+int fcntl(int fildes, int cmd, ...) {
+    klog("warning: fcntl is not implemented");
+    return -1;
 }
-

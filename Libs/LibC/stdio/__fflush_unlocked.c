@@ -26,18 +26,17 @@
  *
  */
 int __fflush_unlocked(FILE* stream) {
+    // flush read buffer if necessary
+    if ( (stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_READ)
+         && (__fflush_read_unlocked(stream) == EOF) ) {
+        return EOF;
+    }
 
-	// flush read buffer if necessary
-	if ((stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_READ)
-			&& (__fflush_read_unlocked(stream) == EOF)) {
-		return EOF;
-	}
+    // flush write buffer if necessary
+    if ( (stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_WRITE)
+         && (__fflush_write_unlocked(stream) == EOF) ) {
+        return EOF;
+    }
 
-	// flush write buffer if necessary
-	if ((stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_WRITE)
-			&& (__fflush_write_unlocked(stream) == EOF)) {
-		return EOF;
-	}
-
-	return 0;
+    return 0;
 }

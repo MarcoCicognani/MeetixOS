@@ -18,17 +18,17 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
 #include "malloc.h"
+#include "string.h"
 
 /**
  *
  */
 char* strdup(const char* src) {
-	char* dest = (char*) malloc(strlen(src) + 1);
-	if (dest == NULL) {
-		return NULL;
-	}
-	strcpy(dest, src);
-	return dest;
+    char* dest = (char*)malloc(strlen(src) + 1);
+    if ( dest == NULL ) {
+        return NULL;
+    }
+    strcpy(dest, src);
+    return dest;
 }

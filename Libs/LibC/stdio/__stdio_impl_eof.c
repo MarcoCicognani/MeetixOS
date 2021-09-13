@@ -26,5 +26,5 @@
  *
  */
 int __stdio_impl_eof(FILE* stream) {
-	return (stream->flags & G_FILE_FLAG_EOF) ? 1 : 0;
+    return (stream->flags & G_FILE_FLAG_EOF) ? 1 : 0;
 }

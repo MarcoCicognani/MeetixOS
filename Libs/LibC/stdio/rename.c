@@ -18,15 +18,14 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "errno.h"
 
 /**
  *
  */
-int rename(const char *old_name, const char *new_name) {
-
-	// TODO
-	__NOT_IMPLEMENTED("rename");
+int rename(const char* old_name, const char* new_name) {
+    // TODO
+    __NOT_IMPLEMENTED("rename");
 }

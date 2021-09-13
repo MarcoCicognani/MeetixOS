@@ -1,6 +1,5 @@
 #include <math.h>
 
-float significandf(float x)
-{
-	return scalbnf(x, -ilogbf(x));
+float significandf(float x) {
+    return scalbnf(x, -ilogbf(x));
 }

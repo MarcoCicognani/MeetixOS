@@ -24,5 +24,5 @@
  *
  */
 int fileno(FILE* stream) {
-	return stream->file_descriptor;
+    return stream->file_descriptor;
 }

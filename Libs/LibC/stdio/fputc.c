@@ -26,10 +26,8 @@
  *
  */
 int fputc(int c, FILE* stream) {
-
-	AtomicLock(&stream->lock);
-	int result = __fputc_unlocked(c, stream);
-	stream->lock = 0;
-	return result;
+    AtomicLock(&stream->lock);
+    int result   = __fputc_unlocked(c, stream);
+    stream->lock = 0;
+    return result;
 }
-

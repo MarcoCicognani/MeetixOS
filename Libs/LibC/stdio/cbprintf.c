@@ -18,17 +18,19 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdio.h"
 #include "errno.h"
+#include "stdio.h"
 
 /**
  *
  */
-int cbprintf(void* param, ssize_t (*callback)(void* param, const char* buf, size_t maximum), const char *format, ...)
-{
-	va_list va;
-	va_start(va, format);
-	int res = vcbprintf(param, callback, format, va);
-	va_end(va);
-	return res;
+int cbprintf(void* param,
+             ssize_t (*callback)(void* param, const char* buf, size_t maximum),
+             const char* format,
+             ...) {
+    va_list va;
+    va_start(va, format);
+    int res = vcbprintf(param, callback, format, va);
+    va_end(va);
+    return res;
 }

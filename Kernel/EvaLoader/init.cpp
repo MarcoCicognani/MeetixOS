@@ -22,13 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * *
  * * * * */
 
-#include "loader.hpp"
-#include <runtime/constructors.hpp>
-
 #include "BuildConfig.hpp"
 #include "debug/DebugInterface.hpp"
+#include "loader.hpp"
 #include "system/BiosDataArea.hpp"
+
 #include <logger/logger.hpp>
+#include <runtime/constructors.hpp>
 #include <system/serial/SerialPort.hpp>
 #include <video/ConsoleVideo.hpp>
 #include <video/PrettyBoot.hpp>
@@ -41,46 +41,43 @@
  * @param multibootStruct:		the multiboot structure provided by GRUB
  * @param magicNumber:			the magic number provided by GRUB
  */
-extern "C" void initializeLoader(MultibootInformation *multibootStruct,
-                                 uint32_t magicNumber) {
-  // call the arch constructors
-  Constructors::call();
+extern "C" void initializeLoader(MultibootInformation* multibootStruct, uint32_t magicNumber) {
+    // call the arch constructors
+    Constructors::call();
 
-  // initialize COM port
-  ComPortInformation comPortInfo = biosDataArea->comPortInfo;
-  if (comPortInfo.com1 > 0) {
-    SerialPort::initializePort(comPortInfo.com1,
-                               false); // Initialize in poll mode
-    Logger::enableSerialPortLogging();
-    DebugInterface::initialize(comPortInfo.com1);
-  }
+    // initialize COM port
+    ComPortInformation comPortInfo = biosDataArea->comPortInfo;
+    if ( comPortInfo.com1 > 0 ) {
+        SerialPort::initializePort(comPortInfo.com1,
+                                   false); // Initialize in poll mode
+        Logger::enableSerialPortLogging();
+        DebugInterface::initialize(comPortInfo.com1);
+    }
 
-  else
-    Logger::println("%! COM1 port not available for serial debug output",
-                    "logger");
+    else
+        Logger::println("%! COM1 port not available for serial debug output", "logger");
 
-  // Clear the console and print the header colored
-  if (PRETTY_BOOT)
-    PrettyBoot::enable();
-  else
+    // Clear the console and print the header colored
+    if ( PRETTY_BOOT )
+        PrettyBoot::enable();
+    else
+        ConsoleVideo::clear();
+
+    // Clear the console and print the header colored
     ConsoleVideo::clear();
+    ConsoleVideo::setColor(32);
+    logInfon("Evangelion Loader");
+    ConsoleVideo::setColor(0x0F);
+    logInfo(" Version %d.%d.%s", L_VERSION_MAJOR, L_VERSION_MINOR, L_VERSION_PATCH);
+    logInfo("");
 
-  // Clear the console and print the header colored
-  ConsoleVideo::clear();
-  ConsoleVideo::setColor(32);
-  logInfon("Evangelion Loader");
-  ConsoleVideo::setColor(0x0F);
-  logInfo(" Version %d.%d.%s", L_VERSION_MAJOR, L_VERSION_MINOR,
-          L_VERSION_PATCH);
-  logInfo("");
+    // check magic number and continue initialization
+    logInfo("%! checking magic number", "early");
+    if ( magicNumber == MULTIBOOT_BOOTLOADER_MAGIC ) {
+        logInfo("%! initializing loader", "early");
+        EvaLoader::initialize(multibootStruct);
+    }
 
-  // check magic number and continue initialization
-  logInfo("%! checking magic number", "early");
-  if (magicNumber == MULTIBOOT_BOOTLOADER_MAGIC) {
-    logInfo("%! initializing loader", "early");
-    EvaLoader::initialize(multibootStruct);
-  }
-
-  else
-    logInfo("%! invalid magic number in multiboot struct", "early");
+    else
+        logInfo("%! invalid magic number in multiboot struct", "early");
 }

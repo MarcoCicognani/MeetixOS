@@ -24,9 +24,9 @@
  *
  */
 int toupper(int c) {
-	if (c >= 'a' && c <= 'z') {
-		return 'A' + (c - 'a');
-	}
+    if ( c >= 'a' && c <= 'z' ) {
+        return 'A' + (c - 'a');
+    }
 
-	return c;
+    return c;
 }

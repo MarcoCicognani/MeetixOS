@@ -18,14 +18,13 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "sys/time.h"
-#include "stdint.h"
 #include "eva.h"
+#include "stdint.h"
+#include "sys/time.h"
 
 /**
  *
  */
-int gettimeofday(struct timeval *tp, struct timezone *tzp) {
-
-	__NOT_IMPLEMENTED(gettimeofday)
+int gettimeofday(struct timeval* tp, struct timezone* tzp) {
+    __NOT_IMPLEMENTED(gettimeofday)
 }

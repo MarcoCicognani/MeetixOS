@@ -18,19 +18,19 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "malloc.h"
 #include "stdarg.h"
 #include "stdio.h"
 #include "string.h"
-#include "malloc.h"
 
 /**
  *
  */
 void kvlog(const char* message, va_list l) {
-	uint32_t msglen = strlen(message);
-	uint32_t buflen = msglen * 4;
-	char* buf = (char*) malloc(buflen);
-	vsnprintf(buf, buflen, message, l);
-	Log(buf);
-	free(buf);
+    uint32_t msglen = strlen(message);
+    uint32_t buflen = msglen * 4;
+    char*    buf    = (char*)malloc(buflen);
+    vsnprintf(buf, buflen, message, l);
+    Log(buf);
+    free(buf);
 }

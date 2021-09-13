@@ -18,65 +18,63 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
 int __fflush_write_unlocked(FILE* stream) {
+    // if nothing was written to the stream, return
+    if ( (stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_WRITE) == 0 ) {
+        return 0;
+    }
 
-	// if nothing was written to the stream, return
-	if ((stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_WRITE) == 0) {
-		return 0;
-	}
+    // if stream is not writable, return in error
+    if ( (stream->flags & FILE_FLAG_MODE_WRITE) == 0 ) {
+        errno = EBADF;
+        stream->flags |= G_FILE_FLAG_ERROR;
+        return EOF;
+    }
 
-	// if stream is not writable, return in error
-	if ((stream->flags & FILE_FLAG_MODE_WRITE) == 0) {
-		errno = EBADF;
-		stream->flags |= G_FILE_FLAG_ERROR;
-		return EOF;
-	}
+    // if stream has no write implementation, return with error
+    if ( stream->impl_write == NULL ) {
+        errno = EBADF;
+        stream->flags |= G_FILE_FLAG_ERROR;
+        return EOF;
+    }
 
-	// if stream has no write implementation, return with error
-	if (stream->impl_write == NULL) {
-		errno = EBADF;
-		stream->flags |= G_FILE_FLAG_ERROR;
-		return EOF;
-	}
+    // perform writing
+    size_t res = 0;
 
-	// perform writing
-	size_t res = 0;
+    size_t total = stream->buffered_bytes_write;
+    size_t done  = 0;
 
-	size_t total = stream->buffered_bytes_write;
-	size_t done = 0;
+    while ( done < total ) {
+        // call write implementation
+        ssize_t written = stream->impl_write((void*)(stream->buffer + done), total - done, stream);
 
-	while (done < total) {
-		// call write implementation
-		ssize_t written = stream->impl_write((void*) (stream->buffer + done),
-				total - done, stream);
+        if ( written == 0 ) {
+            stream->flags |= G_FILE_FLAG_EOF;
+            res = EOF;
+            break;
 
-		if (written == 0) {
-			stream->flags |= G_FILE_FLAG_EOF;
-			res = EOF;
-			break;
+        } else if ( written == -1 ) {
+            stream->flags |= G_FILE_FLAG_ERROR;
+            res = EOF;
+            break;
+        }
 
-		} else if (written == -1) {
-			stream->flags |= G_FILE_FLAG_ERROR;
-			res = EOF;
-			break;
-		}
+        done += written;
+    }
 
-		done += written;
-	}
+    // stream has no direction anymore
+    stream->flags &= ~G_FILE_FLAG_BUFFER_DIRECTION_WRITE;
 
-	// stream has no direction anymore
-	stream->flags &= ~G_FILE_FLAG_BUFFER_DIRECTION_WRITE;
+    // all buffered bytes are written
+    stream->buffered_bytes_write = 0;
 
-	// all buffered bytes are written
-	stream->buffered_bytes_write = 0;
-
-	return res;
+    return res;
 }

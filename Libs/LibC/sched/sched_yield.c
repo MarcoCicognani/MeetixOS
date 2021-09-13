@@ -18,14 +18,13 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "sched.h"
 #include "eva/user.h"
+#include "sched.h"
 
 /**
  *
  */
 int sched_yield() {
-	Yield();
-	return 0;
+    Yield();
+    return 0;
 }
-

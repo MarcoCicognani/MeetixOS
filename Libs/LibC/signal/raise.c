@@ -18,22 +18,20 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "signal.h"
 #include "stdio.h"
-#include "errno.h"
 
 /**
  *
  */
-int raise(int sig) 
-{
-	RaiseSignalStatus status = RaiseSignal(GetTid(), sig);
+int raise(int sig) {
+    RaiseSignalStatus status = RaiseSignal(GetTid(), sig);
 
-	if(status == RAISE_SIGNAL_STATUS_SUCCESSFUL) 
-	{
-		return 0;
-	}
+    if ( status == RAISE_SIGNAL_STATUS_SUCCESSFUL ) {
+        return 0;
+    }
 
-	errno = EINVAL;
-	return -1;
+    errno = EINVAL;
+    return -1;
 }

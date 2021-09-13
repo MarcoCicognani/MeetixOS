@@ -28,42 +28,44 @@
 #include <string>
 
 #ifndef _SCREEN_HPP_
-#define _SCREEN_HPP_
+#    define _SCREEN_HPP_
 
-#define SCREEN_WIDTH 80
-#define SCREEN_HEIGHT 25
-#define VIDEO_MEMORY 0xB8000
+#    define SCREEN_WIDTH  80
+#    define SCREEN_HEIGHT 25
+#    define VIDEO_MEMORY  0xB8000
 
 /**
  * OEM-US special characters
  */
-#define OEMUS_CHAR_UE ((char)0x81) /*�*/
+#    define OEMUS_CHAR_UE ((char)0x81) /*�*/
 
 /**
  *
  */
 class Screen {
 public:
-  virtual ~Screen() {}
+    virtual ~Screen() {
+    }
 
-  virtual void clean() = 0;
-  virtual void deactivate() = 0;
-  virtual void activate() = 0;
+    virtual void clean()      = 0;
+    virtual void deactivate() = 0;
+    virtual void activate()   = 0;
 
-  virtual void close() = 0;
+    virtual void close() = 0;
 
-  virtual void backspace() = 0;
-  virtual void cleanLine(int lineLength) = 0;
-  virtual void write(std::string message, Color_t color = RGB(255, 255, 255),
-                     bool visible = true) = 0;
-  virtual void writeChar(char c, Color_t color = RGB(255, 255, 255)) = 0;
-  virtual void updateCursor() = 0;
+    virtual void backspace()               = 0;
+    virtual void cleanLine(int lineLength) = 0;
+    virtual void write(std::string message, Color_t color = RGB(255, 255, 255), bool visible = true)
+        = 0;
+    virtual void writeChar(char c, Color_t color = RGB(255, 255, 255)) = 0;
+    virtual void updateCursor()                                        = 0;
 
-  virtual bool setColor(std::string color) = 0;
+    virtual bool setColor(std::string color) = 0;
 
-  virtual Keyboard::Info readInput(bool *cancelCondition) = 0;
+    virtual Keyboard::Info readInput(bool* cancelCondition) = 0;
 
-  virtual void workingDirectoryChanged(std::string str) {}
+    virtual void workingDirectoryChanged(std::string str) {
+    }
 };
 
 #endif

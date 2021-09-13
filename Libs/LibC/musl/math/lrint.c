@@ -1,6 +1,7 @@
-#include <limits.h>
-#include <fenv.h>
 #include "libm.h"
+
+#include <fenv.h>
+#include <limits.h>
 
 /*
 If the result cannot be represented (overflow, nan), then
@@ -25,22 +26,20 @@ otherwise LONG_MAX and LONG_MIN can be represented exactly
 as a double.
 */
 
-#if LONG_MAX < 1U<<53 && defined(FE_INEXACT)
-long lrint(double x)
-{
-	#pragma STDC FENV_ACCESS ON
-	int e;
+#if LONG_MAX < 1U << 53 && defined(FE_INEXACT)
+long lrint(double x) {
+#    pragma STDC FENV_ACCESS ON
+    int                      e;
 
-	e = fetestexcept(FE_INEXACT);
-	x = rint(x);
-	if (!e && (x > LONG_MAX || x < LONG_MIN))
-		feclearexcept(FE_INEXACT);
-	/* conversion */
-	return x;
+    e = fetestexcept(FE_INEXACT);
+    x = rint(x);
+    if ( !e && (x > LONG_MAX || x < LONG_MIN) )
+        feclearexcept(FE_INEXACT);
+    /* conversion */
+    return x;
 }
 #else
-long lrint(double x)
-{
-	return rint(x);
+long lrint(double x) {
+    return rint(x);
 }
 #endif

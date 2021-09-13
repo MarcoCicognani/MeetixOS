@@ -1,20 +1,21 @@
 /*********************************************************************************
-* MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
-* 																			     *
-* This program is free software; you can redistribute it and/or                  *
-* modify it under the terms of the GNU General Public License                    *
-* as published by the Free Software Foundation; either version 2				 *
-* of the License, or (char *argumentat your option) any later version.			 *
-*																				 *
-* This program is distributed in the hope that it will be useful,				 *
-* but WITHout ANY WARRANTY; without even the implied warranty of                 *
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
-* GNU General Public License for more details.									 *
-*																				 *
-* You should have received a copy of the GNU General Public License				 *
-* along with this program; if not, write to the Free Software                    *
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
-**********************************************************************************/
+ * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
+ * 																			     *
+ * This program is free software; you can redistribute it and/or                  *
+ * modify it under the terms of the GNU General Public License                    *
+ * as published by the Free Software Foundation; either version 2				 *
+ * of the License, or (char *argumentat your option) any later version.			 *
+ *																				 *
+ * This program is distributed in the hope that it will be useful,				 *
+ * but WITHout ANY WARRANTY; without even the implied warranty of                 *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
+ * GNU General Public License for more details.
+ **
+ *																				 *
+ * You should have received a copy of the GNU General Public License				 *
+ * along with this program; if not, write to the Free Software                    *
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
+ **********************************************************************************/
 
 #include <graphics/text/fontldr.hpp>
 
@@ -25,19 +26,17 @@
  * @param name:		the name of the font
  * @return the font object instance or nullptr
  */
-Font_t *FontLoader::getFontAtPath(const std::string &path, const std::string &name)
-{
-	// open the file
-	FILE *file = fopen(path.c_str(), "r");
-	if (file != NULL)
-	{
-		// get the font instance from file
-		Font_t *font = Font_t::fromFile(file, name);
-		fclose(file);
-		return font;
-	}
+Font_t* FontLoader::getFontAtPath(const std::string& path, const std::string& name) {
+    // open the file
+    FILE* file = fopen(path.c_str(), "r");
+    if ( file != NULL ) {
+        // get the font instance from file
+        Font_t* font = Font_t::fromFile(file, name);
+        fclose(file);
+        return font;
+    }
 
-	return nullptr;
+    return nullptr;
 }
 
 /**
@@ -46,9 +45,8 @@ Font_t *FontLoader::getFontAtPath(const std::string &path, const std::string &na
  * @param name:		the name of the font
  * @return the font object instance or nullptr
  */
-Font_t *FontLoader::getSystemFont(const std::string &name)
-{
-	return getFontAtPath("/sys/lib/fonts/" + name + ".ttf", name);
+Font_t* FontLoader::getSystemFont(const std::string& name) {
+    return getFontAtPath("/sys/lib/fonts/" + name + ".ttf", name);
 }
 
 /**
@@ -58,18 +56,17 @@ Font_t *FontLoader::getSystemFont(const std::string &name)
  * @param name:		the name of the font
  * @return the font instance or nullptr
  */
-Font_t *FontLoader::get(const std::string &name)
-{
-	Font_t *font = getSystemFont(name);
-	if (!font) font = getDefault();
+Font_t* FontLoader::get(const std::string& name) {
+    Font_t* font = getSystemFont(name);
+    if ( !font )
+        font = getDefault();
 
-	return font;
+    return font;
 }
 
 /**
  * @return the default font instance
  */
-Font_t *FontLoader::getDefault()
-{
-	return getSystemFont("default");
+Font_t* FontLoader::getDefault() {
+    return getSystemFont("default");
 }

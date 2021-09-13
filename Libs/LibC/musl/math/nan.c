@@ -1,6 +1,5 @@
 #include <math.h>
 
-double nan(const char *s)
-{
-	return NAN;
+double nan(const char* s) {
+    return NAN;
 }

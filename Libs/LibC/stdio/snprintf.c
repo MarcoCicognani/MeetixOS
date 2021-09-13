@@ -18,18 +18,17 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdio.h"
 #include "errno.h"
 #include "eva/kernel.h"
+#include "stdio.h"
 
 /**
  *
  */
 int snprintf(char* s, size_t n, const char* format, ...) {
-
-	va_list va;
-	va_start(va, format);
-	int res = vsnprintf(s, n, format, va);
-	va_end(va);
-	return res;
+    va_list va;
+    va_start(va, format);
+    int res = vsnprintf(s, n, format, va);
+    va_end(va);
+    return res;
 }

@@ -18,17 +18,16 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "time.h"
 #include "eva/kernel.h"
+#include "time.h"
 
 static struct tm timecontainer;
 
 /**
  *
  */
-struct tm *gmtime(const time_t *time)
-{
-	time = 0;
-	klog("warning: gmtime not implemented");
-	return &timecontainer;
+struct tm* gmtime(const time_t* time) {
+    time = 0;
+    klog("warning: gmtime not implemented");
+    return &timecontainer;
 }

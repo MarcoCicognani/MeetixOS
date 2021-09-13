@@ -36,5 +36,5 @@
  * changed (the system call could do so).
  */
 void syscall(uint32_t call, uint32_t data) {
-  asm("int $0x80" : : "a"(call), "b"(data) : "cc", "memory");
+    asm("int $0x80" : : "a"(call), "b"(data) : "cc", "memory");
 }

@@ -18,17 +18,16 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
 #include "stdint.h"
+#include "string.h"
 
 /**
  *
  */
 char* strcpy(char* dest, const char* src) {
-
-	while (*src) {
-		*dest++ = *src++;
-	}
-	*dest = 0;
-	return dest;
+    while ( *src ) {
+        *dest++ = *src++;
+    }
+    *dest = 0;
+    return dest;
 }

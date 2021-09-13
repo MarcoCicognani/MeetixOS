@@ -18,14 +18,13 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdlib.h"
 #include "errno.h"
+#include "stdlib.h"
 
 /**
  *
  */
 float strtof(const char* str, char** endptr) {
-
-	// TODO
-	__NOT_IMPLEMENTED("strtof");
+    // TODO
+    __NOT_IMPLEMENTED("strtof");
 }

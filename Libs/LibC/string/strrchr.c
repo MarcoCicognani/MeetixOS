@@ -18,26 +18,25 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
 #include "stdbool.h"
 #include "stdint.h"
+#include "string.h"
 
 /**
  *
  */
 char* strrchr(const char* str, int c) {
+    const char* rstr = str + strlen(str);
 
-	const char* rstr = str + strlen(str);
+    while ( true ) {
+        if ( *rstr == c ) {
+            return (char*)rstr;
+        }
+        if ( str == rstr ) {
+            break;
+        }
+        --rstr;
+    }
 
-	while (true) {
-		if (*rstr == c) {
-			return (char*) rstr;
-		}
-		if (str == rstr) {
-			break;
-		}
-		--rstr;
-	}
-
-	return NULL;
+    return NULL;
 }

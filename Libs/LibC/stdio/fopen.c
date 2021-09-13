@@ -18,33 +18,32 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
+#include "file.h"
+#include "malloc.h"
+#include "stdint.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "stdint.h"
-#include "file.h"
 #include "unistd.h"
-#include "errno.h"
-#include "malloc.h"
 
 /**
  *
  */
 FILE* fopen(const char* filename, const char* mode) {
+    // allocate the file structure
+    FILE* file = (FILE*)calloc(sizeof(FILE), 1);
+    if ( file == NULL ) {
+        errno = ENOMEM;
+        return NULL;
+    }
 
-	// allocate the file structure
-	FILE* file = (FILE*) calloc(sizeof(FILE), 1);
-	if (file == NULL) {
-		errno = ENOMEM;
-		return NULL;
-	}
+    // static-open it
+    FILE* res = __fopen_static(filename, mode, file);
+    if ( res == NULL ) {
+        // if it failed, free the file
+        free(file);
+        return NULL;
+    }
 
-	// static-open it
-	FILE* res = __fopen_static(filename, mode, file);
-	if (res == NULL) {
-		// if it failed, free the file
-		free(file);
-		return NULL;
-	}
-
-	return res;
+    return res;
 }

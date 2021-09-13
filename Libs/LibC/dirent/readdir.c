@@ -18,9 +18,9 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "eva.h"
 #include "dirent.h"
 #include "errno.h"
+#include "eva.h"
 #include "malloc.h"
 #include "string.h"
 
@@ -28,33 +28,29 @@
  *
  */
 struct dirent* readdir(DIR* dir) {
+    FsReadDirectoryStatus stat;
+    FsDirectoryEntry*     entry = ReadDirectoryS(dir->iter, &stat);
 
-	FsReadDirectoryStatus stat;
-	FsDirectoryEntry *entry = ReadDirectoryS(dir->iter, &stat);
+    if ( stat == FS_READ_DIRECTORY_SUCCESSFUL ) {
+        dirent* ent           = dir->entbuf;
+        ent->d_fileno         = entry->nodeID;
+        dir->entbuf->d_dev    = -1; // TODO
+        dir->entbuf->d_namlen = strlen(entry->name);
+        dir->entbuf->d_reclen = -1; // TODO
+        dir->entbuf->d_type   = -1; // TODO
+        strcpy(ent->d_name, entry->name);
+        return ent;
 
-	if (stat == FS_READ_DIRECTORY_SUCCESSFUL) 
-	{
-		dirent* ent = dir->entbuf;
-		ent->d_fileno = entry->nodeID;
-		dir->entbuf->d_dev = -1; // TODO
-		dir->entbuf->d_namlen = strlen(entry->name);
-		dir->entbuf->d_reclen = -1; // TODO
-		dir->entbuf->d_type = -1; // TODO
-		strcpy(ent->d_name, entry->name);
-		return ent;
+    }
 
-	} 
+    else if ( stat == FS_READ_DIRECTORY_EOD ) {
+        return NULL;
 
-	else if (stat == FS_READ_DIRECTORY_EOD) 
-	{
-		return NULL;
+    }
 
-	} 
+    else if ( stat == FS_READ_DIRECTORY_ERROR ) {
+        errno = EIO;
+    }
 
-	else if (stat == FS_READ_DIRECTORY_ERROR) 
-	{
-		errno = EIO;
-	}
-
-	return NULL;
+    return NULL;
 }

@@ -18,13 +18,12 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
 #include "eva/common.h"
+#include "unistd.h"
 
 /**
  * TODO
  */
-int isatty(int fd) 
-{
-	__NOT_IMPLEMENTED(isatty);
+int isatty(int fd) {
+    __NOT_IMPLEMENTED(isatty);
 }

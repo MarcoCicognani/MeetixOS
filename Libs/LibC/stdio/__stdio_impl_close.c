@@ -26,6 +26,5 @@
  *
  */
 int __stdio_impl_close(FILE* stream) {
-
-	return close(stream->file_descriptor);
+    return close(stream->file_descriptor);
 }

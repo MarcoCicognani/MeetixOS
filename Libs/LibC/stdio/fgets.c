@@ -18,26 +18,24 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
 char* fgets(char* s, int n, FILE* stream) {
+    char* p = s;
+    --n;
+    int c;
+    while ( n && (c = fgetc(stream)) != EOF ) {
+        *p++ = c;
+        --n;
+    }
+    *p = 0;
 
-	char* p = s;
-	--n;
-	int c;
-	while (n && (c = fgetc(stream)) != EOF) {
-		*p++ = c;
-		--n;
-	}
-	*p = 0;
-
-	klog("fgets -> \"%s\"", s);
-	return s;
+    klog("fgets -> \"%s\"", s);
+    return s;
 }
-

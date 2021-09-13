@@ -18,14 +18,13 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdio.h"
 #include "eva/common.h"
+#include "stdio.h"
 #include "string.h"
 
 /**
  *
  */
 int fscanf(FILE* stream, const char* format, ...) {
-
-	__NOT_IMPLEMENTED(fscanf);
+    __NOT_IMPLEMENTED(fscanf);
 }

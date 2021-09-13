@@ -18,44 +18,43 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "file.h"
+#include "stdint.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "stdint.h"
-#include "file.h"
-#include "unistd.h"
 #include "stdlib.h"
+#include "unistd.h"
 
 /**
  *
  */
 int __fdopen_static(int fd, const char* mode, FILE* file) {
+    // parse mode flags
+    int flags = __parse_mode_flags(mode);
+    if ( flags == EOF ) {
+        return EOF;
+    }
 
-	// parse mode flags
-	int flags = __parse_mode_flags(mode);
-	if (flags == EOF) {
-		return EOF;
-	}
+    // set file descriptor and flags
+    file->file_descriptor = fd;
+    file->flags           = flags;
 
-	// set file descriptor and flags
-	file->file_descriptor = fd;
-	file->flags = flags;
+    // not buffered
+    file->buffer_mode = _IONBF;
 
-	// not buffered
-	file->buffer_mode = _IONBF;
+    // default implementations
+    file->impl_close  = __stdio_impl_close;
+    file->impl_read   = __stdio_impl_read;
+    file->impl_write  = __stdio_impl_write;
+    file->impl_seek   = __stdio_impl_seek;
+    file->impl_tell   = __stdio_impl_tell;
+    file->impl_fileno = __stdio_impl_fileno;
+    file->impl_reopen = __stdio_impl_reopen;
+    file->impl_error  = __stdio_impl_error;
+    file->impl_eof    = __stdio_impl_eof;
 
-	// default implementations
-	file->impl_close = __stdio_impl_close;
-	file->impl_read = __stdio_impl_read;
-	file->impl_write = __stdio_impl_write;
-	file->impl_seek = __stdio_impl_seek;
-	file->impl_tell = __stdio_impl_tell;
-	file->impl_fileno = __stdio_impl_fileno;
-	file->impl_reopen = __stdio_impl_reopen;
-	file->impl_error = __stdio_impl_error;
-	file->impl_eof = __stdio_impl_eof;
+    // add file to list of open files
+    __open_file_list_add(file);
 
-	// add file to list of open files
-	__open_file_list_add(file);
-
-	return 0;
+    return 0;
 }

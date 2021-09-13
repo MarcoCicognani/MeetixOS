@@ -28,23 +28,26 @@
  */
 class ColoredComponent_t {
 protected:
-  Color_t shapeColor;
+    Color_t shapeColor;
 
 public:
-  /**
-   *
-   */
-  virtual ~ColoredComponent_t() {}
+    /**
+     *
+     */
+    virtual ~ColoredComponent_t() {
+    }
 
-  /**
-   *
-   */
-  virtual void setColor(Color_t color, Color_t tltColor) = 0;
+    /**
+     *
+     */
+    virtual void setColor(Color_t color, Color_t tltColor) = 0;
 
-  /*
-   *
-   */
-  Color_t getColor() { return shapeColor; }
+    /*
+     *
+     */
+    Color_t getColor() {
+        return shapeColor;
+    }
 };
 
 #endif

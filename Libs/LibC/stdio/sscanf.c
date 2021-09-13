@@ -18,14 +18,13 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdio.h"
 #include "errno.h"
+#include "stdio.h"
 
 /**
  *
  */
 int sscanf(const char* s, const char* format, ...) {
-
-	// TODO
-	__NOT_IMPLEMENTED("sscanf");
+    // TODO
+    __NOT_IMPLEMENTED("sscanf");
 }

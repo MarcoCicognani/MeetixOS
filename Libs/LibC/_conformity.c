@@ -42,7 +42,6 @@
 /**
  *
  */
-void libcConformityTest() 
-{
-	return;
+void libcConformityTest() {
+    return;
 }

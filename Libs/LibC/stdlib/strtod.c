@@ -18,14 +18,13 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdlib.h"
 #include "errno.h"
+#include "stdlib.h"
 
 /**
  *
  */
 double strtod(const char* str, char** endptr) {
-
-	// TODO
-	__NOT_IMPLEMENTED("strtod");
+    // TODO
+    __NOT_IMPLEMENTED("strtod");
 }

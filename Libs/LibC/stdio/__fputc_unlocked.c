@@ -26,51 +26,49 @@
  *
  */
 int __fputc_unlocked(int c, FILE* stream) {
+    uint8_t c8 = (uint8_t)c;
 
-	uint8_t c8 = (uint8_t) c;
+    // if necessary, initialize stream buffer
+    if ( (stream->flags & G_FILE_FLAG_BUFFER_SET) == 0 ) {
+        if ( __setdefbuf_unlocked(stream) == EOF ) {
+            return EOF;
+        }
+    }
 
-	// if necessary, initialize stream buffer
-	if ((stream->flags & G_FILE_FLAG_BUFFER_SET) == 0) {
-		if (__setdefbuf_unlocked(stream) == EOF) {
-			return EOF;
-		}
-	}
+    // for unbuffered streams, perform direct write
+    if ( stream->buffer_mode == _IONBF ) {
+        if ( __fwrite_unlocked(&c8, 1, 1, stream) != 1 ) {
+            return EOF;
+        }
+        return c8;
+    }
 
-	// for unbuffered streams, perform direct write
-	if (stream->buffer_mode == _IONBF) {
+    // if the last access was a read, flush it
+    if ( stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_READ ) {
+        if ( __fflush_read_unlocked(stream) == EOF ) {
+            return EOF;
+        }
+    }
 
-		if (__fwrite_unlocked(&c8, 1, 1, stream) != 1) {
-			return EOF;
-		}
-		return c8;
-	}
+    // check if buffer is full
+    if ( stream->buffered_bytes_write == stream->buffer_size ) {
+        if ( __fflush_write_unlocked(stream) == EOF ) {
+            return EOF;
+        }
+    }
 
-	// if the last access was a read, flush it
-	if (stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_READ) {
-		if (__fflush_read_unlocked(stream) == EOF) {
-			return EOF;
-		}
-	}
+    // set direction
+    stream->flags |= G_FILE_FLAG_BUFFER_DIRECTION_WRITE;
 
-	// check if buffer is full
-	if (stream->buffered_bytes_write == stream->buffer_size) {
-		if (__fflush_write_unlocked(stream) == EOF) {
-			return EOF;
-		}
-	}
+    // put byte into buffer
+    stream->buffer[stream->buffered_bytes_write++] = c8;
 
-	// set direction
-	stream->flags |= G_FILE_FLAG_BUFFER_DIRECTION_WRITE;
+    // flush stream if its line-buffered and a newline occurs
+    if ( stream->buffer_mode == _IOLBF && c8 == '\n' ) {
+        if ( __fflush_write_unlocked(stream) == EOF ) {
+            return EOF;
+        }
+    }
 
-	// put byte into buffer
-	stream->buffer[stream->buffered_bytes_write++] = c8;
-
-	// flush stream if its line-buffered and a newline occurs
-	if (stream->buffer_mode == _IOLBF && c8 == '\n') {
-		if (__fflush_write_unlocked(stream) == EOF) {
-			return EOF;
-		}
-	}
-
-	return c8;
+    return c8;
 }

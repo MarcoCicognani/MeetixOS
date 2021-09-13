@@ -26,6 +26,5 @@
  *
  */
 int __stdio_impl_fileno(FILE* stream) {
-
-	return fileno(stream);
+    return fileno(stream);
 }

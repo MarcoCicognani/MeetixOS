@@ -18,17 +18,17 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
 int fgetpos(FILE* fp, fpos_t* pos) {
-	if ((*pos = ftello(fp)) < 0) {
-		return -1;
-	}
-	return 0;
+    if ( (*pos = ftello(fp)) < 0 ) {
+        return -1;
+    }
+    return 0;
 }

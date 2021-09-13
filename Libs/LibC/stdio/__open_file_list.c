@@ -21,53 +21,51 @@
 #include "stdio.h"
 #include "stdio_internal.h"
 
-FILE* __open_file_list = 0;
+FILE*   __open_file_list        = 0;
 uint8_t open_file_list_lockatom = 0;
 
 /**
  *
  */
 void __open_file_list_add(FILE* file) {
+    __open_file_list_lock();
 
-	__open_file_list_lock();
+    __open_file_list->prev = file;
+    file->next             = __open_file_list;
+    __open_file_list       = file;
 
-	__open_file_list->prev = file;
-	file->next = __open_file_list;
-	__open_file_list = file;
-
-	__open_file_list_unlock();
+    __open_file_list_unlock();
 }
 
 /**
  *
  */
 void __open_file_list_remove(FILE* file) {
+    __open_file_list_lock();
 
-	__open_file_list_lock();
+    if ( file == __open_file_list ) {
+        __open_file_list = file->next;
+    }
+    if ( file->prev ) {
+        file->prev->next = file->next;
+    }
+    if ( file->next ) {
+        file->next->prev = file->prev;
+    }
 
-	if (file == __open_file_list) {
-		__open_file_list = file->next;
-	}
-	if (file->prev) {
-		file->prev->next = file->next;
-	}
-	if (file->next) {
-		file->next->prev = file->prev;
-	}
-
-	__open_file_list_unlock();
+    __open_file_list_unlock();
 }
 
 /**
  *
  */
 void __open_file_list_lock() {
-	AtomicLock(&open_file_list_lockatom);
+    AtomicLock(&open_file_list_lockatom);
 }
 
 /**
  *
  */
 void __open_file_list_unlock() {
-	open_file_list_lockatom = false;
+    open_file_list_lockatom = false;
 }

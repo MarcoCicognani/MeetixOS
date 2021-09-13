@@ -24,9 +24,9 @@
  *
  */
 int tolower(int c) {
-	if (c >= 'A' && c <= 'Z') {
-		return 'a' + (c - 'A');
-	}
+    if ( c >= 'A' && c <= 'Z' ) {
+        return 'a' + (c - 'A');
+    }
 
-	return c;
+    return c;
 }

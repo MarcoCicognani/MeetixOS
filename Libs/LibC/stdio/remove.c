@@ -18,23 +18,21 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "errno.h"
 
 /**
  *
  */
-int remove(const char *filename) {
-
-	klog("warning: remove(\"%s\") is not implemented", filename);
-	return 0;
+int remove(const char* filename) {
+    klog("warning: remove(\"%s\") is not implemented", filename);
+    return 0;
 }
 
 /**
  *
  */
 int unlink(const char* filename) {
-
-	return remove(filename);
+    return remove(filename);
 }

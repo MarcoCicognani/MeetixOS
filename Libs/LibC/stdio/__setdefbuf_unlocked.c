@@ -26,17 +26,16 @@
  *
  */
 int __setdefbuf_unlocked(FILE* stream) {
+    // try to set the buffer
+    if ( __setvbuf_unlocked(stream, 0, _IOFBF, BUFSIZ) == 0 ) {
+        return 0;
+    }
 
-	// try to set the buffer
-	if (__setvbuf_unlocked(stream, 0, _IOFBF, BUFSIZ) == 0) {
-		return 0;
-	}
+    // failed, try to make unbuffered
+    if ( __setvbuf_unlocked(stream, 0, _IOFBF, BUFSIZ) == 0 ) {
+        return 0;
+    }
 
-	// failed, try to make unbuffered
-	if (__setvbuf_unlocked(stream, 0, _IOFBF, BUFSIZ) == 0) {
-		return 0;
-	}
-
-	// total failure
-	return EOF;
+    // total failure
+    return EOF;
 }

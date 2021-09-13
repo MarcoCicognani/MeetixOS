@@ -19,63 +19,59 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "stdio.h"
+
 #include "stdio_internal.h"
 #include "string.h"
 
-#define _DEFAULT_BUFSIZE	1024
+#define _DEFAULT_BUFSIZE 1024
 
-FILE _stdin;
-FILE *stdin = &_stdin;
-char _stdin_buf[_DEFAULT_BUFSIZE];
+FILE  _stdin;
+FILE* stdin = &_stdin;
+char  _stdin_buf[_DEFAULT_BUFSIZE];
 
-FILE _stdout;
-FILE *stdout = &_stdout;
-char _stdout_buf[_DEFAULT_BUFSIZE];
+FILE  _stdout;
+FILE* stdout = &_stdout;
+char  _stdout_buf[_DEFAULT_BUFSIZE];
 
-FILE _stderr;
-FILE *stderr = &_stderr;
-char _stderr_buf[_DEFAULT_BUFSIZE];
+FILE  _stderr;
+FILE* stderr = &_stderr;
+char  _stderr_buf[_DEFAULT_BUFSIZE];
 
 /**
  *
  */
-void __init_stdio()
-{
-	// this initialization method avoids the use of malloc in the early
-	// stage and leaves the task of allocating enough space to the OS,
-	// allowing the program to fail on load instead of here, where it
-	// could not be handled properly
+void __init_stdio() {
+    // this initialization method avoids the use of malloc in the early
+    // stage and leaves the task of allocating enough space to the OS,
+    // allowing the program to fail on load instead of here, where it
+    // could not be handled properly
 
-	memset(stdin, 0, sizeof(FILE));
-	__fdopen_static(STDIN_FILENO, "r", stdin);
-	setvbuf(stdin, _stdin_buf, _IOLBF, _DEFAULT_BUFSIZE);
+    memset(stdin, 0, sizeof(FILE));
+    __fdopen_static(STDIN_FILENO, "r", stdin);
+    setvbuf(stdin, _stdin_buf, _IOLBF, _DEFAULT_BUFSIZE);
 
-	memset(stdout, 0, sizeof(FILE));
-	__fdopen_static(STDOUT_FILENO, "w", stdout);
-	setvbuf(stdout, _stdout_buf, _IOLBF, _DEFAULT_BUFSIZE);
+    memset(stdout, 0, sizeof(FILE));
+    __fdopen_static(STDOUT_FILENO, "w", stdout);
+    setvbuf(stdout, _stdout_buf, _IOLBF, _DEFAULT_BUFSIZE);
 
-	memset(stderr, 0, sizeof(FILE));
-	__fdopen_static(STDERR_FILENO, "w", stderr);
-	setvbuf(stderr, _stderr_buf, _IONBF, _DEFAULT_BUFSIZE);
+    memset(stderr, 0, sizeof(FILE));
+    __fdopen_static(STDERR_FILENO, "w", stderr);
+    setvbuf(stderr, _stderr_buf, _IONBF, _DEFAULT_BUFSIZE);
 }
 
 /**
  *
  */
-void __fini_stdio()
-{
-	// flush & close everything
-	FILE *f = __open_file_list;
-	while (f)
-	{
-		FILE *n = f->next;
-		if (AtomicTryLock(&n->lock))
-		{
-			__fflush_unlocked(f);
-			__fclose_static_unlocked(f);
-			n->lock = 0;
-		}
-		f = n;
-	}
-
+void __fini_stdio() {
+    // flush & close everything
+    FILE* f = __open_file_list;
+    while ( f ) {
+        FILE* n = f->next;
+        if ( AtomicTryLock(&n->lock) ) {
+            __fflush_unlocked(f);
+            __fclose_static_unlocked(f);
+            n->lock = 0;
+        }
+        f = n;
+    }
 }

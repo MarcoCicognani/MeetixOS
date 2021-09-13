@@ -18,16 +18,15 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "time.h"
 #include "errno.h"
 #include "eva/kernel.h"
 #include "string.h"
+#include "time.h"
 
 /**
  *
  */
 char* strptime(const char* buf, const char* format, struct tm* tm) {
-
-	klog("warning: strptime(\"%s\") is not implemented", format);
-	return 0;
+    klog("warning: strptime(\"%s\") is not implemented", format);
+    return 0;
 }

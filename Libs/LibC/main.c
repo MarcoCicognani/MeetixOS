@@ -22,12 +22,11 @@
 #include "eva.h"
 #include "libgen.h"
 #include "locale.h"
+#include "main_internal.h"
 #include "malloc.h"
 #include "signal.h"
-#include "stdlib.h"
-
-#include "main_internal.h"
 #include "stdio/stdio_internal.h"
+#include "stdlib.h"
 
 /**
  * Global constructor routine
@@ -38,47 +37,47 @@ void _init();
  * Application entry routine, called by the CRTs.
  */
 int __main() {
-  // initialize libc
-  _InitLibc();
+    // initialize libc
+    _InitLibc();
 
-  // call ctors
-  _init();
+    // call ctors
+    _init();
 
-  // default return value
-  int ret = -1;
+    // default return value
+    int ret = -1;
 
-  // parse arguments and call application main
-  int argc;
-  char **args;
+    // parse arguments and call application main
+    int    argc;
+    char** args;
 
-  // parse args and call application main
-  if (!parseargs(&argc, &args))
-    ret = main(argc, args);
-  else
-    Log("failed to parse command line arguments");
+    // parse args and call application main
+    if ( !parseargs(&argc, &args) )
+        ret = main(argc, args);
+    else
+        Log("failed to parse command line arguments");
 
-  // leave
-  exit(ret);
+    // leave
+    exit(ret);
 }
 
 /**
  * Initializes the C library
  */
 void _InitLibc() {
-  // set default locale (N1548-7.11.1.1-4)
-  setlocale(LC_ALL, "C");
+    // set default locale (N1548-7.11.1.1-4)
+    setlocale(LC_ALL, "C");
 
-  // set default signal handlers
-  signal(SIGINT, SIG_DFL);
+    // set default signal handlers
+    signal(SIGINT, SIG_DFL);
 
-  // initialize standard I/O
-  __init_stdio();
+    // initialize standard I/O
+    __init_stdio();
 }
 
 /**
  * Finalize the C library
  */
 void _FiniLibc() {
-  // Finalize the standard I/O
-  __fini_stdio();
+    // Finalize the standard I/O
+    __fini_stdio();
 }

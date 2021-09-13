@@ -33,35 +33,36 @@
  */
 class TitledComponent_t {
 public:
-  /**
-   *
-   */
-  virtual ~TitledComponent_t() {}
+    /**
+     *
+     */
+    virtual ~TitledComponent_t() {
+    }
 
-  /**
-   *
-   */
-  virtual void setTitle(std::string title) = 0;
+    /**
+     *
+     */
+    virtual void setTitle(std::string title) = 0;
 
-  /**
-   *
-   */
-  virtual std::string getTitle() = 0;
+    /**
+     *
+     */
+    virtual std::string getTitle() = 0;
 
-  /*
-   *
-   */
-  virtual void setTitleFont(std::string fontName) = 0;
+    /*
+     *
+     */
+    virtual void setTitleFont(std::string fontName) = 0;
 
-  /*
-   *
-   */
-  virtual void setFontSize(int size) = 0;
+    /*
+     *
+     */
+    virtual void setFontSize(int size) = 0;
 
-  /*
-   *
-   */
-  virtual void setTitleAlignment(TextAlignment alignment) = 0;
+    /*
+     *
+     */
+    virtual void setTitleAlignment(TextAlignment alignment) = 0;
 };
 
 #endif

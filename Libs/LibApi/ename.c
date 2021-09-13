@@ -28,4 +28,6 @@
  *
  * @security-level APPLICATION
  */
-void Ename(EvaName *ename) { syscall(SYSCALL_ENAME, (uint32_t)ename); }
+void Ename(EvaName* ename) {
+    syscall(SYSCALL_ENAME, (uint32_t)ename);
+}

@@ -25,5 +25,5 @@
  *
  */
 int pclose(FILE* stream) {
-	__NOT_IMPLEMENTED(popen);
+    __NOT_IMPLEMENTED(popen);
 }

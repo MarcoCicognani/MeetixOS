@@ -18,14 +18,14 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
-#include "eva/kernel.h"
 #include "errno.h"
+#include "eva/kernel.h"
+#include "unistd.h"
 
 /**
  * TODO
  */
-int rmdir(const char *path) {
-	klog("warning: rmdir(%s) is not implemented", path);
-	return -1;
+int rmdir(const char* path) {
+    klog("warning: rmdir(%s) is not implemented", path);
+    return -1;
 }

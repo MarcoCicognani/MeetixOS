@@ -26,5 +26,5 @@
  *
  */
 ssize_t __stdio_impl_read(void* buf, size_t len, FILE* stream) {
-	return read(stream->file_descriptor, buf, len);
+    return read(stream->file_descriptor, buf, len);
 }

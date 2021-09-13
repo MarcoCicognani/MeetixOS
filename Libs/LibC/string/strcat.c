@@ -18,16 +18,15 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
-#include "stdint.h"
 #include "eva.h"
+#include "stdint.h"
+#include "string.h"
 
 /**
  *
  */
 char* strcat(char* dest, const char* src) {
-
-	size_t len = strlen(dest);
-	strcpy(dest + len, src);
-	return dest;
+    size_t len = strlen(dest);
+    strcpy(dest + len, src);
+    return dest;
 }

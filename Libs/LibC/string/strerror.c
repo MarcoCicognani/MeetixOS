@@ -18,15 +18,14 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
 #include "eva.h"
+#include "string.h"
 
 /**
  *
  */
 char* strerror(int errno) {
+    __DEBUG_TRACE(strerror);
 
-	__DEBUG_TRACE(strerror);
-
-	return (char*) "ERROR(TODO)"; // TODO
+    return (char*)"ERROR(TODO)"; // TODO
 }

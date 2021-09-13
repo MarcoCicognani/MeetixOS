@@ -18,18 +18,17 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "time.h"
 #include "eva/kernel.h"
+#include "time.h"
 
-static char timebuf[] = { 'M', 'o', 'n', ' ', 'J', 'a', 'n', ' ', '0', '1', ' ',
-		'0', '0', ':', '0', '0', ':', '0', '0', ' ', '1', '9', '7', '0' };
+static char timebuf[] = { 'M', 'o', 'n', ' ', 'J', 'a', 'n', ' ', '0', '1', ' ', '0',
+                          '0', ':', '0', '0', ':', '0', '0', ' ', '1', '9', '7', '0' };
 
 /**
  *
  */
-char *ctime(const time_t *time)
-{
-	time = 0;
-	klog("warning: ctime is not implemented");
-	return timebuf;
+char* ctime(const time_t* time) {
+    time = 0;
+    klog("warning: ctime is not implemented");
+    return timebuf;
 }

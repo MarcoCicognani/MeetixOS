@@ -25,8 +25,6 @@
  *
  */
 void perror(const char* s) {
-
-	// TODO
-	__NOT_IMPLEMENTED("perror");
+    // TODO
+    __NOT_IMPLEMENTED("perror");
 }
-

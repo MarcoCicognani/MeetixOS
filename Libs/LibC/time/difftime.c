@@ -24,8 +24,8 @@
  *
  */
 double difftime(time_t t, time_t t2) {
-	t = 0;
-	t2 = 0;
-	klog("warning: difftime not implemented");
-	return 0;
+    t  = 0;
+    t2 = 0;
+    klog("warning: difftime not implemented");
+    return 0;
 }

@@ -23,11 +23,9 @@
 /**
  *
  */
-void klog(const char* message, ...) 
-{
-	va_list l;
-	va_start(l, message);
-	kvlog(message, l);
-	va_end(l);
+void klog(const char* message, ...) {
+    va_list l;
+    va_start(l, message);
+    kvlog(message, l);
+    va_end(l);
 }
-

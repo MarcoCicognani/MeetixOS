@@ -24,5 +24,5 @@
  *
  */
 int isprint(int c) {
-	return c >= ' ' && c <= '~';
+    return c >= ' ' && c <= '~';
 }

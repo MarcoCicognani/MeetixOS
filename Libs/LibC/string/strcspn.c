@@ -18,20 +18,19 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
 #include "stdint.h"
+#include "string.h"
 
 /**
  *
  */
-size_t strcspn(const char *str, const char *chrs)
-{
-	size_t ret = 0;
-	while (*str)
-	{
-		if (strchr(chrs, *str)) return ret;
-		str++;
-		ret++;
-	}
-	return ret;
+size_t strcspn(const char* str, const char* chrs) {
+    size_t ret = 0;
+    while ( *str ) {
+        if ( strchr(chrs, *str) )
+            return ret;
+        str++;
+        ret++;
+    }
+    return ret;
 }

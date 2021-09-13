@@ -24,5 +24,5 @@
  *
  */
 int isalpha(int c) {
-	return islower(c) || isupper(c);
+    return islower(c) || isupper(c);
 }

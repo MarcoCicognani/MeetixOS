@@ -18,17 +18,16 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdio.h"
 #include "errno.h"
+#include "stdio.h"
 
 /**
  *
  */
 int sprintf(char* s, const char* format, ...) {
-
-	va_list va;
-	va_start(va, format);
-	int res = vsprintf(s, format, va);
-	va_end(va);
-	return res;
+    va_list va;
+    va_start(va, format);
+    int res = vsprintf(s, format, va);
+    va_end(va);
+    return res;
 }

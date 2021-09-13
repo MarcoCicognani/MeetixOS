@@ -18,55 +18,53 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "errno.h"
 
 /**
  *
  */
 int __fflush_read_unlocked(FILE* stream) {
+    // if nothing was read from the stream, return
+    if ( (stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_READ) == 0 ) {
+        return 0;
+    }
 
-	// if nothing was read from the stream, return
-	if ((stream->flags & G_FILE_FLAG_BUFFER_DIRECTION_READ) == 0) {
-		return 0;
-	}
+    // if stream is not readable, return in error
+    if ( (stream->flags & FILE_FLAG_MODE_READ) == 0 ) {
+        errno = EBADF;
+        stream->flags |= G_FILE_FLAG_ERROR;
+        return EOF;
+    }
 
-	// if stream is not readable, return in error
-	if ((stream->flags & FILE_FLAG_MODE_READ) == 0) {
-		errno = EBADF;
-		stream->flags |= G_FILE_FLAG_ERROR;
-		return EOF;
-	}
+    // get current location in file (must preserve errno)
+    int   preserved_errno  = errno;
+    off_t current_position = -1;
+    if ( stream->impl_seek ) {
+        current_position = stream->impl_seek(stream, 0, SEEK_CUR);
+    }
+    errno = preserved_errno;
 
-	// get current location in file (must preserve errno)
-	int preserved_errno = errno;
-	off_t current_position = -1;
-	if (stream->impl_seek) {
-		current_position = stream->impl_seek(stream, 0, SEEK_CUR);
-	}
-	errno = preserved_errno;
+    // restore the position
+    int res = 0;
+    if ( current_position >= 0 ) {
+        size_t buffered_bytes    = stream->buffered_bytes_read - stream->buffered_bytes_read_offset;
+        off_t  restored_position = (uintmax_t)current_position < (uintmax_t)buffered_bytes
+                                     ? 0
+                                     : current_position - buffered_bytes;
 
-	// restore the position
-	int res = 0;
-	if (current_position >= 0) {
-		size_t buffered_bytes = stream->buffered_bytes_read
-				- stream->buffered_bytes_read_offset;
-		off_t restored_position =
-				(uintmax_t) current_position < (uintmax_t) buffered_bytes ?
-						0 : current_position - buffered_bytes;
+        if ( stream->impl_seek(stream, restored_position, SEEK_SET) < 0 ) {
+            stream->flags |= G_FILE_FLAG_ERROR;
+        }
+    }
 
-		if (stream->impl_seek(stream, restored_position, SEEK_SET) < 0) {
-			stream->flags |= G_FILE_FLAG_ERROR;
-		}
-	}
+    // reset buffer fields
+    stream->buffered_bytes_read        = 0;
+    stream->buffered_bytes_read_offset = 0;
 
-	// reset buffer fields
-	stream->buffered_bytes_read = 0;
-	stream->buffered_bytes_read_offset = 0;
+    // reset direction
+    stream->flags &= ~G_FILE_FLAG_BUFFER_DIRECTION_READ;
 
-	// reset direction
-	stream->flags &= ~G_FILE_FLAG_BUFFER_DIRECTION_READ;
-
-	return res;
+    return res;
 }

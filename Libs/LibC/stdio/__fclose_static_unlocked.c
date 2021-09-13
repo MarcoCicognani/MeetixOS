@@ -18,38 +18,37 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "file.h"
+#include "malloc.h"
+#include "stdint.h"
 #include "stdio.h"
 #include "stdio_internal.h"
-#include "stdint.h"
-#include "malloc.h"
-#include "file.h"
-#include "unistd.h"
 #include "string.h"
+#include "unistd.h"
 
 /**
  *
  */
 int __fclose_static_unlocked(FILE* stream) {
+    // flush stream
+    __fflush_unlocked(stream);
 
-	// flush stream
-	__fflush_unlocked(stream);
+    // close file descriptor
+    if ( stream->impl_close(stream) ) {
+        return EOF;
+    }
 
-	// close file descriptor
-	if (stream->impl_close(stream)) {
-		return EOF;
-	}
+    // if library created buffer, delete it
+    if ( (stream->flags & G_FILE_FLAG_BUFFER_SET) && (stream->buffer != NULL)
+         && (stream->flags & G_FILE_FLAG_BUFFER_OWNER_LIBRARY) ) {
+        free(stream->buffer);
+    }
 
-	// if library created buffer, delete it
-	if ((stream->flags & G_FILE_FLAG_BUFFER_SET) && (stream->buffer != NULL)
-			&& (stream->flags & G_FILE_FLAG_BUFFER_OWNER_LIBRARY)) {
-		free(stream->buffer);
-	}
+    // reset contents
+    memset(stream, 0, sizeof(FILE));
 
-	// reset contents
-	memset(stream, 0, sizeof(FILE));
+    // remove from open file list
+    __open_file_list_remove(stream);
 
-	// remove from open file list
-	__open_file_list_remove(stream);
-
-	return 0;
+    return 0;
 }

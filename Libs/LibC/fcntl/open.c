@@ -18,34 +18,36 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "eva.h"
 #include "fcntl.h"
-#include "errno.h"
+
 #include <stdarg.h>
 
 /**
  *
  */
-int open(const char* pathname, int flags, ...) 
-{
-	mode_t mode = 0;
-	FsOpenStatus status;
+int open(const char* pathname, int flags, ...) {
+    mode_t       mode = 0;
+    FsOpenStatus status;
 
-	// if the create flag is given, we must have a mode
-	if (flags & O_CREAT) 
-	{
-		va_list ap;
-		va_start(ap, flags);
-		mode = va_arg(ap, mode_t);
-		va_end(ap);
-	}
+    // if the create flag is given, we must have a mode
+    if ( flags & O_CREAT ) {
+        va_list ap;
+        va_start(ap, flags);
+        mode = va_arg(ap, mode_t);
+        va_end(ap);
+    }
 
-	// perform opening syscall
-	File_t fd = OpenFS(pathname, flags, &status);
+    // perform opening syscall
+    File_t fd = OpenFS(pathname, flags, &status);
 
-	if (status == FS_OPEN_SUCCESSFUL) return fd;
-	else if (status == FS_OPEN_NOT_FOUND) errno = ENOENT;
-	else errno = EIO;
+    if ( status == FS_OPEN_SUCCESSFUL )
+        return fd;
+    else if ( status == FS_OPEN_NOT_FOUND )
+        errno = ENOENT;
+    else
+        errno = EIO;
 
-	return -1;
+    return -1;
 }

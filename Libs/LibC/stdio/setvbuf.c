@@ -18,19 +18,17 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "stdint.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "stdlib.h"
-#include "stdint.h"
 
 /**
  *
  */
 int setvbuf(FILE* stream, char* buf, int mode, size_t size) {
-
-	AtomicLock(&stream->lock);
-	int res = __setvbuf_unlocked(stream, buf, mode, size);
-	stream->lock = 0;
-	return res;
+    AtomicLock(&stream->lock);
+    int res      = __setvbuf_unlocked(stream, buf, mode, size);
+    stream->lock = 0;
+    return res;
 }
-

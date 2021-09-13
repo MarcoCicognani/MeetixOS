@@ -18,55 +18,50 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
-int __parse_mode_flags(const char* mode) 
-{
+int __parse_mode_flags(const char* mode) {
+    int flags = 0;
 
-	int flags = 0;
+    switch ( *mode ) {
+        case 'r':
+            flags = FILE_FLAG_MODE_READ;
+            break;
+        case 'w':
+            flags = FILE_FLAG_MODE_WRITE | FILE_FLAG_MODE_CREATE | FILE_FLAG_MODE_TRUNCATE;
+            break;
+        case 'a':
+            flags = FILE_FLAG_MODE_WRITE | FILE_FLAG_MODE_CREATE | FILE_FLAG_MODE_APPEND;
+            break;
+        default:
+            errno = EINVAL;
+            return EOF;
+    }
 
-	switch (*mode) 
-	{
-	case 'r':
-		flags = FILE_FLAG_MODE_READ;
-		break;
-	case 'w':
-		flags = FILE_FLAG_MODE_WRITE | FILE_FLAG_MODE_CREATE | FILE_FLAG_MODE_TRUNCATE;
-		break;
-	case 'a':
-		flags = FILE_FLAG_MODE_WRITE | FILE_FLAG_MODE_CREATE | FILE_FLAG_MODE_APPEND;
-		break;
-	default:
-		errno = EINVAL;
-		return EOF;
-	}
+    while ( *(++mode) ) {
+        switch ( *mode ) {
+            case '+':
+                flags |= FILE_FLAG_MODE_READ | FILE_FLAG_MODE_WRITE;
+                break;
+            case 't':
+                flags &= ~FILE_FLAG_MODE_BINARY;
+                flags |= FILE_FLAG_MODE_TEXTUAL;
+                break;
+            case 'b':
+                flags &= ~FILE_FLAG_MODE_TEXTUAL;
+                flags |= FILE_FLAG_MODE_BINARY;
+                break;
+            default:
+                errno = EINVAL;
+                return EOF;
+        }
+    }
 
-	while (*(++mode)) 
-	{
-		switch (*mode) 
-		{
-		case '+':
-			flags |= FILE_FLAG_MODE_READ | FILE_FLAG_MODE_WRITE;
-			break;
-		case 't':
-			flags &= ~FILE_FLAG_MODE_BINARY;
-			flags |= FILE_FLAG_MODE_TEXTUAL;
-			break;
-		case 'b':
-			flags &= ~FILE_FLAG_MODE_TEXTUAL;
-			flags |= FILE_FLAG_MODE_BINARY;
-			break;
-		default:
-			errno = EINVAL;
-			return EOF;
-		}
-	}
-
-	return flags;
+    return flags;
 }

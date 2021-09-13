@@ -26,5 +26,5 @@
  *
  */
 int __stdio_impl_error(FILE* stream) {
-	return (stream->flags & G_FILE_FLAG_ERROR) ? 1 : 0;
+    return (stream->flags & G_FILE_FLAG_ERROR) ? 1 : 0;
 }

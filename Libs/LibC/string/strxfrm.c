@@ -18,16 +18,15 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
 #include "eva.h"
+#include "string.h"
 
 /**
  *
  */
 size_t strxfrm(char* dest, const char* src, size_t num) {
+    __DEBUG_TRACE(strxfrm);
 
-	__DEBUG_TRACE(strxfrm);
-
-	strncpy(dest, src, num);
-	return strlen(src);
+    strncpy(dest, src, num);
+    return strlen(src);
 }

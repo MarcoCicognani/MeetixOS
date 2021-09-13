@@ -26,8 +26,8 @@
 #define __LABEL__
 
 #include <components/ColoredComponent.hpp>
-#include <components/TitledComponent.hpp>
 #include <components/component.hpp>
+#include <components/TitledComponent.hpp>
 #include <graphics/text/font.hpp>
 #include <graphics/text/textalign.hpp>
 
@@ -38,50 +38,52 @@ class Label_t : public Component_t,
                 public TitledComponent_t,
                 public ColoredComponent_t {
 private:
-  Font_t *font;
-  int fontSize;
-  cairo_text_extents_t lastExtents;
+    Font_t*              font;
+    int                  fontSize;
+    cairo_text_extents_t lastExtents;
 
-  cairo_t *cr;
-  Rectangle bounds;
+    cairo_t*  cr;
+    Rectangle bounds;
 
-  std::string text;
-  TextAlignment alignment;
+    std::string   text;
+    TextAlignment alignment;
 
 public:
-  Label_t();
-  virtual ~Label_t() { delete font; }
+    Label_t();
+    virtual ~Label_t() {
+        delete font;
+    }
 
-  /*
-   * Component
-   */
-  virtual void paint();
-  virtual void update();
-  virtual bool handle(Event_t &e);
+    /*
+     * Component
+     */
+    virtual void paint();
+    virtual void update();
+    virtual bool handle(Event_t& e);
 
-  /*
-   * titled component
-   */
-  virtual void setTitle(std::string title);
-  virtual std::string getTitle();
-  virtual void setTitleFont(std::string fontName);
-  virtual void setFontSize(int size);
-  virtual void setTitleAlignment(TextAlignment alignment);
+    /*
+     * titled component
+     */
+    virtual void        setTitle(std::string title);
+    virtual std::string getTitle();
+    virtual void        setTitleFont(std::string fontName);
+    virtual void        setFontSize(int size);
+    virtual void        setTitleAlignment(TextAlignment alignment);
 
-  /*
-   * colored component
-   */
-  virtual void setColor(Color_t color, Color_t tltColor) {
-    shapeColor = tltColor;
-  }
+    /*
+     * colored component
+     */
+    virtual void setColor(Color_t color, Color_t tltColor) {
+        shapeColor = tltColor;
+    }
 
-  /*
-   * label
-   */
-  virtual void setFont(Font_t *font);
-  void setFontColor(Color_t ftcol);
-  void setAlignment(TextAlignment alignment);
-  TextAlignment getAlignment();
+    /*
+     * label
+     */
+    virtual void  setFont(Font_t* font);
+    void          setFontColor(Color_t ftcol);
+    void          setAlignment(TextAlignment alignment);
+    TextAlignment getAlignment();
 };
 
 #endif

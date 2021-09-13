@@ -18,21 +18,20 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
-#include "eva/kernel.h"
 #include "errno.h"
+#include "eva/kernel.h"
+#include "unistd.h"
 
 /**
  * POSIX wrapper for <Sbrk>
  */
-void *sbrk(intptr_t increment) 
-{
-	// perform syscall
-	void *result;
-	if (Sbrk(increment, &result)) return result;
+void* sbrk(intptr_t increment) {
+    // perform syscall
+    void* result;
+    if ( Sbrk(increment, &result) )
+        return result;
 
-	// set errno on error
-	errno = ENOMEM;
-	return (void*) -1;
+    // set errno on error
+    errno = ENOMEM;
+    return (void*)-1;
 }
-

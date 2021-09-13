@@ -26,6 +26,5 @@
  *
  */
 void __cxa_atexit(void (*func)(void*), void* arg, void* dso_handle) {
-	// TODO
+    // TODO
 }
-

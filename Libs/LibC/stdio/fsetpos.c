@@ -18,19 +18,18 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "errno.h"
 #include "stdio.h"
 #include "stdio_internal.h"
 #include "string.h"
-#include "errno.h"
 
 /**
  *
  */
 int fsetpos(FILE* fp, const fpos_t* pos) {
+    if ( fseeko(fp, *pos, SEEK_SET) < 0 ) {
+        return -1;
+    }
 
-	if (fseeko(fp, *pos, SEEK_SET) < 0) {
-		return -1;
-	}
-
-	return 0;
+    return 0;
 }

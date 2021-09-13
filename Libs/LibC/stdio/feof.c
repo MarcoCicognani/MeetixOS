@@ -18,22 +18,21 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdio.h"
 #include "errno.h"
+#include "stdio.h"
 
 /**
  *
  */
 int feof(FILE* stream) {
-
-	AtomicLock(&stream->lock);
-	int res;
-	if (stream->impl_eof) {
-		res = stream->impl_eof(stream);
-	} else {
-		errno = ENOTSUP;
-		res = EOF;
-	}
-	stream->lock = 0;
-	return res;
+    AtomicLock(&stream->lock);
+    int res;
+    if ( stream->impl_eof ) {
+        res = stream->impl_eof(stream);
+    } else {
+        errno = ENOTSUP;
+        res   = EOF;
+    }
+    stream->lock = 0;
+    return res;
 }

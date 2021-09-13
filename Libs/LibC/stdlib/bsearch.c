@@ -18,16 +18,19 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdlib.h"
-#include "eva/kernel.h"
 #include "errno.h"
+#include "eva/kernel.h"
 #include "stdio.h"
+#include "stdlib.h"
 
 /**
  *
  */
-void* bsearch(const void* value, const void* array, size_t num_elements, size_t size, int (*comparator)(const void*, const void*)) {
-	klog("warning: bsearch is not implemented");
-	return 0;
+void* bsearch(const void* value,
+              const void* array,
+              size_t      num_elements,
+              size_t      size,
+              int (*comparator)(const void*, const void*)) {
+    klog("warning: bsearch is not implemented");
+    return 0;
 }
-

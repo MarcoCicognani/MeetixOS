@@ -18,16 +18,16 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
 #include "stdint.h"
+#include "string.h"
 
 /**
  *
  */
 size_t strspn(const char* str, const char* chrs) {
-	size_t ret = 0;
-	while (*str && strchr(chrs, *str++)) {
-		ret++;
-	}
-	return ret;
+    size_t ret = 0;
+    while ( *str && strchr(chrs, *str++) ) {
+        ret++;
+    }
+    return ret;
 }

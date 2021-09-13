@@ -18,13 +18,12 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "locale.h"
 #include "eva.h"
+#include "locale.h"
 
 /**
  *
  */
 struct lconv* localeconv() {
-
-	__NOT_IMPLEMENTED(localeconv);
+    __NOT_IMPLEMENTED(localeconv);
 }

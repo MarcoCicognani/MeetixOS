@@ -18,15 +18,14 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "sys/stat.h"
-#include "stdint.h"
 #include "eva.h"
+#include "stdint.h"
+#include "sys/stat.h"
 
 /**
  *
  */
 int fstat(int fd, struct stat* buf) {
-
-	klog("warning: fstat(%i, %x) not implemented", fd, buf);
-	return 0;
+    klog("warning: fstat(%i, %x) not implemented", fd, buf);
+    return 0;
 }

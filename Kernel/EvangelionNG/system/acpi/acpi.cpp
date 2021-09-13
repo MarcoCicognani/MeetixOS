@@ -1,46 +1,47 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * *
-* MeetiX OS By MeetiX OS Project [Marco Cicognani]                                    *
-*                                                                                     *
-*         DERIVED FROM THE GHOST OPERATING SYSTEM                                     *
-*         This software is derived from the Ghost operating system project,           *
-*         written by Max Schlüssel <lokoxe@gmail.com>. Copyright 2012-2017            *
-*         https://ghostkernel.org/                                                    *
-*         https://github.com/maxdev1/ghost                                            *
-*                                                                                     *
-* This program is free software; you can redistribute it and/or                       *
-* modify it under the terms of the GNU General Public License                         *
-* as published by the Free Software Foundation; either version 2                      *
-* of the License, or (char *argumentat your option) any later version.                *
-*                                                                                     *
-* This program is distributed in the hope that it will be useful,                     *
-* but WITHout ANY WARRANTY; without even the implied warranty of                      *
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                       *
-* GNU General Public License for more details.                                        *
-*                                                                                     *
-* You should have received a copy of the GNU General Public License                   *
-* along with this program; if not, write to the Free Software                         *
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
+ * MeetiX OS By MeetiX OS Project [Marco Cicognani]                                    *
+ *                                                                                     *
+ *         DERIVED FROM THE GHOST OPERATING SYSTEM                                     *
+ *         This software is derived from the Ghost operating system project,           *
+ *         written by Max Schlüssel <lokoxe@gmail.com>. Copyright 2012-2017            *
+ *         https://ghostkernel.org/                                                    *
+ *         https://github.com/maxdev1/ghost                                            *
+ *                                                                                     *
+ * This program is free software; you can redistribute it and/or                       *
+ * modify it under the terms of the GNU General Public License                         *
+ * as published by the Free Software Foundation; either version 2                      *
+ * of the License, or (char *argumentat your option) any later version.                *
+ *                                                                                     *
+ * This program is distributed in the hope that it will be useful,                     *
+ * but WITHout ANY WARRANTY; without even the implied warranty of                      *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                       *
+ * GNU General Public License for more details.                                        *
+ *                                                                                     *
+ * You should have received a copy of the GNU General Public License                   *
+ * along with this program; if not, write to the Free Software                         *
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <system/acpi/acpi.hpp>
-#include <system/acpi/RsdpLookupUtil.hpp>
-#include <logger/logger.hpp>
-#include <EvangelionNG.hpp>
-#include <utils/string.hpp>
-#include <memory/AddressSpace.hpp>
-#include <system/acpi/madt.hpp>
 #include "eva/types.h"
+
+#include <EvangelionNG.hpp>
+#include <logger/logger.hpp>
+#include <memory/AddressSpace.hpp>
+#include <system/acpi/acpi.hpp>
+#include <system/acpi/madt.hpp>
+#include <system/acpi/RsdpLookupUtil.hpp>
+#include <utils/string.hpp>
 
 /**
  * Remembers the root header and whether its an XSDT
  */
-static AcpiTableHeader *rootHeader = 0;
-static bool rootIsXSDT = false;
+static AcpiTableHeader* rootHeader = 0;
+static bool             rootIsXSDT = false;
 
 /**
  * List of all tables in the root
  */
-static AcpiEntry *first = 0;
+static AcpiEntry* first = 0;
 
 /**
  * get the ACPI entry with provided signature
@@ -48,15 +49,14 @@ static AcpiEntry *first = 0;
  * @param signature:		signature of the entry
  * @return the ACPI entry if exist
  */
-AcpiEntry *Acpi::getEntryWithSignature(const char *signature)
-{
-	AcpiEntry *cur = first;
-	while (cur)
-	{
-		if (cur->hasSignature(signature)) return cur;
-		cur = cur->next;
-	}
-	return 0;
+AcpiEntry* Acpi::getEntryWithSignature(const char* signature) {
+    AcpiEntry* cur = first;
+    while ( cur ) {
+        if ( cur->hasSignature(signature) )
+            return cur;
+        cur = cur->next;
+    }
+    return 0;
 }
 
 /**
@@ -64,9 +64,8 @@ AcpiEntry *Acpi::getEntryWithSignature(const char *signature)
  *
  * @return the acpi list
  */
-AcpiEntry *Acpi::getEntries()
-{
-	return first;
+AcpiEntry* Acpi::getEntries() {
+    return first;
 }
 
 /**
@@ -74,48 +73,43 @@ AcpiEntry *Acpi::getEntries()
  *
  * @return true if there are entries
  */
-bool Acpi::hasEntries()
-{
-	return first != 0;
+bool Acpi::hasEntries() {
+    return first != 0;
 }
 
 /**
  * read the RSDP
  */
-void Acpi::gatherInformation()
-{
-	logDebug("%! gathering information", "acpi");
+void Acpi::gatherInformation() {
+    logDebug("%! gathering information", "acpi");
 
-	// Find root table pointer
-	RsdpDescriptor *rsdp = RsdpLookupUtil::findRSDP();
-	if (rsdp)
-	{
-		// Prepare the root table
-		Acpi::prepareRootSDT(rsdp);
+    // Find root table pointer
+    RsdpDescriptor* rsdp = RsdpLookupUtil::findRSDP();
+    if ( rsdp ) {
+        // Prepare the root table
+        Acpi::prepareRootSDT(rsdp);
 
-		// Go through the existing root entries
-		for (uint32_t i = 0; i < getRSDTentryCount(); i++)
-		{
-			PhysicalAddress entry = getRSDTentry(i);
-			if (entry != 0)
-			{
-				AcpiTableHeader *sdt = mapSDT(entry);
+        // Go through the existing root entries
+        for ( uint32_t i = 0; i < getRSDTentryCount(); i++ ) {
+            PhysicalAddress entry = getRSDTentry(i);
+            if ( entry != 0 ) {
+                AcpiTableHeader* sdt = mapSDT(entry);
 
-				// Could not be mapped? Skip
-				if (!sdt) continue;
+                // Could not be mapped? Skip
+                if ( !sdt )
+                    continue;
 
-				// Create the entry
-				AcpiEntry *entry = new AcpiEntry(sdt, first);
-				first = entry;
-			}
-		}
+                // Create the entry
+                AcpiEntry* entry = new AcpiEntry(sdt, first);
+                first            = entry;
+            }
+        }
 
-	}
+    }
 
-	else
-	{
-		logDebug("%! could not find RSDP", "acpi");
-	}
+    else {
+        logDebug("%! could not find RSDP", "acpi");
+    }
 }
 
 /**
@@ -124,64 +118,57 @@ void Acpi::gatherInformation()
  *
  * @param rsdp:		the rsdp descriptor where we start mapping
  */
-void Acpi::prepareRootSDT(RsdpDescriptor *rsdp)
-{
-	PhysicalAddress rootTableLocation = 0;
+void Acpi::prepareRootSDT(RsdpDescriptor* rsdp) {
+    PhysicalAddress rootTableLocation = 0;
 
-	rootIsXSDT = false;
+    rootIsXSDT = false;
 
-	// If ACPI 2.0 or higher, try to use the XSDT
-	if (rsdp->revision > 0)
-	{
-		RsdpDescriptor20 *rsdp20 = (RsdpDescriptor20*) rsdp;
-		if (rsdp20->xsdtAddress != 0)
-		{
+    // If ACPI 2.0 or higher, try to use the XSDT
+    if ( rsdp->revision > 0 ) {
+        RsdpDescriptor20* rsdp20 = (RsdpDescriptor20*)rsdp;
+        if ( rsdp20->xsdtAddress != 0 ) {
 #if _ARCH_X86_64_
-			rootTableLocation = rsdp20->xsdtAddress;
-			logDebug("%! found XSDT in 64bit range", "acpi");
-			rootIsXSDT = true;
+            rootTableLocation = rsdp20->xsdtAddress;
+            logDebug("%! found XSDT in 64bit range", "acpi");
+            rootIsXSDT = true;
 #elif _ARCH_X86_
-			if (rsdp20->xsdtAddress < 0xFFFFFFFF)
-			{
-				rootIsXSDT = true;
-				logDebug("%! found XSDT in 32bit range", "acpi");
-				rootTableLocation = rsdp20->xsdtAddress;
-			}
+            if ( rsdp20->xsdtAddress < 0xFFFFFFFF ) {
+                rootIsXSDT = true;
+                logDebug("%! found XSDT in 32bit range", "acpi");
+                rootTableLocation = rsdp20->xsdtAddress;
+            }
 
-			else
-			{
-				rootIsXSDT = false;
-				logDebug("%! found XSDT, but range too high for 32bits, attempting to use RSDT", "acpi");
-			}
+            else {
+                rootIsXSDT = false;
+                logDebug("%! found XSDT, but range too high for 32bits, attempting to use RSDT",
+                         "acpi");
+            }
 #endif
-		}
-	}
+        }
+    }
 
-	// No XSDT? Use RSDT
-	if (!rootIsXSDT)
-	{
-		logDebug("%! no XSDT; using RSDT", "acpi");
-		rootTableLocation = rsdp->rsdtAddress;
-	}
+    // No XSDT? Use RSDT
+    if ( !rootIsXSDT ) {
+        logDebug("%! no XSDT; using RSDT", "acpi");
+        rootTableLocation = rsdp->rsdtAddress;
+    }
 
-	// No header? Failed
-	if (!rootTableLocation)
-	{
-		logWarn("%! RSDP did not contain a valid RSDT/XSDT address", "acpi");
-		return;
-	}
+    // No header? Failed
+    if ( !rootTableLocation ) {
+        logWarn("%! RSDP did not contain a valid RSDT/XSDT address", "acpi");
+        return;
+    }
 
-	logDebug("%! root table starts at phys %h", "acpi", rootTableLocation);
+    logDebug("%! root table starts at phys %h", "acpi", rootTableLocation);
 
-	// Map table in virtual address space
-	AcpiTableHeader *header = mapSDT(rootTableLocation);
-	if (!header)
-	{
-		logWarn("%! could not map root system descriptor table", "acpi");
-		return;
-	}
+    // Map table in virtual address space
+    AcpiTableHeader* header = mapSDT(rootTableLocation);
+    if ( !header ) {
+        logWarn("%! could not map root system descriptor table", "acpi");
+        return;
+    }
 
-	rootHeader = header;
+    rootHeader = header;
 }
 
 /**
@@ -190,37 +177,40 @@ void Acpi::prepareRootSDT(RsdpDescriptor *rsdp)
  *
  * @return the length of the table or 0 if failed
  */
-uint32_t Acpi::getLengthOfUnmappedSDT(PhysicalAddress tableLocation)
-{
-	// Align the location down, we will allocate 2 pages to make sure the
-	// header is within the range
-	PhysicalAddress physStart = PAGE_ALIGN_DOWN(tableLocation);
-	VirtualAddress virtualBase = EvaKernel::evaKernelRangePool->allocate(2);
+uint32_t Acpi::getLengthOfUnmappedSDT(PhysicalAddress tableLocation) {
+    // Align the location down, we will allocate 2 pages to make sure the
+    // header is within the range
+    PhysicalAddress physStart   = PAGE_ALIGN_DOWN(tableLocation);
+    VirtualAddress  virtualBase = EvaKernel::evaKernelRangePool->allocate(2);
 
-	if (!AddressSpace::map(virtualBase, physStart, DEFAULT_KERNEL_TABLE_FLAGS, DEFAULT_KERNEL_PAGE_FLAGS))
-	{
-		logWarn("%! could not create virtual mapping (1) for SDT %h", "acpi", tableLocation);
-		return 0;
-	}
-	if (!AddressSpace::map(virtualBase + PAGE_SIZE, physStart + PAGE_SIZE, DEFAULT_KERNEL_TABLE_FLAGS, DEFAULT_KERNEL_PAGE_FLAGS))
-	{
-		logWarn("%! could not create virtual mapping (2) for SDT %h", "acpi", tableLocation);
-		return 0;
-	}
+    if ( !AddressSpace::map(virtualBase,
+                            physStart,
+                            DEFAULT_KERNEL_TABLE_FLAGS,
+                            DEFAULT_KERNEL_PAGE_FLAGS) ) {
+        logWarn("%! could not create virtual mapping (1) for SDT %h", "acpi", tableLocation);
+        return 0;
+    }
+    if ( !AddressSpace::map(virtualBase + PAGE_SIZE,
+                            physStart + PAGE_SIZE,
+                            DEFAULT_KERNEL_TABLE_FLAGS,
+                            DEFAULT_KERNEL_PAGE_FLAGS) ) {
+        logWarn("%! could not create virtual mapping (2) for SDT %h", "acpi", tableLocation);
+        return 0;
+    }
 
-	// Calculate the offset of the header within the table
-	uint32_t mappingOffset = tableLocation - physStart;
+    // Calculate the offset of the header within the table
+    uint32_t mappingOffset = tableLocation - physStart;
 
-	// Take length from the header
-	AcpiTableHeader *header = (AcpiTableHeader*) (virtualBase + mappingOffset);
-	uint32_t length = header->length;
+    // Take length from the header
+    AcpiTableHeader* header = (AcpiTableHeader*)(virtualBase + mappingOffset);
+    uint32_t         length = header->length;
 
-	// Unmap the two mapped pages
-	AddressSpace::unmap(virtualBase);
-	AddressSpace::unmap(virtualBase + PAGE_SIZE);
-	EvaKernel::evaKernelRangePool->free(virtualBase);
+    // Unmap the two mapped pages
+    AddressSpace::unmap(virtualBase);
+    AddressSpace::unmap(virtualBase + PAGE_SIZE);
+    EvaKernel::evaKernelRangePool->free(virtualBase);
 
-	return length;
+    return length;
 }
 
 /**
@@ -230,57 +220,62 @@ uint32_t Acpi::getLengthOfUnmappedSDT(PhysicalAddress tableLocation)
  *
  * @return the header of the mapped table or nullptr
  */
-AcpiTableHeader *Acpi::mapSDT(PhysicalAddress tableLocation)
-{
-	// Retrieve the tables length
-	uint32_t tableLength = getLengthOfUnmappedSDT(tableLocation);
-	if (!tableLength)
-	{
-		logWarn("%! could not map SDT at phys %h, could not get table length", "acpi", tableLocation);
-		return 0;
-	}
+AcpiTableHeader* Acpi::mapSDT(PhysicalAddress tableLocation) {
+    // Retrieve the tables length
+    uint32_t tableLength = getLengthOfUnmappedSDT(tableLocation);
+    if ( !tableLength ) {
+        logWarn("%! could not map SDT at phys %h, could not get table length",
+                "acpi",
+                tableLocation);
+        return 0;
+    }
 
-	// Does the length make sense?
-	if (tableLength > SDT_MAXIMUM_BYTES)
-	{
-		logWarn("%! SDT at %h was skipped due to illegal length (%h)", "acpi", tableLocation, tableLength);
-		return 0;
-	}
+    // Does the length make sense?
+    if ( tableLength > SDT_MAXIMUM_BYTES ) {
+        logWarn("%! SDT at %h was skipped due to illegal length (%h)",
+                "acpi",
+                tableLocation,
+                tableLength);
+        return 0;
+    }
 
-	// Down/upalign physical range
-	PhysicalAddress physStart = PAGE_ALIGN_DOWN(tableLocation);
-	PhysicalAddress physEnd = PAGE_ALIGN_UP(tableLocation + tableLength);
+    // Down/upalign physical range
+    PhysicalAddress physStart = PAGE_ALIGN_DOWN(tableLocation);
+    PhysicalAddress physEnd   = PAGE_ALIGN_UP(tableLocation + tableLength);
 
-	// Calculate offset of header within first page
-	uint32_t mappingOffset = tableLocation - physStart;
+    // Calculate offset of header within first page
+    uint32_t mappingOffset = tableLocation - physStart;
 
-	// Calculate amount of physical pages and allocate virtual range
-	uint32_t pages = (physEnd - physStart) / PAGE_SIZE;
-	VirtualAddress virtualBase = EvaKernel::evaKernelRangePool->allocate(pages);
+    // Calculate amount of physical pages and allocate virtual range
+    uint32_t       pages       = (physEnd - physStart) / PAGE_SIZE;
+    VirtualAddress virtualBase = EvaKernel::evaKernelRangePool->allocate(pages);
 
-	// Could not find a virtual range of that size
-	if (!virtualBase)
-	{
-		logWarn("%! could not find a free virtual range to map an SDT of size %i pages", "acpi", pages);
-		return 0;
-	}
+    // Could not find a virtual range of that size
+    if ( !virtualBase ) {
+        logWarn("%! could not find a free virtual range to map an SDT of size %i pages",
+                "acpi",
+                pages);
+        return 0;
+    }
 
-	// Map the pages
-	for (VirtualAddress off = 0; off < (physEnd - physStart); off = off + PAGE_SIZE)
-		AddressSpace::map(virtualBase + off, physStart + off, DEFAULT_KERNEL_TABLE_FLAGS, DEFAULT_KERNEL_PAGE_FLAGS);
+    // Map the pages
+    for ( VirtualAddress off = 0; off < (physEnd - physStart); off = off + PAGE_SIZE )
+        AddressSpace::map(virtualBase + off,
+                          physStart + off,
+                          DEFAULT_KERNEL_TABLE_FLAGS,
+                          DEFAULT_KERNEL_PAGE_FLAGS);
 
-	// Get the header pointer
-	AcpiTableHeader *header = (AcpiTableHeader*) (virtualBase + mappingOffset);
+    // Get the header pointer
+    AcpiTableHeader* header = (AcpiTableHeader*)(virtualBase + mappingOffset);
 
-	// Validate the table
-	if (!validateSDT(header))
-	{
-		logWarn("%! descriptor table was not valid", "acpi");
-		return 0;
-	}
+    // Validate the table
+    if ( !validateSDT(header) ) {
+        logWarn("%! descriptor table was not valid", "acpi");
+        return 0;
+    }
 
-	// Now return the tables header
-	return header;
+    // Now return the tables header
+    return header;
 }
 
 /**
@@ -289,15 +284,14 @@ AcpiTableHeader *Acpi::mapSDT(PhysicalAddress tableLocation)
  * @param header:		header to validate
  * @return whether the SDT is valid
  */
-bool Acpi::validateSDT(AcpiTableHeader *header)
-{
-	uint8_t sum = 0;
-	uint8_t *tableBytes = reinterpret_cast<uint8_t*>(header);
+bool Acpi::validateSDT(AcpiTableHeader* header) {
+    uint8_t  sum        = 0;
+    uint8_t* tableBytes = reinterpret_cast<uint8_t*>(header);
 
-	for (uint32_t i = 0; i < header->length; i++)
-		sum += tableBytes[i];
+    for ( uint32_t i = 0; i < header->length; i++ )
+        sum += tableBytes[i];
 
-	return sum == 0;
+    return sum == 0;
 }
 
 /**
@@ -305,11 +299,12 @@ bool Acpi::validateSDT(AcpiTableHeader *header)
  *
  * @return the number of entries
  */
-uint32_t Acpi::getRSDTentryCount()
-{
-	uint32_t entryBytes = rootHeader->length - sizeof(AcpiTableHeader);
-	if (rootIsXSDT) return entryBytes / 8;
-	else return entryBytes / 4;
+uint32_t Acpi::getRSDTentryCount() {
+    uint32_t entryBytes = rootHeader->length - sizeof(AcpiTableHeader);
+    if ( rootIsXSDT )
+        return entryBytes / 8;
+    else
+        return entryBytes / 4;
 }
 
 /**
@@ -318,12 +313,13 @@ uint32_t Acpi::getRSDTentryCount()
  * @param index:		the index of the RSD entry
  * @return the physical address of the entry
  */
-PhysicalAddress Acpi::getRSDTentry(uint32_t index)
-{
-	VirtualAddress startOfEntries = ((VirtualAddress) rootHeader) + sizeof(AcpiTableHeader);
+PhysicalAddress Acpi::getRSDTentry(uint32_t index) {
+    VirtualAddress startOfEntries = ((VirtualAddress)rootHeader) + sizeof(AcpiTableHeader);
 
-	if (rootIsXSDT) return ((uint64_t*) startOfEntries)[index];
-	else return ((uint32_t*) startOfEntries)[index];
+    if ( rootIsXSDT )
+        return ((uint64_t*)startOfEntries)[index];
+    else
+        return ((uint32_t*)startOfEntries)[index];
 
-	return 0;
+    return 0;
 }

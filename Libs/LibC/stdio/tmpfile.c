@@ -18,34 +18,32 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "stdio.h"
-#include "stdio_internal.h"
 #include "errno.h"
 #include "malloc.h"
+#include "stdio.h"
+#include "stdio_internal.h"
 
 /**
  *
  */
 FILE* tmpfile() {
+    // create buffer
+    char* name_buf = (char*)malloc(L_tmpnam);
+    if ( name_buf == NULL ) {
+        errno = ENOMEM;
+        return NULL;
+    }
 
-	// create buffer
-	char* name_buf = (char*) malloc(L_tmpnam);
-	if (name_buf == NULL) {
-		errno = ENOMEM;
-		return NULL;
-	}
+    // create name
+    char* name = tmpnam(name_buf);
+    if ( name == NULL ) {
+        free(name_buf);
+        return NULL;
+    }
 
-	// create name
-	char* name = tmpnam(name_buf);
-	if (name == NULL) {
-		free(name_buf);
-		return NULL;
-	}
+    // open file
+    FILE* file = fopen(name, "w+");
 
-	// open file
-	FILE* file = fopen(name, "w+");
-
-	free(name_buf);
-	return file;
-
+    free(name_buf);
+    return file;
 }

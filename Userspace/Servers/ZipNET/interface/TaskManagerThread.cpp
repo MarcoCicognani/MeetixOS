@@ -25,27 +25,27 @@
 /*
  *
  */
-TaskManagerThread_t::TaskManagerThread_t(Label_t *where,
-                                         const Rectangle &bounds)
-    : internal(where), bounds(bounds) {}
+TaskManagerThread_t::TaskManagerThread_t(Label_t* where, const Rectangle& bounds)
+    : internal(where), bounds(bounds) {
+}
 
 /*
  *
  */
 void TaskManagerThread_t::run() {
-  TaskRegisterID("taskManager");
+    TaskRegisterID("taskManager");
 
-  internal->setVisible(true);
-  internal->setColor(0, RGB(255, 255, 255));
+    internal->setVisible(true);
+    internal->setColor(0, RGB(255, 255, 255));
 
-  while (true) {
-    list<Window_t *> windows = ComponentRegistry_t::getWindowsComponents();
-    stringstream titles;
+    while ( true ) {
+        list<Window_t*> windows = ComponentRegistry_t::getWindowsComponents();
+        stringstream    titles;
 
-    for (Window_t *current : windows)
-      titles << " | " << current->getTitle() << " | ";
+        for ( Window_t* current : windows )
+            titles << " | " << current->getTitle() << " | ";
 
-    internal->setTitle(titles.str());
-    Sleep(100);
-  }
+        internal->setTitle(titles.str());
+        Sleep(100);
+    }
 }

@@ -18,27 +18,26 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
 #include "eva.h"
+#include "string.h"
 
 /**
  *
  */
 char* strncpy(char* dest, const char* src, size_t num) {
+    __DEBUG_TRACE(strncpy);
 
-	__DEBUG_TRACE(strncpy);
+    size_t i = 0;
 
-	size_t i = 0;
+    while ( i < num && src[i] != 0 ) {
+        dest[i] = src[i];
+        ++i;
+    }
 
-	while (i < num && src[i] != 0) {
-		dest[i] = src[i];
-		++i;
-	}
+    while ( i < num ) {
+        dest[i] = 0;
+        ++i;
+    }
 
-	while (i < num) {
-		dest[i] = 0;
-		++i;
-	}
-
-	return dest;
+    return dest;
 }

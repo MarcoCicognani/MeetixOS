@@ -18,20 +18,19 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string.h"
-#include "stdint.h"
 #include "eva.h"
+#include "stdint.h"
+#include "string.h"
 
 /**
  *
  */
 void* memset(void* mem, int value, size_t len) {
+    __DEBUG_TRACE(memset);
 
-	__DEBUG_TRACE(memset);
-
-	uint8_t* mem8 = (uint8_t*) mem;
-	while (len--) {
-		mem8[len] = (uint8_t) value;
-	}
-	return mem;
+    uint8_t* mem8 = (uint8_t*)mem;
+    while ( len-- ) {
+        mem8[len] = (uint8_t)value;
+    }
+    return mem;
 }

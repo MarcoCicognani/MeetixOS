@@ -26,5 +26,5 @@
  *
  */
 ssize_t __stdio_impl_write(const void* buf, size_t len, FILE* stream) {
-	return write(stream->file_descriptor, buf, len);
+    return write(stream->file_descriptor, buf, len);
 }

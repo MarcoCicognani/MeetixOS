@@ -18,30 +18,34 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "unistd.h"
-#include "eva/kernel.h"
 #include "errno.h"
+#include "eva/kernel.h"
+#include "unistd.h"
 
 /**
  * POSIX wrapper for <Seek>
  */
-off_t lseek(int fd, off_t offset, int whence) 
-{
-	// set the seek mode for eva kernel
-	FsSeekMode mode;
-	if (whence == SEEK_SET)  mode = FS_SEEK_SET;
-	else if (whence == SEEK_CUR)  mode = FS_SEEK_CUR;
-	else if (whence == SEEK_END)  mode = FS_SEEK_END;
+off_t lseek(int fd, off_t offset, int whence) {
+    // set the seek mode for eva kernel
+    FsSeekMode mode;
+    if ( whence == SEEK_SET )
+        mode = FS_SEEK_SET;
+    else if ( whence == SEEK_CUR )
+        mode = FS_SEEK_CUR;
+    else if ( whence == SEEK_END )
+        mode = FS_SEEK_END;
 
-	// performs the syscall
-	FsSeekStatus status;
-	int64_t result = SeekS(fd, offset, mode, &status);
+    // performs the syscall
+    FsSeekStatus status;
+    int64_t      result = SeekS(fd, offset, mode, &status);
 
-	// check status
-	if (status == FS_SEEK_SUCCESSFUL)  return result;
-	else if (status == FS_SEEK_INVALID_FD)  errno = EBADF;
-	else errno = EIO;
+    // check status
+    if ( status == FS_SEEK_SUCCESSFUL )
+        return result;
+    else if ( status == FS_SEEK_INVALID_FD )
+        errno = EBADF;
+    else
+        errno = EIO;
 
-	return -1;
+    return -1;
 }
-

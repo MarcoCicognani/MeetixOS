@@ -25,15 +25,14 @@
  *
  */
 int println(const char* format, ...) {
+    va_list va;
+    va_start(va, format);
+    int res = vprintf(format, va);
+    va_end(va);
 
-	va_list va;
-	va_start(va, format);
-	int res = vprintf(format, va);
-	va_end(va);
+    if ( printf("\n") != 1 ) {
+        return EOF;
+    }
 
-	if(printf("\n") != 1) {
-		return EOF;
-	}
-
-	return res;
+    return res;
 }

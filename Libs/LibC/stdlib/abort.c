@@ -18,16 +18,16 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <eva.h>
 #include "stdlib.h"
+
+#include <eva.h>
 
 /**
  *
  */
 void abort() {
-
-	// TODO signal
-	Exit(-1);
-	for (;;)
-		;
+    // TODO signal
+    Exit(-1);
+    for ( ;; )
+        ;
 }
