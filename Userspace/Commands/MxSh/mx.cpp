@@ -28,8 +28,6 @@ using namespace std;
  *	main of shell
  */
 int main(int argc, char* argv[]) {
-    Utils::log("MeetiX Shell");
-
     // create object to class
     MXShell* shell = new MXShell();
 
@@ -50,9 +48,6 @@ int main(int argc, char* argv[]) {
 void MXShell::initialize(int argc, char* argv[]) {
     loadEnvironment();
     mode = parseArguments(argc, argv);
-    for ( auto i = 0; i < argc; ++i ) {
-        Utils::log("[MXShell] : argv[%d] = '%s'", i, argv[i]);
-    }
 }
 
 /**
@@ -60,7 +55,7 @@ void MXShell::initialize(int argc, char* argv[]) {
  */
 void MXShell::loadEnvironment() {
     // instantiate object and provide path
-    environment = new Environment("/cfg/environ/vars");
+    environment = new Environment("/MeetiX/Configs/Environ/Global");
 
     // load file to variables
     environment->load();
@@ -98,8 +93,6 @@ OperativeMode MXShell::parseArguments(int argc, char* argv[]) {
  * start routine of shell from mode provided and argument passed
  */
 void MXShell::startRoutine() {
-    Utils::log("MXShell::startRoutine() - mode = %d", static_cast<int>(mode));
-
     // run selected mode from arguments
     if ( mode == SHELL_MODE_SHELL || mode == SHELL_MODE_SHELL_SHORT )
         shellMode(environment);
@@ -124,12 +117,8 @@ void MXShell::startRoutine() {
  * script mode
  */
 void MXShell::scriptMode() {
-    Utils::log("MXShell::scriptMode()");
-
     // check if there are arguments provided
     if ( !argument.empty() ) {
-        Utils::log("MXShell::scriptMode() -> fopen");
-
         // load given script
         FILE* scriptfile = fopen(argument.c_str(), "r");
 
@@ -144,7 +133,6 @@ void MXShell::scriptMode() {
         scriptParser         = new MXScriptParser(scriptfile);
         LsDocument* document = scriptParser->document();
 
-        Utils::log("MXShell::scriptMode() - interpret");
         // call interpreter
         interpreter->interpret(document);
 

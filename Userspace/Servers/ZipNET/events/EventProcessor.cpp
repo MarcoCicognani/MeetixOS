@@ -22,7 +22,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <components/background.hpp>
 #include <components/button.hpp>
 #include <components/canvas.hpp>
 #include <components/cursor.hpp>
@@ -30,13 +29,11 @@
 #include <components/label.hpp>
 #include <components/text/TextField.hpp>
 #include <components/window.hpp>
-#include <events/event.hpp>
 #include <events/EventProcessor.hpp>
 #include <events/FocusEvent.hpp>
 #include <events/KeyEvent.hpp>
 #include <events/MouseEvent.hpp>
 #include <gui/uispech.hpp>
-#include <input/InputReceiver.hpp>
 #include <interface/ComponentRegistry.hpp>
 #include <interface/TaskManagerThread.hpp>
 #include <layout/GridLayoutManager.hpp>
@@ -47,28 +44,30 @@
 /**
  *
  */
-EventProcessor_t::EventProcessor_t() {
+EventProcessor::EventProcessor() {
     multiclickTimespan = DEFAULT_MULTICLICK_TIMESPAN;
 }
 
 /**
  *
  */
-void EventProcessor_t::bufferKeyEvent(Keyboard::Info keyInfo) {
+void EventProcessor::bufferKeyEvent(Keyboard::Info keyInfo) {
     keyInfoBuffer.push_back(keyInfo);
 }
 
 /**
  *
  */
-void EventProcessor_t::bufferCommandMessage(void* commandMessage) {
+void EventProcessor::bufferCommandMessage(void* commandMessage) {
+    Utils::log("EventProcessor::bufferCommandMessage() : Buffering 0x%x", commandMessage);
     commandMessageBuffer.push_back(commandMessage);
+    Utils::log("EventProcessor::bufferCommandMessage() : Done");
 }
 
 /**
  *
  */
-void EventProcessor_t::process() {
+void EventProcessor::process() {
     // process key events
     while ( keyInfoBuffer.size() > 0 ) {
         translateKeyEvent(keyInfoBuffer.back());
@@ -96,7 +95,7 @@ void EventProcessor_t::process() {
 
         // add generated response to queue
         if ( bufResponse.message != 0 )
-            ZipNET::instance()->responderThread->sendResponse(bufResponse);
+            ZipNET::instance()->m_responder_thread->sendResponse(bufResponse);
 
         // delete request buffer
         delete (MessageHeader*)requestBuffer;
@@ -106,9 +105,9 @@ void EventProcessor_t::process() {
 /**
  *
  */
-void EventProcessor_t::processCommand(Tid                       senderTid,
-                                      UiMessageHeader*          requestHeader,
-                                      CommandMessageResponse_t& responseOut) {
+void EventProcessor::processCommand(Tid                       senderTid,
+                                    UiMessageHeader*          requestHeader,
+                                    CommandMessageResponse_t& responseOut) {
     if ( requestHeader->id == UI_PROTOCOL_CREATE_COMPONENT ) {
         Component_t*  component   = 0;
         UiComponentID componentID = -1;
@@ -150,7 +149,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
         // register the component
         if ( component != 0 )
-            componentID = ComponentRegistry_t::add(GetPidForTid(senderTid), component);
+            componentID = ComponentRegistry::instance().add(GetPidForTid(senderTid), component);
 
         // create response message
         UiCreateComponentResponse* response = new UiCreateComponentResponse();
@@ -166,7 +165,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
         UiRemoveComponentRequest* deletionRequest = (UiRemoveComponentRequest*)requestHeader;
 
         // remove from regex
-        ComponentRegistry_t::removeComponent(senderTid, deletionRequest->id);
+        ComponentRegistry::instance().removeComponent(senderTid, deletionRequest->id);
         klog("removed component %i of process %i", deletionRequest->id, senderTid);
 
         // we not sent a response because this protocol is called on destructor
@@ -193,8 +192,8 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
     else if ( requestHeader->id == UI_PROTOCOL_ADD_COMPONENT ) {
         UiComponentAddChildRequest* request = (UiComponentAddChildRequest*)requestHeader;
-        Component_t*                parent  = ComponentRegistry_t::get(request->parent);
-        Component_t*                child   = ComponentRegistry_t::get(request->child);
+        Component_t*                parent  = ComponentRegistry::instance().get(request->parent);
+        Component_t*                child   = ComponentRegistry::instance().get(request->child);
 
         // create response message
         UiComponentAddChildResponse* response = new UiComponentAddChildResponse();
@@ -219,7 +218,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
     else if ( requestHeader->id == UI_PROTOCOL_SET_BOUNDS ) {
         UiComponentSetBoundsRequest* request   = (UiComponentSetBoundsRequest*)requestHeader;
-        Component_t*                 component = ComponentRegistry_t::get(request->id);
+        Component_t*                 component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiComponentSetBoundsResponse* response = new UiComponentSetBoundsResponse();
@@ -237,7 +236,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
     else if ( requestHeader->id == UI_PROTOCOL_GET_BOUNDS ) {
         UiComponentGetBoundsRequest* request   = (UiComponentGetBoundsRequest*)requestHeader;
-        Component_t*                 component = ComponentRegistry_t::get(request->id);
+        Component_t*                 component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiComponentGetBoundsResponse* response = new UiComponentGetBoundsResponse();
@@ -255,7 +254,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
     else if ( requestHeader->id == UI_PROTOCOL_SET_VISIBLE ) {
         UiComponentSetVisibleRequest* request   = (UiComponentSetVisibleRequest*)requestHeader;
-        Component_t*                  component = ComponentRegistry_t::get(request->id);
+        Component_t*                  component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiComponentSetVisibleResponse* response = new UiComponentSetVisibleResponse();
@@ -274,7 +273,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
     else if ( requestHeader->id == UI_PROTOCOL_SET_LISTENER ) {
         UiComponentSetListenerRequest* request   = (UiComponentSetListenerRequest*)requestHeader;
-        Component_t*                   component = ComponentRegistry_t::get(request->id);
+        Component_t*                   component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiComponentSetListenerResponse* response = new UiComponentSetListenerResponse();
@@ -294,7 +293,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
     else if ( requestHeader->id == UI_PROTOCOL_SET_NUMERIC_PROPERTY ) {
         UiComponentSetNumericPropertyRequest* request
             = (UiComponentSetNumericPropertyRequest*)requestHeader;
-        Component_t* component = ComponentRegistry_t::get(request->id);
+        Component_t* component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiComponentSetNumericPropertyResponse* response
@@ -318,7 +317,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
     else if ( requestHeader->id == UI_PROTOCOL_GET_NUMERIC_PROPERTY ) {
         UiComponentGetNumericPropertyRequest* request
             = (UiComponentGetNumericPropertyRequest*)requestHeader;
-        Component_t* component = ComponentRegistry_t::get(request->id);
+        Component_t* component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiComponentGetNumericPropertyResponse* response
@@ -344,7 +343,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
     else if ( requestHeader->id == UI_PROTOCOL_SET_TITLE ) {
         UiComponentSetTitleRequest* request   = (UiComponentSetTitleRequest*)requestHeader;
-        Component_t*                component = ComponentRegistry_t::get(request->id);
+        Component_t*                component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiComponentSetTitleResponse* response = new UiComponentSetTitleResponse();
@@ -369,7 +368,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
     else if ( requestHeader->id == UI_PROTOCOL_GET_TITLE ) {
         UiComponentGetTitleRequest* request   = (UiComponentGetTitleRequest*)requestHeader;
-        Component_t*                component = ComponentRegistry_t::get(request->id);
+        Component_t*                component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiComponentGetTitleResponse* response = new UiComponentGetTitleResponse();
@@ -405,7 +404,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
     else if ( requestHeader->id == UI_PROTOCOL_SET_GHOST_TITLE ) {
         UiComponentSetGhostTitleRequest* request = (UiComponentSetGhostTitleRequest*)requestHeader;
-        Component_t*                     component = ComponentRegistry_t::get(request->id);
+        Component_t*                     component = ComponentRegistry::instance().get(request->id);
 
         UiComponentSetGhostTitleResponse* response = new UiComponentSetGhostTitleResponse();
         if ( component == nullptr )
@@ -424,7 +423,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
     else if ( requestHeader->id == UI_PROTOCOL_SET_TITLE_FONT ) {
         UiComponentSetTitleFontRequest* request   = (UiComponentSetTitleFontRequest*)requestHeader;
-        Component_t*                    component = ComponentRegistry_t::get(request->id);
+        Component_t*                    component = ComponentRegistry::instance().get(request->id);
 
         UiComponentSetTitleFontResponse* response = new UiComponentSetTitleFontResponse();
         if ( component == nullptr )
@@ -444,7 +443,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
     else if ( requestHeader->id == UI_PROTOCOL_CANVAS_ACK_BUFFER_REQUEST ) {
         UiComponentCanvasAckBufferRequest* request
             = (UiComponentCanvasAckBufferRequest*)requestHeader;
-        Component_t* component = ComponentRegistry_t::get(request->id);
+        Component_t* component = ComponentRegistry::instance().get(request->id);
 
         Canvas_t* canvas = (Canvas_t*)component;
         canvas->clientHasAcknowledgedCurrentBuffer();
@@ -453,15 +452,15 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
     else if ( requestHeader->id == UI_PROTOCOL_CANVAS_BLIT ) {
         UiComponentCanvasAckBufferRequest* request
             = (UiComponentCanvasAckBufferRequest*)requestHeader;
-        Component_t* component = ComponentRegistry_t::get(request->id);
+        Component_t* component = ComponentRegistry::instance().get(request->id);
 
         Canvas_t* canvas = (Canvas_t*)component;
         canvas->blit();
     }
 
     else if ( requestHeader->id == UI_PROTOCOL_REGISTER_DESKTOP_CANVAS ) {
-        UiRegisterDesktopCanvasRequest* request   = (UiRegisterDesktopCanvasRequest*)requestHeader;
-        Component_t*                    component = ComponentRegistry_t::get(request->canvasID);
+        UiRegisterDesktopCanvasRequest* request = (UiRegisterDesktopCanvasRequest*)requestHeader;
+        Component_t* component = ComponentRegistry::instance().get(request->canvasID);
 
         // create response message
         UiRegisterDesktopCanvasResponse* response = new UiRegisterDesktopCanvasResponse();
@@ -485,7 +484,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
     else if ( requestHeader->id == UI_PROTOCOL_SET_PNG ) {
         UiComponentSetupPng* request   = (UiComponentSetupPng*)requestHeader;
-        Component_t*         component = ComponentRegistry_t::get(request->id);
+        Component_t*         component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiComponentSetupPngResponse* response = new UiComponentSetupPngResponse();
@@ -511,7 +510,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
     // setup component color
     else if ( requestHeader->id == UI_PROTOCOL_SET_COMPONENT_COLOR ) {
         UiComponentColor* request   = (UiComponentColor*)requestHeader;
-        Component_t*      component = ComponentRegistry_t::get(request->id);
+        Component_t*      component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiComponentColorResponse* response = new UiComponentColorResponse();
@@ -564,7 +563,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
     // set focus component
     else if ( requestHeader->id == UI_PROTOCOL_SET_FOCUS ) {
         UiComponentFocusRequest* request   = (UiComponentFocusRequest*)requestHeader;
-        Component_t*             component = ComponentRegistry_t::get(request->id);
+        Component_t*             component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiComponentFocusResponse* response = new UiComponentFocusResponse();
@@ -582,8 +581,8 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
     // set font size on label
     else if ( requestHeader->id == UI_PROTOCOL_SET_FONT_SIZE ) {
-        UiSetFontSizeRequest* request   = (UiSetFontSizeRequest*)requestHeader;
-        Component_t*          component = ComponentRegistry_t::get(request->id);
+        auto request   = (UiSetFontSizeRequest*)requestHeader;
+        auto component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiSetFontSizeResponse* response = new UiSetFontSizeResponse();
@@ -606,8 +605,8 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
     }
 
     else if ( requestHeader->id == UI_PROTOCOL_SET_TITLE_ALIGNMENT ) {
-        UiSetTitleAlignmentRequest* request   = (UiSetTitleAlignmentRequest*)requestHeader;
-        Component_t*                component = ComponentRegistry_t::get(request->id);
+        auto request   = (UiSetTitleAlignmentRequest*)requestHeader;
+        auto component = ComponentRegistry::instance().get(request->id);
 
         // create response message
         UiSetTitleAlignmentResponse* response = new UiSetTitleAlignmentResponse();
@@ -631,7 +630,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 
     else if ( requestHeader->id == UI_PROTOCOL_REGISTER_TASK_MANAGER ) {
         UiRegisterTaskManagerRequest* request   = (UiRegisterTaskManagerRequest*)requestHeader;
-        Component_t*                  component = ComponentRegistry_t::get(request->id);
+        Component_t*                  component = ComponentRegistry::instance().get(request->id);
 
         UiRegisterTaskManagerResponse* response = new UiRegisterTaskManagerResponse();
         if ( component == nullptr )
@@ -658,7 +657,7 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
         UiSetMouseCursorFormRequest*  request  = (UiSetMouseCursorFormRequest*)requestHeader;
         UiSetMouseCursorFormResponse* response = new UiSetMouseCursorFormResponse();
 
-        if ( Cursor_t::set(request->name) )
+        if ( Cursor::instance().set(request->name) )
             response->status = UI_PROTOCOL_SUCCESS;
         else
             response->status = UI_PROTOCOL_FAIL;
@@ -671,52 +670,53 @@ void EventProcessor_t::processCommand(Tid                       senderTid,
 /**
  *
  */
-void EventProcessor_t::translateKeyEvent(Keyboard::Info& info) {
-    if ( Cursor_t::focusedComponent ) {
+void EventProcessor::translateKeyEvent(Keyboard::Info& info) {
+    if ( Cursor::instance().focusedComponent ) {
         // process
         KeyEvent_t k;
         k.info = info;
-        ZipNET::instance()->dispatch(Cursor_t::focusedComponent, k);
+        ZipNET::instance()->dispatch(Cursor::instance().focusedComponent, k);
     }
 }
 
 /**
  *
  */
-void EventProcessor_t::processMouseState() {
-    Point       previousPosition       = Cursor_t::position;
-    MouseButton previousPressedButtons = Cursor_t::pressedButtons;
+void EventProcessor::processMouseState() {
+    Point       previousPosition       = Cursor::instance().position;
+    MouseButton previousPressedButtons = Cursor::instance().pressedButtons;
 
     Dimension resolution = ZipNET::instance()->videoOutput->getResolution();
     ZipNET*   instance   = ZipNET::instance();
     Screen_t* screen     = instance->screen;
 
-    if ( Cursor_t::position != Cursor_t::nextPosition ) {
+    if ( Cursor::instance().position != Cursor::instance().nextPosition ) {
         // invalidate old location
-        screen->markDirty(Cursor_t::getArea());
+        screen->markDirty(Cursor::instance().getArea());
 
         // set new cursor position
-        Cursor_t::position.x = Cursor_t::nextPosition.x;
-        Cursor_t::position.y = Cursor_t::nextPosition.y;
+        Cursor::instance().position.x = Cursor::instance().nextPosition.x;
+        Cursor::instance().position.y = Cursor::instance().nextPosition.y;
 
         // Invalidate new location
-        screen->markDirty(Cursor_t::getArea());
+        screen->markDirty(Cursor::instance().getArea());
     }
 
     // set pressed buttons
-    Cursor_t::pressedButtons = Cursor_t::nextPressedButtons;
+    Cursor::instance().pressedButtons = Cursor::instance().nextPressedButtons;
 
     MouseEvent_t baseEvent;
-    baseEvent.screenPosition = Cursor_t::position;
+    baseEvent.screenPosition = Cursor::instance().position;
     baseEvent.position       = baseEvent.screenPosition;
-    baseEvent.buttons        = Cursor_t::pressedButtons;
+    baseEvent.buttons        = Cursor::instance().pressedButtons;
 
     // Press
-    if ( (!(previousPressedButtons & MOUSE_BUTTON_1) && (Cursor_t::pressedButtons & MOUSE_BUTTON_1))
+    if ( (!(previousPressedButtons & MOUSE_BUTTON_1)
+          && (Cursor::instance().pressedButtons & MOUSE_BUTTON_1))
          || (!(previousPressedButtons & MOUSE_BUTTON_2)
-             && (Cursor_t::pressedButtons & MOUSE_BUTTON_2))
+             && (Cursor::instance().pressedButtons & MOUSE_BUTTON_2))
          || (!(previousPressedButtons & MOUSE_BUTTON_3)
-             && (Cursor_t::pressedButtons & MOUSE_BUTTON_3)) ) {
+             && (Cursor::instance().pressedButtons & MOUSE_BUTTON_3)) ) {
         // Prepare event
         MouseEvent_t pressEvent = baseEvent;
         pressEvent.type         = MOUSE_EVENT_PRESS;
@@ -737,25 +737,26 @@ void EventProcessor_t::processMouseState() {
         // Send event
         instance->dispatch(screen, pressEvent);
 
-        Component_t* hitComponent = screen->getComponentAt(Cursor_t::position);
+        Component_t* hitComponent = screen->getComponentAt(Cursor::instance().position);
         if ( hitComponent != 0 ) {
             // Prepare drag
             if ( hitComponent != screen )
-                Cursor_t::draggedComponent = hitComponent;
+                Cursor::instance().draggedComponent = hitComponent;
 
             // Switch focus
-            if ( hitComponent != Cursor_t::focusedComponent ) {
+            if ( hitComponent != Cursor::instance().focusedComponent ) {
                 // Old loses focus
-                if ( Cursor_t::focusedComponent != 0 ) {
+                if ( Cursor::instance().focusedComponent != 0 ) {
                     FocusEvent_t focusLostEvent;
                     focusLostEvent.type                = FOCUS_EVENT_LOST;
                     focusLostEvent.newFocusedComponent = hitComponent;
-                    instance->dispatchUpwards(Cursor_t::focusedComponent, focusLostEvent);
+                    instance->dispatchUpwards(Cursor::instance().focusedComponent, focusLostEvent);
 
                     // Post event to client
                     EventListenerInfo_t listenerInfo;
-                    if ( Cursor_t::focusedComponent->getListener(UI_COMPONENT_EVENT_TYPE_FOCUS,
-                                                                 listenerInfo) ) {
+                    if ( Cursor::instance().focusedComponent->getListener(
+                             UI_COMPONENT_EVENT_TYPE_FOCUS,
+                             listenerInfo) ) {
                         UiComponentFocusEvent focusEvent;
                         focusEvent.header.type        = UI_COMPONENT_EVENT_TYPE_FOCUS;
                         focusEvent.header.componentID = listenerInfo.componentID;
@@ -775,13 +776,14 @@ void EventProcessor_t::processMouseState() {
                 FocusEvent_t focusGainedEvent;
                 focusGainedEvent.type                = FOCUS_EVENT_GAINED;
                 focusGainedEvent.newFocusedComponent = hitComponent;
-                Cursor_t::focusedComponent
+                Cursor::instance().focusedComponent
                     = instance->dispatchUpwards(hitComponent, focusGainedEvent);
 
                 // Post event to client
                 EventListenerInfo_t listenerInfo;
-                if ( Cursor_t::focusedComponent->getListener(UI_COMPONENT_EVENT_TYPE_FOCUS,
-                                                             listenerInfo) ) {
+                if ( Cursor::instance().focusedComponent->getListener(
+                         UI_COMPONENT_EVENT_TYPE_FOCUS,
+                         listenerInfo) ) {
                     UiComponentFocusEvent focusEvent;
                     focusEvent.header.type        = UI_COMPONENT_EVENT_TYPE_FOCUS;
                     focusEvent.header.componentID = listenerInfo.componentID;
@@ -797,16 +799,16 @@ void EventProcessor_t::processMouseState() {
     }
 
     else if ( ((previousPressedButtons & MOUSE_BUTTON_1)
-               && !(Cursor_t::pressedButtons & MOUSE_BUTTON_1))
+               && !(Cursor::instance().pressedButtons & MOUSE_BUTTON_1))
               || ((previousPressedButtons & MOUSE_BUTTON_2)
-                  && !(Cursor_t::pressedButtons & MOUSE_BUTTON_2))
+                  && !(Cursor::instance().pressedButtons & MOUSE_BUTTON_2))
               || ((previousPressedButtons & MOUSE_BUTTON_3)
-                  && !(Cursor_t::pressedButtons & MOUSE_BUTTON_3)) ) {
-        if ( Cursor_t::draggedComponent ) {
+                  && !(Cursor::instance().pressedButtons & MOUSE_BUTTON_3)) ) {
+        if ( Cursor::instance().draggedComponent ) {
             MouseEvent_t releaseDraggedEvent = baseEvent;
             releaseDraggedEvent.type         = MOUSE_EVENT_DRAG_RELEASE;
-            instance->dispatchUpwards(Cursor_t::draggedComponent, releaseDraggedEvent);
-            Cursor_t::draggedComponent = 0;
+            instance->dispatchUpwards(Cursor::instance().draggedComponent, releaseDraggedEvent);
+            Cursor::instance().draggedComponent = 0;
         }
 
         MouseEvent_t releaseEvent = baseEvent;
@@ -816,34 +818,35 @@ void EventProcessor_t::processMouseState() {
         // Move or drag
     }
 
-    else if ( Cursor_t::position != previousPosition ) {
+    else if ( Cursor::instance().position != previousPosition ) {
         // Post enter or leave events
-        Component_t* hovered = screen->getComponentAt(Cursor_t::position);
-        if ( (hovered != Cursor_t::hoveredComponent)
-             && (Cursor_t::draggedComponent != 0
-                 && Cursor_t::draggedComponent != Cursor_t::hoveredComponent) ) {
+        Component_t* hovered = screen->getComponentAt(Cursor::instance().position);
+        if ( (hovered != Cursor::instance().hoveredComponent)
+             && (Cursor::instance().draggedComponent != 0
+                 && Cursor::instance().draggedComponent
+                        != Cursor::instance().hoveredComponent) ) {
             // Leave
-            if ( Cursor_t::hoveredComponent ) {
+            if ( Cursor::instance().hoveredComponent ) {
                 MouseEvent_t leaveEvent = baseEvent;
                 leaveEvent.type         = MOUSE_EVENT_LEAVE;
-                instance->dispatchUpwards(Cursor_t::hoveredComponent, leaveEvent);
-                Cursor_t::hoveredComponent = 0;
+                instance->dispatchUpwards(Cursor::instance().hoveredComponent, leaveEvent);
+                Cursor::instance().hoveredComponent = 0;
             }
 
             // Enter
             else if ( hovered ) {
-                MouseEvent_t enterEvent    = baseEvent;
-                enterEvent.type            = MOUSE_EVENT_ENTER;
-                Cursor_t::hoveredComponent = hovered;
-                instance->dispatchUpwards(Cursor_t::hoveredComponent, enterEvent);
+                MouseEvent_t enterEvent              = baseEvent;
+                enterEvent.type                      = MOUSE_EVENT_ENTER;
+                Cursor::instance().hoveredComponent = hovered;
+                instance->dispatchUpwards(Cursor::instance().hoveredComponent, enterEvent);
             }
         }
 
         // Dragging
-        if ( Cursor_t::draggedComponent != 0 ) {
+        if ( Cursor::instance().draggedComponent != 0 ) {
             MouseEvent_t dragEvent = baseEvent;
             dragEvent.type         = MOUSE_EVENT_DRAG;
-            instance->dispatchUpwards(Cursor_t::draggedComponent, dragEvent);
+            instance->dispatchUpwards(Cursor::instance().draggedComponent, dragEvent);
 
         }
 

@@ -10,6 +10,7 @@
       <file path="$PROJECT_DIR$/Libs/Include/freetype2" />
       <file path="$PROJECT_DIR$/Libs/Include/pixman-1" />
       <file path="$PROJECT_DIR$/Toolchain/Local" />
+      <file path="$PROJECT_DIR$/Toolchain/NewLocal" />
       <file path="$PROJECT_DIR$/Toolchain/Tarballs" />
     </excludeRoots>
   </component>

@@ -27,6 +27,7 @@
 
 #include <cairo/cairo.h>
 #include <components/component.hpp>
+#include <components/screen.hpp>
 #include <cstdio>
 #include <events/MouseEvent.hpp>
 #include <fstream>
@@ -34,7 +35,6 @@
 #include <gui/uispech.hpp>
 #include <map>
 #include <sstream>
-#include <string.h>
 
 #define FALLBACK_CURSOR_SIZE 10
 
@@ -50,36 +50,47 @@ struct CursorConfiguration {
 /**
  *
  */
-class Cursor_t {
+class Cursor {
 public:
-    static Point       position;
-    static Point       nextPosition;
-    static MouseButton pressedButtons;
-    static MouseButton nextPressedButtons;
+    static Cursor& instance();
 
-    static Component_t* draggedComponent;
-    static Component_t* hoveredComponent;
-    static Component_t* focusedComponent;
+    Point       position{ 0, 0 };
+    Point       nextPosition{ 0, 0 };
+    MouseButton pressedButtons{ MOUSE_BUTTON_NONE };
+    MouseButton nextPressedButtons{ MOUSE_BUTTON_NONE };
 
-    /**
-     *
-     */
-    static void paint(Graphics* global);
+    Component_t* draggedComponent{ nullptr };
+    Component_t* hoveredComponent{ nullptr };
+    Component_t* focusedComponent{ nullptr };
 
     /**
      *
      */
-    static Rectangle getArea();
+    void paint(Graphics* global);
 
     /**
      *
      */
-    static bool set(std::string name);
+    Rectangle getArea();
 
     /**
      *
      */
-    static bool load(std::string cursorPath);
+    bool set(std::string name);
+
+    /**
+     *
+     */
+    bool load(const std::string& cursor_path);
+
+private:
+    Cursor() = default;
+
+    map<string, CursorConfiguration> cursorConfigurations{};
+    CursorConfiguration*             currentConfiguration{ nullptr };
+
+    cairo_t*  cr{ nullptr };
+    Screen_t* screen{ nullptr };
 };
 
 #endif

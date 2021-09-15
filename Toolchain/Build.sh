@@ -56,7 +56,7 @@ for CMD_ARG in "$@"; do
 done
 
 # Use the amount of CPUs as JOB_COUNT
-if [ -f "/proc/cpuinfo" ]; then
+if [ -f /proc/cpuinfo ]; then
     BUILD_JOBS=$(grep -c '^processor[[:space:]]*:' </proc/cpuinfo)
 else
     BUILD_JOBS=1
@@ -175,10 +175,10 @@ dir_push ../Build/Release
     ninja crt0 crti crtn || exit 1
 
     echo "Building ${GREEN}libApi${RESET}"
-    ninja Api || exit 1
+    ninja LibApi || exit 1
 
     echo "Building ${GREEN}libC${RESET}"
-    ninja C || exit 1
+    ninja LibC || exit 1
 dir_pop
 
 # Build GCC libstdc++-v3

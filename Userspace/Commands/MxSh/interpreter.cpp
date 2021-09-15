@@ -31,8 +31,6 @@ void MXinterpreter::interpret(LsDocument* script) {
     for ( LsStatement* stat : script->statements ) {
         string command = stat->pairs[0]->key;
 
-        Log("Parsing statement");
-
         if ( command == "printf" )
             print(stat);
         else if ( command == "driver" )
@@ -60,8 +58,8 @@ void MXinterpreter::interpret(LsDocument* script) {
  *	print instruction, print on COM1 and std_out
  */
 void MXinterpreter::print(LsStatement* stat) {
-    // cout << stat->pairs[0]->value << endl;
-    // Utils::log(stat->pairs[0]->value.c_str());
+    cout << stat->pairs[0]->value << endl;
+    Utils::log(stat->pairs[0]->value.c_str());
 }
 
 /**
@@ -96,27 +94,25 @@ void MXinterpreter::exec(string path, string args) {
  */
 void MXinterpreter::wait(LsStatement* stat) {
     string identifier = stat->pairs[0]->value;
-    klog(("waiting for '" + identifier + "'").c_str());
-    Pid id;
-    while ( (id = TaskGetID(identifier.c_str())) == -1 )
+    Utils::log("Waiting for task which register '%s'", identifier.c_str());
+
+    while ( TaskGetID(identifier.c_str()) < 0 )
         Yield();
-    klog("ID %s registered", identifier.c_str());
+
+    Utils::log("ID '%s' registered", identifier.c_str());
 }
 
 /**
  *	lock application for n milliseconds
  */
 void MXinterpreter::sleep(LsStatement* stat) {
-    int          time;
-    stringstream ss;
+    int time;
 
+    stringstream ss;
     ss << stat->pairs[0]->value;
     ss >> time;
 
-    stringstream hp;
-    hp << "sleeping for " << time;
-    Utils::log(hp.str());
-    cout << hp.str();
+    Utils::log("Sleeping for %d", time);
 
     Sleep(time);
 }
@@ -179,14 +175,19 @@ string MXinterpreter::findParam(LsStatement* stat, string key, string def) {
  *	exec application with provided security level
  */
 Pid MXinterpreter::execWithSpawner(string path, string args, SecurityLevel slvl) {
-    Pid          pid  = -1;
-    SpawnStatus  stat = SpawnP(path.c_str(), args.c_str(), "/", slvl, &pid);
-    stringstream out;
+    auto pid          = -1;
+    auto spawn_status = SpawnP(path.c_str(), args.c_str(), "/", slvl, &pid);
 
-    if ( stat != SPAWN_STATUS_SUCCESSFUL ) {
-        out << "failed to spawn '" << path << "' with code " << stat;
+    stringstream out;
+    out << "Spawned '" << path << "' with status : " << spawn_status;
+    Utils::log(out.str());
+
+    if ( spawn_status != SPAWN_STATUS_SUCCESSFUL ) {
+        std::stringstream ss;
+        ss << "failed to spawn '" << path << "' with code " << spawn_status;
+
         Utils::log(out.str());
-        cout << "failed to spawn '" << path << "' with code " << stat << endl;
+        cout << ss.str() << endl;
     }
 
     return pid;

@@ -63,9 +63,9 @@ typedef uint32_t ComponentRequirement_t;
  */
 class Component_t : public BoundsEventComponent_t {
 private:
-    Rectangle            bounds;
-    Component_t*         parent;
-    vector<Component_t*> children;
+    Rectangle            bounds{};
+    Component_t*         parent{ nullptr};
+    vector<Component_t*> children{};
 
     Dimension minimumSize;
     Dimension preferredSize;
@@ -95,7 +95,7 @@ public:
     Component_t(bool transparentBackground = false)
         : id(-1), graphics(transparentBackground), visible(true),
           requirements(COMPONENT_REQUIREMENT_ALL), childRequirements(COMPONENT_REQUIREMENT_ALL),
-          parent(0), layoutManager(0), BoundsEventComponent_t(this) {
+          parent(nullptr), layoutManager(nullptr), BoundsEventComponent_t(this) {
     }
 
     /**
@@ -316,7 +316,7 @@ public:
     /**
      * Places the flag for the given requirement in the list of child-requirements.
      */
-    void markChildsFor(ComponentRequirement_t req);
+    void mark_children_for(ComponentRequirement_t req);
 
     /**
      * Resolves the given requirement

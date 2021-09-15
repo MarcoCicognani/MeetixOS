@@ -26,17 +26,16 @@
 #include <interface/CommandMessageReceiverThread.hpp>
 #include <stdio.h>
 #include <string.h>
+#include <utils/utils.hpp>
 #include <zipNET.hpp>
 
 /**
  *
  */
-void CommandMessageReceiverThread_t::run() {
-    TaskRegisterID("messageReceiver");
-
+void CommandMessageReceiverThread::run() {
     // create a buffer for incoming command messages
-    size_t   bufferLength = sizeof(MessageHeader) + UI_MAXIMUM_MESSAGE_SIZE;
-    uint8_t* buffer       = new uint8_t[bufferLength];
+    auto bufferLength = sizeof(MessageHeader) + UI_MAXIMUM_MESSAGE_SIZE;
+    auto buffer       = new uint8_t[bufferLength];
 
     while ( !stop ) {
         // receive messages
@@ -50,6 +49,7 @@ void CommandMessageReceiverThread_t::run() {
             break;
 
         if ( stat == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+            Utils::log("Command receiver have a messageee");
             MessageHeader* requestMessage = (MessageHeader*)buffer;
 
             // add message to the event processing queue
@@ -59,13 +59,11 @@ void CommandMessageReceiverThread_t::run() {
 
             ZipNET::instance()->eventProcessor->bufferCommandMessage(messageCopy);
             ZipNET::instance()->triggerRender();
-
-        }
-
-        else if ( stat == MESSAGE_RECEIVE_STATUS_EXCEEDS_BUFFER_SIZE )
+        } else if ( stat == MESSAGE_RECEIVE_STATUS_EXCEEDS_BUFFER_SIZE ) {
             klog("could not receive an incoming request, message exceeded buffer size");
-        else
+        } else {
             klog("an unknown error occurred when trying to receive a UI request (code: %i)", stat);
+        }
     }
 
     delete buffer;

@@ -40,10 +40,10 @@
 class ZipNET {
 public:
     VideoOutput_t*                   videoOutput;
-    EventProcessor_t*                eventProcessor;
+    EventProcessor*                eventProcessor;
     Screen_t*                        screen;
     Background_t*                    background;
-    CommandMessageResponderThread_t* responderThread;
+    CommandMessageResponderThread*   m_responder_thread;
     uint8_t                          renderAtom;
     Graphics                         global;
 
@@ -57,7 +57,7 @@ public:
     /**
      *
      */
-    void mainLoop(Rectangle screenBounds);
+    [[noreturn]] void mainLoop(Rectangle screenBounds);
 
     /**
      * Blits the component state.

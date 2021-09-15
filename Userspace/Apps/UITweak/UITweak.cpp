@@ -48,7 +48,7 @@ static uint8_t lock = true;
  */
 void findBackgroundsPaths() {
     // create a base path
-    std::string basepath = "/cfg/gui/background/";
+    std::string basepath = "/MeetiX/Configs/WM/Backgrounds/";
 
     // open the background directory
     FsDirectoryIterator* iterator = OpenDirectory(basepath.c_str());
@@ -61,9 +61,7 @@ void findBackgroundsPaths() {
 
         // only on successful read
         if ( stat == FS_READ_DIRECTORY_SUCCESSFUL ) {
-            // check if node exist and it isn't a cfg file // TODO remove .directory from
-            // ramdisk!!!!!
-            if ( node && strcmp(node->name, ".directory") != 0 )
+            if ( node )
                 backgrounds.push_back(basepath + node->name);
         }
 

@@ -27,20 +27,18 @@
  */
 class Lock {
 protected:
-    uint8_t locked; // internal locker flag
+    uint8_t locked{ false }; // internal locker flag
 
 public:
     /**
      * empty constructor
      */
-    Lock() : locked(false) {
-    }
+    Lock() = default;
 
     /**
      * destructor
      */
-    virtual ~Lock() {
-    }
+    virtual ~Lock() = default;
 
     /**
      * perform the lock
@@ -59,7 +57,7 @@ public:
     /**
      * return the locker flag
      */
-    bool isLocked() {
+    bool isLocked() const {
         return locked;
     }
 };

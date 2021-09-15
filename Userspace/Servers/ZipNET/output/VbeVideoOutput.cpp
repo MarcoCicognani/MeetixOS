@@ -52,10 +52,7 @@ void VbeVideoOutput_t::blit(const Rectangle& invalid,
 
             position = position + videoModeInformation.bpsl;
         }
-
-    }
-
-    else if ( bpp == 24 ) {
+    } else if ( bpp == 24 ) {
         for ( int y = invalid.y; y < bottom; y++ ) {
             for ( int x = invalid.x; x < right; x++ ) {
                 Color_t color       = source[y * sourceSize.width + x];

@@ -20,6 +20,7 @@
 #ifndef MEETIX_LIBRARY_IO_KEYBOARD
 #define MEETIX_LIBRARY_IO_KEYBOARD
 
+#include <map>
 #include <sstream>
 #include <stdint.h>
 #include <string>
@@ -28,34 +29,6 @@
  * static class to manage keyboard
  */
 class Keyboard {
-private:
-    /**
-     * remove constructor
-     */
-    Keyboard() = delete;
-
-    /**
-     * register the keyboard
-     * to the shared memory area of the ps2 driver
-     */
-    static void registerKeyboard();
-
-    /**
-     * load the scancode file of the layout path provided
-     *
-     * @param iso:		the path to the iso file
-     * @return whether the operation success
-     */
-    static bool loadScancodeLayout(const std::string& iso);
-
-    /**
-     * load the conversion file of the layout path provided
-     *
-     * @param iso:		the path to the iso file
-     * @return whether the operation success
-     */
-    static bool loadConversionLayout(const std::string& iso);
-
 public:
     /**
      * basic keyboard infos,
@@ -199,6 +172,8 @@ public:
         }
     };
 
+    static Keyboard& instance();
+
     /**
      * read a key from shared ps2 driver area
      * and return an info instance with the code of the readed key
@@ -206,7 +181,7 @@ public:
      * @param breakCondition:	an additional flag to sincronize the reading
      * @return an info instance with the key code readed
      */
-    static Info read(bool* breakCondition = nullptr);
+    Info read(bool* breakCondition = nullptr);
 
     /**
      * convert a scancode key to a keyboard key name
@@ -215,7 +190,7 @@ public:
      * @param out:			the info to fill to
      * @return whether the conversion success
      */
-    static bool keyForScancode(uint8_t scancode, Info* out);
+    bool keyForScancode(uint8_t scancode, Info* out);
 
     /**
      * convert the provided keyboard info to the corresponsing character
@@ -223,7 +198,7 @@ public:
      * @param info:		the keyboard key name
      * @return the converted character
      */
-    static char charForKey(const Info& info);
+    char charForKey(const Info& info);
 
     /**
      * creates a full keyboard info from a basic info
@@ -231,12 +206,12 @@ public:
      * @param basic:	the basic info to convert
      * @return the full key info
      */
-    static Info fullKeyInfo(const InfoBasic& basic);
+    Info fullKeyInfo(const InfoBasic& basic);
 
     /**
      * @return the name of the current layout
      */
-    static std::string getCurrentLayout();
+    std::string getCurrentLayout();
 
     /**
      * load a new layout from filepath
@@ -244,7 +219,57 @@ public:
      * @param iso:		the path to the iso file
      * @return whether the operation success
      */
-    static bool loadLayout(const std::string& iso);
+    bool loadLayout(const std::string& iso);
+
+private:
+    Keyboard() = default;
+
+    /**
+     * register the keyboard
+     * to the shared memory area of the ps2 driver
+     */
+    void registerKeyboard();
+
+    /**
+     * load the scancode file of the layout path provided
+     *
+     * @param iso:		the path to the iso file
+     * @return whether the operation success
+     */
+    bool loadScancodeLayout(const std::string& iso);
+
+    /**
+     * load the conversion file of the layout path provided
+     *
+     * @param iso:		the path to the iso file
+     * @return whether the operation success
+     */
+    bool loadConversionLayout(const std::string& iso);
+
+private:
+    /**
+     * global status for special keys
+     */
+    bool m_status_ctrl{ false };
+    bool m_status_shift{ false };
+    bool m_status_alt{ false };
+
+    /**
+     * map to contains scancodes and conversions of the loaded layoutes
+     */
+    std::map<uint32_t, std::string> m_scancode_layout{};
+    std::map<Keyboard::Info, char>  m_conversion_layout{};
+
+    /**
+     * last pressed key
+     */
+    std::string m_current_layout{};
+
+    /**
+     * flag and relative descriptor of last unknow pressed key
+     */
+    bool m_have_last_unknown_key{ false };
+    Info m_last_unknown_key{};
 };
 
 #endif

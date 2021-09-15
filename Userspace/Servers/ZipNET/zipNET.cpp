@@ -60,8 +60,8 @@ static uint64_t renderStart;
 /**
  *
  */
-int main(int argc, char* argv[]) {
-    server = new ZipNET();
+int main() {
+    server = new ZipNET{};
     server->launch();
     return 0;
 }
@@ -82,15 +82,14 @@ void ZipNET::launch() {
     }
 
     // set up event handling
-    eventProcessor = new EventProcessor_t();
-    InputReceiver_t::initialize();
+    eventProcessor = new EventProcessor();
+    InputReceiver::initialize();
 
     std::string keyLayout = "it-EU";
     Utils::log("loading keyboard layout '%s'", keyLayout.c_str());
-    if ( !Keyboard::loadLayout(keyLayout) )
-        Utils::log(
-            ("failed to load keyboard layout '" + keyLayout + "', no keyboard input available")
-                .c_str());
+    if ( !Keyboard::instance().loadLayout(keyLayout) )
+        Utils::log("failed to load keyboard layout '%s', no keyboard input available",
+                   keyLayout.c_str());
 
     // create the cursor
     loadCursor();
@@ -108,12 +107,12 @@ void ZipNET::launch() {
     screen->addChild(background);
 
     // start registration interface
-    RegistrationThread_t* registrationThread = new RegistrationThread_t();
-    registrationThread->start();
+    auto registration_thread = new RegistrationThread();
+    registration_thread->start();
 
     // start responder interface
-    responderThread = new CommandMessageResponderThread_t();
-    responderThread->start();
+    m_responder_thread = new CommandMessageResponderThread();
+    m_responder_thread->start();
 
     // execute the main loop
     mainLoop(screenBounds);
@@ -122,7 +121,7 @@ void ZipNET::launch() {
 /**
  *
  */
-void lockCheck() {
+[[noreturn]] void lockCheck() {
     while ( true ) {
         if ( Millis() - renderStart > 6000 )
             Utils::log("window server has frozen");
@@ -133,15 +132,15 @@ void lockCheck() {
 /**
  *
  */
-void ZipNET::mainLoop(Rectangle screenBounds) {
+[[noreturn]] void ZipNET::mainLoop(Rectangle screenBounds) {
     global.resize(screenBounds.width, screenBounds.height);
     Environment::set("SYSTEM_LEVEL", "interactive");
 
     CreateThreadN((void*)lockCheck, "lockCheck");
 
-    Cursor_t::nextPosition = Point(screenBounds.width / 2, screenBounds.height / 2);
+    Cursor::instance().nextPosition = Point(screenBounds.width / 2, screenBounds.height / 2);
 
-    // intially set rendering atom
+    // initially set rendering atom
     renderAtom = true;
 
     uint64_t renderTime;
@@ -160,7 +159,7 @@ void ZipNET::mainLoop(Rectangle screenBounds) {
         screen->blit(&global, screenBounds, Point(0, 0));
 
         // paint the cursor
-        Cursor_t::paint(&global);
+        Cursor::instance().paint(&global);
 
         // blit output
         blit(&global);
@@ -179,9 +178,9 @@ void ZipNET::mainLoop(Rectangle screenBounds) {
  *
  */
 void ZipNET::blit(Graphics* graphics) {
-    Dimension resolution = videoOutput->getResolution();
-    Rectangle screenBounds(0, 0, resolution.width, resolution.height);
-    Color_t*  buffer = (Color_t*)cairo_image_surface_get_data(graphics->getSurface());
+    auto      resolution = videoOutput->getResolution();
+    Rectangle screenBounds{ 0, 0, resolution.width, resolution.height };
+    auto buffer = reinterpret_cast<Color_t*>(cairo_image_surface_get_data(graphics->getSurface()));
 
     // get invalid output
     Rectangle invalid = screen->grabInvalid();
@@ -196,21 +195,27 @@ void ZipNET::blit(Graphics* graphics) {
  *
  */
 void ZipNET::loadCursor() {
-    if ( !Cursor_t::load("/cfg/gui/cursor/default.cursor") )
+    if ( !Cursor::instance().load("/MeetiX/Configs/WM/Cursors/Default") ) {
         Utils::log("Unable to load default cursor");
-    if ( !Cursor_t::load("/cfg/gui/cursor/text.cursor") )
+    }
+    if ( !Cursor::instance().load("/MeetiX/Configs/WM/Cursors/Text") ) {
         Utils::log("Unable to load text cursor");
-    if ( !Cursor_t::load("/cfg/gui/cursor/resize-ns.cursor") )
+    }
+    if ( !Cursor::instance().load("/MeetiX/Configs/WM/Cursors/ResizeNS") ) {
         Utils::log("Unable to load resize-ns cursor");
-    if ( !Cursor_t::load("/cfg/gui/cursor/resize-ew.cursor") )
+    }
+    if ( !Cursor::instance().load("/MeetiX/Configs/WM/Cursors/ResizeEW") ) {
         Utils::log("Unable to load resize-ew cursor");
-    if ( !Cursor_t::load("/cfg/gui/cursor/resize-nesw.cursor") )
+    }
+    if ( !Cursor::instance().load("/MeetiX/Configs/WM/Cursors/ResizeNESW") ) {
         Utils::log("Unable to load resize-nesw cursor");
-    if ( !Cursor_t::load("/cfg/gui/cursor/resize-nwes.cursor") )
+    }
+    if ( !Cursor::instance().load("/MeetiX/Configs/WM/Cursors/ResizeNWES") ) {
         Utils::log("Unable to load resize-nwes cursor");
+    }
 
-    Cursor_t::set("default");
-    Cursor_t::focusedComponent = screen;
+    Cursor::instance().set("default");
+    Cursor::instance().focusedComponent = screen;
 }
 
 /**
@@ -218,8 +223,8 @@ void ZipNET::loadCursor() {
  */
 Component_t* ZipNET::dispatchUpwards(Component_t* component, Event_t& event) {
     // store when dispatching to parents
-    Point        initialPosition;
-    Locatable_t* locatable = dynamic_cast<Locatable_t*>(&event);
+    Point initialPosition;
+    auto  locatable = dynamic_cast<Locatable_t*>(&event);
     if ( locatable )
         initialPosition = locatable->position;
 
@@ -281,7 +286,7 @@ bool ZipNET::cleanup(Pid process) {
     klog("removing components for process %i", process);
 
     // get components mapped for process
-    std::map<int, Component_t*>* components = ComponentRegistry_t::getProcessMap(process);
+    auto components = ComponentRegistry::instance().getProcessMap(process);
 
     // if component exist set false visible to clear screen
     if ( components ) {
@@ -290,11 +295,11 @@ bool ZipNET::cleanup(Pid process) {
             Component_t* current = entry.second;
             if ( current ) {
                 current->setVisible(false);
-                ComponentRegistry_t::removeComponent(process, entry.first);
+                ComponentRegistry::instance().removeComponent(process, entry.first);
             }
         }
 
-        ComponentRegistry_t::removeProcessMap(process);
+        ComponentRegistry::instance().removeProcessMap(process);
 
         return true;
     }

@@ -21,17 +21,13 @@
 #include <utils/utils.hpp>
 
 /**
- * global static instance of the singletone object
- */
-static TextLayouter* instance = nullptr;
-
-/**
  * @return the instance of the font manager singleton
  */
 TextLayouter* TextLayouter::getInstance() {
-    if ( !instance )
-        instance = new TextLayouter();
-    return instance;
+    static TextLayouter* s_instance = nullptr;
+    if ( !s_instance )
+        s_instance = new TextLayouter();
+    return s_instance;
 }
 
 /**

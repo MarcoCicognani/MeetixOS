@@ -30,12 +30,12 @@
 /**
  *
  */
-class RegistrationThread_t : public Thread {
+class RegistrationThread : public Thread {
 public:
     /**
      *
      */
-    virtual void run();
+    [[noreturn]] virtual void run();
 };
 
 #endif

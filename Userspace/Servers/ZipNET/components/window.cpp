@@ -271,14 +271,14 @@ bool Window_t::handle(Event_t& event) {
                 if ( (pos.x < shadowSize + cornerSize / 2) && (pos.x > shadowSize - cornerSize / 2)
                      && (pos.y < cornerSize)
                      && (pos.y > shadowSize - cornerSize / 2) ) { // Top left corner
-                    Cursor_t::set("resize-nwes");
+                    Cursor::instance().set("resize-nwes");
                 }
 
                 else if ( (pos.x > currentBounds.width - shadowSize - cornerSize / 2)
                           && (pos.x < currentBounds.width - shadowSize + cornerSize / 2)
                           && (pos.y < cornerSize)
                           && (pos.y > shadowSize - cornerSize / 2) ) { // Top right corner
-                    Cursor_t::set("resize-nesw");
+                    Cursor::instance().set("resize-nesw");
                 }
 
                 else if ( (pos.x < shadowSize + cornerSize / 2)
@@ -286,7 +286,7 @@ bool Window_t::handle(Event_t& event) {
                           && (pos.y > currentBounds.height - shadowSize - cornerSize / 2)
                           && (pos.y < currentBounds.height - shadowSize
                                           + cornerSize / 2) ) { // Bottom left corner
-                    Cursor_t::set("resize-nesw");
+                    Cursor::instance().set("resize-nesw");
                 }
 
                 else if ( (pos.x > currentBounds.width - shadowSize - cornerSize / 2)
@@ -294,33 +294,33 @@ bool Window_t::handle(Event_t& event) {
                           && (pos.y > currentBounds.height - shadowSize - cornerSize / 2)
                           && (pos.y < currentBounds.height - shadowSize
                                           + cornerSize / 2) ) { // Bottom right corner
-                    Cursor_t::set("resize-nwes");
+                    Cursor::instance().set("resize-nwes");
                 }
 
                 else if ( pos.y < shadowSize + borderWidth / 2
                           && pos.y > shadowSize - borderWidth / 2 ) { // Top edge
-                    Cursor_t::set("resize-ns");
+                    Cursor::instance().set("resize-ns");
                 }
 
                 else if ( pos.x < shadowSize + borderWidth / 2
                           && pos.x > shadowSize - borderWidth / 2 ) { // Left edge
-                    Cursor_t::set("resize-ew");
+                    Cursor::instance().set("resize-ew");
                 }
 
                 else if ( (pos.y > currentBounds.height - shadowSize - borderWidth / 2)
                           && (pos.y < currentBounds.height - shadowSize
                                           + borderWidth / 2) ) { // Bottom edge
-                    Cursor_t::set("resize-ns");
+                    Cursor::instance().set("resize-ns");
                 }
 
                 else if ( (pos.x > currentBounds.width - shadowSize - borderWidth / 2)
                           && (pos.x < currentBounds.width - shadowSize
                                           + borderWidth / 2) ) { // Right edge
-                    Cursor_t::set("resize-ew");
+                    Cursor::instance().set("resize-ew");
                 }
 
                 else {
-                    Cursor_t::set("default");
+                    Cursor::instance().set("default");
                 }
             }
 
@@ -522,7 +522,7 @@ bool Window_t::handle(Event_t& event) {
         }
 
         else if ( mouseEvent->type == MOUSE_EVENT_LEAVE )
-            Cursor_t::set("default");
+            Cursor::instance().set("default");
 
         else if ( mouseEvent->type == MOUSE_EVENT_DRAG_RELEASE ) {
             crossPressed = false;

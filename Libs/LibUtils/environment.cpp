@@ -21,6 +21,7 @@
 #include <fstream>
 #include <utils/environment.hpp>
 #include <utils/fparser.hpp>
+#include <utils/utils.hpp>
 
 using namespace std;
 
@@ -29,7 +30,7 @@ using namespace std;
  */
 string Environment::get(const string& key) {
     // open the environment file
-    ifstream env("/cfg/environ/vars");
+    ifstream env("/MeetiX/Configs/Environ/Global");
 
     // parse the content
     PropertyFileParser  parser(env);
@@ -47,10 +48,11 @@ void Environment::set(const string& key, const string& var) {
     string request = "--setenv " + key + '=' + var;
 
     // exec shell
-    SpawnStatus status = Spawn("/cmd/mx", request.c_str(), "/", SECURITY_LEVEL_APPLICATION);
+    SpawnStatus status = Spawn("/Bins/MxSh", request.c_str(), "/", SECURITY_LEVEL_APPLICATION);
 
-    //// check exec state
-    // if (status != SPAWN_STATUS_SUCCESSFUL) Utils::log("setEnvVar: failed to spawn mx process");
+    // check exec state
+    if ( status != SPAWN_STATUS_SUCCESSFUL )
+        Utils::log("setEnvVar: failed to spawn mx process");
 }
 
 /**
@@ -72,5 +74,4 @@ string Environment::getHostname() {
  */
 string Environment::getTheme() {
     return Environment::get("THEME");
-    ;
 }

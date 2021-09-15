@@ -19,28 +19,31 @@
 
 #include <gui/component.hpp>
 #include <gui/componentregistry.hpp>
-#include <tasking/lock.hpp>
 
-static Lock                                componentsLock;
-static std::map<UiComponentID, Component*> components;
+ComponentRegistry& ComponentRegistry::instance() {
+    static ComponentRegistry* s_instance = nullptr;
+    if ( !s_instance )
+        s_instance = new ComponentRegistry{};
+    return *s_instance;
+}
 
 /**
  * Add a component object to client registry
  */
 void ComponentRegistry::add(Component* component) {
-    componentsLock.lock();
-    components[component->getID()] = component;
-    componentsLock.unlock();
+    m_lock.lock();
+    m_registry[component->getID()] = component;
+    m_lock.unlock();
 }
 
 /*
  * Remove a component by id (remove only the reference on client map, not delete the object)
  */
 void ComponentRegistry::remove(UiComponentID id) {
-    if ( components.count(id) > 0 ) {
-        componentsLock.lock();
-        components.erase(id);
-        componentsLock.unlock();
+    if ( m_registry.count(id) > 0 ) {
+        m_lock.lock();
+        m_registry.erase(id);
+        m_lock.unlock();
     }
 }
 
@@ -48,14 +51,14 @@ void ComponentRegistry::remove(UiComponentID id) {
  * return the object by id
  */
 Component* ComponentRegistry::get(UiComponentID id) {
-    if ( components.count(id) > 0 ) {
-        componentsLock.lock();
-        Component* component = components[id];
-        componentsLock.unlock();
+    if ( m_registry.count(id) > 0 ) {
+        m_lock.lock();
+        auto component = m_registry[id];
+        m_lock.unlock();
 
         return component;
     }
-    return 0;
+    return nullptr;
 }
 
 /**
@@ -63,13 +66,11 @@ Component* ComponentRegistry::get(UiComponentID id) {
  * the deletion of client component object remove itself from client map and windowserver map
  */
 void ComponentRegistry::deleteRegistry() {
-    componentsLock.lock();
+    m_lock.lock();
 
     // start from end
-    for ( std::map<UiComponentID, Component*>::reverse_iterator rit = components.rbegin();
-          rit != components.rend();
-          ++rit )
-        delete rit->second;
+    for ( auto rev_it = m_registry.rbegin(); rev_it != m_registry.rend(); ++rev_it )
+        delete rev_it->second;
 
-    componentsLock.unlock();
+    m_lock.unlock();
 }

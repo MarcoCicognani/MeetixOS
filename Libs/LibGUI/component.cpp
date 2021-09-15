@@ -27,7 +27,7 @@
  */
 Component::~Component() {
     removeFromZipNetRegex();
-    ComponentRegistry::remove(this->id);
+    ComponentRegistry::instance().remove(this->id);
 }
 
 /*

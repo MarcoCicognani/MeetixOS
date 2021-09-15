@@ -10,7 +10,7 @@ wait:"vbe"
 
 printf:"Starting zipNET windowserver"
 exec:"/MeetiX/Kernel/Servers/ZipNET.sv"
-wait:"zipNET::registration"
+wait:"ZipNET::registration"
 
 printf:"Starting MXLogin"
 exec:"/Apps/MXLogin/Bin/MXLogin"

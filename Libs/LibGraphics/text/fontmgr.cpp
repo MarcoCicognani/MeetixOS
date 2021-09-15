@@ -21,17 +21,13 @@
 #include <utils/utils.hpp>
 
 /**
- * singletone instance of the class
- */
-static FontManager* instance = nullptr;
-
-/**
  * @return the instance of the font manager singleton
  */
 FontManager* FontManager::getInstance() {
-    if ( !instance )
-        instance = new FontManager();
-    return instance;
+    static FontManager* s_instance = nullptr;
+    if ( !s_instance )
+        s_instance = new FontManager();
+    return s_instance;
 }
 
 /**

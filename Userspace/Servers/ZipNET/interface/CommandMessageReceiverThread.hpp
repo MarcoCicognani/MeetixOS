@@ -30,7 +30,7 @@
 /**
  *
  */
-class CommandMessageReceiverThread_t : public Thread {
+class CommandMessageReceiverThread : public Thread {
 public:
     uint8_t stop = false;
 

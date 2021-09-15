@@ -28,29 +28,13 @@
 #include <utils/fparser.hpp>
 #include <utils/utils.hpp>
 
-/**
- * global status for special keys
- */
-static bool statusCtrl  = false;
-static bool statusShift = false;
-static bool statusAlt   = false;
+Keyboard& Keyboard::instance() {
+    static Keyboard* s_instance = nullptr;
+    if ( !s_instance )
+        s_instance = new Keyboard{};
 
-/**
- * map to contains scancodes and conversions of the loaded layoutes
- */
-static std::map<uint32_t, std::string> scancodeLayout;
-static std::map<Keyboard::Info, char>  conversionLayout;
-
-/**
- * last pressed key
- */
-static std::string currentLayout;
-
-/**
- * flag and relative descriptor of last unknow pressed key
- */
-static bool           haveLastUnknownKey = false;
-static Keyboard::Info lastUnknownKey;
+    return *s_instance;
+}
 
 /**
  * load the scancode file of the layout path provided
@@ -60,25 +44,25 @@ static Keyboard::Info lastUnknownKey;
  */
 bool Keyboard::loadScancodeLayout(const std::string& iso) {
     // open the file
-    std::ifstream in("/sys/lib/kb/" + iso + ".layout");
+    std::ifstream in("/MeetiX/Configs/WM/KbLayouts/" + iso + ".layout");
     if ( !in.is_open() )
         return false;
 
     // get the property of the file
     std::map<std::string, std::string> properties;
     {
-        scancodeLayout.clear();
+        m_scancode_layout.clear();
         PropertyFileParser props(in);
         properties = props.getProperties();
     }
 
     // register each property
     for ( std::pair<std::string, std::string> entry : properties ) {
-        uint32_t scancode = 0;
-        int32_t  spacepos = entry.first.find(" ");
-        if ( spacepos != std::string::npos ) {
-            std::string part1 = entry.first.substr(0, spacepos);
-            std::string part2 = entry.first.substr(spacepos + 1);
+        auto scancode  = 0;
+        auto space_pos = entry.first.find(" ");
+        if ( space_pos != std::string::npos ) {
+            std::string part1 = entry.first.substr(0, space_pos);
+            std::string part2 = entry.first.substr(space_pos + 1);
 
             uint32_t          part1val;
             std::stringstream conv1;
@@ -91,9 +75,7 @@ bool Keyboard::loadScancodeLayout(const std::string& iso) {
             conv2 >> part2val;
 
             scancode = (part1val << 8) | part2val;
-        }
-
-        else {
+        } else {
             std::stringstream conv;
             conv << std::hex << entry.first;
             conv >> scancode;
@@ -104,10 +86,9 @@ bool Keyboard::loadScancodeLayout(const std::string& iso) {
             msg << "could not map scancode " << (uint32_t)scancode << ", key name '" << entry.second
                 << "' is not known";
             Utils::log(msg.str());
+        } else {
+            m_scancode_layout[scancode] = entry.second;
         }
-
-        else
-            scancodeLayout[scancode] = entry.second;
     }
 
     return true;
@@ -121,14 +102,14 @@ bool Keyboard::loadScancodeLayout(const std::string& iso) {
  */
 bool Keyboard::loadConversionLayout(const std::string& iso) {
     // open the file
-    std::ifstream in("/sys/lib/kb/" + iso + ".conversion");
+    std::ifstream in("/MeetiX/Configs/WM/KbLayouts/" + iso + ".conversion");
     if ( !in.good() )
         return false;
 
     // get the properties of the file
     std::map<std::string, std::string> properties;
     {
-        conversionLayout.clear();
+        m_conversion_layout.clear();
         PropertyFileParser props(in);
         properties = props.getProperties();
     }
@@ -169,8 +150,8 @@ bool Keyboard::loadConversionLayout(const std::string& iso) {
         info.key = keyName;
 
         // Push the mapping
-        char        c     = -1;
-        std::string value = entry.second;
+        auto c     = -1;
+        auto value = entry.second;
         if ( value.length() > 0 ) {
             c = value[0];
 
@@ -182,16 +163,14 @@ bool Keyboard::loadConversionLayout(const std::string& iso) {
                     uint32_t num;
                     conv >> num;
                     c = num;
-                }
-
-                else {
+                } else {
                     Utils::log("skipping value '" + value + "' in key " + keyName
                                + ", illegal format");
                     continue;
                 }
             }
         }
-        conversionLayout[info] = c;
+        m_conversion_layout[info] = static_cast<char>(c);
     }
 
     return true;
@@ -241,26 +220,26 @@ bool Keyboard::keyForScancode(uint8_t scancode, Info* out) {
 
     // Get key from layout map
     bool foundCompound = false;
-    if ( haveLastUnknownKey ) {
-        int compoundScancode = lastUnknownKey.scancode << 8 | out->scancode;
+    if ( m_have_last_unknown_key ) {
+        int compoundScancode = m_last_unknown_key.scancode << 8 | out->scancode;
 
         // Try to find a compound key
-        std::map<uint32_t, std::string>::iterator pos = scancodeLayout.find(compoundScancode);
-        if ( pos != scancodeLayout.end() ) {
-            out->key           = pos->second;
-            foundCompound      = true;
-            haveLastUnknownKey = false;
+        auto pos = m_scancode_layout.find(compoundScancode);
+        if ( pos != m_scancode_layout.end() ) {
+            out->key                = pos->second;
+            foundCompound           = true;
+            m_have_last_unknown_key = false;
         }
     }
 
     // When it is no compound
     if ( !foundCompound ) {
         // Try to find the normal key
-        std::map<uint32_t, std::string>::iterator pos = scancodeLayout.find(out->scancode);
-        if ( pos == scancodeLayout.end() ) {
+        auto pos = m_scancode_layout.find(out->scancode);
+        if ( pos == m_scancode_layout.end() ) {
             // If it's not found, this might be the start of a compound
-            haveLastUnknownKey = true;
-            lastUnknownKey     = *out;
+            m_have_last_unknown_key = true;
+            m_last_unknown_key      = *out;
             return false;
         }
 
@@ -270,16 +249,16 @@ bool Keyboard::keyForScancode(uint8_t scancode, Info* out) {
 
     // Handle special keys
     if ( out->key == "KEY_CTRL_L" || out->key == "KEY_CTRL_R" )
-        statusCtrl = out->pressed;
+        m_status_ctrl = out->pressed;
     else if ( out->key == "KEY_SHIFT_L" || out->key == "KEY_SHIFT_R" )
-        statusShift = out->pressed;
+        m_status_shift = out->pressed;
     else if ( out->key == "KEY_ALT_L" || out->key == "KEY_ALT_R" )
-        statusAlt = out->pressed;
+        m_status_alt = out->pressed;
 
     // Set control key info
-    out->ctrl  = statusCtrl;
-    out->shift = statusShift;
-    out->alt   = statusAlt;
+    out->ctrl  = m_status_ctrl;
+    out->shift = m_status_shift;
+    out->alt   = m_status_alt;
 
     return true;
 }
@@ -291,8 +270,8 @@ bool Keyboard::keyForScancode(uint8_t scancode, Info* out) {
  * @return the converted character
  */
 char Keyboard::charForKey(const Info& info) {
-    std::map<Info, char>::iterator pos = conversionLayout.find(info);
-    if ( pos != conversionLayout.end() )
+    auto pos = m_conversion_layout.find(info);
+    if ( pos != m_conversion_layout.end() )
         return pos->second;
 
     return -1;
@@ -309,8 +288,8 @@ Keyboard::Info Keyboard::fullKeyInfo(const InfoBasic& basic) {
     Info info(basic);
 
     // find the key code
-    std::map<uint32_t, std::string>::iterator pos = scancodeLayout.find(basic.scancode);
-    if ( pos != scancodeLayout.end() )
+    auto pos = m_scancode_layout.find(basic.scancode);
+    if ( pos != m_scancode_layout.end() )
         info.key = pos->second;
     return info;
 }
@@ -319,7 +298,7 @@ Keyboard::Info Keyboard::fullKeyInfo(const InfoBasic& basic) {
  * @return the name of the current layout
  */
 std::string Keyboard::getCurrentLayout() {
-    return currentLayout;
+    return m_current_layout;
 }
 
 /**
@@ -330,7 +309,7 @@ std::string Keyboard::getCurrentLayout() {
  */
 bool Keyboard::loadLayout(const std::string& iso) {
     if ( loadScancodeLayout(iso) && loadConversionLayout(iso) ) {
-        currentLayout = iso;
+        m_current_layout = iso;
         return true;
     }
     return false;

@@ -32,9 +32,9 @@
 /**
  *
  */
-void CommandMessageResponderThread_t::run() {
+[[noreturn]] void CommandMessageResponderThread::run() {
     TaskRegisterID("messageResponder");
-    EventProcessor_t* eventProcessor = ZipNET::instance()->eventProcessor;
+    EventProcessor* eventProcessor = ZipNET::instance()->eventProcessor;
     while ( true ) {
         // wait until messages are added
         AtomicLock(&bufferEmpty);
@@ -57,7 +57,7 @@ void CommandMessageResponderThread_t::run() {
 /**
  *
  */
-void CommandMessageResponderThread_t::sendResponse(CommandMessageResponse_t& response) {
+void CommandMessageResponderThread::sendResponse(CommandMessageResponse_t& response) {
     buffer.push_back(response);
     bufferEmpty = false;
 }

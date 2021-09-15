@@ -78,7 +78,7 @@ class InputKeyListener : public KeyListener {
 public:
     virtual void handleKeyEvent(KeyEvent& e) {
         locker.lock();
-        inputBuffer.push_back(Keyboard::fullKeyInfo(e.info));
+        inputBuffer.push_back(Keyboard::instance().fullKeyInfo(e.info));
         inputBufferEmpty = false;
         locker.unlock();
     }
@@ -109,7 +109,7 @@ void OsmosUI::configureUi(std::string pathToConfiguration, Dimension resolution)
     this->resolution = resolution;
 
     // load keyboard layout
-    Keyboard::loadLayout("it-EU");
+    Keyboard::instance().loadLayout("it-EU");
 
     // keep configuration file
     std::ifstream conf(pathToConfiguration);

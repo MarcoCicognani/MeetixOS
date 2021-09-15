@@ -342,7 +342,7 @@ bool TextField_t::handle(Event_t& event) {
             }
 
             else {
-                char c = Keyboard::charForKey(keyEvent->info);
+                char c = Keyboard::instance().charForKey(keyEvent->info);
 
                 if ( c != -1 ) {
                     std::stringstream s;
@@ -359,14 +359,14 @@ bool TextField_t::handle(Event_t& event) {
         if ( mouseEvent->type == MOUSE_EVENT_ENTER ) {
             visualStatus = TextFieldVisualStatus_t::HOVERED;
 
-            Cursor_t::set("text");
+            Cursor::instance().set("text");
             markFor(COMPONENT_REQUIREMENT_PAINT);
         }
 
         else if ( mouseEvent->type == MOUSE_EVENT_LEAVE ) {
             visualStatus = TextFieldVisualStatus_t::NORMAL;
 
-            Cursor_t::set("default");
+            Cursor::instance().set("default");
             markFor(COMPONENT_REQUIREMENT_PAINT);
         }
 

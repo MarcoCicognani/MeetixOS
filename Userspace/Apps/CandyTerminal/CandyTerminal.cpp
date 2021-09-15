@@ -67,7 +67,7 @@ void CandyTerminal::execute() {
 
     // load keyboard layout
     std::string initialLayout = "it-EU";
-    if ( !Keyboard::loadLayout(initialLayout) ) {
+    if ( !Keyboard::instance().loadLayout(initialLayout) ) {
         Utils::log("CandyTerminal: Failed to load keyboard layout: " + initialLayout);
         return;
     }
@@ -81,16 +81,16 @@ void CandyTerminal::execute() {
         return;
 
     // start in/out routines
-    OutputRoutineStartinfo* outInfo = new OutputRoutineStartinfo();
-    outInfo->threadName             = "CandyTerminal/StandartOutput";
-    outInfo->errorOutput            = false;
-    outInfo->terminal               = this;
+    auto outInfo         = new OutputRoutineStartinfo();
+    outInfo->threadName  = "CandyTerminal/StandardOutput";
+    outInfo->errorOutput = false;
+    outInfo->terminal    = this;
     CreateThreadD((void*)&outputRoutine, outInfo);
 
-    OutputRoutineStartinfo* errInfo = new OutputRoutineStartinfo();
-    errInfo->threadName             = "CandyTerminal/ErrorOutput";
-    errInfo->errorOutput            = true;
-    errInfo->terminal               = this;
+    auto errInfo         = new OutputRoutineStartinfo();
+    errInfo->threadName  = "CandyTerminal/ErrorOutput";
+    errInfo->errorOutput = true;
+    errInfo->terminal    = this;
     CreateThreadD((void*)&outputRoutine, errInfo);
 
     inputRoutine();
@@ -111,10 +111,9 @@ void CandyTerminal::initializeScreen() {
         return;
     }
 
-    GuiScreen* guiScreen = new GuiScreen();
+    auto guiScreen = new GuiScreen();
     if ( guiScreen->initialize() )
         screen = guiScreen;
-
     else
         Utils::log("CandyTerminal: Failed to initialize the graphical screen");
 }
@@ -158,7 +157,7 @@ void CandyTerminal::startShell() {
     stdioIN[1] = shelloutW;
     stdioIN[2] = shellerrW;
     File_t      stdioTarget[3];
-    SpawnStatus status = SpawnPOI("/cmd/mx",
+    SpawnStatus status = SpawnPOI("/Bins/MxSh",
                                   "-sh",
                                   "/",
                                   SECURITY_LEVEL_APPLICATION,
@@ -241,7 +240,7 @@ void CandyTerminal::inputRoutine() {
             }
 
             else {
-                char chr = Keyboard::charForKey(readInput);
+                char chr = Keyboard::instance().charForKey(readInput);
                 if ( chr != -1 ) {
                     buffer = buffer + chr;
 
@@ -286,7 +285,7 @@ void CandyTerminal::inputRoutine() {
                 writeShellkeyToShell(SHELLKEY_DOWN);
 
             else {
-                char chr = Keyboard::charForKey(readInput);
+                char chr = Keyboard::instance().charForKey(readInput);
                 if ( chr != -1 ) {
                     write(shellIN, &chr, 1);
 

@@ -114,8 +114,8 @@ private:
     /**
      * paint routine
      */
-    static void paintEntry(GuiScreen* screen);
-    void        paint();
+    static void       paintEntry(GuiScreen* screen);
+    [[noreturn]] void paint();
 
     /**
      *

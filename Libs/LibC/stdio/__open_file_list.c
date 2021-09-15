@@ -21,7 +21,7 @@
 #include "stdio.h"
 #include "stdio_internal.h"
 
-FILE*   __open_file_list        = 0;
+FILE*   __open_file_list        = NULL;
 uint8_t open_file_list_lockatom = 0;
 
 /**

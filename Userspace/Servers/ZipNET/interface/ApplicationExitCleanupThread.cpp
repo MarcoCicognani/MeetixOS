@@ -22,16 +22,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <gui/uispech.hpp>
 #include <interface/ApplicationExitCleanupThread.hpp>
-#include <stdio.h>
-#include <string.h>
 #include <zipNET.hpp>
 
 /**
  *
  */
-void ApplicationExitCleanupThread_t::run() {
+void ApplicationExitCleanupThread::run() {
     TaskRegisterID("exitCleaner");
 
     // wait until the thread finish

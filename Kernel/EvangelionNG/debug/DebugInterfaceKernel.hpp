@@ -28,6 +28,7 @@
 #include "debug/DebugInterface.hpp"
 #include "eva/stdint.h"
 #include "filesystem/filesystem.hpp"
+#include "filesystem/FsNode.hpp"
 
 #define DEBUG_INTERFACE_EXIT_IF_UNINITIALIZED                                                      \
     if ( !DebugInterfaceInitialized )                                                              \

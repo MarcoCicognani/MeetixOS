@@ -30,7 +30,7 @@
 /**
  *
  */
-class InputReceiver_t {
+class InputReceiver {
 public:
     static void initialize();
     static void startReceiveMouseEvents();

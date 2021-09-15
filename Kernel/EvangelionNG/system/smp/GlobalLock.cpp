@@ -22,15 +22,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <logger/logger.hpp>
 #include <system/smp/GlobalLock.hpp>
 
 /**
  * lock the system
  */
 void GlobalLock::lock() {
-    while ( !__sync_bool_compare_and_swap(&atom, 0, 1) )
+    while ( !__sync_bool_compare_and_swap(&atom, 0, 1) ) {
         asm("pause");
+    }
 }
 
 /**

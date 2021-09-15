@@ -52,7 +52,7 @@ string          output;
 class InputKeyListener : public KeyListener {
     virtual void handleKeyEvent(KeyEvent& e) {
         waitingInputLock.lock();
-        waitingInput.push_back(Keyboard::fullKeyInfo(e.info));
+        waitingInput.push_back(Keyboard::instance().fullKeyInfo(e.info));
         lastInput        = Millis();
         noInputAvailable = false;
         waitingInputLock.unlock();

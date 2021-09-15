@@ -31,16 +31,16 @@
 /**
  *
  */
-class ApplicationExitCleanupThread_t : public Thread {
+class ApplicationExitCleanupThread : public Thread {
 private:
     Tid                             pid;
-    CommandMessageReceiverThread_t* commandReceiver;
+    CommandMessageReceiverThread* commandReceiver;
 
 public:
     /**
      *
      */
-    ApplicationExitCleanupThread_t(Pid pid, CommandMessageReceiverThread_t* commandReceiver)
+    ApplicationExitCleanupThread(Pid pid, CommandMessageReceiverThread* commandReceiver)
         : pid(pid), commandReceiver(commandReceiver) {
     }
 

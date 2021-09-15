@@ -37,5 +37,5 @@ void TextFrontEnd_t::write(string message, string title) {
 }
 
 Keyboard::Info TextFrontEnd_t::readInput() {
-    return Keyboard::read();
+    return Keyboard::instance().read();
 }

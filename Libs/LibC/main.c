@@ -18,20 +18,27 @@
  *Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include "errno.h"
 #include "eva.h"
-#include "libgen.h"
 #include "locale.h"
 #include "main_internal.h"
-#include "malloc.h"
 #include "signal.h"
 #include "stdio/stdio_internal.h"
 #include "stdlib.h"
 
+#include <stdio.h>
+
 /**
  * Global constructor routine
  */
-void _init();
+extern void _init();
+extern void _fini();
+
+extern void (*__init_array_start[])();
+extern void (*__init_array_end[])();
+extern void (*__preinit_array_start[])();
+extern void (*__preinit_array_end[])();
+extern void (*__fini_array_start[])();
+extern void (*__fini_array_end[])();
 
 /**
  * Application entry routine, called by the CRTs.
@@ -41,7 +48,22 @@ int __main() {
     _InitLibc();
 
     // call ctors
+    Log("__main : calling constructors in _init()");
+    // call global constructors
+    for ( size_t i = 0; i < __preinit_array_end - __preinit_array_start; i++ ) {
+        (*__preinit_array_start[i])();
+    }
+
+    klog("Called %d preinit_constructors", __preinit_array_end - __preinit_array_start);
+
     _init();
+    Log("Called _init()");
+
+    for ( size_t i = 0; i < __init_array_end - __init_array_start; i++ ) {
+        (*__init_array_start[i])();
+    }
+    klog("Called %d __init_array", __init_array_end - __init_array_start);
+    Log("__main : calling constructors in _init() DONE");
 
     // default return value
     int ret = -1;
@@ -50,11 +72,16 @@ int __main() {
     int    argc;
     char** args;
 
+    Log("__main() : Parsing arguments");
+
     // parse args and call application main
-    if ( !parseargs(&argc, &args) )
+    if ( !parseargs(&argc, &args) ) {
+        Log("__main() : Arguments parsed, passing control to the application");
+        Log(args[0]);
         ret = main(argc, args);
-    else
+    } else {
         Log("failed to parse command line arguments");
+    }
 
     // leave
     exit(ret);
@@ -64,6 +91,8 @@ int __main() {
  * Initializes the C library
  */
 void _InitLibc() {
+    Log("_InitLibc : Initializing");
+
     // set default locale (N1548-7.11.1.1-4)
     setlocale(LC_ALL, "C");
 
@@ -72,12 +101,21 @@ void _InitLibc() {
 
     // initialize standard I/O
     __init_stdio();
+
+    Log("_InitLibc : Initializing Done");
 }
 
 /**
  * Finalize the C library
  */
 void _FiniLibc() {
+    // call global destructors
+    for ( size_t i = 0; i < __fini_array_end - __fini_array_start; i++ ) {
+        (*__fini_array_start[i])();
+    }
+
+    _fini();
+
     // Finalize the standard I/O
     __fini_stdio();
 }

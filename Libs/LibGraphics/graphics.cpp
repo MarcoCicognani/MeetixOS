@@ -51,11 +51,15 @@ void Graphics::resize(int newWidth, int newHeight) {
 /**
  *
  */
-void Graphics::blitTo(Graphics* graphics, Rectangle absoluteClip, Point position) {
+void Graphics::blitTo(Graphics* graphics, const Rectangle& absolute_clip, const Point& position) {
     auto cr = graphics->context;
     cairo_save(cr);
     cairo_set_source_surface(cr, this->surface, position.x, position.y);
-    cairo_rectangle(cr, absoluteClip.x, absoluteClip.y, absoluteClip.width, absoluteClip.height);
+    cairo_rectangle(cr,
+                    absolute_clip.x,
+                    absolute_clip.y,
+                    absolute_clip.width,
+                    absolute_clip.height);
     cairo_clip(cr);
     cairo_paint(cr);
     cairo_restore(cr);

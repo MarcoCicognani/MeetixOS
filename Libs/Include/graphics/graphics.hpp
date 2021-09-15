@@ -34,8 +34,8 @@ class Graphics {
 private:
     int              width;
     int              height;
-    cairo_t*         context = 0;
-    cairo_surface_t* surface = 0;
+    cairo_t*         context{ nullptr };
+    cairo_surface_t* surface{ nullptr };
 
 public:
     /**
@@ -84,7 +84,7 @@ public:
     /**
      *
      */
-    void blitTo(Graphics* graphics, Rectangle absoluteClip, Point position);
+    void blitTo(Graphics* graphics, const Rectangle& absolute_clip, const Point& position);
 };
 
 #endif

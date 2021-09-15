@@ -39,7 +39,7 @@ void TaskManagerThread_t::run() {
     internal->setColor(0, RGB(255, 255, 255));
 
     while ( true ) {
-        list<Window_t*> windows = ComponentRegistry_t::getWindowsComponents();
+        list<Window_t*> windows = ComponentRegistry::instance().getWindowsComponents();
         stringstream    titles;
 
         for ( Window_t* current : windows )

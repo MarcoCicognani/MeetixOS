@@ -32,20 +32,20 @@
 /**
  *
  */
-void InputReceiver_t::initialize() {
-    CreateThreadN((void*)InputReceiver_t::startReceiveMouseEvents, "keyReceiver");
-    CreateThreadN((void*)InputReceiver_t::startReceiveKeyEvents, "mouseReceiver");
+void InputReceiver::initialize() {
+    CreateThreadN((void*)InputReceiver::startReceiveMouseEvents, "keyReceiver");
+    CreateThreadN((void*)InputReceiver::startReceiveKeyEvents, "mouseReceiver");
 }
 
 /**
  *
  */
-void InputReceiver_t::startReceiveKeyEvents() {
-    EventProcessor_t* eventQueue = ZipNET::instance()->eventProcessor;
+void InputReceiver::startReceiveKeyEvents() {
+    EventProcessor* eventQueue = ZipNET::instance()->eventProcessor;
 
     Keyboard::Info info;
     while ( true ) {
-        info = Keyboard::read();
+        info = Keyboard::instance().read();
         eventQueue->bufferKeyEvent(info);
 
         ZipNET::instance()->triggerRender();
@@ -55,34 +55,34 @@ void InputReceiver_t::startReceiveKeyEvents() {
 /**
  *
  */
-void InputReceiver_t::startReceiveMouseEvents() {
+void InputReceiver::startReceiveMouseEvents() {
     ZipNET*           instance   = ZipNET::instance();
-    EventProcessor_t* eventQueue = instance->eventProcessor;
+    EventProcessor* eventQueue = instance->eventProcessor;
     Dimension         resolution = instance->videoOutput->getResolution();
 
     Mouse::Info info;
     while ( true ) {
         info = Mouse::read();
 
-        Cursor_t::nextPosition.x += info.x;
-        Cursor_t::nextPosition.y -= info.y;
+        Cursor::instance().nextPosition.x += info.x;
+        Cursor::instance().nextPosition.y -= info.y;
 
-        if ( Cursor_t::nextPosition.x < 0 )
-            Cursor_t::nextPosition.x = 0;
-        if ( Cursor_t::nextPosition.x > resolution.width - 2 )
-            Cursor_t::nextPosition.x = resolution.width - 2;
-        if ( Cursor_t::nextPosition.y < 0 )
-            Cursor_t::nextPosition.y = 0;
-        if ( Cursor_t::nextPosition.y > resolution.height - 2 )
-            Cursor_t::nextPosition.y = resolution.height - 2;
+        if ( Cursor::instance().nextPosition.x < 0 )
+            Cursor::instance().nextPosition.x = 0;
+        if ( Cursor::instance().nextPosition.x > resolution.width - 2 )
+            Cursor::instance().nextPosition.x = resolution.width - 2;
+        if ( Cursor::instance().nextPosition.y < 0 )
+            Cursor::instance().nextPosition.y = 0;
+        if ( Cursor::instance().nextPosition.y > resolution.height - 2 )
+            Cursor::instance().nextPosition.y = resolution.height - 2;
 
-        Cursor_t::nextPressedButtons = MOUSE_BUTTON_NONE;
+        Cursor::instance().nextPressedButtons = MOUSE_BUTTON_NONE;
         if ( info.button1 )
-            Cursor_t::nextPressedButtons |= MOUSE_BUTTON_1;
+            Cursor::instance().nextPressedButtons |= MOUSE_BUTTON_1;
         if ( info.button2 )
-            Cursor_t::nextPressedButtons |= MOUSE_BUTTON_2;
+            Cursor::instance().nextPressedButtons |= MOUSE_BUTTON_2;
         if ( info.button3 )
-            Cursor_t::nextPressedButtons |= MOUSE_BUTTON_3;
+            Cursor::instance().nextPressedButtons |= MOUSE_BUTTON_3;
 
         ZipNET::instance()->triggerRender();
     }

@@ -127,7 +127,7 @@ void CandyShell::prepare() {
 
     // load keyboard layout
     string initialLayout = "it-EU";
-    if ( Keyboard::loadLayout(initialLayout) )
+    if ( Keyboard::instance().loadLayout(initialLayout) )
         Utils::log("keyboard layout '" + initialLayout + "' loaded");
 
     else {
@@ -568,7 +568,7 @@ bool CandyShell::handleBuiltin(string command) {
     else if ( command.substr(0, string(BUILTIN_COMMAND_KBD_SET).length())
               == BUILTIN_COMMAND_KBD_SET ) {
         command           = command.substr(string(BUILTIN_COMMAND_KBD_SET).length());
-        bool layoutLoaded = Keyboard::loadLayout(command);
+        bool layoutLoaded = Keyboard::instance().loadLayout(command);
 
         if ( layoutLoaded )
             screen->write("keyboard layout to '" + command + "' set \n", RGB(255, 255, 255));
@@ -582,7 +582,7 @@ bool CandyShell::handleBuiltin(string command) {
     else if ( command == BUILTIN_COMMAND_SCANCODE ) {
         if ( headless ) {
             while ( true ) {
-                Keyboard::Info key = Keyboard::read();
+                Keyboard::Info key = Keyboard::instance().read();
                 if ( key.pressed && key.ctrl && key.key == "KEY_C" )
                     break;
 
@@ -601,7 +601,7 @@ bool CandyShell::handleBuiltin(string command) {
     }
 
     else if ( command == BUILTIN_COMMAND_KBD_INFO ) {
-        screen->write("keyboard layout is '" + Keyboard::getCurrentLayout() + "'\n",
+        screen->write("keyboard layout is '" + Keyboard::instance().getCurrentLayout() + "'\n",
                       RGB(255, 255, 255));
         return true;
 
@@ -1049,7 +1049,7 @@ string CandyShell::readInput(string            there,
             }
 
             else {
-                char chr = Keyboard::charForKey(key);
+                char chr = Keyboard::instance().charForKey(key);
                 if ( chr != -1 ) {
                     line = line + chr;
 

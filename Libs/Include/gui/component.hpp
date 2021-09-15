@@ -87,7 +87,7 @@ protected:
             UiComponentID id = response->id;
             if ( response->status == UI_PROTOCOL_SUCCESS ) {
                 Concrete<ComponentType>* component = new Concrete<ComponentType>(id);
-                ComponentRegistry::add(component);
+                ComponentRegistry::instance().add(component);
 
                 return component;
             }

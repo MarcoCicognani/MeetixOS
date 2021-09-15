@@ -129,7 +129,7 @@ Thread* InterruptExceptionHandler::handle(Thread* currentThread) {
     dump(currentThread);
     while ( true )
         asm("hlt");
-    return 0;
+    return nullptr;
 }
 
 /**

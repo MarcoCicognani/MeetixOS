@@ -52,6 +52,7 @@ int __fdopen_static(int fd, const char* mode, FILE* file) {
     file->impl_reopen = __stdio_impl_reopen;
     file->impl_error  = __stdio_impl_error;
     file->impl_eof    = __stdio_impl_eof;
+    file->lock        = false;
 
     // add file to list of open files
     __open_file_list_add(file);

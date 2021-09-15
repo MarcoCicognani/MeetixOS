@@ -221,7 +221,7 @@ void HeadlessScreen::scroll(int value) {
  *
  */
 Keyboard::Info HeadlessScreen::readInput() {
-    return Keyboard::read();
+    return Keyboard::instance().read();
 }
 
 /**

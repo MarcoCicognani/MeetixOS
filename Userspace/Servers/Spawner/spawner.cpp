@@ -148,8 +148,8 @@ void init() {
         if ( stat != MESSAGE_RECEIVE_STATUS_SUCCESSFUL )
             protocolError("receiving command failed with code %i", stat);
 
-        MessageHeader*      header        = (MessageHeader*)requestBuffer;
-        SpawnCommandHeader* commandHeader = (SpawnCommandHeader*)MESSAGE_CONTENT(header);
+        auto header        = (MessageHeader*)requestBuffer;
+        auto commandHeader = (SpawnCommandHeader*)MESSAGE_CONTENT(header);
 
         if ( commandHeader->command == SPAWN_COMMAND_SPAWN_REQUEST )
             processSpawnRequest((SpawnCommandSpawnRequest*)commandHeader,
@@ -351,6 +351,8 @@ SpawnStatus spawn(const char*   path,
     // file of executable
     File_t file;
 
+    Utils::log("Requested spawn for %s %s", path, args);
+
     // open input file
     if ( !findFile(path, &file) ) {
         klog("unable to open the file: %s, it doesn't exist on PATH directory", path);
@@ -412,10 +414,7 @@ SpawnStatus spawn(const char*   path,
         // out-set process id
         *outPid   = targetPid;
         spawnStat = SPAWN_STATUS_SUCCESSFUL;
-
-    }
-
-    else {
+    } else {
         // cancel creation & let kernel clean up
         CancelProcessCreation(targetProc);
 
@@ -434,5 +433,6 @@ SpawnStatus spawn(const char*   path,
     // Close binary file
     Close(file);
 
+    Utils::log("Spawn request for %s completed with %d", path, spawnStat);
     return spawnStat;
 }

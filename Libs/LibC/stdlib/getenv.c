@@ -28,7 +28,7 @@
  */
 char* getenv(const char* key) {
     // open the environment file
-    FILE* env = fopen("/cfg/environ/vars", "r");
+    FILE* env = fopen("/MeetiX/Configs/Environ/Global", "r");
 
     // create the line buffer
     const int buflen = 1024;

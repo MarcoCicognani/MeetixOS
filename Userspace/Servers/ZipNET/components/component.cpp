@@ -25,7 +25,6 @@
 #include <algorithm>
 #include <cairo/cairo.h>
 #include <components/component.hpp>
-#include <components/geoshape.hpp>
 #include <components/window.hpp>
 #include <events/KeyEvent.hpp>
 #include <events/locatable.hpp>
@@ -33,7 +32,6 @@
 #include <gui/properties.hpp>
 #include <layout/FlowLayoutManager.hpp>
 #include <layout/GridLayoutManager.hpp>
-#include <zipNET.hpp>
 
 /**
  *
@@ -316,8 +314,10 @@ void Component_t::setLayoutManager(LayoutManager_t* newMgr) {
  *
  */
 void Component_t::layout() {
-    if ( layoutManager )
+    if ( layoutManager ) {
         layoutManager->layout();
+    }
+
     markFor(COMPONENT_REQUIREMENT_UPDATE);
 }
 
@@ -348,18 +348,20 @@ void Component_t::markParentFor(ComponentRequirement_t req) {
 void Component_t::markFor(ComponentRequirement_t req) {
     requirements |= req;
 
-    if ( parent )
-        parent->markChildsFor(req);
+    if ( parent ) {
+        parent->mark_children_for(req);
+    }
 }
 
 /**
  *
  */
-void Component_t::markChildsFor(ComponentRequirement_t req) {
+void Component_t::mark_children_for(ComponentRequirement_t req) {
     childRequirements |= req;
 
-    if ( parent )
-        parent->markChildsFor(req);
+    if ( parent ) {
+        parent->mark_children_for(req);
+    }
 }
 
 /**
@@ -367,21 +369,20 @@ void Component_t::markChildsFor(ComponentRequirement_t req) {
  */
 void Component_t::resolveRequirement(ComponentRequirement_t req) {
     if ( childRequirements & req ) {
-        for ( Component_t* child : children ) {
-            if ( child->visible )
+        for ( auto child : children ) {
+            if ( child->visible ) {
                 child->resolveRequirement(req);
+            }
         }
         childRequirements &= ~COMPONENT_REQUIREMENT_NONE;
     }
 
     if ( requirements & req ) {
-        if ( req == COMPONENT_REQUIREMENT_LAYOUT )
+        if ( req == COMPONENT_REQUIREMENT_LAYOUT ) {
             layout();
-
-        else if ( req == COMPONENT_REQUIREMENT_UPDATE )
+        } else if ( req == COMPONENT_REQUIREMENT_UPDATE ) {
             update();
-
-        else if ( req == COMPONENT_REQUIREMENT_PAINT ) {
+        } else if ( req == COMPONENT_REQUIREMENT_PAINT ) {
             paint();
             markDirty();
         }

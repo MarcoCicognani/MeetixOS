@@ -72,7 +72,7 @@ extern Tid UiEventDispatcherTid;
  */
 class UI {
 private:
-    static void eventDispatchThread();
+    [[noreturn]] static void eventDispatchThread();
     static void eventDispatchQueueAdd(const UiEventDispatchData& data);
 
 public:

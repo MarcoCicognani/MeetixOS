@@ -29,10 +29,9 @@
  */
 void Screen_t::markDirty(Rectangle rect) {
     // Mark area as invalid
-    if ( invalid.x == 0 && invalid.y == 0 && invalid.width == 0 && invalid.height == 0 )
+    if ( invalid.x == 0 && invalid.y == 0 && invalid.width == 0 && invalid.height == 0 ) {
         invalid = rect;
-
-    else {
+    } else {
         int top  = rect.getTop() < invalid.getTop() ? rect.getTop() : invalid.getTop();
         int left = rect.getLeft() < invalid.getLeft() ? rect.getLeft() : invalid.getLeft();
         int bottom

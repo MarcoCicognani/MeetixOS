@@ -215,12 +215,15 @@ SYSCALL_HANDLER(sleep) {
 SYSCALL_HANDLER(atomicWait) {
     SyscallAtomicLock* data = (SyscallAtomicLock*)SYSCALL_DATA(currentThread->cpuState);
 
+    if ( String::equals(currentThread->getIdentifier(), "ZipNET") ) {
+        logInfo("ZipNET requested AtomWait on atom1 = 0x%h, atom2 = 0x%h", data->atom1, data->atom2);
+    }
+
     // when "trying" only...
     if ( data->tryOnly ) {
         // check if atom 1 is set and atom 2 is NULL or set
         if ( *data->atom1 && (!data->atom2 || *data->atom2) )
             data->wasSet = false;
-
         else {
             *data->atom1 = true;
             if ( data->atom2 )

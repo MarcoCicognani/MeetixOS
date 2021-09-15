@@ -28,6 +28,7 @@
 #include "filesystem/FsDescriptors.hpp"
 #include "filesystem/FsNode.hpp"
 #include "filesystem/FsTransactionHandlerDiscovery.hpp"
+#include "filesystem/FsTransactionHandlerGetLengthDefault.hpp"
 #include "logger/logger.hpp"
 #include "memory/contextual.hpp"
 

@@ -33,7 +33,7 @@
  * This UI interface specification defines the messages
  * that the active window manager must understand.
  */
-#define UI_REGISTRATION_THREAD_IDENTIFIER "zipNET::registration"
+#define UI_REGISTRATION_THREAD_IDENTIFIER "ZipNET::registration"
 
 /*
  * Size of the largest expected message

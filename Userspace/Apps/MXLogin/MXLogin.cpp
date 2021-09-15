@@ -94,7 +94,10 @@ static void loginToMeetiX() {
             Utils::log("Logging as: %s", username.c_str());
 
             // exec mx shell to start ui components
-            Spawn("/cmd/mx", "-s uistart.sh", "/cfg/init/gui/", SECURITY_LEVEL_APPLICATION);
+            Spawn("/Bins/MxSh",
+                  "-s Start.sh",
+                  "/MeetiX/Configs/Interactive/",
+                  SECURITY_LEVEL_APPLICATION);
         }
 
         // unlock event mode
@@ -121,14 +124,14 @@ static void loginToMeetiX() {
  */
 static bool researchAccess(string username, string password, LoginMode_t mode) {
     // open the crd file
-    ifstream fcrd("/cfg/passwd/crd");
+    ifstream users_tab("/MeetiX/Configs/Credentials/Users");
 
     // get file properties
-    PropertyFileParser  parser(fcrd);
+    PropertyFileParser  parser(users_tab);
     map<string, string> properties = parser.getProperties();
 
     // always close file
-    fcrd.close();
+    users_tab.close();
 
     // check all username and passwords
     for ( pair<string, string> current : properties ) {
@@ -147,7 +150,7 @@ static bool researchAccess(string username, string password, LoginMode_t mode) {
 /*
  *	secondary thread: responsible of time label
  */
-void timeThread() {
+[[noreturn]] void timeThread() {
     // registering name of task
     TaskRegisterID("timer");
 
@@ -291,8 +294,12 @@ void paintAnimation() {
  *	MXLogin, graphical login of MeetiX OS
  */
 int main(int argc, char* argv[]) {
+    Utils::log("Hello from MXLogin");
+
     // open communication to windowserver
     if ( UI::open() == UI_OPEN_STATUS_SUCCESSFUL ) {
+        Utils::log("UI::open success");
+
         // parse args, if mode is lock get the first user name
         if ( argc == 2 && !strcmp(argv[1], "lock") )
             mode = LOCK;
@@ -353,7 +360,8 @@ int main(int argc, char* argv[]) {
 
         // close interface connection
         UI::close();
+    } else {
+        Utils::log("unable to open login GUI");
     }
-
     return 0;
 }

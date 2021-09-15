@@ -565,9 +565,11 @@ add_library(LibC
         musl/math/i386/lrintl.s
         musl/math/i386/atanl.s)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-narrowing")
+
 target_include_directories(LibC PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/musl)
 add_custom_command(
         TARGET LibC
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibC> ${TOOLCHAIN_ROOT}/lib/libc.a
-        COMMAND ${CMAKE_COMMAND} -E touch ${TOOLCHAIN_ROOT}/lib/libm.a
+        COMMAND ${CMAKE_AR} cr ${TOOLCHAIN_ROOT}/lib/libm.a
 )

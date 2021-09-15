@@ -29,16 +29,21 @@
 
 using namespace std;
 
-static map<UiComponentID, Component_t*>           components;
-static map<Pid, map<UiComponentID, Component_t*>> componentsByProcess;
-static UiComponentID                              nextID = 1;
+ComponentRegistry& ComponentRegistry::instance() {
+    static ComponentRegistry* s_instance = nullptr;
+    if ( !s_instance ) {
+        s_instance = new ComponentRegistry{};
+    }
+
+    return *s_instance;
+}
 
 /**
  *
  */
-UiComponentID ComponentRegistry_t::add(Pid process, Component_t* component) {
+UiComponentID ComponentRegistry::add(Pid process, Component_t* component) {
     UiComponentID id                 = nextID++;
-    components[id]                   = component;
+    m_registry[id]                   = component;
     componentsByProcess[process][id] = component;
     component->id                    = id;
     return id;
@@ -47,16 +52,16 @@ UiComponentID ComponentRegistry_t::add(Pid process, Component_t* component) {
 /**
  *
  */
-Component_t* ComponentRegistry_t::get(UiComponentID id) {
-    if ( components.count(id) > 0 )
-        return components[id];
+Component_t* ComponentRegistry::get(UiComponentID id) {
+    if ( m_registry.count(id) > 0 )
+        return m_registry[id];
     return 0;
 }
 
 /**
  *
  */
-map<UiComponentID, Component_t*>* ComponentRegistry_t::getProcessMap(Pid pid) {
+map<UiComponentID, Component_t*>* ComponentRegistry::getProcessMap(Pid pid) {
     if ( componentsByProcess.count(pid) > 0 )
         return &componentsByProcess[pid];
     return nullptr;
@@ -65,10 +70,10 @@ map<UiComponentID, Component_t*>* ComponentRegistry_t::getProcessMap(Pid pid) {
 /**
  *
  */
-bool ComponentRegistry_t::removeComponent(Pid pid, UiComponentID id) {
-    if ( components.count(id) > 0 ) {
+bool ComponentRegistry::removeComponent(Pid pid, UiComponentID id) {
+    if ( m_registry.count(id) > 0 ) {
         // get components and set unvisible
-        Component_t* component = components[id];
+        Component_t* component = m_registry[id];
         component->setVisible(false);
 
         // remove from process map
@@ -76,7 +81,7 @@ bool ComponentRegistry_t::removeComponent(Pid pid, UiComponentID id) {
             componentsByProcess[pid].erase(componentsByProcess[pid].find(id));
 
         // remove from global components
-        components.erase(components.find(id));
+        m_registry.erase(m_registry.find(id));
 
         return true;
     }
@@ -87,12 +92,12 @@ bool ComponentRegistry_t::removeComponent(Pid pid, UiComponentID id) {
 /**
  *
  */
-std::list<Window_t*> ComponentRegistry_t::getWindowsComponents() {
+std::list<Window_t*> ComponentRegistry::getWindowsComponents() {
     // list where copy objects
     std::list<Window_t*> listOfWindows;
 
     // parse all regex
-    for ( std::pair<UiComponentID, Component_t*> current : components ) {
+    for ( std::pair<UiComponentID, Component_t*> current : m_registry ) {
         Component_t* component = current.second;
 
         if ( component->getComponentType() == UI_COMPONENT_TYPE_WINDOW ) {
@@ -111,6 +116,6 @@ std::list<Window_t*> ComponentRegistry_t::getWindowsComponents() {
 /**
  *
  */
-void ComponentRegistry_t::removeProcessMap(Pid pid) {
+void ComponentRegistry::removeProcessMap(Pid pid) {
     componentsByProcess.erase(pid);
 }

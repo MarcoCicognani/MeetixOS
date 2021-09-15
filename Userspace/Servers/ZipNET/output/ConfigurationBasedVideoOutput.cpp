@@ -37,7 +37,7 @@ using namespace std;
  */
 bool ConfigurationBasedVideoOutput_t::initialize() {
     // open configuration file
-    string   path = "/cfg/gui/configuration/resolution.cfg";
+    string   path = "/MeetiX/Configs/WM/PreferredRes.cfg";
     ifstream in(path);
     if ( !in.good() ) {
         cerr << "unable to read configuration file: '" << path << "'" << endl;

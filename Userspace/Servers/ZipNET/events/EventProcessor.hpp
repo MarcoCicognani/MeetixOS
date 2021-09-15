@@ -39,11 +39,11 @@ using namespace std;
  * The event queue is used to store any incoming events for
  * later processing.
  */
-class EventProcessor_t {
+class EventProcessor {
 public:
     uint32_t multiclickTimespan;
 
-    EventProcessor_t();
+    EventProcessor();
 
     deque<Keyboard::Info> keyInfoBuffer;
     void                  bufferKeyEvent(Keyboard::Info keyInfo);

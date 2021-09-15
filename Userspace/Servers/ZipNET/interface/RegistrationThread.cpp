@@ -27,45 +27,44 @@
 #include <gui/uispech.hpp>
 #include <interface/ApplicationExitCleanupThread.hpp>
 #include <interface/CommandMessageReceiverThread.hpp>
-#include <stdio.h>
+#include <utils/utils.hpp>
 
 /**
  *
  */
-void RegistrationThread_t::run() {
+[[noreturn]] void RegistrationThread::run() {
     // register this thread
     if ( !TaskRegisterID("registration") ) {
-        klog("failed to register task identifier for registration thread");
-        return;
+        Utils::log("failed to register task identifier for registration thread");
     }
 
     // wait for initialization requests
-    size_t   bufferLength = sizeof(MessageHeader) + sizeof(UiInitializeRequest);
-    uint8_t* buffer       = new uint8_t[bufferLength];
+    auto bufferLength = sizeof(MessageHeader) + sizeof(UiInitializeRequest);
+    auto buffer       = new uint8_t[bufferLength];
 
     while ( true ) {
-        MessageReceiveStatus stat = ReceiveMessage(buffer, bufferLength);
+        auto stat = ReceiveMessage(buffer, bufferLength);
+        Utils::log("Awaiting receiving registration message");
 
         if ( stat == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-            MessageHeader*       requestMessage = (MessageHeader*)buffer;
-            UiInitializeRequest* request        = (UiInitializeRequest*)MESSAGE_CONTENT(buffer);
+            Utils::log("Message received");
+            auto requestMessage = reinterpret_cast<MessageHeader*>(buffer);
 
             // create handler thread
-            CommandMessageReceiverThread_t* communicator    = new CommandMessageReceiverThread_t();
-            Tid                             communicatorTid = communicator->start();
+            auto communicator    = new CommandMessageReceiverThread();
+            auto communicatorTid = communicator->start();
 
             // create a thread that cleans up the ui when the client thread exits
-            ApplicationExitCleanupThread_t* cleanup
-                = new ApplicationExitCleanupThread_t(GetPidForTid(requestMessage->sender),
-                                                     communicator);
-            Tid cleaner = cleanup->start();
+            auto cleanup    = new ApplicationExitCleanupThread(GetPidForTid(requestMessage->sender),
+                                                               communicator);
+            auto cleanerTid = cleanup->start();
 
             // send response
             UiInitializeResponse response;
             response.header.id                  = UI_PROTOCOL_INITIALIZATION;
             response.status                     = UI_PROTOCOL_SUCCESS;
             response.windowServerDelegateThread = communicatorTid;
-            response.windowServerCleanUPThread  = cleaner;
+            response.windowServerCleanUPThread  = cleanerTid;
             SendMessageT(requestMessage->sender,
                          &response,
                          sizeof(UiInitializeResponse),

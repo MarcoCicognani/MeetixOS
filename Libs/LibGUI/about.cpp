@@ -61,7 +61,7 @@ void aboutMeetiXOS() {
     panel = Geoshape::create();
     about->addChild(panel);
     panel->setBounds(Rectangle(0, 0, 350, 230));
-    panel->setPNG("/app/OsmosUI/deps/icon/logo.png", Point(70, 50));
+    panel->setPNG("/Apps/OsmosUI/Resources/Icons/OSLogo_hdpi.png", Point(70, 50));
 
     // create and configure first line of about text
     line1 = Label::create();
@@ -77,7 +77,7 @@ void aboutMeetiXOS() {
     panel->addChild(line2);
     line2->setBounds(Rectangle(0, 130, 320, 30));
     line2->setTitleAlignment(TextAlignment::CENTER);
-    line2->setTitle("[ Copyright (C) 2017, MeetiX OS Project ]");
+    line2->setTitle("[ Copyright (C) 2021, MeetiX OS Project ]");
 
     // show window about
     about->setVisible(true);

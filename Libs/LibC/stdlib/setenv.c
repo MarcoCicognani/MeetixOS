@@ -32,7 +32,7 @@ int setenv(const char* key, const char* val, int overwrite) {
     sprintf(args, "--sentenv %s=%s", key, val);
 
     // exec shell and check status
-    if ( Spawn("/cmd/mx", args, "/", SECURITY_LEVEL_APPLICATION) == SPAWN_STATUS_SUCCESSFUL )
+    if ( Spawn("/Bins/MxSh", args, "/", SECURITY_LEVEL_APPLICATION) == SPAWN_STATUS_SUCCESSFUL )
         return 0;
 
     return -1;

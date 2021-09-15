@@ -64,20 +64,22 @@ ProcessorState* InterruptDispatcher::handle(ProcessorState* cpuState) {
     handlingLock.lock();
 
     // save current task state
-    Thread* currentThread = Tasking::save(cpuState);
+    auto currentThread = Tasking::save(cpuState);
 
     // Exceptions (interrupts below 0x20) are redirected to the exception handler,
     // while requests are redirected to the request handler.
-    if ( cpuState->intr < 0x20 )
+    if ( cpuState->intr < 0x20 ) {
         currentThread = InterruptExceptionHandler::handle(currentThread);
-    else
+    } else {
         currentThread = InterruptRequestHandler::handle(currentThread);
+    }
 
     // sanity check
-    if ( currentThread->waitManager != 0 )
+    if ( currentThread->waitManager ) {
         EvaKernel::panic("scheduled thread %i had a wait manager ('%s')",
                          currentThread->id,
                          currentThread->waitManager->debugName());
+    }
 
     // send end of interrupt
     Lapic::sendEoi();

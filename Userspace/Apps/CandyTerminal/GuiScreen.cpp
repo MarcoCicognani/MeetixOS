@@ -65,7 +65,7 @@ public:
      *
      */
     virtual void handleKeyEvent(KeyEvent& e) {
-        screen->bufferInput(Keyboard::fullKeyInfo(e.info));
+        screen->bufferInput(Keyboard::instance().fullKeyInfo(e.info));
     }
 };
 
@@ -242,7 +242,7 @@ CharLayout* GuiScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
 /**
  *
  */
-void GuiScreen::paint() {
+[[noreturn]] void GuiScreen::paint() {
     int padding = 0;
     while ( true ) {
         auto windowBounds = window->getBounds();

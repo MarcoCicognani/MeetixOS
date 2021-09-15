@@ -41,7 +41,7 @@ typedef struct {
 /**
  *
  */
-class CommandMessageResponderThread_t : public Thread {
+class CommandMessageResponderThread : public Thread {
 public:
     std::deque<CommandMessageResponse_t> buffer;
     uint8_t                              bufferEmpty = true;
@@ -49,7 +49,7 @@ public:
     /**
      *
      */
-    virtual void run();
+    [[noreturn]] virtual void run();
 
     /**
      *

@@ -190,6 +190,10 @@ SYSCALL_HANDLER(setWorkingDirectory) {
 SYSCALL_HANDLER(fsOpen) {
     SyscallFsOpen* data = (SyscallFsOpen*)SYSCALL_DATA(currentThread->cpuState);
 
+    if ( String::equals(currentThread->getIdentifier(), "ZipNET") ) {
+        logInfo("ZipNET requested file-open for path '%s'", data->path);
+    }
+
     // create an absolute path from the given path
     Local<char> targetPath(new char[PATH_MAX]);
     FileSystem::concatAsAbsolutePath(currentThread->process->workingDirectory,
@@ -197,16 +201,18 @@ SYSCALL_HANDLER(fsOpen) {
                                      targetPath());
 
     // create the handler that works after the node was discovered
-    Contextual<SyscallFsOpen*>         boundData(data, currentThread->process->pageDirectory);
-    FsTransactionHandlerDiscoveryOpen* handler
-        = new FsTransactionHandlerDiscoveryOpen(targetPath(), boundData);
+    Contextual<SyscallFsOpen*> boundData(data, currentThread->process->pageDirectory);
+    auto handler     = new FsTransactionHandlerDiscoveryOpen(targetPath(), boundData);
     auto startStatus = handler->startTransaction(currentThread);
+    if ( String::equals(currentThread->getIdentifier(), "ZipNET") ) {
+        logInfo("Open for file '%s' started with code %i", data->path, startStatus);
+    }
 
-    if ( startStatus == FS_TRANSACTION_START_WITH_WAITER )
+    if ( startStatus == FS_TRANSACTION_START_WITH_WAITER ) {
         return Tasking::schedule();
-    else if ( startStatus == FS_TRANSACTION_START_IMMEDIATE_FINISH )
+    } else if ( startStatus == FS_TRANSACTION_START_IMMEDIATE_FINISH ) {
         return currentThread;
-    else {
+    } else {
         logWarn("starting open transaction failed with status (%i)", startStatus);
         data->status = FS_OPEN_ERROR;
         return currentThread;

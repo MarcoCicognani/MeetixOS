@@ -81,7 +81,7 @@ UiOpenStatus UI::open() {
     }
 
     // check response
-    UiInitializeResponse* response = (UiInitializeResponse*)MESSAGE_CONTENT(responseBuffer());
+    auto response = (UiInitializeResponse*)MESSAGE_CONTENT(responseBuffer());
     if ( response->status != UI_PROTOCOL_SUCCESS ) {
         Utils::log("failed to open UI");
         return UI_OPEN_STATUS_FAILED;
@@ -108,7 +108,7 @@ UiCloseStatus UI::close() {
 
     // delete the component object of client map
     // (the object deletion remove itself from component map and from zipNet regex)
-    ComponentRegistry::deleteRegistry();
+    ComponentRegistry::instance().deleteRegistry();
 
     // get id of transaction
     MessageTransaction tx = GetMessageTxId();
@@ -235,7 +235,7 @@ bool UI::setMouseCursor(std::string name) {
 /**
  *
  */
-void UI::eventDispatchThread() {
+[[noreturn]] void UI::eventDispatchThread() {
     size_t         buffer_size = UI_MAXIMUM_MESSAGE_SIZE;
     Local<uint8_t> buffer(new uint8_t[buffer_size]);
 
@@ -243,9 +243,8 @@ void UI::eventDispatchThread() {
         int stat = ReceiveMessage(buffer(), buffer_size);
         if ( stat == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
             // event message
-            UiComponentEventHeader* eventHeader
-                = (UiComponentEventHeader*)MESSAGE_CONTENT(buffer());
-            Component* component = ComponentRegistry::get(eventHeader->componentID);
+            auto eventHeader = (UiComponentEventHeader*)MESSAGE_CONTENT(buffer());
+            auto component   = ComponentRegistry::instance().get(eventHeader->componentID);
 
             if ( !component ) {
                 Utils::log("event received for unknown component %i", eventHeader->componentID);
@@ -255,10 +254,9 @@ void UI::eventDispatchThread() {
             // tell the component delegate to handle the event
             component->handle(eventHeader);
 
-        }
-
-        else
+        } else {
             Utils::log("something went wrong when receiving an event, status code: %i", stat);
+        }
     }
 }
 

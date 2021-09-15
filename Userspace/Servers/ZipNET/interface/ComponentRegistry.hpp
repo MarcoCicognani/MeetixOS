@@ -38,15 +38,24 @@ class Window_t;
 /**
  *
  */
-class ComponentRegistry_t {
+class ComponentRegistry {
 public:
-    static UiComponentID                     add(Pid process, Component_t* component);
-    static Component_t*                      get(UiComponentID id);
-    static std::list<Window_t*>              getWindowsComponents();
-    static map<UiComponentID, Component_t*>* getProcessMap(Pid pid);
+    static ComponentRegistry& instance();
 
-    static bool removeComponent(Pid pid, UiComponentID id);
-    static void removeProcessMap(Pid pid);
+    UiComponentID                     add(Pid process, Component_t* component);
+    Component_t*                      get(UiComponentID id);
+    std::list<Window_t*>              getWindowsComponents();
+    map<UiComponentID, Component_t*>* getProcessMap(Pid pid);
+
+    bool removeComponent(Pid pid, UiComponentID id);
+    void removeProcessMap(Pid pid);
+
+private:
+    ComponentRegistry() = default;
+
+    map<UiComponentID, Component_t*>           m_registry{};
+    map<Pid, map<UiComponentID, Component_t*>> componentsByProcess{};
+    UiComponentID                              nextID{ 1 };
 };
 
 #endif

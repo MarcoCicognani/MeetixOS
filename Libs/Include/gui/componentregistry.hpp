@@ -21,6 +21,7 @@
 #define MEETIX_LIBRARY_UI_COMPONENT_REGISTRY
 
 #include <gui/uispech.hpp>
+#include <tasking/lock.hpp>
 #include <map>
 
 // forward declaration
@@ -31,10 +32,18 @@ class Component;
  */
 class ComponentRegistry {
 public:
-    static void       add(Component* component);
-    static void       remove(UiComponentID id);
-    static Component* get(UiComponentID id);
-    static void       deleteRegistry();
+    static ComponentRegistry& instance();
+
+    void       add(Component* component);
+    void       remove(UiComponentID id);
+    Component* get(UiComponentID id);
+    void       deleteRegistry();
+
+private:
+    ComponentRegistry() = default;
+
+    Lock                                m_lock{};
+    std::map<UiComponentID, Component*> m_registry{};
 };
 
 #endif

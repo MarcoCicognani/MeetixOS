@@ -38,7 +38,7 @@ Font_t::Font_t(const std::string& name,
                uint32_t           sourceLength,
                FontStyle          style,
                bool               hint)
-    : name(name), data(nullptr), face(0), okay(false), style(style), activeSize(0), hint(hint) {
+    : name(name), data(nullptr), face(nullptr), okay(false), style(style), activeSize(0), hint(hint) {
     data = new uint8_t[sourceLength];
     memcpy(data, source, sourceLength);
 
