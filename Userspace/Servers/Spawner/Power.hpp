@@ -22,7 +22,7 @@
 /*
  * reboot or shutdown the system
  */
-void processHealtMachine(int command);
+void processHaltMachine(int command);
 
 /*
  *

@@ -21,7 +21,7 @@
 #define MEETIX_LIBRARY_TASKING_TASKING
 
 #include <eva.h>
-#include <eva/utils/llist.hpp>
+#include <vector>
 
 /*
  * static class to get and manage tasks of kernel
@@ -31,22 +31,22 @@ public:
     /**
      * @return a list with tids of threads
      */
-    static llist<Tid> getThreadIDs();
+    static std::vector<Tid> getThreadIDs();
 
     /**
      * @return a list with pids of Processes
      */
-    static llist<Pid> getProcessIDs();
+    static std::vector<Pid> getProcessIDs();
 
     /**
      * @return list with descriptors of process
      */
-    static llist<ProcessDescriptor> getProcess();
+    static std::vector<ProcessDescriptor> getProcess();
 
     /**
      * @return list with descriptors of threads
      */
-    static llist<ThreadDescriptor> getThreads();
+    static std::vector<ThreadDescriptor> getThreads();
 };
 
 #endif

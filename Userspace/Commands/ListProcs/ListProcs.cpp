@@ -24,26 +24,27 @@
 /**
  * create the type comparator
  */
-typedef bool (*Compare)(const ProcessDescriptor& task1, const ProcessDescriptor& task2);
+using CompareFn = bool (*)(const ProcessDescriptor& task1, const ProcessDescriptor& task2);
 
 /*
  * compare by id
  */
-static inline bool compareByPid(const ProcessDescriptor& task1, const ProcessDescriptor& task2) {
+static inline bool compare_by_pid(const ProcessDescriptor& task1, const ProcessDescriptor& task2) {
     return task1.main.id > task2.main.id;
 }
 
 /*
  * compare by Name
  */
-static inline bool compareByName(const ProcessDescriptor& task1, const ProcessDescriptor& task2) {
+static inline bool compare_by_name(const ProcessDescriptor& task1, const ProcessDescriptor& task2) {
     return strcmp(task1.main.identifier, task2.main.identifier) > 0;
 }
 
 /*
  * compare by Memory
  */
-static inline bool compareByMem(const ProcessDescriptor& task1, const ProcessDescriptor& task2) {
+static inline bool compare_by_memory(const ProcessDescriptor& task1,
+                                     const ProcessDescriptor& task2) {
     return task1.heapUsed > task2.heapUsed;
 }
 
@@ -55,10 +56,10 @@ void showTotalMemoryUsage() {
     Sysinfo(&info);
 
     // TODO get width from shell
-    int width   = (info.totRam / 1024) / 10;
-    int used    = (info.totRam / 1024) - (info.freeRam / 1024);
-    int percent = used / 100 * width;
-    int cells   = (width * percent) / 100;
+    auto width   = (info.totRam / 1024) / 10;
+    auto used    = (info.totRam / 1024) - (info.freeRam / 1024);
+    auto percent = used / 100 * width;
+    auto cells   = (width * percent) / 100;
 
     printf("\n  %-4s", "Total Memory Usage [");
 
@@ -75,42 +76,38 @@ void showTotalMemoryUsage() {
 /**
  * show the memory usage and get the process list from the kernel, then print it on the screen
  */
-void showproc(Compare compare, bool useMegabytes) {
+void show_processes(CompareFn compare, bool useMegabytes) {
     // show memory usage
     showTotalMemoryUsage();
 
     // get task list from kernel
-    llist<ProcessDescriptor> proclist = Tasking::getProcess();
-
-    // sorting task array
-    proclist.sort(compare);
+    auto procs_list = Tasking::getProcess();
+    std::sort(procs_list.begin(), procs_list.end(), compare);
 
     // print on screen
     println("%5s %6s %6s %-18s %-38s", "PID", "HEAP", "IMAGE", "NAME", "PATH");
-    for ( llist<ProcessDescriptor>::iterator it = proclist.begin(); it != proclist.end(); it++ ) {
-        ProcessDescriptor data = *it;
-        // if (useMegabytes)
-        //{
-        data.imageSize = (data.imageSize > 1024 ? data.imageSize / 1024 : data.imageSize);
-        data.heapUsed  = (data.heapUsed > 1024 ? data.heapUsed / 1024 : data.heapUsed);
-        //}
+    for ( auto& proc_data : procs_list ) {
+        proc_data.imageSize
+            = (proc_data.imageSize > 1024 ? proc_data.imageSize / 1024 : proc_data.imageSize);
+        proc_data.heapUsed
+            = (proc_data.heapUsed > 1024 ? proc_data.heapUsed / 1024 : proc_data.heapUsed);
         println("%5d %6d %6d %-18s %-38s",
-                data.main.id,
-                data.heapUsed,
-                data.imageSize / 1024,
-                data.main.identifier,
-                data.sourcePath);
+                proc_data.main.id,
+                proc_data.heapUsed,
+                proc_data.imageSize / 1024,
+                proc_data.main.identifier,
+                proc_data.sourcePath);
     }
 }
 
 /*
  * print on screen the help
  */
-void usage(const char* cmdname) {
+void usage(const char* cmd_name) {
     println("");
-    println("Process displayer utility");
-    println("usage: %s [filter]", cmdname);
-    println("avaible filters:");
+    println("Process List utility");
+    println("Usage: %s [filter]", cmd_name);
+    println("Available filters:");
     println("\t-i/--sort-by-id    [show the task list sorted by the process numeric id]");
     println("\t-n/--sort-by-name  [show the task list sorted by the process string id]");
     println("\t-m/--sort-by-mem   [show the task list sorted by the process memory use]");
@@ -124,49 +121,48 @@ void usage(const char* cmdname) {
  */
 int main(int argc, const char* argv[]) {
     // create mode flags
-    bool showhelp     = false;
+    bool show_help    = false;
     bool useMegabytes = true;
 
     // create args
-    option longopts[] = { { "sort-by-id", no_argument, 0, 'i' },
-                          { "sort-by-name", no_argument, 0, 'n' },
-                          { "sort-by-mem", no_argument, 0, 'm' },
-                          { "use-megabytes", no_argument, 0, 'u' },
-                          { 0, 0, 0, 0 } };
+    option long_cmdline_opts[] = { { "sort-by-id", no_argument, nullptr, 'i' },
+                                   { "sort-by-name", no_argument, nullptr, 'n' },
+                                   { "sort-by-mem", no_argument, nullptr, 'm' },
+                                   { "use-megabytes", no_argument, nullptr, 'u' },
+                                   { nullptr, 0, nullptr, 0 } };
 
     // set as default the comparator t
-    static bool (*compare)(const ProcessDescriptor& task1, const ProcessDescriptor& task2)
-        = &compareByPid;
+    CompareFn compare_fn = &compare_by_pid;
 
     // parse args
-    char opt;
-    while ( (opt = getoptlong(argc, argv, "h?", longopts, NULL)) != EOF ) {
+    int opt;
+    while ( (opt = getoptlong(argc, argv, "h?", long_cmdline_opts, NULL)) != EOF ) {
         switch ( opt ) {
             case 'i':
-                compare = &compareByPid;
+                compare_fn = &compare_by_pid;
                 break;
             case 'n':
-                compare = &compareByName;
+                compare_fn = &compare_by_name;
                 break;
             case 'm':
-                compare = &compareByMem;
+                compare_fn = &compare_by_memory;
                 break;
             case 'u':
                 useMegabytes = true;
             case 'h':
-                showhelp = true;
-                break;
             case '?':
-                showhelp = true;
+            default:
+                show_help = true;
                 break;
         }
     }
 
     // do a mode
-    if ( !showhelp )
-        showproc(compare, useMegabytes);
-    else
+    if ( !show_help ) {
+        show_processes(compare_fn, useMegabytes);
+    } else {
         usage(argv[0]);
+    }
 
     return 0;
 }

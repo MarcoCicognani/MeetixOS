@@ -161,7 +161,7 @@ void init() {
                                 header->transaction);
         else if ( commandHeader->command == SPAWN_COMMAND_SHUTDOWN_MACHINE
                   || commandHeader->command == SPAWN_COMMAND_REBOOT_MACHINE )
-            processHealtMachine(commandHeader->command);
+            processHaltMachine(commandHeader->command);
         else
             protocolError("received unknown command: code %i, task %i",
                           commandHeader->command,

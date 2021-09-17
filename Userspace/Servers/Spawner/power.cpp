@@ -33,15 +33,15 @@ static inline bool compare(const Pid& first, const Pid& second) {
 /**
  *
  */
-void processHealtMachine(int command) {
+void processHaltMachine(int command) {
     // get process tids and sort it
-    llist<Pid> process = Tasking::getProcessIDs();
-    process.sort(compare);
+    auto process = Tasking::getProcessIDs();
+    std::sort(process.begin(), process.end(), compare);
 
     // send SIGINT signal to all process
-    for ( llist<Tid>::iterator it = process.begin(); it != process.end(); ++it ) {
-        klog("sending SIGINT to thread %i", *it);
-        RaiseSignal(*it, SIGINT);
+    for (auto& proc_id : process) {
+        klog("sending SIGINT to thread %i", proc_id);
+        RaiseSignal(proc_id, SIGINT);
     }
 
     // shutdown or reboot system

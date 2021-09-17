@@ -23,9 +23,9 @@
 /**
  * @return a list with tids of threads
  */
-llist<Tid> Tasking::getThreadIDs() {
+std::vector<Tid> Tasking::getThreadIDs() {
     // get the thread count
-    llist<Tid> tids;
+    std::vector<Tid> tids;
     uint32_t   tcount = GetThreadCount();
 
     // only if call success
@@ -36,7 +36,7 @@ llist<Tid> Tasking::getThreadIDs() {
         // get the tids and copy to the list
         uint32_t copied = GetThreadTids(buffer(), tcount);
         for ( int i = 0; i < copied; i++ )
-            tids.add(buffer()[i]);
+            tids.push_back(buffer()[i]);
     }
 
     return tids;
@@ -45,9 +45,9 @@ llist<Tid> Tasking::getThreadIDs() {
 /**
  * @return a list with pids of Processes
  */
-llist<Pid> Tasking::getProcessIDs() {
+std::vector<Pid> Tasking::getProcessIDs() {
     // get the thread count
-    llist<Pid> pids;
+    std::vector<Pid> pids;
     uint32_t   pcount = GetProcessCount();
 
     // only if call success
@@ -58,7 +58,7 @@ llist<Pid> Tasking::getProcessIDs() {
         // get the tids and copy to the list
         uint32_t copied = GetProcessPids(buffer(), pcount);
         for ( int i = 0; i < copied; i++ )
-            pids.add(buffer()[i]);
+            pids.push_back(buffer()[i]);
     }
 
     return pids;
@@ -67,18 +67,18 @@ llist<Pid> Tasking::getProcessIDs() {
 /**
  * @return list with descriptors of process
  */
-llist<ProcessDescriptor> Tasking::getProcess() {
+std::vector<ProcessDescriptor> Tasking::getProcess() {
     // create a local list to store descriptors and get the pids
-    llist<ProcessDescriptor> descriptors;
-    llist<Pid>               pids = Tasking::getProcessIDs();
+    std::vector<ProcessDescriptor> descriptors;
+    std::vector<Pid>               proc_ids = Tasking::getProcessIDs();
 
     // check validity
-    if ( pids.count() > 0 ) {
-        // get all descriptors by tids
-        for ( llist<Pid>::iterator it = pids.begin(); it != pids.end(); it++ ) {
+    if ( !proc_ids.empty() ) {
+        // get all descriptors by thread IDs
+        for (auto& pid : proc_ids ) {
             ProcessDescriptor process;
-            if ( GetProcessDescriptor(*it, &process) )
-                descriptors.add(process);
+            if ( GetProcessDescriptor(pid, &process) )
+                descriptors.push_back(process);
         }
     }
 
@@ -88,18 +88,18 @@ llist<ProcessDescriptor> Tasking::getProcess() {
 /**
  * @return list with descriptors of threads
  */
-llist<ThreadDescriptor> Tasking::getThreads() {
+std::vector<ThreadDescriptor> Tasking::getThreads() {
     // create a local list to store descriptors and get the pids
-    llist<ThreadDescriptor> descriptors;
-    llist<Pid>              tids = Tasking::getThreadIDs();
+    std::vector<ThreadDescriptor> descriptors;
+    std::vector<Pid>              tids = Tasking::getThreadIDs();
 
     // check validity
-    if ( tids.count() > 0 ) {
+    if ( !tids.empty() ) {
         // get all descriptors by tids
-        for ( llist<Pid>::iterator it = tids.begin(); it != tids.end(); it++ ) {
+        for (auto& tid : tids) {
             ThreadDescriptor thread;
-            if ( GetThreadDescriptor(*it, &thread) )
-                descriptors.add(thread);
+            if ( GetThreadDescriptor(tid, &thread) )
+                descriptors.push_back(thread);
         }
     }
 

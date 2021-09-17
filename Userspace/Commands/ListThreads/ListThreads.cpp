@@ -22,13 +22,18 @@
 #include <tasking/tasking.hpp>
 #include <unistd.h>
 
+/**
+ * create the type comparator
+ */
+using CompareFn = bool (*)(const ThreadDescriptor& task1, const ThreadDescriptor& task2);
+
 /*
  * show the usage of command
  */
-void usage(const char* cmdname) {
+void usage(const char* cmd_name) {
     println("");
-    println("Thread displayer utility");
-    println("usage: %s [filter]", cmdname);
+    println("Thread List utility");
+    println("Usage: %s [filter]", cmd_name);
     println("The following filters are available:");
     println("\t-i/--sort-by-tid           show the task list sorted by the Thread numeric id");
     println("\t-n/--sort-by-name          show the task list sorted by the Thread string id");
@@ -38,17 +43,17 @@ void usage(const char* cmdname) {
 }
 
 // compare by id
-static inline bool compareByTid(const ThreadDescriptor& task1, const ThreadDescriptor& task2) {
+static inline bool compare_by_tid(const ThreadDescriptor& task1, const ThreadDescriptor& task2) {
     return task1.id > task2.id;
 }
 
 // compare by Name
-static inline bool compareByName(const ThreadDescriptor& task1, const ThreadDescriptor& task2) {
+static inline bool compare_by_name(const ThreadDescriptor& task1, const ThreadDescriptor& task2) {
     return strcmp(task1.identifier, task2.identifier) > 0;
 }
 
 // compare by Memory
-static inline bool compareByMem(const ThreadDescriptor& task1, const ThreadDescriptor& task2) {
+static inline bool compare_by_memory(const ThreadDescriptor& task1, const ThreadDescriptor& task2) {
     return task1.threadUserStackSize > task2.threadUserStackSize;
 }
 
@@ -57,43 +62,44 @@ static inline bool compareByMem(const ThreadDescriptor& task1, const ThreadDescr
  */
 int main(int argc, const char* argv[]) {
     // create help flag
-    bool showHelp = false;
+    bool show_help = false;
 
     // create args
-    option long_opts[] = { { "sort-by-id", no_argument, nullptr, 'i' },
-                           { "sort-by-name", no_argument, nullptr, 'n' },
-                           { "sort-by-mem", no_argument, nullptr, 'm' },
-                           { "help", no_argument, nullptr, 'h' },
-                           { nullptr, 0, nullptr, 0 } };
+    option long_cmdline_opts[] = { { "sort-by-id", no_argument, nullptr, 'i' },
+                                   { "sort-by-name", no_argument, nullptr, 'n' },
+                                   { "sort-by-mem", no_argument, nullptr, 'm' },
+                                   { "help", no_argument, nullptr, 'h' },
+                                   { nullptr, 0, nullptr, 0 } };
 
     // set as default the comparator t
-    static bool (*compare)(const ThreadDescriptor& task1, const ThreadDescriptor& task2)
-        = &compareByTid;
+    CompareFn compare_fn = &compare_by_tid;
 
     // parse args
-    char opt;
-    while ( (opt = getoptlong(argc, argv, "h", long_opts, NULL)) != EOF ) {
+    int opt;
+    while ( (opt = getoptlong(argc, argv, "h", long_cmdline_opts, NULL)) != EOF ) {
         switch ( opt ) {
             case 'i':
-                compare = &compareByTid;
+                compare_fn = &compare_by_tid;
                 break;
             case 'n':
-                compare = &compareByName;
+                compare_fn = &compare_by_name;
                 break;
             case 'm':
-                compare = &compareByMem;
+                compare_fn = &compare_by_memory;
                 break;
             case 'h':
-                showHelp = true;
+            case '?':
+            default:
+                show_help = true;
                 break;
         }
     }
 
     // check if is not requested the help
-    if ( !showHelp ) {
+    if ( !show_help ) {
         // get thread list from kernel
-        llist<ThreadDescriptor> tlist = Tasking::getThreads();
-        tlist.sort(compare);
+        auto threads = Tasking::getThreads();
+        std::sort(threads.begin(), threads.end(), compare_fn);
 
         // print on screen
         println("%5s %-56s %-20s %-20s   %5s",
@@ -102,13 +108,13 @@ int main(int argc, const char* argv[]) {
                 "Execution time (ms)",
                 "Scheduled Time",
                 "User Stack (kb)");
-        for ( llist<ThreadDescriptor>::iterator it = tlist.begin(); it != tlist.end(); ++it )
+        for (auto& thread : threads)
             println("%5i %-56s %-20d %-20d %5ikb",
-                    (*it).id,
-                    (*it).identifier,
-                    (*it).executionTime,
-                    (*it).scheduledTimes,
-                    (*it).threadUserStackSize);
+                    thread.id,
+                    thread.identifier,
+                    thread.executionTime,
+                    thread.scheduledTimes,
+                    thread.threadUserStackSize);
     }
 
     else
