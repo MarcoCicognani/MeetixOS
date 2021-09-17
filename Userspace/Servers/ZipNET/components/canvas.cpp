@@ -25,6 +25,8 @@
 #include <components/canvas.hpp>
 #include <eva/memory.h>
 
+#define ALIGN_UP(value)		(value + value % 20)
+
 /**
  *
  */
@@ -68,7 +70,8 @@ void Canvas_t::checkBuffer() {
     Rectangle bounds = getBounds();
     uint32_t  requiredSize
         = sizeof(UiCanvasSharedMemoryHeader)
-        + cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, bounds.height) * bounds.width;
+        + cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, ALIGN_UP(bounds.width))
+              * ALIGN_UP(bounds.height);
     uint16_t requiredPages = PAGE_ALIGN_UP(requiredSize) / PAGE_SIZE;
 
     // if next buffer not yet acknowledged, ask client to acknowledge it
@@ -124,8 +127,8 @@ void Canvas_t::createNewBuffer(uint16_t requiredPages) {
 
     // initialize the header
     UiCanvasSharedMemoryHeader* header = (UiCanvasSharedMemoryHeader*)nextBuffer.localMapping;
-    header->paintableWidth             = bounds.width;
-    header->paintableHeight            = bounds.height;
+    header->paintableWidth             = ALIGN_UP(bounds.width);
+    header->paintableHeight            = ALIGN_UP(bounds.height);
     header->blitX                      = 0;
     header->blitY                      = 0;
     header->blitWidth                  = 0;
