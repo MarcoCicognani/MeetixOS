@@ -4,7 +4,7 @@ set(ASM_SOURCES
         system/processor.asm)
 set_source_files_properties(${ASM_SOURCES} PROPERTIES LANGUAGE ASM_NASM)
 
-add_executable(EvangelionNG
+add_executable(Kernel
         EvangelionNG.cpp
         filesystem/FsDelegateTasked.cpp
         filesystem/FsDelegatePipe.cpp
@@ -79,8 +79,8 @@ add_executable(EvangelionNG
         vm86/Virtual8086Monitor.cpp
         ${ASM_SOURCES})
 
-target_include_directories(EvangelionNG PRIVATE . ../EvaShared)
-target_link_libraries(EvangelionNG EvaShared)
-target_link_options(EvangelionNG PRIVATE LINKER:-T ${CMAKE_CURRENT_SOURCE_DIR}/../extra/link-kernel.ld -nostdlib -nostartfiles)
+target_include_directories(Kernel PRIVATE . ../Shared)
+target_link_libraries(Kernel Shared)
+target_link_options(Kernel PRIVATE LINKER:-T ${CMAKE_CURRENT_SOURCE_DIR}/LinkScript.ld -nostdlib -nostartfiles)
 
-install(TARGETS EvangelionNG DESTINATION ${ISO_IMAGE_INSTALL_ROOT}/boot)
+install(TARGETS Kernel DESTINATION ${ISO_IMAGE_INSTALL_ROOT}/boot)

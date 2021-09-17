@@ -1,7 +1,7 @@
 set(ASM_SOURCES memory/gdt/GdtMounter.asm)
 set_source_files_properties(${ASM_SOURCES} PROPERTIES LANGUAGE ASM_NASM)
 
-add_library(EvaShared
+add_library(Shared
         STATIC
         debug/DebugInterface.cpp
         logger/logger.cpp
@@ -18,4 +18,4 @@ add_library(EvaShared
         utils/string.cpp
         video/ConsoleVideo.cpp
         video/PrettyBoot.cpp)
-target_include_directories(EvaShared PRIVATE .)
+target_include_directories(Shared PRIVATE .)

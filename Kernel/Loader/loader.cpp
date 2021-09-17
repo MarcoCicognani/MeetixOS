@@ -122,7 +122,7 @@ void EvaLoader::initialize(MultibootInformation* multibootInformation) {
     PRETTY_BOOT_STATUS("locating Evangelion kernel", 3, GREEN);
     logInfo("%! locating Evangelion Kernel...", "Eva Loader");
     MultibootModule* kernelModule
-        = MultibootUtils::findModule(setupInformation.multibootInformation, "/boot/EvangelionNG");
+        = MultibootUtils::findModule(setupInformation.multibootInformation, "/boot/Kernel");
     if ( kernelModule ) {
         PRETTY_BOOT_STATUS("Loading EvangelionNG", 5, GREEN);
         logInfo("%! found EvangelionNG binary at %h, loading...",
