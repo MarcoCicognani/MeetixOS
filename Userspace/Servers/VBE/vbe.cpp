@@ -137,7 +137,7 @@ bool setVideoMode(uint32_t       wantedWidth,
 
             // mode output
             if ( debugOutput ) {
-                Utils::log("mode: %i, attr: %i, mmo: %i, %ix%ix%i lfb: %d",
+                Utils::log("mode: %i, attr: %i, mmo: %i, %ix%ix%i lfb: 0x%x",
                            mode,
                            modeInfoBlock->modeAttributes,
                            modeInfoBlock->memoryModel,
