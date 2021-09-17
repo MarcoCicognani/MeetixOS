@@ -95,8 +95,8 @@ static void loginToMeetiX() {
 
             // exec mx shell to start ui components
             Spawn("/Bins/MxSh",
-                  "-s Start.sh",
-                  "/MeetiX/Configs/Interactive/",
+                  "-s AfterLogin.sh",
+                  "/MeetiX/Configs/Startup/Interactive/",
                   SECURITY_LEVEL_APPLICATION);
         }
 
@@ -134,7 +134,7 @@ static bool researchAccess(string username, string password, LoginMode_t mode) {
     users_tab.close();
 
     // check all username and passwords
-    for ( pair<string, string> current : properties ) {
+    for ( auto& current : properties ) {
         // compare
         if ( username == current.first && password == current.second ) {
             if ( mode != LoginMode_t::LOCK )
@@ -294,12 +294,8 @@ void paintAnimation() {
  *	MXLogin, graphical login of MeetiX OS
  */
 int main(int argc, char* argv[]) {
-    Utils::log("Hello from MXLogin");
-
     // open communication to windowserver
     if ( UI::open() == UI_OPEN_STATUS_SUCCESSFUL ) {
-        Utils::log("UI::open success");
-
         // parse args, if mode is lock get the first user name
         if ( argc == 2 && !strcmp(argv[1], "lock") )
             mode = LOCK;

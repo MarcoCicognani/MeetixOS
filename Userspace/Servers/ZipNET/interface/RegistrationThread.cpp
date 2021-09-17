@@ -44,10 +44,8 @@
 
     while ( true ) {
         auto stat = ReceiveMessage(buffer, bufferLength);
-        Utils::log("Awaiting receiving registration message");
 
         if ( stat == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-            Utils::log("Message received");
             auto requestMessage = reinterpret_cast<MessageHeader*>(buffer);
 
             // create handler thread

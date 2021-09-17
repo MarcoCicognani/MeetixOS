@@ -186,7 +186,7 @@ void OsmosUI::setMenuButton() {
     buttons->configure("menu",
                        Rectangle(0, 0, 72, 30),
                        "",
-                       "/app/OsmosUI/deps/icon/mx.png",
+                       "/Apps/OsmosUI/Resources/Icons/OSLogo_ldpi.png",
                        Point(0, 0),
                        ARGB(255, 10, 200, 10),
                        ARGB(255, 0, 0, 0));
@@ -270,7 +270,7 @@ void meetiXOSLogout() {
     delete memLabel;
 
     // exec login
-    Spawn("/app/MXLogin/bin/MXLogin", "", "/app/MXLogin/", SECURITY_LEVEL_APPLICATION);
+    Spawn("/Apps/MXLogin/Bin/MXLogin", "", "/Apps/MXLogin/", SECURITY_LEVEL_APPLICATION);
 
     // unlock iteration
     _continue = false;
@@ -285,7 +285,7 @@ void meetiXOSLogout() {
  */
 std::map<string, string> createMenuConfiguration() {
     // create basedir
-    string basedir = "/app/";
+    string basedir = "/Apps/";
 
     // open the directory
     FsDirectoryIterator* it = OpenDirectory(basedir.c_str());
@@ -309,8 +309,8 @@ std::map<string, string> createMenuConfiguration() {
 
                 // create streamer to create argument
                 stringstream arg;
-                arg << basedir << node->name << "/bin/" << node->name << '&' << basedir
-                    << node->name << "/deps/icon/ico.png";
+                arg << basedir << node->name << "/Bin/" << node->name << '&' << basedir
+                    << node->name << "/Resources/Icons/Desktop.png";
 
                 // store into map
                 configuration.insert(make_pair(name, arg.str()));
@@ -424,9 +424,9 @@ void OsmosUI::mainLoop() {
         if ( key.pressed ) {
             // reading combination
             if ( key.alt && key.key == "KEY_T" )
-                Spawn("/app/CandyShell/bin/CandyShell", "", "/", SECURITY_LEVEL_APPLICATION);
+                Spawn("/Apps/CandyShell/Bin/CandyShell", "", "/", SECURITY_LEVEL_APPLICATION);
             else if ( key.alt && key.key == "KEY_S" )
-                Spawn("/app/CandyNote/bin/CandyNote", "-new", "/", SECURITY_LEVEL_APPLICATION);
+                Spawn("/Apps/CandyNote/Bin/CandyNote", "-new", "/", SECURITY_LEVEL_APPLICATION);
         }
     }
 }

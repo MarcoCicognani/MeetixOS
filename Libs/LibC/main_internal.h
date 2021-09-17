@@ -19,7 +19,7 @@
 #ifndef __MAIN_INTERNAL__
 #define __MAIN_INTERNAL__
 
-#include "eva/common.h"
+#include <eva/common.h>
 
 __BEGIN_C
 

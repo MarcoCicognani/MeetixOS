@@ -59,9 +59,7 @@ void EventProcessor::bufferKeyEvent(Keyboard::Info keyInfo) {
  *
  */
 void EventProcessor::bufferCommandMessage(void* commandMessage) {
-    Utils::log("EventProcessor::bufferCommandMessage() : Buffering 0x%x", commandMessage);
     commandMessageBuffer.push_back(commandMessage);
-    Utils::log("EventProcessor::bufferCommandMessage() : Done");
 }
 
 /**

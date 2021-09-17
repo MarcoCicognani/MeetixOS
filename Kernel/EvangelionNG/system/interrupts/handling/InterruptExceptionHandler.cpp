@@ -262,6 +262,17 @@ Thread* InterruptExceptionHandler::handlePageFault(Thread* currentThread) {
             currentThread->id);
     dump(currentThread);
 
+    auto ebp = reinterpret_cast<VirtualAddress*>(currentThread->cpuState->ebp);
+    logInfo("%# stack trace:");
+    for ( int frame = 0; frame < 5; ++frame ) {
+        auto eip = ebp[1];
+        if ( eip == 0 ) {
+            break;
+        }
+        ebp = reinterpret_cast<VirtualAddress*>(ebp[0]);
+        logInfo("%#  %h", eip);
+    }
+
     return Tasking::schedule();
 }
 

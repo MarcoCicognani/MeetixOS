@@ -103,15 +103,15 @@ Font_t* Font_t::fromFile(FILE* in, const std::string& name) {
         return nullptr;
 
     // read the file
-    uint8_t* fileContent = new uint8_t[length];
+    auto fileContent = new uint8_t[length];
     if ( !FileUtils::tryReadBytes(in, 0, fileContent, length) ) {
-        delete fileContent;
+        delete[] fileContent;
         return nullptr;
     }
 
     // create the new font
     if ( !FontManager::getInstance()->createFont(name, fileContent, length) ) {
-        delete fileContent;
+        delete[] fileContent;
         return nullptr;
     }
 

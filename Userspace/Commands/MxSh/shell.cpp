@@ -218,7 +218,7 @@ void MXShell::shellMode(Environment* env) {
     environ->setVariable("USER", "user");
     std::string user = environ->getVariable("USER");
     std::string host = environ->getVariable("HOSTNAME");
-    std::string dir  = "/home/" + user;
+    std::string dir  = "/Users/" + user;
     SetWorkingDirectory(dir.c_str());
 
     while ( true ) {

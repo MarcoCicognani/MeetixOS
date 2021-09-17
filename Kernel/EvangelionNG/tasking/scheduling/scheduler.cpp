@@ -598,10 +598,6 @@ void Scheduler::_processWaitQueue() {
 void Scheduler::_checkWaitingState(Thread* thread) {
     // check if task must continue waiting
     if ( thread->waitManager ) {
-        if (String::equals(thread->getIdentifier(),"ZipNET")) {
-            logInfo("ZipNET Waits for %s", thread->waitManager->debugName());
-        }
-
         if ( thread->checkWaiting() ) {
             // increase wait counter for deadlock warnings
             thread->waitCount++;

@@ -49,7 +49,6 @@ void CommandMessageReceiverThread::run() {
             break;
 
         if ( stat == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-            Utils::log("Command receiver have a messageee");
             MessageHeader* requestMessage = (MessageHeader*)buffer;
 
             // add message to the event processing queue

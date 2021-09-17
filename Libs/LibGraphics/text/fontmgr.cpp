@@ -96,7 +96,7 @@ bool FontManager::createFont(const std::string& name,
     }
 
     // Create font object
-    Font_t* font = new Font_t(name, source, sourceLength, style, hint);
+    auto font = new Font_t(name, source, sourceLength, style, hint);
     if ( !font->isOkay() )
         delete font;
 

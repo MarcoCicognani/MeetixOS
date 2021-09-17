@@ -30,7 +30,7 @@ using namespace std;
  */
 string Environment::get(const string& key) {
     // open the environment file
-    ifstream env("/MeetiX/Configs/Environ/Global");
+    ifstream env("/MeetiX/Configs/Env/Global");
 
     // parse the content
     PropertyFileParser  parser(env);

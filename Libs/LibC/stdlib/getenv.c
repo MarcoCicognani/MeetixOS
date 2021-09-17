@@ -28,32 +28,34 @@
  */
 char* getenv(const char* key) {
     // open the environment file
-    FILE* env = fopen("/MeetiX/Configs/Environ/Global", "r");
+    FILE* env = fopen("/MeetiX/Configs/Env/Global", "r");
 
-    // create the line buffer
-    const int buflen = 1024;
-    const int keylen = strlen(key);
-    char*     line   = malloc(sizeof(char) * buflen);
+    if (env) {
+        // create the line buffer
+        const int buflen = 1024;
+        const int keylen = strlen(key);
+        char*     line   = malloc(sizeof(char) * buflen);
 
-    // read the file
-    while ( readline(env, line) ) {
-        // get separator character
-        char* separator = strchr(line, '=');
+        // read the file
+        while ( readline(env, line) ) {
+            // get separator character
+            char* separator = strchr(line, '=');
 
-        // compare the provided key
-        if ( keylen == (int)(separator - line) && !strncmp(key, line, keylen) ) {
-            // clos the file
-            fclose(env);
+            // compare the provided key
+            if ( keylen == (int)(separator - line) && !strncmp(key, line, keylen) ) {
+                // clos the file
+                fclose(env);
 
-            // return the value
-            return ++separator;
+                // return the value
+                return ++separator;
+            }
+
+            // reset the buffer
+            memset(line, '\0', buflen);
         }
 
-        // reset the buffer
-        memset(line, '\0', buflen);
+        // variable not found, close file and return
+        fclose(env);
     }
-
-    // variable not found, close file and return
-    fclose(env);
     return NULL;
 }

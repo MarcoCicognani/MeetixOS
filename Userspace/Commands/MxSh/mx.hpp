@@ -79,13 +79,13 @@ private:
     std::string argument;
 
     // object to environment class
-    Environment* environment;
+    Environment* environment{};
 
     // object to script interpreter
-    MXinterpreter* interpreter;
+    MXinterpreter* interpreter{};
 
     // object to script parser
-    MXScriptParser* scriptParser;
+    MXScriptParser* scriptParser{};
 
 public:
     // constructor
@@ -96,9 +96,9 @@ public:
 
     // destructor
     ~MXShell() {
-        delete environment;
-        delete interpreter;
-        delete scriptParser;
+//        delete environment;
+//        delete interpreter;
+//        delete scriptParser;
     }
 
     /*

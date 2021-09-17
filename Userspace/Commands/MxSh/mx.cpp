@@ -55,7 +55,7 @@ void MXShell::initialize(int argc, char* argv[]) {
  */
 void MXShell::loadEnvironment() {
     // instantiate object and provide path
-    environment = new Environment("/MeetiX/Configs/Environ/Global");
+    environment = new Environment("/MeetiX/Configs/Env/Global");
 
     // load file to variables
     environment->load();

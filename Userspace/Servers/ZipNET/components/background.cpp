@@ -51,7 +51,7 @@ void Background_t::paint() {
 /**
  *
  */
-bool Background_t::setBackground(std::string path) {
+bool Background_t::setBackground(const std::string& path) {
     // free memory
     cairo_surface_destroy(surface);
 
@@ -59,8 +59,8 @@ bool Background_t::setBackground(std::string path) {
     surface = cairo_image_surface_create_from_png(path.c_str());
     if ( surface ) {
         // set new theme
-        std::string newTheme = basename((char*)path.c_str());
-        newTheme             = newTheme.substr(0, newTheme.find('.'));
+        std::string newTheme{ basename((char*)path.c_str()) };
+        newTheme = newTheme.substr(0, newTheme.find('.'));
         Environment::set("THEME", newTheme);
 
         // paint the new background

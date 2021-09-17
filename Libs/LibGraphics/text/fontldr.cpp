@@ -18,6 +18,7 @@
  **********************************************************************************/
 
 #include <graphics/text/fontldr.hpp>
+#include <utils/utils.hpp>
 
 /**
  * load a font file from an arbitrary path
@@ -28,10 +29,10 @@
  */
 Font_t* FontLoader::getFontAtPath(const std::string& path, const std::string& name) {
     // open the file
-    FILE* file = fopen(path.c_str(), "r");
-    if ( file != NULL ) {
+    auto file = fopen(path.c_str(), "r");
+    if ( file ) {
         // get the font instance from file
-        Font_t* font = Font_t::fromFile(file, name);
+        auto font = Font_t::fromFile(file, name);
         fclose(file);
         return font;
     }
@@ -46,7 +47,7 @@ Font_t* FontLoader::getFontAtPath(const std::string& path, const std::string& na
  * @return the font object instance or nullptr
  */
 Font_t* FontLoader::getSystemFont(const std::string& name) {
-    return getFontAtPath("/sys/lib/fonts/" + name + ".ttf", name);
+    return getFontAtPath("/MeetiX/Configs/WM/Fonts/" + name + ".ttf", name);
 }
 
 /**
@@ -57,7 +58,7 @@ Font_t* FontLoader::getSystemFont(const std::string& name) {
  * @return the font instance or nullptr
  */
 Font_t* FontLoader::get(const std::string& name) {
-    Font_t* font = getSystemFont(name);
+    auto font = getSystemFont(name);
     if ( !font )
         font = getDefault();
 

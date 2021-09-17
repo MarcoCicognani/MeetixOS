@@ -22,13 +22,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <cairo/cairo-ft.h>
 #include <cairo/cairo.h>
 #include <components/label.hpp>
-#include <eva.h>
 #include <events/MouseEvent.hpp>
 #include <graphics/text/fontldr.hpp>
-#include <sstream>
 
 /**
  *

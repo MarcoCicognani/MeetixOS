@@ -33,8 +33,11 @@ int main(int argc, char* argv[]) {
         // get resolution from windowserver
         Dimension resolution = UI::getResolution();
 
+        auto user_name = Environment::getLoggedUser();
+        user_name[0] = static_cast<char>(toupper(user_name[0]));
+
         // configure ui with script
-        ui->configureUi("/users/" + Environment::get("USER") + "/desktop/.ui.cfg", resolution);
+        ui->configureUi("/Users/" + user_name + "/Desktop/.ui.cfg", resolution);
         ui->createComponents();
 
         // main loop

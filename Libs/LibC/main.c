@@ -47,37 +47,26 @@ int __main() {
     // initialize libc
     _InitLibc();
 
-    // call ctors
-    Log("__main : calling constructors in _init()");
     // call global constructors
     for ( size_t i = 0; i < __preinit_array_end - __preinit_array_start; i++ ) {
         (*__preinit_array_start[i])();
     }
 
-    klog("Called %d preinit_constructors", __preinit_array_end - __preinit_array_start);
-
     _init();
-    Log("Called _init()");
 
     for ( size_t i = 0; i < __init_array_end - __init_array_start; i++ ) {
         (*__init_array_start[i])();
     }
-    klog("Called %d __init_array", __init_array_end - __init_array_start);
-    Log("__main : calling constructors in _init() DONE");
 
     // default return value
-    int ret = -1;
+    int ret = EXIT_FAILURE;
 
     // parse arguments and call application main
     int    argc;
     char** args;
 
-    Log("__main() : Parsing arguments");
-
     // parse args and call application main
     if ( !parseargs(&argc, &args) ) {
-        Log("__main() : Arguments parsed, passing control to the application");
-        Log(args[0]);
         ret = main(argc, args);
     } else {
         Log("failed to parse command line arguments");
@@ -91,8 +80,6 @@ int __main() {
  * Initializes the C library
  */
 void _InitLibc() {
-    Log("_InitLibc : Initializing");
-
     // set default locale (N1548-7.11.1.1-4)
     setlocale(LC_ALL, "C");
 
@@ -101,8 +88,6 @@ void _InitLibc() {
 
     // initialize standard I/O
     __init_stdio();
-
-    Log("_InitLibc : Initializing Done");
 }
 
 /**

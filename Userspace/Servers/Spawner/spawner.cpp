@@ -65,17 +65,21 @@ void createOsEnvironmentFile(const char* dir, const char* fileName) {
     SetWorkingDirectory(dir);
 
     // define first variables
-    const char envvar[]
+    const char base_env[]
         = { "HOSTNAME=MeetiX_OS\nVERSION=0.7.1\nSYSTEM_LEVEL=basic\nPATH=/Bins/:/Apps/"
-            ":/MeetiX/Kernel/Servers/\nTHEME=multi\n" };
-    int length = strlen(envvar);
+            ":/MeetiX/Kernel/Servers/\nTHEME=Green\n" };
+    auto base_env_len = strlen(base_env);
 
     // create the environment file
-    File_t env = OpenF(fileName, O_CREAT | O_READ | O_WRITE);
+    auto env_fd = OpenF(fileName, O_READ | O_WRITE);
+    if (env_fd == FD_NONE) {
+        env_fd = OpenF(fileName, O_CREAT | O_READ | O_WRITE);
 
-    // write variables on file and close it
-    Write(env, envvar, length);
-    Close(env);
+        // write variables on file and close it
+        Write(env_fd, base_env, base_env_len);
+    }
+
+    Close(env_fd);
 }
 
 /**
@@ -319,11 +323,11 @@ bool findFile(const char* path, File_t* file) {
         return true;
 
     // try adding the path
-    std::vector<std::string> paths = Arguments::split(Environment::get("PATH"), ':');
-    for ( std::string dir : paths ) {
+    auto paths = Arguments::split(Environment::get("PATH"), ':');
+    for ( auto& dir : paths ) {
         // app directory is composited
-        if ( dir == "app" )
-            dir += std::string(path) + std::string("/bin");
+        if ( dir == "Apps" )
+            dir += std::string{ path } + std::string{ "/Bin" };
 
         // try open the file
         if ( (*file = OpenF((dir + std::string(path)).c_str(), O_RDONLY)) != FD_NONE )
@@ -350,8 +354,6 @@ SpawnStatus spawn(const char*   path,
                   File_t        inStderr) {
     // file of executable
     File_t file;
-
-    Utils::log("Requested spawn for %s %s", path, args);
 
     // open input file
     if ( !findFile(path, &file) ) {
@@ -432,7 +434,5 @@ SpawnStatus spawn(const char*   path,
 
     // Close binary file
     Close(file);
-
-    Utils::log("Spawn request for %s completed with %d", path, spawnStat);
     return spawnStat;
 }

@@ -178,15 +178,11 @@ Pid MXinterpreter::execWithSpawner(string path, string args, SecurityLevel slvl)
     auto pid          = -1;
     auto spawn_status = SpawnP(path.c_str(), args.c_str(), "/", slvl, &pid);
 
-    stringstream out;
-    out << "Spawned '" << path << "' with status : " << spawn_status;
-    Utils::log(out.str());
-
     if ( spawn_status != SPAWN_STATUS_SUCCESSFUL ) {
         std::stringstream ss;
         ss << "failed to spawn '" << path << "' with code " << spawn_status;
 
-        Utils::log(out.str());
+        Utils::log(ss.str().c_str());
         cout << ss.str() << endl;
     }
 

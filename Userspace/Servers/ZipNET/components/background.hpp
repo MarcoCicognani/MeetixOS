@@ -51,7 +51,7 @@ public:
     /*
      * Background
      */
-    bool setBackground(std::string path);
+    bool setBackground(const std::string& path);
 
 private:
     cairo_surface_t* surface;
