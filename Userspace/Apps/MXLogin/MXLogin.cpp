@@ -94,10 +94,10 @@ static void loginToMeetiX() {
             Utils::log("Logging as: %s", username.c_str());
 
             // exec mx shell to start ui components
-            Spawn("/Bins/MxSh",
-                  "-s AfterLogin.sh",
-                  "/MeetiX/Configs/Startup/Interactive/",
-                  SECURITY_LEVEL_APPLICATION);
+            s_spawn("/Bins/MxSh",
+                    "-s AfterLogin.sh",
+                    "/MeetiX/Configs/Startup/Interactive/",
+                    SECURITY_LEVEL_APPLICATION);
         }
 
         // unlock event mode
@@ -112,7 +112,7 @@ static void loginToMeetiX() {
             usernameField->setTitle("");
         passwordField->setTitle("");
 
-        Sleep(1500);
+        s_sleep(1500);
 
         loginButton->setColor(ARGB(150, 0, 0, 0), ARGB(255, 255, 255, 255));
         loginButton->setTitle("Login");
@@ -152,7 +152,7 @@ static bool researchAccess(string username, string password, LoginMode_t mode) {
  */
 [[noreturn]] void timeThread() {
     // registering name of task
-    TaskRegisterID("timer");
+    s_task_register_id("timer");
 
     // creating varible to time struct
     TimeDriverCall time;
@@ -170,7 +170,7 @@ static bool researchAccess(string username, string password, LoginMode_t mode) {
         hourInfo->setTitle(hours.str());
 
         // wait one second
-        Sleep(1000);
+        s_sleep(1000);
     }
 }
 
@@ -286,7 +286,7 @@ void paintAnimation() {
             animation->setBounds(Rectangle(0, yPosition, resolution.width, 200));
 
         // sleep
-        Sleep(5);
+        s_sleep(5);
     }
 }
 
@@ -319,7 +319,7 @@ int main(int argc, char* argv[]) {
         loginRectangle->setColor(ARGB(120, 20, 150, 20), ARGB(255, 0, 0, 0));
 
         // run as a background thread the paint animation method
-        CreateThreadN((void*)&paintAnimation, "animation");
+        s_create_thread_n((void*)&paintAnimation, "animation");
 
         // configure button and textfields
         configureActionComponents();
@@ -328,7 +328,7 @@ int main(int argc, char* argv[]) {
         loginRectangle->setVisible(true);
 
         // exec timeThread in background
-        CreateThreadN((void*)&timeThread, "timelabel");
+        s_create_thread_n((void*)&timeThread, "timelabel");
 
         // add to login rectangle components
         loginRectangle->addChild(hourInfo);
@@ -340,7 +340,7 @@ int main(int argc, char* argv[]) {
         loginRectangle->addChild(loginButton);
 
         // event mode
-        AtomicBlock(&lock);
+        s_atomic_block(&lock);
 
         // delete interface objects
         delete usernameField;

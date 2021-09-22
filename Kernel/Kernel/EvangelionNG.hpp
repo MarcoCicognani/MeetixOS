@@ -87,7 +87,7 @@ public:
      *
      * @param initialPdPhysical:	the physical page where initialize
      */
-    static void runBasicSystemPackage(PhysicalAddress initialPdPhysical);
+    static void runBasicSystemPackage(PhysAddr initialPdPhysical);
 
     /**
      * AP setup routine

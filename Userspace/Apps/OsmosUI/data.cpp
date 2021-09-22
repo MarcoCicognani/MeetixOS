@@ -91,7 +91,7 @@ OsmosUI::~OsmosUI() {
 }
 
 /**
- *	Open comunication to windowserver
+ *	s_open comunication to windowserver
  */
 bool OsmosUI::init() {
     // create communication to windowserver
@@ -259,7 +259,7 @@ void OsmosUI::setTaskLabel() {
 void meetiXOSLogout() {
     // kill all threads
     for ( int tid : threads )
-        Kill(tid);
+        s_kill(tid);
 
     // remove all objects
     delete buttons;
@@ -270,7 +270,7 @@ void meetiXOSLogout() {
     delete memLabel;
 
     // exec login
-    Spawn("/Apps/MXLogin/Bin/MXLogin", "", "/Apps/MXLogin/", SECURITY_LEVEL_APPLICATION);
+    s_spawn("/Apps/MXLogin/Bin/MXLogin", "", "/Apps/MXLogin/", SECURITY_LEVEL_APPLICATION);
 
     // unlock iteration
     _continue = false;
@@ -288,7 +288,7 @@ std::map<string, string> createMenuConfiguration() {
     string basedir = "/Apps/";
 
     // open the directory
-    FsDirectoryIterator* it = OpenDirectory(basedir.c_str());
+    FsDirectoryIterator* it = s_open_directory(basedir.c_str());
 
     // create a configuration map
     map<string, string> configuration;
@@ -297,20 +297,20 @@ std::map<string, string> createMenuConfiguration() {
     while ( true ) {
         // read nodes
         FsReadDirectoryStatus stat;
-        FsDirectoryEntry*     node = ReadDirectoryS(it, &stat);
+        FsDirectoryEntry*     node = s_read_directory_s(it, &stat);
 
         // if read is successful
         if ( stat == FS_READ_DIRECTORY_SUCCESSFUL ) {
             // if node exist and it isn't a system application
-            if ( node && strcmp(node->name, "OsmosUI") != 0 && strcmp(node->name, "MXLogin") != 0
-                 && strcmp(node->name, "zipNET") != 0 ) {
+            if ( node && strcmp(node->m_name, "OsmosUI") != 0
+                 && strcmp(node->m_name, "MXLogin") != 0 && strcmp(node->m_name, "zipNET") != 0 ) {
                 // create configuration line
-                string name = string(node->name);
+                string name = string(node->m_name);
 
                 // create streamer to create argument
                 stringstream arg;
-                arg << basedir << node->name << "/Bin/" << node->name << '&' << basedir
-                    << node->name << "/Resources/Icons/Desktop.png";
+                arg << basedir << node->m_name << "/Bin/" << node->m_name << '&' << basedir
+                    << node->m_name << "/Resources/Icons/Desktop.png";
 
                 // store into map
                 configuration.insert(make_pair(name, arg.str()));
@@ -377,7 +377,7 @@ void OsmosUI::createComponents() {
 Keyboard::Info OsmosUI::readInput() {
     // wait for input
     if ( inputBuffer.size() == 0 )
-        AtomicBlock(&inputBufferEmpty);
+        s_atomic_block(&inputBufferEmpty);
 
     // lock thread
     locker.lock();
@@ -403,18 +403,20 @@ void OsmosUI::mainLoop() {
     if ( configuration["TaskManagerThread"] == "true" )
         UI::registerTaskManager(taskLabel, taskLabel->getBounds());
     if ( configuration["HourManagerThread"] == "true" )
-        threads.push_back(CreateThreadDN((void*)&SecondaryThread::HourManagerThread,
-                                         (void*)hourLabel,
-                                         "hourmgr"));
+        threads.push_back(s_create_thread_dn((void*)&SecondaryThread::HourManagerThread,
+                                             (void*)hourLabel,
+                                             "hourmgr"));
     if ( configuration["MemoryUsageThread"] == "true" )
-        threads.push_back(CreateThreadDN((void*)&SecondaryThread::MemoryUsageThread,
-                                         (void*)memLabel,
-                                         "memusage"));
+        threads.push_back(s_create_thread_dn((void*)&SecondaryThread::MemoryUsageThread,
+                                             (void*)memLabel,
+                                             "memusage"));
     if ( configuration["OsmosUIDockThread"] == "true" )
-        threads.push_back(
-            CreateThreadDN((void*)&SecondaryThread::OsmosUIDockThread, (void*)&resolution, "dock"));
+        threads.push_back(s_create_thread_dn((void*)&SecondaryThread::OsmosUIDockThread,
+                                             (void*)&resolution,
+                                             "dock"));
     if ( configuration["NotificationThread"] == "true" )
-        threads.push_back(CreateThreadN((void*)&SecondaryThread::NotificationThread, "notifier"));
+        threads.push_back(
+            s_create_thread_n((void*)&SecondaryThread::NotificationThread, "notifier"));
 
     // main loop of gui
     while ( _continue ) {
@@ -424,9 +426,9 @@ void OsmosUI::mainLoop() {
         if ( key.pressed ) {
             // reading combination
             if ( key.alt && key.key == "KEY_T" )
-                Spawn("/Apps/CandyShell/Bin/CandyShell", "", "/", SECURITY_LEVEL_APPLICATION);
+                s_spawn("/Apps/CandyShell/Bin/CandyShell", "", "/", SECURITY_LEVEL_APPLICATION);
             else if ( key.alt && key.key == "KEY_S" )
-                Spawn("/Apps/CandyNote/Bin/CandyNote", "-new", "/", SECURITY_LEVEL_APPLICATION);
+                s_spawn("/Apps/CandyNote/Bin/CandyNote", "-new", "/", SECURITY_LEVEL_APPLICATION);
         }
     }
 }

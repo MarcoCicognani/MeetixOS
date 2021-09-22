@@ -25,8 +25,8 @@
 #ifndef IPC_MAILBOX
 #define IPC_MAILBOX
 
-#include "eva/ipc.h"
-#include "eva/stdint.h"
+#include "Api/IPC.h"
+#include "Api/StdInt.h"
 
 /**
  * Maximum messages count in a single queue
@@ -86,8 +86,8 @@ public:
      * if <tx> isn't {MESSAGE_TRANSACTION_NONE} is copied to <out> the first message with <tx> id
      *
      * @param target:		the identifier of the thread that have to receive the message
-     * @param out:			the pointer to the userspace instance of the MessageHeader where write the last
-     * message
+     * @param out:			the pointer to the userspace instance of the MessageHeader where write
+     * the last message
      * @param max:			the size of the <out> buffer
      * @param tx:			the transaction identifier
      */

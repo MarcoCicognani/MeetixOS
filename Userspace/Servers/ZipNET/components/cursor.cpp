@@ -22,8 +22,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
+#include <Api.h>
 #include <components/cursor.hpp>
-#include <eva.h>
 #include <events/MouseEvent.hpp>
 #include <utils/fparser.hpp>
 #include <utils/utils.hpp>
@@ -93,11 +93,11 @@ bool Cursor::load(const std::string& cursor_path) {
     auto cursor_image_path = cursor_path + "/" + image;
 
     // check if file exists
-    auto image_fd = Open(cursor_image_path.c_str());
+    auto image_fd = s_open(cursor_image_path.c_str());
     if ( image_fd == FD_NONE ) {
         return false;
     }
-    Close(image_fd);
+    s_close(image_fd);
 
     // load cursor
     CursorConfiguration cursor_config;

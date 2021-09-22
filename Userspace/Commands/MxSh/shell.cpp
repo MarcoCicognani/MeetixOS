@@ -25,7 +25,7 @@
 #include "mx.hpp"
 #include "parser.hpp"
 
-#include <eva/utils/local.hpp>
+#include <Api/utils/local.hpp>
 #include <io/shell.hpp>
 #include <iostream>
 #include <sstream>
@@ -144,9 +144,9 @@ bool readInputLine(std::string& line) {
  *
  */
 bool fileExists(std::string path) {
-    File_t file;
-    if ( (file = Open(path.c_str())) != -1 ) {
-        Close(file);
+    FileHandle file;
+    if ( (file = s_open(path.c_str())) != -1 ) {
+        s_close(file);
         return true;
     }
     return false;
@@ -181,7 +181,7 @@ bool handleBuiltin(std::string cwd, ProgramCall* call) {
     if ( call->program == "cd" ) {
         if ( call->arguments.size() == 1 ) {
             auto newdir = call->arguments.at(0);
-            SetWorkingDirectory(newdir.c_str());
+            s_set_working_directory(newdir.c_str());
         } else
             std::cerr << "Usage:\tcd /path/to/target" << std::endl;
         return true;
@@ -219,13 +219,13 @@ void MXShell::shellMode(Environment* env) {
     std::string user = environ->getVariable("USER");
     std::string host = environ->getVariable("HOSTNAME");
     std::string dir  = "/Users/" + user;
-    SetWorkingDirectory(dir.c_str());
+    s_set_working_directory(dir.c_str());
 
     while ( true ) {
         // print host, user and cwd
         std::cout << (char)27 << "[31m" << host << (char)27 << "[0m";
         std::cout << '@' << (char)27 << "[33m" << user << (char)27 << "[0m" << ':';
-        if ( GetWorkingDirectory(cwdbuf) == GET_WORKING_DIRECTORY_SUCCESSFUL )
+        if ( s_get_working_directory(cwdbuf) == GET_WORKING_DIRECTORY_SUCCESSFUL )
             std::cout << (char)27 << "[35m" << cwdbuf << (char)27 << "[0m";
         else
             std::cout << "?";
@@ -251,10 +251,10 @@ void MXShell::shellMode(Environment* env) {
             continue;
 
         // perform spawning
-        File_t previousOutPipeR = -1;
-        Pid    firstProcessID   = -1;
-        Pid    lastProcessID    = -1;
-        bool   success          = false;
+        FileHandle previousOutPipeR = -1;
+        Pid        firstProcessID   = -1;
+        Pid        lastProcessID    = -1;
+        bool       success          = false;
 
         auto numCalls = pipeexpr->calls.size();
         for ( int c = 0; c < numCalls; c++ ) {
@@ -276,11 +276,11 @@ void MXShell::shellMode(Environment* env) {
             }
 
             // create out pipe if necessary
-            File_t outPipeW;
-            File_t outPipeR;
+            FileHandle outPipeW;
+            FileHandle outPipeR;
             if ( numCalls > 1 && c < numCalls - 1 ) {
                 FsPipeStatus pipeStat;
-                PipeS(&outPipeW, &outPipeR, &pipeStat);
+                s_pipe_s(&outPipeW, &outPipeR, &pipeStat);
 
                 if ( pipeStat != FS_PIPE_SUCCESSFUL ) {
                     std::cerr << "failed to create output pipe when spawning '" << call->program
@@ -291,7 +291,7 @@ void MXShell::shellMode(Environment* env) {
                 }
             }
             // decide how to set in/out/err file descriptors
-            File_t inStdio[3];
+            FileHandle inStdio[3];
 
             // stderr is always the same
             inStdio[2] = STDERR_FILENO;
@@ -310,14 +310,14 @@ void MXShell::shellMode(Environment* env) {
 
             // do spawning
             Pid         outPid;
-            File_t      outStdio[3];
-            SpawnStatus status = SpawnPOI(findProgram(cwd, call->program).c_str(),
-                                          argstream.str().c_str(),
-                                          cwdbuf,
-                                          SECURITY_LEVEL_APPLICATION,
-                                          &outPid,
-                                          outStdio,
-                                          inStdio);
+            FileHandle  outStdio[3];
+            SpawnStatus status = s_spawn_poi(findProgram(cwd, call->program).c_str(),
+                                             argstream.str().c_str(),
+                                             cwdbuf,
+                                             SECURITY_LEVEL_APPLICATION,
+                                             &outPid,
+                                             outStdio,
+                                             inStdio);
 
             // check result
             if ( status == SPAWN_STATUS_SUCCESSFUL ) {
@@ -327,11 +327,11 @@ void MXShell::shellMode(Environment* env) {
                 success       = true;
 
                 // close write end in this process
-                Close(outPipeW);
+                s_close(outPipeW);
 
                 if ( previousOutPipeR != -1 ) {
                     // close read end of previous pipe in this process
-                    Close(previousOutPipeR);
+                    s_close(previousOutPipeR);
                 }
 
                 // remember for next process
@@ -359,7 +359,7 @@ void MXShell::shellMode(Environment* env) {
         if ( success ) {
             // join into the last process
             Shell::setControlProcess(lastProcessID);
-            Join(lastProcessID);
+            s_join(lastProcessID);
             Shell::setControlProcess(0);
         }
     }

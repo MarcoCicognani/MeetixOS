@@ -25,8 +25,8 @@
 #ifndef CHUNKALLOCATOR_HPP_
 #define CHUNKALLOCATOR_HPP_
 
-#include "eva/stdint.h"
-#include "eva/types.h"
+#include "Api/StdInt.h"
+#include "Api/Types.h"
 
 #include <logger/logger.hpp>
 
@@ -74,14 +74,14 @@ public:
      * @param start:	the starting address
      * @param end:		the ending address
      */
-    void initialize(VirtualAddress start, VirtualAddress end);
+    void initialize(VirtAddr start, VirtAddr end);
 
     /**
      * expands the size of memory managed by the object
      *
      * @param size:		the size of the expansion
      */
-    void expand(VirtualAddress size);
+    void expand(VirtAddr size);
 
     /**
      * allocate a size of memory on space managed by the object

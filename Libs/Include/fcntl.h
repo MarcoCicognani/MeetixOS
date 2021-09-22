@@ -20,8 +20,8 @@
 #ifndef __MEETIX_LIBC_FCNTL__
 #define __MEETIX_LIBC_FCNTL__
 
-#include <eva/fs.h>
-#include <eva/stdint.h>
+#include <Api/FileSystem.h>
+#include <Api/StdInt.h>
 
 __BEGIN_C
 
@@ -57,7 +57,7 @@ typedef uint32_t mode_t;
 #define FD_CLOEXEC 0 // FILE_CONTROL_FLAG_CLOSE_ON_EXEC
 
 /**
- * POSIX wrapper for open syscall
+ * POSIX wrapper for open do_syscall
  *
  * @param pathname:     the path of the file that we want to open
  * @param flags:        one of the open flag codes

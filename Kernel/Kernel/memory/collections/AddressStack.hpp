@@ -25,7 +25,7 @@
 #ifndef EVA_MEMORY_ADDRESS_STACK
 #define EVA_MEMORY_ADDRESS_STACK
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <memory/memory.hpp>
 #include <memory/paging.hpp>

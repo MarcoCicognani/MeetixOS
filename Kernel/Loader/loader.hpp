@@ -25,7 +25,7 @@
 #ifndef EVA_LOADER_LOADER
 #define EVA_LOADER_LOADER
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <kernelloader/SetupInformation.hpp>
 #include <memory/bitmap/BitmapPageAllocator.hpp>

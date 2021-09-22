@@ -105,7 +105,7 @@ public:
     virtual int getHeight() = 0;
 
     virtual void lock() {
-        AtomicLock(&_lock);
+        s_atomic_lock(&_lock);
     }
     virtual void unlock() {
         _lock = false;

@@ -147,7 +147,7 @@ void Cmos_t::timer(Cmos_t* instance) {
     // mainloop of thread
     while ( true ) {
         // wait each second
-        Sleep(1000);
+        s_sleep(1000);
 
         // increase or decrease variables
         var.second++;
@@ -168,7 +168,7 @@ void Cmos_t::timer(Cmos_t* instance) {
  *
  */
 int main(int argc, char* argv[]) {
-    if ( !RegisterAsServer(TIME_DRIVER_IDENTIFIER, SECURITY_LEVEL_DRIVER) ) {
+    if ( !s_register_as_server(TIME_DRIVER_IDENTIFIER, SECURITY_LEVEL_DRIVER) ) {
         klog("TimeDriver: could not register with task identifier %s", TIME_DRIVER_IDENTIFIER);
         return -1;
     }
@@ -177,7 +177,7 @@ int main(int argc, char* argv[]) {
     Cmos_t* EvaTime = new Cmos_t();
 
     // create timer thread
-    CreateThreadDN((void*)&Cmos_t::timer, (void*)EvaTime, "timer");
+    s_create_thread_dn((void*)&Cmos_t::timer, (void*)EvaTime, "timer");
 
     // set length for buffer
     const size_t buflen = sizeof(MessageHeader) + sizeof(TimeDriverHeader);
@@ -191,7 +191,7 @@ int main(int argc, char* argv[]) {
         uint8_t buf[buflen];
 
         // wawit for messages
-        MessageReceiveStatus status = ReceiveMessage(buf, buflen);
+        MessageReceiveStatus status = s_receive_message(buf, buflen);
         if ( status != MESSAGE_RECEIVE_STATUS_SUCCESSFUL )
             continue;
 
@@ -209,7 +209,10 @@ int main(int argc, char* argv[]) {
             response.month  = var.month;
             response.year   = var.year;
 
-            SendMessageT(header->sender, &response, sizeof(TimeDriverCall), header->transaction);
+            s_send_message_t(header->m_sender_tid,
+                             &response,
+                             sizeof(TimeDriverCall),
+                             header->m_transaction);
         }
 
         // send response
@@ -217,12 +220,17 @@ int main(int argc, char* argv[]) {
             TimeDriverUptime response;
             response.second = var.upSecond;
 
-            SendMessageT(header->sender, &response, sizeof(TimeDriverUptime), header->transaction);
+            s_send_message_t(header->m_sender_tid,
+                             &response,
+                             sizeof(TimeDriverUptime),
+                             header->m_transaction);
         }
 
         // unknown command, probably deprecated or bad
         else
-            Utils::log("uknown command: %i from task: %i", timeheader->command, header->sender);
+            Utils::log("uknown command: %i from task: %i",
+                       timeheader->command,
+                       header->m_sender_tid);
     }
 
     delete EvaTime;

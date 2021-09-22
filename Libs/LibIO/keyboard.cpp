@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <eva.h>
+#include <Api.h>
 #include <fstream>
 #include <io/files/futils.hpp>
 #include <io/keyboard.hpp>
@@ -190,7 +190,7 @@ Keyboard::Info Keyboard::read(bool* breakCondition) {
             return Info();
 
     // wait until incoming data is here (and the driver unsets the atom)
-    AtomicBlockDual(&ps2Area->keyboard.atomNothingQueued, (uint8_t*)breakCondition);
+    s_atomic_block_dual(&ps2Area->keyboard.atomNothingQueued, (uint8_t*)breakCondition);
 
     // take info from the shared memory
     uint8_t scancode = ps2Area->keyboard.scancode;

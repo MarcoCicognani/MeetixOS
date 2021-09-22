@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <eva.h>
+#include <Api.h>
 #include <io/ps2.hpp>
 #include <stdio.h>
 
@@ -42,14 +42,14 @@ static uint8_t ps2RegistrationLock = false;
  * @return whether the registration success
  */
 bool Ps2::registerSelf() {
-    AtomicLock(&ps2RegistrationLock);
+    s_atomic_lock(&ps2RegistrationLock);
 
     // if already registered return
     if ( ps2IsRegistered )
         return true;
 
     // check the existance of the driver
-    Tid driverTid = TaskGetID(PS2_DRIVER_IDENTIFIER);
+    Tid driverTid = s_task_get_id(PS2_DRIVER_IDENTIFIER);
     if ( driverTid == -1 ) {
         klog("PS/2 driver registration failed: failed to identify PS/2 driver instance");
         ps2RegistrationLock = false;
@@ -58,8 +58,8 @@ bool Ps2::registerSelf() {
 
     // send registration
     Ps2RegisterRequest request;
-    MessageTransaction transaction = GetMessageTxId();
-    if ( SendMessageT(driverTid, &request, sizeof(Ps2RegisterRequest), transaction)
+    MessageTransaction transaction = s_get_message_tx_id();
+    if ( s_send_message_t(driverTid, &request, sizeof(Ps2RegisterRequest), transaction)
          != MESSAGE_SEND_STATUS_SUCCESSFUL ) {
         klog("PS/2 driver registration error: failed to send registration request message");
         ps2RegistrationLock = false;
@@ -69,7 +69,7 @@ bool Ps2::registerSelf() {
     // read response
     uint32_t responseBufLen = sizeof(MessageHeader) + sizeof(Ps2RegisterResponse);
     uint8_t  responseBuffer[responseBufLen];
-    if ( ReceiveMessageT(responseBuffer, responseBufLen, transaction)
+    if ( s_receive_message_t(responseBuffer, responseBufLen, transaction)
          != MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         klog("PS/2 driver registration error: failed to receive registration response message");
         ps2RegistrationLock = false;

@@ -52,7 +52,7 @@ typedef struct {
 
         uint8_t scancode;
     } keyboard;
-} __attribute__((packed)) Ps2SharedArea;
+} A_PACKED Ps2SharedArea;
 
 /**
  * Request sent to register the sender thread as the
@@ -60,7 +60,7 @@ typedef struct {
  */
 typedef struct {
     // empty request
-} __attribute__((packed)) Ps2RegisterRequest;
+} A_PACKED Ps2RegisterRequest;
 
 /**
  * Response sent to a registering thread, containing the
@@ -68,7 +68,7 @@ typedef struct {
  */
 typedef struct {
     Ps2SharedArea* area;
-} __attribute__((packed)) Ps2RegisterResponse;
+} A_PACKED Ps2RegisterResponse;
 
 /**
  * shared area pointer

@@ -28,7 +28,7 @@
 #include "screen.hpp"
 #include "StreamStatus.hpp"
 
-#include <eva.h>
+#include <Api.h>
 #include <io/shell.hpp>
 #include <tasking/lock.hpp>
 
@@ -48,9 +48,9 @@ struct OutputRoutineStartinfo {
  */
 class CandyTerminal {
 private:
-    File_t shellIN;
-    File_t shellOUT;
-    File_t shellERR;
+    FileHandle shellIN;
+    FileHandle shellOUT;
+    FileHandle shellERR;
 
     /**
      * Contains whether the terminal is run in headless mode or GUI mode. Only

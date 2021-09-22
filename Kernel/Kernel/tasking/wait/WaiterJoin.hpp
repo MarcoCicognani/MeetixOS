@@ -31,7 +31,7 @@
 
 /**
  * Waiter implementation used for thread joining,
- * when a thread call the {Join} system call the caller is stored in
+ * when a thread call the {s_join} system call the caller is stored in
  * the waiting list with this waiter, that check if the joined thread is still alive
  */
 class WaiterJoin : public Waiter {

@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 #include "EvangelionNG.hpp"
 
 #include <BuildConfig.hpp>

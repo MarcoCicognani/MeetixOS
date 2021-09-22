@@ -20,7 +20,7 @@
 #ifndef __MEETIX_LIBC_ENDIAN__
 #define __MEETIX_LIBC_ENDIAN__
 
-#include <eva/common.h>
+#include <Api/Common.h>
 #include <stdint.h>
 
 __BEGIN_C

@@ -23,7 +23,7 @@
 #include "GFrontEnd.hpp"
 #include "TFrontEnd.hpp"
 
-#include <eva.h>
+#include <Api.h>
 #include <fstream>
 #include <io/keyboard.hpp>
 #include <iostream>

@@ -37,22 +37,22 @@ SYSCALL_HANDLER(sendMessage) {
     SyscallSendMessage* data = (SyscallSendMessage*)SYSCALL_DATA(currentThread->cpuState);
 
     // send the message
-    data->status = MessageController::sendMessage(data->receiver,
-                                                  currentThread->id,
-                                                  data->buffer,
-                                                  data->length,
-                                                  data->transaction);
+    data->m_send_status = MessageController::sendMessage(data->m_receiver_thread_id,
+                                                         currentThread->id,
+                                                         data->m_in_buffer,
+                                                         data->m_in_buffer_len,
+                                                         data->m_message_transaction);
 
     // move receiver to top of wait queue
-    if ( data->status == MESSAGE_SEND_STATUS_SUCCESSFUL ) {
-        Thread* receiver = Tasking::getTaskById(data->receiver);
+    if ( data->m_send_status == MESSAGE_SEND_STATUS_SUCCESSFUL ) {
+        Thread* receiver = Tasking::getTaskById(data->m_receiver_thread_id);
         if ( receiver )
             Tasking::increaseWaitPriority(receiver);
     }
 
     // check if block
-    else if ( data->mode == MESSAGE_SEND_MODE_BLOCKING
-              && data->status == MESSAGE_SEND_STATUS_QUEUE_FULL ) {
+    else if ( data->m_send_mode == MESSAGE_SEND_MODE_BLOCKING
+              && data->m_send_status == MESSAGE_SEND_STATUS_QUEUE_FULL ) {
         currentThread->wait(new WaiterSendMessage(data));
         return Tasking::schedule();
     }
@@ -67,17 +67,17 @@ SYSCALL_HANDLER(receiveMessage) {
     SyscallReceiveMessage* data = (SyscallReceiveMessage*)SYSCALL_DATA(currentThread->cpuState);
 
     // get message
-    data->status = MessageController::receiveMessage(currentThread->id,
-                                                     data->buffer,
-                                                     data->maximum,
-                                                     data->transaction);
+    data->m_receive_status = MessageController::receiveMessage(currentThread->id,
+                                                               data->m_out_buffer,
+                                                               data->m_out_buffer_len,
+                                                               data->m_message_transaction);
 
     // there was a message, immediate return
-    if ( data->status == MESSAGE_RECEIVE_STATUS_SUCCESSFUL )
+    if ( data->m_receive_status == MESSAGE_RECEIVE_STATUS_SUCCESSFUL )
         return currentThread;
-    if ( data->status == MESSAGE_RECEIVE_STATUS_QUEUE_EMPTY ) {
+    if ( data->m_receive_status == MESSAGE_RECEIVE_STATUS_QUEUE_EMPTY ) {
         // check mode to see what to do
-        if ( data->mode == MESSAGE_RECEIVE_MODE_NON_BLOCKING )
+        if ( data->m_receive_mode == MESSAGE_RECEIVE_MODE_NON_BLOCKING )
             return currentThread;
 
         // perform blocking

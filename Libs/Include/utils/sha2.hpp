@@ -40,7 +40,7 @@ extern "C" {
 
 #endif /* SHA2_USE_INTTYPES_H */
 
-/*** SHA-256/384/512 Various Length Definitions ***********************/
+/*** SHA-256/384/512 Various s_length Definitions ***********************/
 #define SHA256_BLOCK_LENGTH         64
 #define SHA256_DIGEST_LENGTH        32
 #define SHA256_DIGEST_STRING_LENGTH (SHA256_DIGEST_LENGTH * 2 + 1)

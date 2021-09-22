@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
         Dimension resolution = UI::getResolution();
 
         auto user_name = Environment::getLoggedUser();
-        user_name[0] = static_cast<char>(toupper(user_name[0]));
+        user_name[0]   = static_cast<char>(toupper(user_name[0]));
 
         // configure ui with script
         ui->configureUi("/Users/" + user_name + "/Desktop/.ui.cfg", resolution);

@@ -25,14 +25,14 @@
 #ifndef EVA_EXECUTABLE_ELF32_LOADER
 #define EVA_EXECUTABLE_ELF32_LOADER
 
-#include "eva/elf32.h"
+#include "Api/ELF32.h"
 
 #include <memory/paging.hpp>
 #include <ramdisk/ramdisk.hpp>
 #include <tasking/thread.hpp>
 
 /**
- * Executable spawn status
+ * Executable s_spawn status
  */
 enum class Elf32SpawnStatus : uint8_t
 {

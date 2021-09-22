@@ -28,7 +28,7 @@
 #include "BuildConfig.hpp"
 #include "debug/DebugInterfaceMode.hpp"
 #include "debug/DebugProtocol.hpp"
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * flag that determines whether the interface is initialized
@@ -48,42 +48,42 @@ public:
     static void initialize(uint16_t port);
 
     /**
-     * writes a log character on serial buffer
+     * writes a s_log character on serial buffer
      *
      * @param c:	the character to write
      */
     static void writeLogCharacter(char c);
 
     /**
-     * writes a log byte byte on serial buffer
+     * writes a s_log byte byte on serial buffer
      *
      * @param value:	the value to write
      */
     static void writeByte(uint8_t value);
 
     /**
-     * writes a log short value on serial buffer
+     * writes a s_log short value on serial buffer
      *
      * @param value:	the value to write
      */
     static void writeShort(uint16_t value);
 
     /**
-     * writes a log integer value on serial buffer
+     * writes a s_log integer value on serial buffer
      *
      * @param value:	the value to write
      */
     static void writeInt(uint32_t value);
 
     /**
-     * writes a log long value on serial buffer
+     * writes a s_log long value on serial buffer
      *
      * @param value:	the value to write
      */
     static void writeLong(uint64_t value);
 
     /**
-     * writes a log string on serial buffer
+     * writes a s_log string on serial buffer
      *
      * @param string:	the string to write
      */

@@ -18,7 +18,7 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 #include "time.h"
 
 static char timebuf[] = { 'M', 'o', 'n', ' ', 'J', 'a', 'n', ' ', '0', '1', ' ', '0',

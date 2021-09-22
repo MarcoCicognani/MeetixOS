@@ -19,16 +19,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "errno.h"
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 #include "unistd.h"
 
 /**
- * POSIX wrapper for <Sbrk>
+ * POSIX wrapper for <s_set_break>
  */
 void* sbrk(intptr_t increment) {
     // perform syscall
     void* result;
-    if ( Sbrk(increment, &result) )
+    if ( s_set_break(increment, &result) )
         return result;
 
     // set errno on error

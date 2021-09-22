@@ -25,7 +25,7 @@
 #ifndef SHELL_STANDARD_IO
 #define SHELL_STANDARD_IO
 
-#include <eva.h>
+#include <Api.h>
 #include <stdint.h>
 
 class CandyShell;
@@ -38,7 +38,7 @@ struct StandardOutThreadData {
     const char* id;
     bool        stop;
     bool        err;
-    File_t      stdoutReadEnd;
+    FileHandle  stdoutReadEnd;
     Screen*     screen;
 };
 
@@ -48,7 +48,7 @@ struct StandardOutThreadData {
 struct StandardInThreadData {
     const char* id;
     bool        continueInput;
-    File_t      stdinWriteEnd;
+    FileHandle  stdinWriteEnd;
     Pid         intPid = -1; // process to interrupt on Ctrl+C
     CandyShell* shell;
 };

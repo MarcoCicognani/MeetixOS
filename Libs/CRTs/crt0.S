@@ -23,7 +23,7 @@
 
 # <__main> and <Exit> are provided by the library
 .extern __main
-.extern Exit
+.extern s_exit
 
 # The <_start> function is where the kernel starts the execution.
 _start:

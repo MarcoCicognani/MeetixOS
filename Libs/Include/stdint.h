@@ -20,6 +20,6 @@
 #ifndef __MEETIX_LIBC_STDINT__
 #define __MEETIX_LIBC_STDINT__
 
-#include <eva/stdint.h>
+#include <Api/StdInt.h>
 
 #endif

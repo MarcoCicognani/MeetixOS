@@ -71,9 +71,9 @@ static ChunkAllocator allocator;
 /**
  * heap ranges
  */
-static VirtualAddress heapStart        = 0;
-static VirtualAddress heapEnd          = 0;
-static uint32_t       usedMemoryAmount = 0;
+static VirtAddr heapStart        = 0;
+static VirtAddr heapEnd          = 0;
+static uint32_t usedMemoryAmount = 0;
 
 /**
  * ready flag
@@ -86,7 +86,7 @@ static bool kernelHeapInitialized = false;
  * @param start:	the start address
  * @param end:		the end address
  */
-void KernelHeap::initialize(VirtualAddress start, VirtualAddress end) {
+void KernelHeap::initialize(VirtAddr start, VirtAddr end) {
     // initialize the collector and save the ranges
     allocator.initialize(start, end);
     heapStart = start;
@@ -110,10 +110,10 @@ bool KernelHeap::expandHeap() {
     }
 
     // Expand virtual space
-    for ( VirtualAddress virt = heapEnd; virt < heapEnd + KERNEL_HEAP_EXPAND_STEP;
-          virt                = virt + PAGE_SIZE ) {
+    for ( VirtAddr virt = heapEnd; virt < heapEnd + KERNEL_HEAP_EXPAND_STEP;
+          virt          = virt + PAGE_SIZE ) {
         // get a new physical page
-        PhysicalAddress page = PPallocator::allocate();
+        PhysAddr page = PPallocator::allocate();
         if ( !page ) {
             logWarn("%! no pages left for expanding", "kernheap");
             return false;

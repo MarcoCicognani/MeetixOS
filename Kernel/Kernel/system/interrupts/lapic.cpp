@@ -40,8 +40,8 @@ static bool prepared = false;
 /**
  * All APICs are at the same physical and virtual address
  */
-static PhysicalAddress physicalBase = 0;
-static VirtualAddress  virtualBase;
+static PhysAddr physicalBase = 0;
+static VirtAddr virtualBase;
 
 /**
  * initialize the apic driver
@@ -85,7 +85,7 @@ void Lapic::initialize() {
  *
  * @param lapicAddress:		the physical address of the lapic
  */
-void Lapic::prepare(PhysicalAddress lapicAddress) {
+void Lapic::prepare(PhysAddr lapicAddress) {
     physicalBase = lapicAddress;
     prepared     = true;
 

@@ -25,7 +25,7 @@
 #ifndef EVA_SYSTEM_SMP_GLOBALLOCK
 #define EVA_SYSTEM_SMP_GLOBALLOCK
 
-#include "eva/stdint.h"
+#include <Api/StdInt.h>
 
 /**
  * amage system locker

@@ -64,7 +64,7 @@ typedef uint32_t ComponentRequirement_t;
 class Component_t : public BoundsEventComponent_t {
 private:
     Rectangle            bounds{};
-    Component_t*         parent{ nullptr};
+    Component_t*         parent{ nullptr };
     vector<Component_t*> children{};
 
     Dimension minimumSize;

@@ -35,12 +35,12 @@
 #include <tasking/wait/WaiterWaitForIrq.hpp>
 
 /**
- * Join to another thread and let the current
+ * s_join to another thread and let the current
  * thread to sleep with a join waiter to wait the joined task's termination
  */
 SYSCALL_HANDLER(join) {
     SyscallJoin* data = (SyscallJoin*)SYSCALL_DATA(currentThread->cpuState);
-    currentThread->wait(new WaiterJoin(data->taskID));
+    currentThread->wait(new WaiterJoin(data->m_thread_id));
     return Tasking::schedule();
 }
 
@@ -56,7 +56,7 @@ SYSCALL_HANDLER(yield) {
  */
 SYSCALL_HANDLER(getTid) {
     SyscallGetTid* data = (SyscallGetTid*)SYSCALL_DATA(currentThread->cpuState);
-    data->id            = currentThread->id;
+    data->m_thread_id   = currentThread->id;
     return currentThread;
 }
 
@@ -66,7 +66,7 @@ SYSCALL_HANDLER(getTid) {
  */
 SYSCALL_HANDLER(getPid) {
     SyscallGetPid* data = (SyscallGetPid*)SYSCALL_DATA(currentThread->cpuState);
-    data->id            = currentThread->process->main->id;
+    data->m_proc_id     = currentThread->process->main->id;
     return currentThread;
 }
 
@@ -75,7 +75,7 @@ SYSCALL_HANDLER(getPid) {
  */
 SYSCALL_HANDLER(millis) {
     SyscallMillis* data = (SyscallMillis*)SYSCALL_DATA(currentThread->cpuState);
-    data->millis        = Tasking::currentScheduler()->getMilliseconds();
+    data->m_millis_amount = Tasking::currentScheduler()->getMilliseconds();
     return currentThread;
 }
 
@@ -84,20 +84,20 @@ SYSCALL_HANDLER(millis) {
  */
 SYSCALL_HANDLER(getThreadName) {
     SyscallGetIdentifier* data   = (SyscallGetIdentifier*)SYSCALL_CODE(currentThread->cpuState);
-    Thread*               target = Tasking::getTaskById(data->id);
+    Thread*               target = Tasking::getTaskById(data->m_thread_id);
 
     // check existance
     if ( target ) {
         const char* identifier = target->getIdentifier();
         if ( identifier )
-            String::copy(data->identifier, identifier);
+            String::copy(data->m_thread_name, identifier);
         else
-            data->identifier[0] = '\0';
+            data->m_thread_name[0] = '\0';
     }
 
     // set a terminated string
     else
-        data->identifier[0] = '\0';
+        data->m_thread_name[0] = '\0';
 
     return currentThread;
 }
@@ -107,8 +107,8 @@ SYSCALL_HANDLER(getThreadName) {
  */
 SYSCALL_HANDLER(getPidForTid) {
     SyscallGetPidForTid* data       = (SyscallGetPidForTid*)SYSCALL_DATA(currentThread->cpuState);
-    Thread*              targetTask = Tasking::getTaskById(data->tid);
-    data->pid                       = targetTask->process->main->id;
+    Thread*              targetTask = Tasking::getTaskById(data->m_thread_id);
+    data->m_proc_id                 = targetTask->process->main->id;
 
     return currentThread;
 }
@@ -118,13 +118,13 @@ SYSCALL_HANDLER(getPidForTid) {
  */
 SYSCALL_HANDLER(getParentPid) {
     SyscallGetParentPid* data       = (SyscallGetParentPid*)SYSCALL_DATA(currentThread->cpuState);
-    Thread*              targetTask = Tasking::getTaskById(data->pid);
+    Thread*              targetTask = Tasking::getTaskById(data->m_proc_id);
 
     Process* parentProcess = targetTask->process->parent;
     if ( parentProcess )
-        data->parentPid = parentProcess->main->id;
+        data->m_parent_proc_id = parentProcess->main->id;
     else
-        data->parentPid = -1;
+        data->m_parent_proc_id = -1;
 
     return currentThread;
 }
@@ -135,11 +135,11 @@ SYSCALL_HANDLER(getParentPid) {
 SYSCALL_HANDLER(getTidByName) {
     SyscallTaskIDGet* data = (SyscallTaskIDGet*)SYSCALL_DATA(currentThread->cpuState);
 
-    Thread* resultTask = Tasking::getTaskByIdentifier((const char*)data->identifier);
+    Thread* resultTask = Tasking::getTaskByIdentifier((const char*)data->m_identifier);
     if ( resultTask != 0 )
-        data->resultTaskID = resultTask->id;
+        data->m_thread_id = resultTask->id;
     else
-        data->resultTaskID = -1;
+        data->m_thread_id = -1;
 
     return currentThread;
 }
@@ -149,8 +149,8 @@ SYSCALL_HANDLER(getTidByName) {
  */
 SYSCALL_HANDLER(registerThreadName) {
     SyscallTaskIDRegister* data = (SyscallTaskIDRegister*)SYSCALL_DATA(currentThread->cpuState);
-    data->success
-        = Tasking::registerTaskForIdentifier(currentThread, data->identifier, data->selectedID);
+    data->m_success
+        = Tasking::registerTaskForIdentifier(currentThread, data->m_identifier, data->m_selected_identifier);
     return currentThread;
 }
 
@@ -159,22 +159,22 @@ SYSCALL_HANDLER(registerThreadName) {
  */
 SYSCALL_HANDLER(kill) {
     SyscallKill* data   = (SyscallKill*)SYSCALL_DATA(currentThread->cpuState);
-    Thread*      target = Tasking::getTaskById(data->pid);
+    Thread*      target = Tasking::getTaskById(data->m_proc_id);
 
     // if thread doesn't exist
     if ( !target )
-        data->status = KILL_STATUS_NOT_FOUND;
+        data->m_kill_status = KILL_STATUS_NOT_FOUND;
 
     // if thread is main kill entire process
     else if ( target->type == THREAD_TYPE_MAIN ) {
         target->process->main->alive = false;
-        data->status                 = KILL_STATUS_SUCCESSFUL;
+        data->m_kill_status          = KILL_STATUS_SUCCESSFUL;
     }
 
     // else kill only current thread
     else {
         target->alive = false;
-        data->status  = KILL_STATUS_SUCCESSFUL;
+        data->m_kill_status = KILL_STATUS_SUCCESSFUL;
     }
 
     // schedule, clear lists
@@ -204,8 +204,8 @@ SYSCALL_HANDLER(exitThread) {
  */
 SYSCALL_HANDLER(sleep) {
     SyscallSleep* data = (SyscallSleep*)SYSCALL_DATA(currentThread->cpuState);
-    if ( data->milliseconds > 0 )
-        currentThread->wait(new WaiterSleep(currentThread, data->milliseconds));
+    if ( data->m_ms_amount > 0 )
+        currentThread->wait(new WaiterSleep(currentThread, data->m_ms_amount));
     return Tasking::schedule();
 }
 
@@ -216,31 +216,31 @@ SYSCALL_HANDLER(atomicWait) {
     SyscallAtomicLock* data = (SyscallAtomicLock*)SYSCALL_DATA(currentThread->cpuState);
 
     // when "trying" only...
-    if ( data->tryOnly ) {
+    if ( data->m_is_try ) {
         // check if atom 1 is set and atom 2 is NULL or set
-        if ( *data->atom1 && (!data->atom2 || *data->atom2) )
-            data->wasSet = false;
+        if ( *data->m_atom_1 && (!data->m_atom_2 || *data->m_atom_2) )
+            data->m_was_set = false;
         else {
-            *data->atom1 = true;
-            if ( data->atom2 )
-                *data->atom2 = true;
-            data->wasSet = true;
+            *data->m_atom_1 = true;
+            if ( data->m_atom_2 )
+                *data->m_atom_2 = true;
+            data->m_was_set = true;
         }
         return currentThread;
     }
 
     // check if atom 1 is set and atom 2 is NULL or set
-    if ( *data->atom1 && (!data->atom2 || *data->atom2) ) {
-        currentThread->wait(new WaiterAtomicWait(data->atom1, data->atom2, data->setOnFinish));
+    if ( *data->m_atom_1 && (!data->m_atom_2 || *data->m_atom_2) ) {
+        currentThread->wait(new WaiterAtomicWait(data->m_atom_1, data->m_atom_2, data->m_set_on_finish));
         return Tasking::schedule();
     }
 
     // already unlocked, set atoms
-    if ( data->setOnFinish ) {
-        *data->atom1 = true;
+    if ( data->m_set_on_finish ) {
+        *data->m_atom_1 = true;
 
-        if ( data->atom2 )
-            *data->atom2 = true;
+        if ( data->m_atom_2 )
+            *data->m_atom_2 = true;
     }
     return currentThread;
 }
@@ -255,11 +255,11 @@ SYSCALL_HANDLER(waitForIrq) {
 
     // Only driver level
     if ( currentThread->process->securityLevel == SECURITY_LEVEL_DRIVER ) {
-        bool fired = InterruptRequestHandler::pollIrq(data->irq);
+        bool fired = InterruptRequestHandler::pollIrq(data->m_irq);
         if ( fired )
             return currentThread;
         else {
-            currentThread->wait(new WaiterWaitForIrq(data->irq));
+            currentThread->wait(new WaiterWaitForIrq(data->m_irq));
             return Tasking::schedule();
         }
     }
@@ -279,17 +279,17 @@ SYSCALL_HANDLER(fork) {
         FileSystem::processForked(currentThread->process->main->id, forked->process->main->id);
 
         // return forked id in target process
-        data->forkedID = forked->id;
+        data->m_forked_proc_id = forked->id;
 
         // switch to clone for a moment, set return value to 0
         PageDirectory cur = AddressSpace::getCurrentSpace();
         AddressSpace::switchToSpace(forked->process->pageDirectory);
-        data->forkedID = 0;
+        data->m_forked_proc_id = 0;
         AddressSpace::switchToSpace(cur);
     }
 
     else
-        data->forkedID = -1;
+        data->m_forked_proc_id = -1;
 
     return currentThread;
 }
@@ -302,15 +302,15 @@ SYSCALL_HANDLER(registerIrqHandler) {
         = (SyscallRegisterIrqHandler*)SYSCALL_DATA(currentThread->cpuState);
 
     if ( currentThread->process->securityLevel <= SECURITY_LEVEL_DRIVER ) {
-        InterruptRequestHandler::setHandler(data->irq,
+        InterruptRequestHandler::setHandler(data->m_irq,
                                             currentThread->id,
-                                            data->handler,
-                                            data->callback);
-        data->status = REGISTER_IRQ_HANDLER_STATUS_SUCCESSFUL;
+                                            data->m_user_handler,
+                                            data->m_return_callback);
+        data->m_register_status = REGISTER_IRQ_HANDLER_STATUS_SUCCESSFUL;
     }
 
     else
-        data->status = REGISTER_IRQ_HANDLER_STATUS_NOT_PERMITTED;
+        data->m_register_status = REGISTER_IRQ_HANDLER_STATUS_NOT_PERMITTED;
 
     return currentThread;
 }
@@ -330,28 +330,28 @@ SYSCALL_HANDLER(registerSignalHandler) {
     SyscallRegisterSignalHandler* data
         = (SyscallRegisterSignalHandler*)SYSCALL_DATA(currentThread->cpuState);
 
-    if ( data->signal >= 0 && data->signal < SIG_COUNT ) {
-        SignalHandler* handler = &(currentThread->process->signalHandlers[data->signal]);
+    if ( data->m_signal >= 0 && data->m_signal < SIG_COUNT ) {
+        SignalHandler* handler = &(currentThread->process->signalHandlers[data->m_signal]);
 
-        data->previousHandler = handler->handler;
-        handler->handler      = data->handler;
-        handler->callback     = data->callback;
+        data->m_previous_handler = handler->handler;
+        handler->handler      = data->m_user_handler;
+        handler->callback     = data->m_return_callback;
         handler->threadID     = currentThread->id;
-        data->status          = REGISTER_SIGNAL_HANDLER_STATUS_SUCCESSFUL;
+        data->m_register_status  = REGISTER_SIGNAL_HANDLER_STATUS_SUCCESSFUL;
 
         logDebug("%! signal handler %h registered for signal %i",
-                 "syscall",
-                 data->handler,
-                 data->signal);
+                 "do_syscall",
+                 data->m_user_handler,
+                 data->m_signal);
     }
 
     else {
-        data->previousHandler = -1;
-        data->status          = REGISTER_SIGNAL_HANDLER_STATUS_INVALID_SIGNAL;
+        data->m_previous_handler = -1;
+        data->m_register_status  = REGISTER_SIGNAL_HANDLER_STATUS_INVALID_SIGNAL;
         logDebug("%! failed to register signal handler %h for invalid signal %i",
-                 "syscall",
-                 data->handler,
-                 data->signal);
+                 "do_syscall",
+                 data->m_user_handler,
+                 data->m_signal);
     }
 
     return currentThread;
@@ -363,32 +363,32 @@ SYSCALL_HANDLER(registerSignalHandler) {
 SYSCALL_HANDLER(raiseSignal) {
     SyscallRaiseSignal* data = (SyscallRaiseSignal*)SYSCALL_DATA(currentThread->cpuState);
 
-    if ( data->signal >= 0 && data->signal < SIG_COUNT ) {
+    if ( data->m_signal >= 0 && data->m_signal < SIG_COUNT ) {
         // get main thread by id
         Thread* targetThread = 0;
 
-        if ( currentThread->id == data->process )
+        if ( currentThread->id == data->m_proc_id )
             targetThread = currentThread;
-        else if ( currentThread->process->main->id == data->process )
+        else if ( currentThread->process->main->id == data->m_proc_id )
             targetThread = currentThread->process->main;
         else
-            targetThread = Tasking::getTaskById(data->process);
+            targetThread = Tasking::getTaskById(data->m_proc_id);
 
         // target process doesn't exist
         if ( !targetThread )
-            data->status = RAISE_SIGNAL_STATUS_INVALID_TARGET;
+            data->m_raise_status = RAISE_SIGNAL_STATUS_INVALID_TARGET;
 
         else {
             // raise the signal
-            targetThread->raiseSignal(data->signal);
-            data->status = RAISE_SIGNAL_STATUS_SUCCESSFUL;
+            targetThread->raiseSignal(data->m_signal);
+            data->m_raise_status = RAISE_SIGNAL_STATUS_SUCCESSFUL;
         }
 
     }
 
     // signal doesn't exist
     else
-        data->status = RAISE_SIGNAL_STATUS_INVALID_SIGNAL;
+        data->m_raise_status = RAISE_SIGNAL_STATUS_INVALID_SIGNAL;
 
     return Tasking::schedule();
 }

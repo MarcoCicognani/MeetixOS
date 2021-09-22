@@ -25,7 +25,7 @@
 #ifndef EVA_TEMPORARY_PAGING_UTIL
 #define EVA_TEMPORARY_PAGING_UTIL
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <memory/memory.hpp>
 #include <memory/paging.hpp>
@@ -47,14 +47,14 @@ public:
      * @param phys:		the physical address to map
      * @return the virtual address
      */
-    static VirtualAddress map(PhysicalAddress phys);
+    static VirtAddr map(PhysAddr phys);
 
     /**
      * unmap the given virtual address
      *
      * @param virt:		the virtual address to be unmapped
      */
-    static void unmap(VirtualAddress virt);
+    static void unmap(VirtAddr virt);
 };
 
 #endif

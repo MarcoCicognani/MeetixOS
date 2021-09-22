@@ -34,7 +34,7 @@
  */
 FsTransactionHandlerStartStatus FsTransactionHandlerWrite::startTransaction(Thread* thread) {
     // create a context-bound wrapper for the data buffer
-    Contextual<uint8_t*> boundBuffer(data()->buffer, thread->process->pageDirectory);
+    Contextual<const uint8_t*> boundBuffer(data()->m_in_buffer, thread->process->pageDirectory);
 
     // check for the driver delegate
     FsDelegate* delegate = node->getDelegate();
@@ -49,13 +49,13 @@ FsTransactionHandlerStartStatus FsTransactionHandlerWrite::startTransaction(Thre
     // check if the transaction is repeated only
     if ( wantsRepeatTransaction() ) {
         // when a transaction is repeated, the waiter is still on the requesters task
-        delegate->requestWrite(thread, node, data()->length, boundBuffer, fd, this);
+        delegate->requestWrite(thread, node, data()->m_in_buffer_len, boundBuffer, fd, this);
         return FS_TRANSACTION_START_WITH_WAITER;
     }
 
     // start transaction by requesting the delegate
     FsTransactionID transaction
-        = delegate->requestWrite(thread, node, data()->length, boundBuffer, fd, this);
+        = delegate->requestWrite(thread, node, data()->m_in_buffer_len, boundBuffer, fd, this);
 
     // initially check status
     if ( WaiterFsTransaction::isTransactionWaiting(thread, this, transaction, delegate) ) {
@@ -72,7 +72,7 @@ FsTransactionHandlerStartStatus FsTransactionHandlerWrite::startTransaction(Thre
 FsTransactionHandlerFinishStatus
 FsTransactionHandlerWrite::finishTransaction(Thread* thread, FsDelegate* delegate) {
     delegate->finishWrite(thread, &status, &result, fd);
-    data()->result = result;
-    data()->status = status;
+    data()->m_write_bytes  = result;
+    data()->m_write_status = status;
     return FS_TRANSACTION_HANDLING_DONE;
 }

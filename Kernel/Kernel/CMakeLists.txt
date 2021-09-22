@@ -34,7 +34,7 @@ add_executable(Kernel
         memory/TemporaryPagingUtil.cpp
         memory/KernelHeap.cpp
         init.cpp
-        ramdisk/ramdisk.cpp
+        ramdisk/Ramdisk.cpp
         calls/SyscallHandlerVm86.cpp
         calls/SyscallHandlerMemory.cpp
         calls/SyscallHandlerInfo.cpp
@@ -42,7 +42,6 @@ add_executable(Kernel
         calls/SyscallHandler.cpp
         calls/SyscallHandlerMessaging.cpp
         calls/SyscallHandlerFilesystem.cpp
-        calls/SyscallHandlerRamdisk.cpp
         calls/SyscallHandlerSpawning.cpp
         calls/SyscallHandlerTasking.cpp
         calls/SyscallHandlerServer.cpp

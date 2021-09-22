@@ -19,15 +19,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "errno.h"
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 #include "unistd.h"
 
 /**
- * POSIX wrapper for <GetWorkingDirectory>
+ * POSIX wrapper for <s_get_working_directory>
  */
 char* getcwd(char* buf, size_t size) {
     // performs syscall
-    GetWorkingDirectoryStatus stat = GetWorkingDirectoryL(buf, size);
+    GetWorkingDirectoryStatus stat = s_get_working_directory_l(buf, size);
 
     // check status
     if ( stat == GET_WORKING_DIRECTORY_SUCCESSFUL )

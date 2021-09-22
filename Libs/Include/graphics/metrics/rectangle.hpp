@@ -174,6 +174,6 @@ public:
         }
         return norm;
     }
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

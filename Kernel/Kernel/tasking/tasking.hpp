@@ -25,10 +25,10 @@
 #ifndef EVA_TASKING_TASKING
 #define EVA_TASKING_TASKING
 
-#include "eva/kernel.h"
-#include "eva/stdint.h"
+#include "Api/Kernel.h"
+#include "Api/StdInt.h"
 
-#include <eva/utils/llist.hpp>
+#include <Api/utils/llist.hpp>
 #include <system/ProcessorState.hpp>
 #include <tasking/process.hpp>
 #include <tasking/scheduling/scheduler.hpp>
@@ -150,8 +150,8 @@ public:
      * concat a numeric id to the task identifier if task id is already in use
      *
      * @param target:					the target thread to adjust
-     * @param firstExist:				the first existing thread with same name that we shall
-     * set
+     * @param firstExist:				the first existing thread with same name that
+     * we shall set
      * @param preferredIdentifier:		identifier to adjust and set to target
      * @return the setupped identifier for the target
      */

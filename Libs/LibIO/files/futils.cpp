@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <eva.h>
+#include <Api.h>
 #include <io/files/futils.hpp>
 #include <stdio.h>
 
@@ -28,11 +28,11 @@
  * @param out:		the object where store the readed bytes
  * @return whether the operation success
  */
-bool FileUtils::readString(File_t file, std::string& out) {
+bool FileUtils::readString(FileHandle file, std::string& out) {
     // create buffer to stoire readed bytes
     uint8_t           c;
     std::stringstream s;
-    while ( Read(file, &c, 1) > 0 ) {
+    while ( s_read(file, &c, 1) > 0 ) {
         // stop on null-terminator
         if ( !c ) {
             out = s.str();
@@ -54,12 +54,12 @@ bool FileUtils::readString(File_t file, std::string& out) {
  * @param len:		the quantity of bytes to be readed
  * @return whether the operation success
  */
-bool FileUtils::readBytes(File_t file, uint8_t* buffer, size_t len) {
+bool FileUtils::readBytes(FileHandle file, uint8_t* buffer, size_t len) {
     ssize_t remain = len;
 
     FsReadStatus status;
     while ( remain ) {
-        ssize_t read = ReadS(file, &buffer[len - remain], remain, &status);
+        ssize_t read = s_read_s(file, &buffer[len - remain], remain, &status);
         if ( status != FS_READ_SUCCESSFUL || read <= 0 )
             return false;
         remain -= read;
@@ -77,10 +77,10 @@ bool FileUtils::readBytes(File_t file, uint8_t* buffer, size_t len) {
  * @param len:		the quantity of bytes to be readed
  * @return whether the operation success
  */
-bool FileUtils::readBytes(File_t file, size_t offset, uint8_t* buffer, size_t len) {
+bool FileUtils::readBytes(FileHandle file, size_t offset, uint8_t* buffer, size_t len) {
     // performs a seek before read
     FsSeekStatus s;
-    SeekS(file, offset, FS_SEEK_SET, &s);
+    s_seek_s(file, offset, FS_SEEK_SET, &s);
     if ( s != FS_SEEK_SUCCESSFUL )
         return false;
 

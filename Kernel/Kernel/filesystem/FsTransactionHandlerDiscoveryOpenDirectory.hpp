@@ -52,15 +52,15 @@ public:
     virtual FsTransactionHandlerFinishStatus afterFinishTransaction(Thread* thread) {
         if ( status == FS_DISCOVERY_SUCCESSFUL ) {
             // fill the call iterator with the node id & reset position
-            data()->iterator->nodeID   = node->id;
-            data()->iterator->position = 0;
-            data()->status             = FS_OPEN_DIRECTORY_SUCCESSFUL;
+            data()->m_directory_iterator->m_node_id  = node->id;
+            data()->m_directory_iterator->m_position = 0;
+            data()->m_open_directory_status          = FS_OPEN_DIRECTORY_SUCCESSFUL;
         }
 
         else if ( status == FS_DISCOVERY_NOT_FOUND )
-            data()->status = FS_OPEN_DIRECTORY_NOT_FOUND;
+            data()->m_open_directory_status = FS_OPEN_DIRECTORY_NOT_FOUND;
         else if ( status == FS_DISCOVERY_ERROR || status == FS_DISCOVERY_BUSY )
-            data()->status = FS_OPEN_DIRECTORY_ERROR;
+            data()->m_open_directory_status = FS_OPEN_DIRECTORY_ERROR;
 
         return FS_TRANSACTION_HANDLING_DONE;
     }

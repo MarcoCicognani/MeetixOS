@@ -18,7 +18,7 @@
  *Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include "eva.h"
+#include "Api.h"
 #include "locale.h"
 #include "main_internal.h"
 #include "signal.h"
@@ -69,7 +69,7 @@ int __main() {
     if ( !parseargs(&argc, &args) ) {
         ret = main(argc, args);
     } else {
-        Log("failed to parse command line arguments");
+        s_log("failed to parse command line arguments");
     }
 
     // leave

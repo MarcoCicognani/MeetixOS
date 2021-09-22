@@ -27,7 +27,7 @@
 #include "Elf32Loader.hpp"
 #include "Power.hpp"
 
-#include <eva/bytewise.h>
+#include <Api/ByteWise.h>
 #include <fcntl.h>
 #include <io/files/futils.hpp>
 #include <stdarg.h>
@@ -43,7 +43,7 @@
  */
 int main(int argc, char* argv[]) {
     // register this task as the system spawner
-    if ( !RegisterAsServer(SPAWNER_IDENTIFIER, SECURITY_LEVEL_KERNEL) ) {
+    if ( !s_register_as_server(SPAWNER_IDENTIFIER, SECURITY_LEVEL_KERNEL) ) {
         klog("failed to initialize spawner service: could not register with "
              "identifier %s",
              SPAWNER_IDENTIFIER);
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
  */
 void createOsEnvironmentFile(const char* dir, const char* fileName) {
     // open directory etc
-    SetWorkingDirectory(dir);
+    s_set_working_directory(dir);
 
     // define first variables
     const char base_env[]
@@ -71,25 +71,25 @@ void createOsEnvironmentFile(const char* dir, const char* fileName) {
     auto base_env_len = strlen(base_env);
 
     // create the environment file
-    auto env_fd = OpenF(fileName, O_READ | O_WRITE);
-    if (env_fd == FD_NONE) {
-        env_fd = OpenF(fileName, O_CREAT | O_READ | O_WRITE);
+    auto env_fd = s_open_f(fileName, O_READ | O_WRITE);
+    if ( env_fd == FD_NONE ) {
+        env_fd = s_open_f(fileName, O_CREAT | O_READ | O_WRITE);
 
         // write variables on file and close it
-        Write(env_fd, base_env, base_env_len);
+        s_write(env_fd, base_env, base_env_len);
     }
 
-    Close(env_fd);
+    s_close(env_fd);
 }
 
 /**
- *	create log file
+ *	create s_log file
  */
 void createOsLogFile(const char* dir, const char* fileName) {
     // open directory etc
-    SetWorkingDirectory(dir);
+    s_set_working_directory(dir);
 
-    const char loginput[] = { "[0] log file created\n" };
+    const char loginput[] = { "[0] s_log file created\n" };
     int        length     = strlen(loginput);
 
     // create the log file
@@ -126,9 +126,7 @@ void init() {
 
         klog("Creating log file");
         createOsLogFile("/MeetiX/", "log");
-    }
-
-    else
+    } else
         klog("failed to load mx shell from '/Bins/MxSh' with code %d", stat);
 }
 
@@ -141,13 +139,12 @@ void init() {
 
     // defining size for messages
     const size_t requestLenMax = sizeof(MessageHeader) + sizeof(SpawnCommandSpawnRequest) + 1024;
-
     while ( true ) {
         // creating buffer for message
         uint8_t requestBuffer[requestLenMax];
 
         // receive incoming request
-        MessageReceiveStatus stat = ReceiveMessage(requestBuffer, requestLenMax);
+        auto stat = s_receive_message(requestBuffer, requestLenMax);
 
         if ( stat != MESSAGE_RECEIVE_STATUS_SUCCESSFUL )
             protocolError("receiving command failed with code %i", stat);
@@ -155,17 +152,17 @@ void init() {
         auto header        = (MessageHeader*)requestBuffer;
         auto commandHeader = (SpawnCommandHeader*)MESSAGE_CONTENT(header);
 
-        if ( commandHeader->command == SPAWN_COMMAND_SPAWN_REQUEST )
+        if ( commandHeader->m_command == SPAWN_COMMAND_SPAWN_REQUEST )
             processSpawnRequest((SpawnCommandSpawnRequest*)commandHeader,
-                                header->sender,
-                                header->transaction);
-        else if ( commandHeader->command == SPAWN_COMMAND_SHUTDOWN_MACHINE
-                  || commandHeader->command == SPAWN_COMMAND_REBOOT_MACHINE )
-            processHaltMachine(commandHeader->command);
+                                header->m_sender_tid,
+                                header->m_transaction);
+        else if ( commandHeader->m_command == SPAWN_COMMAND_SHUTDOWN_MACHINE
+                  || commandHeader->m_command == SPAWN_COMMAND_REBOOT_MACHINE )
+            processHaltMachine(commandHeader->m_command);
         else
             protocolError("received unknown command: code %i, task %i",
-                          commandHeader->command,
-                          header->sender);
+                          commandHeader->m_command,
+                          header->m_sender_tid);
     }
 }
 
@@ -183,25 +180,25 @@ void protocolError(std::string msg, ...) {
  *
  */
 void processSpawnRequest(SpawnCommandSpawnRequest* request, Tid requester, MessageTransaction tx) {
-    SecurityLevel secLvl = request->securityLevel;
+    SecurityLevel secLvl = request->m_security_level;
 
-    const char* pos = (const char*)request;
-    pos             = pos + sizeof(SpawnCommandSpawnRequest);
+    auto pos = (const char*)request;
+    pos      = pos + sizeof(SpawnCommandSpawnRequest);
 
-    const char* path = pos;
-    pos              = pos + request->pathBytes;
+    auto path = pos;
+    pos       = pos + request->m_path_len;
 
-    const char* args = pos;
-    pos              = pos + request->argsBytes;
+    auto args = pos;
+    pos       = pos + request->m_args_len;
 
-    const char* workdir = pos;
+    auto workdir = pos;
 
     // parameters ready, perform spawn
     Pid         oPid;
-    File_t      oFdInw;
-    File_t      oFdOutr;
-    File_t      oFdErr;
-    Pid         requesterPid = GetPidForTid(requester);
+    FileHandle  oFdInw;
+    FileHandle  oFdOutr;
+    FileHandle  oFdErr;
+    Pid         requesterPid = s_get_pid_for_tid(requester);
     SpawnStatus spawnStatus  = spawn(path,
                                      args,
                                      workdir,
@@ -211,50 +208,48 @@ void processSpawnRequest(SpawnCommandSpawnRequest* request, Tid requester, Messa
                                      &oFdInw,
                                      &oFdOutr,
                                      &oFdErr,
-                                     request->stdin,
-                                     request->stdout,
-                                     request->stderr);
+                                     request->m_stdin,
+                                     request->m_stdout,
+                                     request->m_stderr);
 
     // send response
     SpawnCommandSpawnResponse response;
-    response.spawnedProcessID = oPid;
-    response.status           = spawnStatus;
-    response.stdinWrite       = oFdInw;
-    response.stdoutRead       = oFdOutr;
-    response.stderrRead       = oFdErr;
-    SendMessageT(requester, &response, sizeof(SpawnCommandSpawnResponse), tx);
+    response.m_new_process_id = oPid;
+    response.m_spawn_status   = spawnStatus;
+    response.m_stdin_write    = oFdInw;
+    response.m_stdout_read    = oFdOutr;
+    response.m_stderr_read    = oFdErr;
+    s_send_message_t(requester, &response, sizeof(SpawnCommandSpawnResponse), tx);
 }
 
 /**
  *
  */
-bool createPipe(Pid     thisPid,
-                Pid     requesterPid,
-                Pid     targetPid,
-                File_t  source,
-                File_t* out,
-                File_t  target) {
-    File_t created = FD_NONE;
+bool createPipe(Pid         thisPid,
+                Pid         requesterPid,
+                Pid         targetPid,
+                FileHandle  source,
+                FileHandle* out,
+                FileHandle  target) {
+    FileHandle created = FD_NONE;
     if ( source == FD_NONE ) {
         // create pipe
-        File_t       pipe[2];
+        FileHandle   pipe[2];
         FsPipeStatus pipeStat;
-        PipeS(&pipe[0], &pipe[1], &pipeStat);
+        s_pipe_s(&pipe[0], &pipe[1], &pipeStat);
 
         if ( pipeStat == FS_PIPE_SUCCESSFUL ) {
             // map into target & requester
-            created = CloneFdT(pipe[1], thisPid, target, targetPid);
-            *out    = CloneFd(pipe[0], thisPid, requesterPid);
+            created = s_clone_fd_t(pipe[1], thisPid, target, targetPid);
+            *out    = s_clone_fd(pipe[0], thisPid, requesterPid);
 
             // close pipe here
-            Close(pipe[0]);
-            Close(pipe[1]);
+            s_close(pipe[0]);
+            s_close(pipe[1]);
         }
-    }
-
-    else {
+    } else {
         // map into target
-        created = CloneFdT(source, requesterPid, target, targetPid);
+        created = s_clone_fd_t(source, requesterPid, target, targetPid);
         *out    = source;
     }
 
@@ -264,15 +259,15 @@ bool createPipe(Pid     thisPid,
 /**
  *
  */
-bool setupStdio(Pid     createdPid,
-                Pid     requesterPid,
-                File_t* outStdin,
-                File_t* outStdout,
-                File_t* outStderr,
-                File_t  inStdin,
-                File_t  inStdout,
-                File_t  inStderr) {
-    uint32_t thisPid = GetPid();
+bool setupStdio(Pid         createdPid,
+                Pid         requesterPid,
+                FileHandle* outStdin,
+                FileHandle* outStdout,
+                FileHandle* outStderr,
+                FileHandle  inStdin,
+                FileHandle  inStdout,
+                FileHandle  inStderr) {
+    auto thisPid = s_get_pid();
     if ( !createPipe(thisPid, requesterPid, createdPid, inStdin, outStdin, STDIN_FILENO) )
         return false;
     if ( !createPipe(thisPid, requesterPid, createdPid, inStdout, outStdout, STDOUT_FILENO) )
@@ -296,16 +291,16 @@ void writeCliArgs(ProcessCreationIdentifier targetProc, const char* args) {
     argsBuf[argsLen] = 0;
 
     // store arguments
-    CliArgsStore(targetProc, argsBuf);
+    s_cli_args_store(targetProc, argsBuf);
 
     // free buffer
-    delete argsBuf;
+    delete[] argsBuf;
 }
 
 /**
  *
  */
-BinaryFormat detectFormat(File_t file) {
+BinaryFormat detectFormat(FileHandle file) {
     // try to detect the format
     BinaryFormat form = BF_UNKNOWN;
     if ( Elf32Loader::checkForElfBinaryAndReset(file) == LS_SUCCESSFUL )
@@ -317,9 +312,9 @@ BinaryFormat detectFormat(File_t file) {
 /*
  *
  */
-bool findFile(const char* path, File_t* file) {
+bool findFile(const char* path, FileHandle* file) {
     // try open with provided path
-    if ( (*file = OpenF(path, O_RDONLY)) != FD_NONE )
+    if ( (*file = s_open_f(path, O_RDONLY)) != FD_NONE )
         return true;
 
     // try adding the path
@@ -330,7 +325,7 @@ bool findFile(const char* path, File_t* file) {
             dir += std::string{ path } + std::string{ "/Bin" };
 
         // try open the file
-        if ( (*file = OpenF((dir + std::string(path)).c_str(), O_RDONLY)) != FD_NONE )
+        if ( (*file = s_open_f((dir + std::string(path)).c_str(), O_RDONLY)) != FD_NONE )
             return true;
     }
 
@@ -346,14 +341,14 @@ SpawnStatus spawn(const char*   path,
                   SecurityLevel secLvl,
                   Pid           requesterPid,
                   Pid*          outPid,
-                  File_t*       outStdin,
-                  File_t*       outStdout,
-                  File_t*       outStderr,
-                  File_t        inStdin,
-                  File_t        inStdout,
-                  File_t        inStderr) {
+                  FileHandle*   outStdin,
+                  FileHandle*   outStdout,
+                  FileHandle*   outStderr,
+                  FileHandle    inStdin,
+                  FileHandle    inStdout,
+                  FileHandle    inStderr) {
     // file of executable
-    File_t file;
+    FileHandle file;
 
     // open input file
     if ( !findFile(path, &file) ) {
@@ -369,13 +364,13 @@ SpawnStatus spawn(const char*   path,
     }
 
     // create empty target process
-    auto targetProc = CreateEmptyProcess(secLvl);
-    Pid  targetPid  = GetCreatedProcessID(targetProc);
+    auto targetProc = s_create_empty_process(secLvl);
+    Pid  targetPid  = s_get_created_process_id(targetProc);
 
     // apply configuration
     ProcessConfiguration configuration;
-    configuration.sourcePath = (char*)path;
-    ConfigureProcess(targetProc, configuration);
+    configuration.m_source_path = (char*)path;
+    s_configure_process(targetProc, configuration);
 
     // create a loader
     Loader* loader;
@@ -408,17 +403,17 @@ SpawnStatus spawn(const char*   path,
         writeCliArgs(targetProc, args);
 
         // set working directory
-        SetWorkingDirectoryP(workdir, targetProc);
+        s_set_working_directory_p(workdir, targetProc);
 
         // attached loaded process
-        AttachCreatedProcess(targetProc, entryAddress);
+        s_attach_created_process(targetProc, entryAddress);
 
         // out-set process id
         *outPid   = targetPid;
         spawnStat = SPAWN_STATUS_SUCCESSFUL;
     } else {
         // cancel creation & let kernel clean up
-        CancelProcessCreation(targetProc);
+        s_cancel_process_creation(targetProc);
 
         if ( ldrStat == LS_IO_ERROR )
             spawnStat = SPAWN_STATUS_IO_ERROR;
@@ -433,6 +428,6 @@ SpawnStatus spawn(const char*   path,
     }
 
     // Close binary file
-    Close(file);
+    s_close(file);
     return spawnStat;
 }

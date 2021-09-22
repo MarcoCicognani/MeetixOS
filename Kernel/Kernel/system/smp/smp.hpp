@@ -46,7 +46,7 @@ public:
      * @param initialPageDirectoryPhysical
      *		the first physical address where the initialization begin
      */
-    static void initialize(PhysicalAddress initialPageDirectoryPhysical);
+    static void initialize(PhysAddr initialPageDirectoryPhysical);
 };
 
 #endif

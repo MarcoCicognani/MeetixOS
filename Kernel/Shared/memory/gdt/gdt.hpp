@@ -25,7 +25,7 @@
 #ifndef EVA_SHARED_MEMORY_GDT_GDT
 #define EVA_SHARED_MEMORY_GDT_GDT
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <memory/gdt/gdt.hpp>
 #include <memory/gdt/GdtEntry.hpp>

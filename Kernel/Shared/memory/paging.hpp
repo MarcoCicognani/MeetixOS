@@ -25,8 +25,8 @@
 #ifndef EVA_SHARED_MEMORY_PAGING
 #define EVA_SHARED_MEMORY_PAGING
 
-#include "eva/memory.h"
-#include "eva/stdint.h"
+#include "Api/Memory.h"
+#include "Api/StdInt.h"
 
 /**
  * Page directory flags

@@ -25,7 +25,7 @@
 #ifndef EVA_SHARED_SYSTEM_SERIAL_SERIALPORT
 #define EVA_SHARED_SYSTEM_SERIAL_SERIALPORT
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * Constants for COM port communcation

@@ -39,7 +39,10 @@ void SecondaryThread::OsmosUIDockThread(const Dimension& resolution) {
     // creating button and add to list
     dockButtons = new ButtonList();
     dockButtons->add("shell", [] {
-        Spawn("/app/CandyShell/bin/CandyShell", "", "/app/CandyShell/", SECURITY_LEVEL_APPLICATION);
+        s_spawn("/app/CandyShell/bin/CandyShell",
+                "",
+                "/app/CandyShell/",
+                SECURITY_LEVEL_APPLICATION);
     });
     dockButtons->configure("shell",
                            Rectangle(30, 7, 48, 48),
@@ -51,7 +54,10 @@ void SecondaryThread::OsmosUIDockThread(const Dimension& resolution) {
 
     // creating button and add to list
     dockButtons->add("calculator", [] {
-        Spawn("/app/calculator/bin/calculator", "", "/app/calculator/", SECURITY_LEVEL_APPLICATION);
+        s_spawn("/app/calculator/bin/calculator",
+                "",
+                "/app/calculator/",
+                SECURITY_LEVEL_APPLICATION);
     });
     dockButtons->configure("calculator",
                            Rectangle(125, 7, 48, 48),
@@ -63,7 +69,7 @@ void SecondaryThread::OsmosUIDockThread(const Dimension& resolution) {
 
     // creating button and add to list
     dockButtons->add("editor", [] {
-        Spawn("/app/CandyNote/bin/CandyNote", "", "/app/CandyNote/", SECURITY_LEVEL_APPLICATION);
+        s_spawn("/app/CandyNote/bin/CandyNote", "", "/app/CandyNote/", SECURITY_LEVEL_APPLICATION);
     });
     dockButtons->configure("editor",
                            Rectangle(220, 7, 48, 48),
@@ -88,7 +94,7 @@ void SecondaryThread::OsmosUIDockThread(const Dimension& resolution) {
 
     // lock thread
     uint8_t blocker = true;
-    AtomicBlock(&blocker);
+    s_atomic_block(&blocker);
 
     // remove screen objects
     delete dockButtons;

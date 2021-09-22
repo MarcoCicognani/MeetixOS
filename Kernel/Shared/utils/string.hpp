@@ -25,7 +25,7 @@
 #ifndef EVA_SHARED_UTILS_STRING
 #define EVA_SHARED_UTILS_STRING
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <stddef.h>
 

@@ -25,8 +25,8 @@
 #ifndef SYSTEM_ACPI_RSDPLOOKUPUTIL
 #define SYSTEM_ACPI_RSDPLOOKUPUTIL
 
-#include "eva/stdint.h"
-#include "eva/types.h"
+#include "Api/StdInt.h"
+#include "Api/Types.h"
 
 #include <system/acpi/rsdp.hpp>
 

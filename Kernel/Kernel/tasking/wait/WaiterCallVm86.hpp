@@ -25,7 +25,7 @@
 #ifndef EVA_MULTITASKING_WAIT_MANAGER_VIRTUAL_8086
 #define EVA_MULTITASKING_WAIT_MANAGER_VIRTUAL_8086
 
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 
 #include <tasking/wait/waiter.hpp>
 
@@ -38,19 +38,19 @@ private:
      * internal data
      */
     SyscallCallVm86* data;                 // pointer to syscall data
-    Vm86Registers*   temporaryOut;         // pointer to vm86 registers descriptor
+    VM86Registers*   temporaryOut;         // pointer to vm86 registers descriptor
     uint32_t         virtual8086ProcessId; // process id of the task that keep waiting
 
 public:
     /**
      * filled constructor
      *
-     * @param _data:					pointer to syscall data
+     * @param _data:					pointer to do_syscall data
      * @param _temporaryOut:			pointer to vm86 registers descriptor
      * @param _virtual8086ProcessId:	process id of the task that keep waiting
      */
     WaiterCallVm86(SyscallCallVm86* _data,
-                   Vm86Registers*   _temporaryOut,
+                   VM86Registers*   _temporaryOut,
                    uint32_t         _virtual8086ProcessId)
         : data(_data), temporaryOut(_temporaryOut), virtual8086ProcessId(_virtual8086ProcessId) {
     }
@@ -68,7 +68,7 @@ public:
         // check validity
         if ( !vm86task ) {
             // Task has finished, copy the values to the waiting data struct
-            *(data->out) = *temporaryOut;
+            *(data->m_out_registers) = *temporaryOut;
 
             // Delete temporary out struct
             delete temporaryOut;

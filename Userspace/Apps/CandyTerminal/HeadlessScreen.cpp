@@ -24,7 +24,7 @@
 
 #include "HeadlessScreen.hpp"
 
-#include <eva.h>
+#include <Api.h>
 #include <string.h>
 #include <utils/utils.hpp>
 
@@ -47,7 +47,7 @@ HeadlessScreen::HeadlessScreen() {
  *
  */
 void HeadlessScreen::clean() {
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
     for ( uint32_t off = 0; off < SCREEN_HEIGHT * SCREEN_WIDTH * 2; off += 2 ) {
         outputCurrent[off]     = ' ';
         outputCurrent[off + 1] = SC_COLOR(SC_BLACK, SC_WHITE);
@@ -63,7 +63,7 @@ void HeadlessScreen::updateVisualCursor() {
     int x = (offset % (SCREEN_WIDTH * 2)) / 2;
     int y = offset / (SCREEN_WIDTH * 2);
 
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
     uint16_t position = (y * SCREEN_WIDTH) + x;
 
     Utils::Cpu::outportByte(0x3D4, 0x0F);
@@ -77,7 +77,7 @@ void HeadlessScreen::updateVisualCursor() {
  *
  */
 void HeadlessScreen::moveCursor(int x, int y) {
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
 
     offset = (y * SCREEN_WIDTH * 2) + x * 2;
     if ( offset < 0 )
@@ -96,7 +96,7 @@ void HeadlessScreen::moveCursor(int x, int y) {
  */
 void HeadlessScreen::writeChar(char c) {
     // Print to the screen
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
 
     if ( c == '\n' ) {
         offset = offset + SCREEN_WIDTH * 2;
@@ -121,7 +121,7 @@ void HeadlessScreen::writeChar(char c) {
  *
  */
 void HeadlessScreen::backspace() {
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
 
     offset                  = offset - 2;
     outputCurrent[offset++] = ' ';
@@ -137,7 +137,7 @@ void HeadlessScreen::backspace() {
  *
  */
 void HeadlessScreen::normalize() {
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
 
     if ( offset >= SCREEN_WIDTH * SCREEN_HEIGHT * 2 ) {
         offset = offset - SCREEN_WIDTH * 2;
@@ -163,7 +163,7 @@ void HeadlessScreen::setCursorVisible(bool visible) {
     if ( visible )
         updateVisualCursor();
     else {
-        AtomicLock(&lock);
+        s_atomic_lock(&lock);
         // effectively hides the cursor
         Utils::Cpu::outportByte(0x3D4, 0x0F);
         Utils::Cpu::outportByte(0x3D5, (uint8_t)(-1 & 0xFF));
@@ -185,7 +185,7 @@ void HeadlessScreen::setScrollAreaScreen() {
  */
 void HeadlessScreen::setScrollArea(int start, int end) {
     scrollAreaScreen = false;
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
     scrollAreaStart = start > SCREEN_HEIGHT ? SCREEN_HEIGHT : start;
     scrollAreaEnd   = end > SCREEN_HEIGHT ? SCREEN_HEIGHT : end;
     lock            = false;
@@ -198,7 +198,7 @@ void HeadlessScreen::scroll(int value) {
     int scrollStart = scrollAreaScreen ? 0 : scrollAreaStart;
     int scrollEnd   = scrollAreaScreen ? SCREEN_HEIGHT : scrollAreaEnd;
 
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
 
     if ( value > 0 ) {
         for ( int i = scrollEnd - 2; i >= scrollStart; i-- )

@@ -19,12 +19,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "errno.h"
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 #include "unistd.h"
 
 /**
- * POSIX wrapper for <Tell>
+ * POSIX wrapper for <s_tell>
  */
 long int tell(int filedes) {
-    return Tell(filedes);
+    return s_tell(filedes);
 }

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <eva.h>
+#include <Api.h>
 #include <gui/component.hpp>
 #include <gui/uispech.hpp>
 #include <utils/valplacer.hpp>
@@ -38,12 +38,12 @@ void Component::removeFromZipNetRegex() {
         return;
 
     // send remove request
-    MessageTransaction tx = GetMessageTxId();
+    MessageTransaction tx = s_get_message_tx_id();
 
     UiRemoveComponentRequest request;
     request.header.id = UI_PROTOCOL_REMOVE_COMPONENT;
     request.id        = this->id;
-    SendMessageT(UiDelegateTid, &request, sizeof(UiRemoveComponentRequest), tx);
+    s_send_message_t(UiDelegateTid, &request, sizeof(UiRemoveComponentRequest), tx);
 }
 
 /**
@@ -54,19 +54,19 @@ bool Component::addChild(Component* child) {
         return false;
 
     // send initialization request
-    MessageTransaction tx = GetMessageTxId();
+    MessageTransaction tx = s_get_message_tx_id();
 
     UiComponentAddChildRequest request;
     request.header.id = UI_PROTOCOL_ADD_COMPONENT;
     request.parent    = this->id;
     request.child     = child->id;
-    SendMessageT(UiDelegateTid, &request, sizeof(UiComponentAddChildRequest), tx);
+    s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentAddChildRequest), tx);
 
     // read response
     size_t  bufferSize = sizeof(MessageHeader) + sizeof(UiComponentAddChildResponse);
     uint8_t buffer[bufferSize];
 
-    if ( ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         UiComponentAddChildResponse* response
             = (UiComponentAddChildResponse*)MESSAGE_CONTENT(buffer);
         if ( response->status == UI_PROTOCOL_SUCCESS )
@@ -84,19 +84,19 @@ bool Component::setBounds(Rectangle rect) {
         return false;
 
     // send initialization request
-    MessageTransaction tx = GetMessageTxId();
+    MessageTransaction tx = s_get_message_tx_id();
 
     UiComponentSetBoundsRequest request;
     request.header.id = UI_PROTOCOL_SET_BOUNDS;
     request.id        = this->id;
     request.bounds    = rect;
-    SendMessageT(UiDelegateTid, &request, sizeof(UiComponentSetBoundsRequest), tx);
+    s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentSetBoundsRequest), tx);
 
     // read response
     size_t         bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetBoundsResponse);
     Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
-    if ( ReceiveMessageT(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         UiComponentSetBoundsResponse* response
             = (UiComponentSetBoundsResponse*)MESSAGE_CONTENT(buffer());
 
@@ -115,18 +115,18 @@ Rectangle Component::getBounds() {
         return Rectangle();
 
     // send initialization request
-    MessageTransaction tx = GetMessageTxId();
+    MessageTransaction tx = s_get_message_tx_id();
 
     UiComponentGetBoundsRequest request;
     request.header.id = UI_PROTOCOL_GET_BOUNDS;
     request.id        = this->id;
-    SendMessageT(UiDelegateTid, &request, sizeof(UiComponentGetBoundsRequest), tx);
+    s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentGetBoundsRequest), tx);
 
     // read response
     size_t         bufferSize = sizeof(MessageHeader) + sizeof(UiComponentGetBoundsResponse);
     Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
-    if ( ReceiveMessageT(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         UiComponentGetBoundsResponse* response
             = (UiComponentGetBoundsResponse*)MESSAGE_CONTENT(buffer());
 
@@ -145,19 +145,19 @@ bool Component::setVisible(bool visible) {
         return false;
 
     // send initialization request
-    MessageTransaction tx = GetMessageTxId();
+    MessageTransaction tx = s_get_message_tx_id();
 
     UiComponentSetVisibleRequest request;
     request.header.id = UI_PROTOCOL_SET_VISIBLE;
     request.id        = this->id;
     request.visible   = visible;
-    SendMessageT(UiDelegateTid, &request, sizeof(UiComponentSetVisibleRequest), tx);
+    s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentSetVisibleRequest), tx);
 
     // read response
     size_t  bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetVisibleResponse);
     uint8_t buffer[bufferSize];
 
-    if ( ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         UiComponentSetVisibleResponse* response
             = (UiComponentSetVisibleResponse*)MESSAGE_CONTENT(buffer);
         if ( response->status == UI_PROTOCOL_SUCCESS )
@@ -175,19 +175,19 @@ bool Component::setFocus(bool focus) {
         return false;
 
     // send initialization request
-    MessageTransaction tx = GetMessageTxId();
+    MessageTransaction tx = s_get_message_tx_id();
 
     UiComponentFocusRequest request;
     request.header.id = UI_PROTOCOL_SET_FOCUS;
     request.id        = this->id;
     request.focus     = focus;
-    SendMessageT(UiDelegateTid, &request, sizeof(UiComponentFocusRequest), tx);
+    s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentFocusRequest), tx);
 
     // read response
     size_t  bufferSize = sizeof(MessageHeader) + sizeof(UiComponentFocusResponse);
     uint8_t buffer[bufferSize];
 
-    if ( ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         UiComponentFocusResponse* response = (UiComponentFocusResponse*)MESSAGE_CONTENT(buffer);
         if ( response->status == UI_PROTOCOL_SUCCESS )
             return true;
@@ -204,20 +204,20 @@ bool Component::setNumericProperty(int property, uint32_t value) {
         return false;
 
     // send initialization request
-    MessageTransaction tx = GetMessageTxId();
+    MessageTransaction tx = s_get_message_tx_id();
 
     UiComponentSetNumericPropertyRequest request;
     request.header.id = UI_PROTOCOL_SET_NUMERIC_PROPERTY;
     request.id        = this->id;
     request.property  = property;
     request.value     = value;
-    SendMessageT(UiDelegateTid, &request, sizeof(UiComponentSetNumericPropertyRequest), tx);
+    s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentSetNumericPropertyRequest), tx);
 
     // read response
     size_t bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetNumericPropertyResponse);
     Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
-    if ( ReceiveMessageT(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         UiComponentSetNumericPropertyResponse* response
             = (UiComponentSetNumericPropertyResponse*)MESSAGE_CONTENT(buffer());
 
@@ -236,19 +236,19 @@ bool Component::getNumericProperty(int property, uint32_t* out) {
         return false;
 
     // send initialization request
-    MessageTransaction tx = GetMessageTxId();
+    MessageTransaction tx = s_get_message_tx_id();
 
     UiComponentGetNumericPropertyRequest request;
     request.header.id = UI_PROTOCOL_GET_NUMERIC_PROPERTY;
     request.id        = this->id;
     request.property  = property;
-    SendMessageT(UiDelegateTid, &request, sizeof(UiComponentGetNumericPropertyRequest), tx);
+    s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentGetNumericPropertyRequest), tx);
 
     // read response
     size_t bufferSize = sizeof(MessageHeader) + sizeof(UiComponentGetNumericPropertyResponse);
     Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
-    if ( ReceiveMessageT(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         UiComponentGetNumericPropertyResponse* response
             = (UiComponentGetNumericPropertyResponse*)MESSAGE_CONTENT(buffer());
 
@@ -276,20 +276,20 @@ bool Component::setListener(UiComponentEventType eventType, Listener* newListene
         return false;
 
     // send request
-    MessageTransaction tx = GetMessageTxId();
+    MessageTransaction tx = s_get_message_tx_id();
 
     UiComponentSetListenerRequest request;
     request.header.id    = UI_PROTOCOL_SET_LISTENER;
     request.id           = this->id;
     request.targetThread = UiEventDispatcherTid;
     request.eventType    = eventType;
-    SendMessageT(UiDelegateTid, &request, sizeof(UiComponentSetListenerRequest), tx);
+    s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentSetListenerRequest), tx);
 
     // read response
     size_t  bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetListenerResponse);
     uint8_t buffer[bufferSize];
 
-    if ( ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         UiComponentSetListenerResponse* response
             = (UiComponentSetListenerResponse*)MESSAGE_CONTENT(buffer);
         if ( response->status == UI_PROTOCOL_SUCCESS )

@@ -8,7 +8,7 @@ add_library(Shared
         memory/bitmap/BitmapPageAllocator.cpp
         memory/gdt/gdt.cpp
         ${ASM_SOURCES}
-        memory/memory.cpp
+        memory/Memory.cpp
         multiboot/MultibootUtil.cpp
         runtime/constructors.cpp
         runtime/ItaniumCXXAbiSupport.cpp

@@ -82,12 +82,12 @@ void EventProcessor::process() {
 
         // prepare response
         CommandMessageResponse_t bufResponse;
-        bufResponse.target      = message->sender;
-        bufResponse.transaction = message->transaction;
+        bufResponse.target      = message->m_sender_tid;
+        bufResponse.transaction = message->m_transaction;
         bufResponse.message     = 0;
 
         // process the actual action
-        processCommand(message->sender,
+        processCommand(message->m_sender_tid,
                        (UiMessageHeader*)MESSAGE_CONTENT(requestBuffer),
                        bufResponse);
 
@@ -147,7 +147,8 @@ void EventProcessor::processCommand(Tid                       senderTid,
 
         // register the component
         if ( component != 0 )
-            componentID = ComponentRegistry::instance().add(GetPidForTid(senderTid), component);
+            componentID
+                = ComponentRegistry::instance().add(s_get_pid_for_tid(senderTid), component);
 
         // create response message
         UiCreateComponentResponse* response = new UiCreateComponentResponse();
@@ -722,7 +723,7 @@ void EventProcessor::processMouseState() {
         // Multiclicks
         static uint64_t lastClick    = 0;
         static int      clickCount   = 0;
-        uint64_t        currentClick = Millis();
+        uint64_t        currentClick = s_millis();
         uint64_t        diff         = currentClick - lastClick;
         if ( diff < multiclickTimespan )
             ++clickCount;
@@ -759,9 +760,9 @@ void EventProcessor::processMouseState() {
                         focusEvent.header.type        = UI_COMPONENT_EVENT_TYPE_FOCUS;
                         focusEvent.header.componentID = listenerInfo.componentID;
                         focusEvent.nowFocused         = false;
-                        SendMessage(listenerInfo.targetThread,
-                                    &focusEvent,
-                                    sizeof(UiComponentFocusEvent));
+                        s_send_message(listenerInfo.targetThread,
+                                       &focusEvent,
+                                       sizeof(UiComponentFocusEvent));
                     }
                 }
 
@@ -779,16 +780,15 @@ void EventProcessor::processMouseState() {
 
                 // Post event to client
                 EventListenerInfo_t listenerInfo;
-                if ( Cursor::instance().focusedComponent->getListener(
-                         UI_COMPONENT_EVENT_TYPE_FOCUS,
-                         listenerInfo) ) {
+                if ( Cursor::instance().focusedComponent->getListener(UI_COMPONENT_EVENT_TYPE_FOCUS,
+                                                                      listenerInfo) ) {
                     UiComponentFocusEvent focusEvent;
                     focusEvent.header.type        = UI_COMPONENT_EVENT_TYPE_FOCUS;
                     focusEvent.header.componentID = listenerInfo.componentID;
                     focusEvent.nowFocused         = true;
-                    SendMessage(listenerInfo.targetThread,
-                                &focusEvent,
-                                sizeof(UiComponentFocusEvent));
+                    s_send_message(listenerInfo.targetThread,
+                                   &focusEvent,
+                                   sizeof(UiComponentFocusEvent));
                 }
             }
         }
@@ -821,8 +821,7 @@ void EventProcessor::processMouseState() {
         Component_t* hovered = screen->getComponentAt(Cursor::instance().position);
         if ( (hovered != Cursor::instance().hoveredComponent)
              && (Cursor::instance().draggedComponent != 0
-                 && Cursor::instance().draggedComponent
-                        != Cursor::instance().hoveredComponent) ) {
+                 && Cursor::instance().draggedComponent != Cursor::instance().hoveredComponent) ) {
             // Leave
             if ( Cursor::instance().hoveredComponent ) {
                 MouseEvent_t leaveEvent = baseEvent;
@@ -833,8 +832,8 @@ void EventProcessor::processMouseState() {
 
             // Enter
             else if ( hovered ) {
-                MouseEvent_t enterEvent              = baseEvent;
-                enterEvent.type                      = MOUSE_EVENT_ENTER;
+                MouseEvent_t enterEvent             = baseEvent;
+                enterEvent.type                     = MOUSE_EVENT_ENTER;
                 Cursor::instance().hoveredComponent = hovered;
                 instance->dispatchUpwards(Cursor::instance().hoveredComponent, enterEvent);
             }

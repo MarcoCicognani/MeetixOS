@@ -34,7 +34,7 @@
  */
 [[noreturn]] void RegistrationThread::run() {
     // register this thread
-    if ( !TaskRegisterID("registration") ) {
+    if ( !s_task_register_id("registration") ) {
         Utils::log("failed to register task identifier for registration thread");
     }
 
@@ -43,7 +43,7 @@
     auto buffer       = new uint8_t[bufferLength];
 
     while ( true ) {
-        auto stat = ReceiveMessage(buffer, bufferLength);
+        auto stat = s_receive_message(buffer, bufferLength);
 
         if ( stat == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
             auto requestMessage = reinterpret_cast<MessageHeader*>(buffer);
@@ -53,8 +53,9 @@
             auto communicatorTid = communicator->start();
 
             // create a thread that cleans up the ui when the client thread exits
-            auto cleanup    = new ApplicationExitCleanupThread(GetPidForTid(requestMessage->sender),
-                                                               communicator);
+            auto cleanup
+                = new ApplicationExitCleanupThread(s_get_pid_for_tid(requestMessage->m_sender_tid),
+                                                   communicator);
             auto cleanerTid = cleanup->start();
 
             // send response
@@ -63,10 +64,10 @@
             response.status                     = UI_PROTOCOL_SUCCESS;
             response.windowServerDelegateThread = communicatorTid;
             response.windowServerCleanUPThread  = cleanerTid;
-            SendMessageT(requestMessage->sender,
-                         &response,
-                         sizeof(UiInitializeResponse),
-                         requestMessage->transaction);
+            s_send_message_t(requestMessage->m_sender_tid,
+                             &response,
+                             sizeof(UiInitializeResponse),
+                             requestMessage->m_transaction);
         }
     }
 }

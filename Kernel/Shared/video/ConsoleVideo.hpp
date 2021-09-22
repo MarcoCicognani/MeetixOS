@@ -25,7 +25,7 @@
 #ifndef EVA_SHARED_VIDEO_CONSOLEVIDEO
 #define EVA_SHARED_VIDEO_CONSOLEVIDEO
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 #include "system/IOPorts.hpp"
 
 #include <stdarg.h>

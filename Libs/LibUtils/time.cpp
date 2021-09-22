@@ -24,23 +24,23 @@
  */
 bool MXtime::getTime(TimeDriverCall& call) {
     // identify time driver in task list
-    Tid timeID = TaskGetID(TIME_DRIVER_IDENTIFIER);
+    Tid timeID = s_task_get_id(TIME_DRIVER_IDENTIFIER);
     if ( timeID == -1 )
         return false;
 
     // get transaction
-    MessageTransaction transaction = GetMessageTxId();
+    MessageTransaction transaction = s_get_message_tx_id();
 
     // send message to timer server
     TimeDriverHeader request;
     request.command = GET_TIME;
-    SendMessageT(timeID, &request, sizeof(TimeDriverHeader), transaction);
+    s_send_message_t(timeID, &request, sizeof(TimeDriverHeader), transaction);
 
     // receive response
     size_t  buflen = sizeof(MessageHeader) + sizeof(TimeDriverCall);
     uint8_t buf[buflen];
 
-    if ( ReceiveMessageT(buf, buflen, transaction) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(buf, buflen, transaction) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         TimeDriverCall* content = (TimeDriverCall*)MESSAGE_CONTENT(buf);
         call.second             = content->second;
         call.minute             = content->minute;
@@ -59,23 +59,23 @@ bool MXtime::getTime(TimeDriverCall& call) {
  */
 bool MXtime::getUptime(TimeDriverUptime& call) {
     // identify time driver in task list
-    Tid timeID = TaskGetID(TIME_DRIVER_IDENTIFIER);
+    Tid timeID = s_task_get_id(TIME_DRIVER_IDENTIFIER);
     if ( timeID == -1 )
         return false;
 
     // get transaction
-    MessageTransaction transaction = GetMessageTxId();
+    MessageTransaction transaction = s_get_message_tx_id();
 
     // send message to timer server
     TimeDriverHeader request;
     request.command = GET_UPTIME;
-    SendMessageT(timeID, &request, sizeof(TimeDriverHeader), transaction);
+    s_send_message_t(timeID, &request, sizeof(TimeDriverHeader), transaction);
 
     // receive response
     size_t  buflen = sizeof(MessageHeader) + sizeof(TimeDriverUptime);
     uint8_t buf[buflen];
 
-    if ( ReceiveMessageT(buf, buflen, transaction) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(buf, buflen, transaction) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         TimeDriverUptime* content = (TimeDriverUptime*)MESSAGE_CONTENT(buf);
         call.second               = content->second;
 

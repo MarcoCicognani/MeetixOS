@@ -25,8 +25,8 @@
 #ifndef __EVA_SYSTEM_PCI_PCI__
 #define __EVA_SYSTEM_PCI_PCI__
 
-#include <eva/stdint.h>
-#include <eva/utils/llist.hpp>
+#include <Api/StdInt.h>
+#include <Api/utils/llist.hpp>
 
 /**
  * macros

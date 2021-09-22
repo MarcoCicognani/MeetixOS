@@ -19,11 +19,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "errno.h"
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 #include "unistd.h"
 
 /**
- * POSIX wrapper for <Seek>
+ * POSIX wrapper for <s_seek>
  */
 off_t lseek(int fd, off_t offset, int whence) {
     // set the seek mode for eva kernel
@@ -37,7 +37,7 @@ off_t lseek(int fd, off_t offset, int whence) {
 
     // performs the syscall
     FsSeekStatus status;
-    int64_t      result = SeekS(fd, offset, mode, &status);
+    int64_t      result = s_seek_s(fd, offset, mode, &status);
 
     // check status
     if ( status == FS_SEEK_SUCCESSFUL )

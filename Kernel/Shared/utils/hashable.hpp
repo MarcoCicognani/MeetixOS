@@ -25,7 +25,7 @@
 #ifndef EVA_SHARED_UTILS_HASHCODE
 #define EVA_SHARED_UTILS_HASHCODE
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * class to generate hash code from different types

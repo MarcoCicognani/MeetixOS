@@ -31,7 +31,7 @@
 #include <video/ConsoleVideo.hpp>
 
 /**
- * Width of a log entry header
+ * Width of a s_log entry header
  */
 static const uint32_t HEADER_WIDTH = 15;
 

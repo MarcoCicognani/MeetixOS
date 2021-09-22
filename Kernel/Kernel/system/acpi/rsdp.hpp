@@ -25,7 +25,7 @@
 #ifndef SYSTEM_ACPI_RSDP
 #define SYSTEM_ACPI_RSDP
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 // "RSD PTR ", vice-versa (little endian)
 #define RSDPTR_MAGIC 0x2052545020445352
@@ -41,7 +41,7 @@ struct RsdpDescriptor {
     char     oemId[6]; // The specification says: "An OEM-supplied string that identifies the OEM".
     uint8_t  revision; // ACPI revision
     uint32_t rsdtAddress; // 32-bit physical address of the RSDT table
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Root System Description Pointer 2.0
@@ -53,6 +53,6 @@ struct RsdpDescriptor20 {
     uint64_t xsdtAddress;      // 64-bit physical address of the XSDT table
     uint8_t  extendedChecksum; // checksum of the entire table
     uint8_t  reserved[3];      // 3 bytes to be ignored in reading and that must not be written
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

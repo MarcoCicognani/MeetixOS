@@ -1,3 +1,5 @@
+set(CMAKE_CXX_STANDARD 20)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_ARCH_X86_=1")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-address-of-packed-member")

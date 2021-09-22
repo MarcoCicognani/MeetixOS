@@ -78,6 +78,6 @@ public:
         return Point(width + p.width, height + p.height);
     }
 
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

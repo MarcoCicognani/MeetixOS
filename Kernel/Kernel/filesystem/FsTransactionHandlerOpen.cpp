@@ -41,8 +41,12 @@ FsTransactionHandlerStartStatus FsTransactionHandlerOpen::startTransaction(Threa
     }
 
     // start transaction by requesting the delegate
-    FsTransactionID transaction
-        = delegate->requestOpen(thread, node, data()->path, data()->flags, data()->mode, this);
+    FsTransactionID transaction = delegate->requestOpen(thread,
+                                                        node,
+                                                        data()->m_path,
+                                                        data()->m_flags,
+                                                        data()->m_mode,
+                                                        this);
 
     // check status for possible immediate finish
     if ( WaiterFsTransaction::isTransactionWaiting(thread, this, transaction, delegate) ) {
@@ -60,13 +64,13 @@ FsTransactionHandlerFinishStatus FsTransactionHandlerOpen::finishTransaction(Thr
                                                                              FsDelegate* delegate) {
     delegate->finishOpen(thread, this);
 
-    data()->status = status;
+    data()->m_open_status = status;
 
     // when delegate says opening is fine, create the file descriptor
     if ( status == FS_OPEN_SUCCESSFUL )
-        data()->fd = FileSystem::mapFile(thread->process->main->id, node, data()->flags);
+        data()->m_open_fd = FileSystem::mapFile(thread->process->main->id, node, data()->m_flags);
     else
-        data()->fd = -1;
+        data()->m_open_fd = -1;
 
     return FS_TRANSACTION_HANDLING_DONE;
 }

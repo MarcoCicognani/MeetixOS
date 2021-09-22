@@ -41,9 +41,9 @@ static IoApic* first = 0;
  * @param ioapicAddress:				the physical address of the IOApic
  * @param globalSystemInterruptBase:	base interrupt managed by IOApic
  */
-void IoApicManager::create(uint32_t        id,
-                           PhysicalAddress ioapicAddress,
-                           uint32_t        globalSystemInterruptBase) {
+void IoApicManager::create(uint32_t id,
+                           PhysAddr ioapicAddress,
+                           uint32_t globalSystemInterruptBase) {
     first = new IoApic(id, ioapicAddress, globalSystemInterruptBase, first);
 }
 

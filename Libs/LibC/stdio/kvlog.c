@@ -31,6 +31,6 @@ void kvlog(const char* message, va_list l) {
     uint32_t buflen = msglen * 4;
     char*    buf    = (char*)malloc(buflen);
     vsnprintf(buf, buflen, message, l);
-    Log(buf);
+    s_log(buf);
     free(buf);
 }

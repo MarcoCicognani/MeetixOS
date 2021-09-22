@@ -28,7 +28,7 @@
  *
  */
 FILE* freopen(const char* filename, const char* mode, FILE* stream) {
-    AtomicLock(&stream->lock);
+    s_atomic_lock(&stream->lock);
     FILE* res;
     if ( stream->impl_reopen ) {
         res = stream->impl_reopen(filename, mode, stream);

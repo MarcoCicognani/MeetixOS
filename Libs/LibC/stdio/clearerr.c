@@ -26,7 +26,7 @@
  *
  */
 void clearerr(FILE* stream) {
-    AtomicLock(&stream->lock);
+    s_atomic_lock(&stream->lock);
     __clearerr_unlocked(stream);
     stream->lock = 0;
 }

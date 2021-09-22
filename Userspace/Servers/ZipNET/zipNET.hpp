@@ -39,13 +39,13 @@
  */
 class ZipNET {
 public:
-    VideoOutput_t*                   videoOutput;
+    VideoOutput_t*                 videoOutput;
     EventProcessor*                eventProcessor;
-    Screen_t*                        screen;
-    Background_t*                    background;
-    CommandMessageResponderThread*   m_responder_thread;
-    uint8_t                          renderAtom;
-    Graphics                         global;
+    Screen_t*                      screen;
+    Background_t*                  background;
+    CommandMessageResponderThread* m_responder_thread;
+    uint8_t                        renderAtom;
+    Graphics                       global;
 
     /**
      * Sets up the windowing system by configuring a video output, setting up the

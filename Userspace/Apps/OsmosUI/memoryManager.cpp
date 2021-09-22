@@ -30,17 +30,17 @@ void SecondaryThread::MemoryUsageThread(Label* memLabel) {
         stringstream usage;
 
         // call sysinfo
-        EvaSysInfo memUsage;
-        Sysinfo(&memUsage);
+        SystemInfo memUsage;
+        s_system_info(&memUsage);
 
         // fill stringstream with data
-        usage << (memUsage.totRam - memUsage.freeRam) / 1024 << "/" << memUsage.totRam / 1024
-              << "MB";
+        usage << (memUsage.m_memory_total_amount - memUsage.m_memory_free_amount) / 1024 << "/"
+              << memUsage.m_memory_total_amount / 1024 << "MB";
 
         // and display in screen label
         memLabel->setTitle(usage.str());
 
         // wait 50 milliseconds
-        Sleep(50);
+        s_sleep(50);
     }
 }

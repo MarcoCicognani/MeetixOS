@@ -18,9 +18,9 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "Api.h"
 #include "dirent.h"
 #include "errno.h"
-#include "eva.h"
 #include "malloc.h"
 #include "string.h"
 
@@ -29,16 +29,16 @@
  */
 struct dirent* readdir(DIR* dir) {
     FsReadDirectoryStatus stat;
-    FsDirectoryEntry*     entry = ReadDirectoryS(dir->iter, &stat);
+    FsDirectoryEntry*     entry = s_read_directory_s(dir->iter, &stat);
 
     if ( stat == FS_READ_DIRECTORY_SUCCESSFUL ) {
         dirent* ent           = dir->entbuf;
-        ent->d_fileno         = entry->nodeID;
+        ent->d_fileno         = entry->m_node_id;
         dir->entbuf->d_dev    = -1; // TODO
-        dir->entbuf->d_namlen = strlen(entry->name);
+        dir->entbuf->d_namlen = strlen(entry->m_name);
         dir->entbuf->d_reclen = -1; // TODO
         dir->entbuf->d_type   = -1; // TODO
-        strcpy(ent->d_name, entry->name);
+        strcpy(ent->d_name, entry->m_name);
         return ent;
 
     }

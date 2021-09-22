@@ -96,7 +96,7 @@ static void showOnScreen(Notification_t* msg) {
         showPopupAnimation(popup, msg->animation, true);
 
         // wait for provided time
-        Sleep(msg->displayTime * 1000);
+        s_sleep(msg->displayTime * 1000);
 
         // delete popup with animation
         showPopupAnimation(popup, msg->animation, false);
@@ -119,14 +119,14 @@ void SecondaryThread::NotificationThread() {
     // mainloop
     while ( true ) {
         // receive incoming request
-        MessageReceiveStatus stat = ReceiveMessage(buffer, length);
+        MessageReceiveStatus stat = s_receive_message(buffer, length);
 
         // start notification only if there aren't errors
         if ( stat == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
             // read message and begin thread
             popupOnScreen++;
             Notification_t* incoming = (Notification_t*)MESSAGE_CONTENT(buffer);
-            CreateThreadD((void*)showOnScreen, incoming);
+            s_create_thread_d((void*)showOnScreen, incoming);
         }
     }
 }

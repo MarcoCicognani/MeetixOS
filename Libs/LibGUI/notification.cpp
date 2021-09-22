@@ -61,12 +61,12 @@ void Notification::send(const std::string& title,
         return;
 
     // get notifier id
-    Tid notifierTid = TaskGetID(NOTIFICATION_THREAD);
+    Tid notifierTid = s_task_get_id(NOTIFICATION_THREAD);
     if ( notifierTid == -1 )
         return;
 
     // create message
-    MessageTransaction transaction = GetMessageTxId();
+    MessageTransaction transaction = s_get_message_tx_id();
     Notification_t     request;
 
     // copy string into char pointer and truncate if exced in length
@@ -89,5 +89,5 @@ void Notification::send(const std::string& title,
     request.animation   = animation;
 
     // send message
-    SendMessageT(notifierTid, &request, sizeof(Notification_t), transaction);
+    s_send_message_t(notifierTid, &request, sizeof(Notification_t), transaction);
 }

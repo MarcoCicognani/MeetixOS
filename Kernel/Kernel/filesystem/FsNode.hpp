@@ -25,8 +25,8 @@
 #ifndef EVA_FILESYSTEM_FILESYSTEM_NODE
 #define EVA_FILESYSTEM_FILESYSTEM_NODE
 
-#include "eva/fs.h"
-#include "eva/stdint.h"
+#include "Api/FileSystem.h"
+#include "Api/StdInt.h"
 #include "utils/ListEntry.hpp"
 
 class FsDelegate;
@@ -61,7 +61,7 @@ public:
      */
     bool contentsValid;
 
-    FsNode* findChild(char* name);
+    FsNode* findChild(const char* name);
 };
 
 #endif

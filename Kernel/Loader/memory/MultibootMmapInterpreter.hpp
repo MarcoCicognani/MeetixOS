@@ -25,7 +25,7 @@
 #ifndef EVA_KERNEL_MEMORY_BITMAPPHYSICALPAGEALLOCATOR
 #define EVA_KERNEL_MEMORY_BITMAPPHYSICALPAGEALLOCATOR
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <memory/bitmap/bitmap.hpp>
 #include <memory/bitmap/BitmapPageAllocator.hpp>

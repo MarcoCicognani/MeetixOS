@@ -19,11 +19,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "errno.h"
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 #include "unistd.h"
 
 /**
- * POSIX wrapper for <Write>
+ * POSIX wrapper for <s_write>
  */
 int chdir(const char* path) {
     (void)path;

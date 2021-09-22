@@ -258,7 +258,7 @@ bool Component_t::handle(Event_t& event) {
             postedKeyEvent.header.type        = UI_COMPONENT_EVENT_TYPE_KEY;
             postedKeyEvent.header.componentID = info.componentID;
             postedKeyEvent.keyInfo            = keyEvent->info;
-            SendMessage(info.targetThread, &postedKeyEvent, sizeof(UiComponentKeyEvent));
+            s_send_message(info.targetThread, &postedKeyEvent, sizeof(UiComponentKeyEvent));
         }
     }
 
@@ -273,7 +273,7 @@ bool Component_t::handle(Event_t& event) {
             postedEvent.position           = mouseEvent->position;
             postedEvent.type               = mouseEvent->type;
             postedEvent.buttons            = mouseEvent->buttons;
-            SendMessage(info.targetThread, &postedEvent, sizeof(UiComponentMouseEvent));
+            s_send_message(info.targetThread, &postedEvent, sizeof(UiComponentMouseEvent));
         }
     }
 

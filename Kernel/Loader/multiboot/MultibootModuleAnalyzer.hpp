@@ -25,7 +25,7 @@
 #ifndef EVA_LOADER_MULTIBOOT_MULTIBOOTMODULEANALYZER
 #define EVA_LOADER_MULTIBOOT_MULTIBOOTMODULEANALYZER
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <multiboot/multiboot.hpp>
 

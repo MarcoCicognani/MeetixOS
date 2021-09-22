@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <eva.h>
+#include <Api.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,32 +64,39 @@ const char* getNodeTypeSymbol(FsNodeType type) {
  */
 void printNode(FsDirectoryEntry* node, bool all, bool list) {
     // if we haven't permission
-    if ( node->name[0] == '.' && !all )
+    if ( node->m_name[0] == '.' && !all )
         return;
 
     // print on screen
     if ( list ) {
         // check if node is a file
-        if ( node->type == FS_NODE_TYPE_FILE ) {
+        if ( node->m_node_type == FS_NODE_TYPE_FILE ) {
             // open the file
-            File_t   file = OpenF(node->name, O_RDONLY);
-            uint64_t flen = Length(file);
-            println("%-5d %3d %7s %s", node->nodeID, flen, getStrNodeType(node->type), node->name);
+            FileHandle file = s_open_f(node->m_name, O_RDONLY);
+            uint64_t   flen = s_length(file);
+            println("%-5d %3d %7s %s",
+                    node->m_node_id,
+                    flen,
+                    getStrNodeType(node->m_node_type),
+                    node->m_name);
         } else
-            println("%-5d %7s %s", node->nodeID, getStrNodeType(node->type), node->name);
+            println("%-5d %7s %s",
+                    node->m_node_id,
+                    getStrNodeType(node->m_node_type),
+                    node->m_name);
     }
 
     else {
         // check if node is a file
-        if ( node->type == FS_NODE_TYPE_FILE ) {
+        if ( node->m_node_type == FS_NODE_TYPE_FILE ) {
             // open the file
-            File_t   file = OpenF(node->name, O_RDONLY);
-            uint64_t flen = Length(file);
-            println("%3s %10s %d", getNodeTypeSymbol(node->type), node->name, flen);
+            FileHandle file = s_open_f(node->m_name, O_RDONLY);
+            uint64_t   flen = s_length(file);
+            println("%3s %10s %d", getNodeTypeSymbol(node->m_node_type), node->m_name, flen);
         }
 
         else
-            println("%3s %10s", getNodeTypeSymbol(node->type), node->name);
+            println("%3s %10s", getNodeTypeSymbol(node->m_node_type), node->m_name);
     }
 }
 
@@ -155,13 +162,13 @@ int main(int argc, const char* argv[]) {
 
         // from parser copy on buffer the directory to scan
         if ( current )
-            GetWorkingDirectory(scandir);
+            s_get_working_directory(scandir);
         else
             strcpy(scandir, argv[index]);
 
         // open the directory
         FsOpenDirectoryStatus stat;
-        FsDirectoryIterator*  it = OpenDirectoryS(scandir, &stat);
+        FsDirectoryIterator*  it = s_open_directory_s(scandir, &stat);
 
         // check for errors
         if ( stat != FS_OPEN_DIRECTORY_SUCCESSFUL ) {
@@ -173,7 +180,7 @@ int main(int argc, const char* argv[]) {
         while ( true ) {
             // read each node
             FsReadDirectoryStatus stat;
-            FsDirectoryEntry*     node = ReadDirectoryS(it, &stat);
+            FsDirectoryEntry*     node = s_read_directory_s(it, &stat);
 
             // node readed succesful
             if ( stat == FS_READ_DIRECTORY_SUCCESSFUL ) {
@@ -189,7 +196,7 @@ int main(int argc, const char* argv[]) {
         }
 
         // free memory
-        CloseDirectory(it);
+        s_close_directory(it);
     }
 
     else

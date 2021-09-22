@@ -46,21 +46,21 @@ SYSCALL_HANDLER(allocMem) {
     Process* process = currentThread->process;
 
     SyscallAllocMem* data = (SyscallAllocMem*)SYSCALL_DATA(currentThread->cpuState);
-    data->virtualResult   = 0;
+    data->m_region_ptr    = 0;
 
     // Get the number of pages
-    uint32_t pages = PAGE_ALIGN_UP(data->size) / PAGE_SIZE;
+    uint32_t pages = PAGE_ALIGN_UP(data->m_region_size) / PAGE_SIZE;
     if ( pages > 0 ) {
         // Allocate a virtual range, we are physical owner
-        uint8_t        virtualRangeFlags = PROC_VIRTUAL_RANGE_FLAG_PHYSICAL_OWNER;
-        VirtualAddress virtualRangeBase = process->virtualRanges.allocate(pages, virtualRangeFlags);
+        uint8_t  virtualRangeFlags = PROC_VIRTUAL_RANGE_FLAG_PHYSICAL_OWNER;
+        VirtAddr virtualRangeBase  = process->virtualRanges.allocate(pages, virtualRangeFlags);
 
         if ( virtualRangeBase != 0 ) {
             bool mappingSuccessful = true;
 
             // Perform either page-wise mapping
             for ( uint32_t i = 0; i < pages; i++ ) {
-                PhysicalAddress addr = PPallocator::allocate();
+                PhysAddr addr = PPallocator::allocate();
                 if ( !addr ) {
                     mappingSuccessful = false;
                     break;
@@ -75,23 +75,23 @@ SYSCALL_HANDLER(allocMem) {
             // Check if the mapping was successful
             if ( mappingSuccessful ) {
                 // Successful, return the range base
-                data->virtualResult = (void*)virtualRangeBase;
+                data->m_region_ptr = (void*)virtualRangeBase;
 
                 logDebug("%! allocated memory area of size %h at virt %h for process %i",
-                         "syscall",
+                         "do_syscall",
                          pages * PAGE_SIZE,
-                         data->virtualResult,
-                         process->main->id);
+                         data->m_region_ptr,
+                         process->main->m_tid);
             }
 
             else {
                 // Failed to create the area, free everything
                 logWarn("%! went out of memory during shared memory allocation for process %i, "
                         "rollback...",
-                        "syscall",
-                        process->main->id);
+                        "do_syscall",
+                        process->main->m_tid);
                 for ( uint32_t i = 0; i < pages; i++ ) {
-                    PhysicalAddress addr
+                    PhysAddr addr
                         = AddressSpace::virtualToPhysical(virtualRangeBase + i * PAGE_SIZE);
                     if ( addr )
                         PPallocator::free(addr);
@@ -118,30 +118,29 @@ SYSCALL_HANDLER(allocMem) {
  */
 SYSCALL_HANDLER(shareMem) {
     SyscallShareMem* data = (SyscallShareMem*)SYSCALL_DATA(currentThread->cpuState);
-    data->virtualAddress  = 0;
+    data->m_shared_ptr    = 0;
 
     // Get the number of pages
-    uint32_t memory = (uint32_t)data->memory;
-    uint32_t pages  = PAGE_ALIGN_UP(data->size) / PAGE_SIZE;
+    uint32_t memory = (uint32_t)data->m_region_ptr;
+    uint32_t pages  = PAGE_ALIGN_UP(data->m_size_to_share) / PAGE_SIZE;
 
     // Only allow sharing in user memory
     if ( memory < CONST_KERNEL_AREA_START
          && (memory + pages * PAGE_SIZE) <= CONST_KERNEL_AREA_START ) {
         // Get the target process
-        Thread* targetThread = Tasking::getTaskById(data->processID);
+        Thread* targetThread = Tasking::getTaskById(data->m_target_proc_id);
         if ( targetThread ) {
             Process* targetProcess = targetThread->process;
 
             // Get the range in the other process space
-            VirtualAddress virtualRangeBase
+            VirtAddr virtualRangeBase
                 = targetProcess->virtualRanges.allocate(pages, PROC_VIRTUAL_RANGE_FLAG_NONE);
             if ( virtualRangeBase != 0 ) {
                 PageDirectory executingSpace = AddressSpace::getCurrentSpace();
 
                 // Map the pages to the other processes space
                 for ( uint32_t i = 0; i < pages; i++ ) {
-                    PhysicalAddress physicalAddr
-                        = AddressSpace::virtualToPhysical(memory + i * PAGE_SIZE);
+                    PhysAddr physicalAddr = AddressSpace::virtualToPhysical(memory + i * PAGE_SIZE);
 
                     AddressSpace::switchToSpace(targetProcess->pageDirectory);
                     AddressSpace::map(virtualRangeBase + i * PAGE_SIZE,
@@ -152,42 +151,42 @@ SYSCALL_HANDLER(shareMem) {
                 }
 
                 // Done
-                data->virtualAddress = (void*)virtualRangeBase;
+                data->m_shared_ptr = (void*)virtualRangeBase;
 
                 logDebug("%! shared memory area of process %i at %h of size %h with process %i to "
                          "address %h",
-                         "syscall",
-                         currentThread->process->main->id,
+                         "do_syscall",
+                         currentThread->process->main->m_tid,
                          memory,
                          pages * PAGE_SIZE,
-                         targetProcess->main->id,
+                         targetProcess->main->m_tid,
                          virtualRangeBase);
             }
 
             else {
                 logWarn("%! process %i was unable to share memory are %h of size %h with process "
                         "%i because there was no virtual range",
-                        "syscall",
-                        currentThread->process->main->id,
+                        "do_syscall",
+                        currentThread->process->main->m_tid,
                         memory,
                         pages * PAGE_SIZE,
-                        targetProcess->main->id);
+                        targetProcess->main->m_tid);
             }
         }
 
         else {
             logWarn("%! process %i was unable to share memory with the other process because it "
                     "was null",
-                    "syscall",
-                    currentThread->process->main->id);
+                    "do_syscall",
+                    currentThread->process->main->m_tid);
         }
     }
 
     else {
         logWarn(
             "%! process %i was unable to share memory because addresses below %h are not allowed",
-            "syscall",
-            currentThread->process->main->id,
+            "do_syscall",
+            currentThread->process->main->m_tid,
             CONST_KERNEL_AREA_START);
     }
 
@@ -205,15 +204,15 @@ SYSCALL_HANDLER(mapMmio) {
     Process* process = currentThread->process;
 
     SyscallMapMmio* data = (SyscallMapMmio*)SYSCALL_DATA(currentThread->cpuState);
-    data->virtualAddress = 0;
+    data->m_mapped_ptr   = 0;
 
     // Only kernel and drivers may do this
     if ( process->securityLevel <= SECURITY_LEVEL_DRIVER ) {
-        uint32_t pages = PAGE_ALIGN_UP(data->size) / PAGE_SIZE;
+        uint32_t pages = PAGE_ALIGN_UP(data->m_region_size) / PAGE_SIZE;
 
         // Allocate a virtual range (but not be physical owner)
-        VirtualAddress range = process->virtualRanges.allocate(pages, PROC_VIRTUAL_RANGE_FLAG_NONE);
-        uint32_t       physical = (uint32_t)data->physicalAddress;
+        VirtAddr range    = process->virtualRanges.allocate(pages, PROC_VIRTUAL_RANGE_FLAG_NONE);
+        uint32_t physical = (uint32_t)data->m_physical_address;
         if ( pages > 0 && range != 0 ) {
             // Map the pages to the space
             for ( uint32_t i = 0; i < pages; i++ )
@@ -222,7 +221,7 @@ SYSCALL_HANDLER(mapMmio) {
                                   DEFAULT_USER_TABLE_FLAGS,
                                   DEFAULT_USER_PAGE_FLAGS);
 
-            data->virtualAddress = (void*)range;
+            data->m_mapped_ptr = (void*)range;
         }
     }
 
@@ -238,8 +237,8 @@ SYSCALL_HANDLER(mapMmio) {
 SYSCALL_HANDLER(unmap) {
     Process* process = currentThread->process;
 
-    SyscallUnmap*  data = (SyscallUnmap*)SYSCALL_DATA(currentThread->cpuState);
-    VirtualAddress base = data->virtualBase;
+    SyscallUnmap* data = (SyscallUnmap*)SYSCALL_DATA(currentThread->cpuState);
+    VirtAddr      base = data->m_region_ptr;
 
     // Search for the range
     AddressRange* range = process->virtualRanges.getRanges();
@@ -263,16 +262,16 @@ SYSCALL_HANDLER(unmap) {
         // Free the virtual range
         process->virtualRanges.free(range->base);
         logDebug("%! task %i in process %i unmapped range at %h",
-                 "syscall",
-                 process->main->id,
+                 "do_syscall",
+                 process->main->m_tid,
                  currentThread->id,
                  base);
     }
 
     else {
         logWarn("%! task %i in process %i tried to unmap range at %h that was never mapped",
-                "syscall",
-                process->main->id,
+                "do_syscall",
+                process->main->m_tid,
                 currentThread->id,
                 base);
     }
@@ -289,9 +288,9 @@ SYSCALL_HANDLER(sbrk) {
 
     // initialize the heap if necessary
     if ( !process->heapBreak ) {
-        VirtualAddress heapStart = process->imageEnd;
+        VirtAddr heapStart = process->imageEnd;
 
-        PhysicalAddress phys = PPallocator::allocate();
+        PhysAddr phys = PPallocator::allocate();
         AddressSpace::map(heapStart, phys, DEFAULT_USER_TABLE_FLAGS, DEFAULT_USER_PAGE_FLAGS);
         PPreferenceTracker::increment(phys);
 
@@ -299,55 +298,55 @@ SYSCALL_HANDLER(sbrk) {
         process->heapStart = heapStart;
         process->heapPages = 1;
         logDebug("%! process %i initializes his heap at %h",
-                 "syscall",
-                 process->main->id,
+                 "do_syscall",
+                 process->main->m_tid,
                  heapStart);
     }
 
     // calculate new address
-    VirtualAddress brkOld = process->heapBreak;
-    VirtualAddress brkNew = brkOld + data->amount;
+    VirtAddr brkOld = process->heapBreak;
+    VirtAddr brkNew = brkOld + data->m_amount;
 
     // heap expansion is limited
     if ( brkNew >= CONST_USER_MAXIMUM_HEAP_BREAK ) {
         logInfo("%! process %i went out of memory when setting heap break",
-                "syscall",
+                "do_syscall",
                 process->main->id);
-        data->address    = -1;
-        data->successful = false;
+        data->m_out_address = -1;
+        data->m_success     = false;
     }
 
     else {
         // expand if necessary
-        VirtualAddress virtAbove;
+        VirtAddr virtAbove;
         while ( brkNew > (virtAbove = process->heapStart + process->heapPages * PAGE_SIZE) ) {
-            PhysicalAddress phys = PPallocator::allocate();
+            PhysAddr phys = PPallocator::allocate();
             AddressSpace::map(virtAbove, phys, DEFAULT_USER_TABLE_FLAGS, DEFAULT_USER_PAGE_FLAGS);
             PPreferenceTracker::increment(phys);
             ++process->heapPages;
         }
 
         // shrink if possible
-        VirtualAddress virtBelow;
+        VirtAddr virtBelow;
         while ( brkNew
                 < (virtBelow = process->heapStart + process->heapPages * PAGE_SIZE - PAGE_SIZE) ) {
-            PhysicalAddress phys = AddressSpace::virtualToPhysical(virtBelow);
+            PhysAddr phys = AddressSpace::virtualToPhysical(virtBelow);
             AddressSpace::unmap(virtBelow);
             if ( !PPreferenceTracker::decrement(phys) )
                 PPallocator::free(phys);
             --process->heapPages;
         }
 
-        process->heapBreak = brkNew;
-        data->address      = brkOld;
-        data->successful   = true;
+        process->heapBreak  = brkNew;
+        data->m_out_address = brkOld;
+        data->m_success     = true;
     }
 
     logDebug("%! <%i> sbrk(%i): %h -> %h (%h -> %h, %i pages)",
-             "syscall",
-             process->main->id,
-             data->amount,
-             data->address,
+             "do_syscall",
+             process->main->m_proc_id,
+             data->m_amount,
+             data->m_out_address,
              process->heapBreak,
              process->heapStart,
              process->heapStart + process->heapPages * PAGE_SIZE,
@@ -366,12 +365,12 @@ SYSCALL_HANDLER(lowerMalloc) {
 
     // check the security
     if ( process->securityLevel <= SECURITY_LEVEL_DRIVER )
-        data->result = LowerHeap::allocate(data->size);
+        data->m_region_ptr = LowerHeap::allocate(data->m_region_size);
     else {
         logDebug("%! task %i tried to allocate lower memory but does not have permission",
-                 "syscall",
+                 "do_syscall",
                  currentThread->id);
-        data->result = 0;
+        data->m_region_ptr = 0;
     }
 
     return currentThread;
@@ -385,10 +384,10 @@ SYSCALL_HANDLER(lowerFree) {
     SyscallLowerFree* data    = (SyscallLowerFree*)SYSCALL_DATA(currentThread->cpuState);
 
     if ( process->securityLevel <= SECURITY_LEVEL_DRIVER )
-        LowerHeap::free(data->memory);
+        LowerHeap::free(data->m_region_ptr);
     else {
         logDebug("%! task %i tried to free lower memory but does not have permission",
-                 "syscall",
+                 "do_syscall",
                  currentThread->id);
     }
     return currentThread;

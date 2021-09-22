@@ -19,8 +19,8 @@
 #ifndef MEETIX_LIBRARY_UTILS_IPCSTREAM
 #define MEETIX_LIBRARY_UTILS_IPCSTREAM
 
-#include <eva.h>
-#include <eva/utils/llist.hpp>
+#include <Api.h>
+#include <Api/utils/llist.hpp>
 #include <stdint.h>
 #include <string.h>
 #include <string>
@@ -64,7 +64,7 @@ public:
          */
         T*       bufptr; // the pointer to the buffer
         uint32_t size;   // the size of the buffer
-    } __attribute__((packed));
+    } A_PACKED;
 
     /**
      * ipc stream type
@@ -331,8 +331,8 @@ private:
      * pipe descriptors
      * opened when stream is in PIPE mode
      */
-    File_t inPipe;  // pipe where stream write
-    File_t outPipe; // pipe where stream read
+    FileHandle inPipe;  // pipe where stream write
+    FileHandle outPipe; // pipe where stream read
 
     /**
      * instantiate the cache object
@@ -401,7 +401,7 @@ private:
      * check if the receiver is alive
      */
     inline bool checkReceiverAliveState() {
-        return (GetPidForTid(receiver) != -1 ? true : false);
+        return (s_get_pid_for_tid(receiver) != -1 ? true : false);
     }
 
     /**

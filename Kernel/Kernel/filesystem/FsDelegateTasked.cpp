@@ -24,7 +24,7 @@
 
 #include "filesystem/FsDelegateTasked.hpp"
 
-#include "eva/utils/local.hpp"
+#include "Api/utils/local.hpp"
 #include "EvangelionNG.hpp"
 #include "filesystem/filesystem.hpp"
 #include "logger/logger.hpp"
@@ -43,8 +43,8 @@ FsDelegateTasked::FsDelegateTasked(Thread* delegateThread)
 /**
  *
  */
-bool FsDelegateTasked::prepare(VirtualAddress* outTransactionStorage) {
-    VirtualAddress transactionStorageAddress
+bool FsDelegateTasked::prepare(VirtAddr* outTransactionStorage) {
+    VirtAddr transactionStorageAddress
         = delegateThread->process->virtualRanges.allocate(1,
                                                           PROC_VIRTUAL_RANGE_FLAG_PHYSICAL_OWNER);
     if ( transactionStorageAddress == 0 ) {
@@ -194,10 +194,10 @@ FsTransactionID FsDelegateTasked::requestRead(Thread*                   requeste
      */
     AddressSpace::switchToSpace(requester->process->pageDirectory);
 
-    int                    requiredPages = PAGE_ALIGN_UP(length) / PAGE_SIZE + 1;
-    Local<PhysicalAddress> physPages(new PhysicalAddress[requiredPages]);
-    VirtualAddress         virtStart         = PAGE_ALIGN_DOWN((VirtualAddress)buffer());
-    uint32_t               offsetInFirstPage = ((VirtualAddress)buffer()) & PAGE_ALIGN_MASK;
+    int             requiredPages = PAGE_ALIGN_UP(length) / PAGE_SIZE + 1;
+    Local<PhysAddr> physPages(new PhysAddr[requiredPages]);
+    VirtAddr        virtStart         = PAGE_ALIGN_DOWN((VirtAddr)buffer());
+    uint32_t        offsetInFirstPage = ((VirtAddr)buffer()) & PAGE_ALIGN_MASK;
 
     for ( int i = 0; i < requiredPages; i++ )
         physPages()[i] = AddressSpace::virtualToPhysical(virtStart + i * PAGE_SIZE);
@@ -215,7 +215,7 @@ FsTransactionID FsDelegateTasked::requestRead(Thread*                   requeste
     disc->length   = length;
     disc->physFsID = node->physFsID;
 
-    VirtualAddress mappedVirt = delegateThread->process->virtualRanges.allocate(requiredPages);
+    VirtAddr mappedVirt = delegateThread->process->virtualRanges.allocate(requiredPages);
     for ( int i = 0; i < requiredPages; i++ )
         AddressSpace::map(mappedVirt + i * PAGE_SIZE,
                           physPages()[i],
@@ -296,7 +296,7 @@ void FsDelegateTasked::finishRead(Thread*                requester,
 FsTransactionID FsDelegateTasked::requestWrite(Thread*                    requester,
                                                FsNode*                    node,
                                                int64_t                    length,
-                                               Contextual<uint8_t*>       buffer,
+                                               Contextual<const uint8_t*> buffer,
                                                FileDescriptorContent*     fd,
                                                FsTransactionHandlerWrite* handler) {
     // start/repeat transaction
@@ -315,10 +315,10 @@ FsTransactionID FsDelegateTasked::requestWrite(Thread*                    reques
      */
     AddressSpace::switchToSpace(requester->process->pageDirectory);
 
-    int                    requiredPages = PAGE_ALIGN_UP(length) / PAGE_SIZE + 1;
-    Local<PhysicalAddress> physPages(new PhysicalAddress[requiredPages]);
-    VirtualAddress         virtStart         = PAGE_ALIGN_DOWN((VirtualAddress)buffer());
-    uint32_t               offsetInFirstPage = ((VirtualAddress)buffer()) & PAGE_ALIGN_MASK;
+    int             requiredPages = PAGE_ALIGN_UP(length) / PAGE_SIZE + 1;
+    Local<PhysAddr> physPages(new PhysAddr[requiredPages]);
+    VirtAddr        virtStart         = PAGE_ALIGN_DOWN((VirtAddr)buffer());
+    uint32_t        offsetInFirstPage = ((VirtAddr)buffer()) & PAGE_ALIGN_MASK;
 
     for ( int i = 0; i < requiredPages; i++ )
         physPages()[i] = AddressSpace::virtualToPhysical(virtStart + i * PAGE_SIZE);
@@ -336,7 +336,7 @@ FsTransactionID FsDelegateTasked::requestWrite(Thread*                    reques
     disc->length   = length;
     disc->physFsID = node->physFsID;
 
-    VirtualAddress mappedVirt = delegateThread->process->virtualRanges.allocate(requiredPages);
+    VirtAddr mappedVirt = delegateThread->process->virtualRanges.allocate(requiredPages);
     for ( int i = 0; i < requiredPages; i++ )
         AddressSpace::map(mappedVirt + i * PAGE_SIZE,
                           physPages()[i],
@@ -388,8 +388,8 @@ void FsDelegateTasked::finishWrite(Thread*                requester,
 
     FsTaskedDelegateTransactionStorageWrite* storage
         = (FsTaskedDelegateTransactionStorageWrite*)transactionStorage();
-    int64_t      lengthWrite = storage->resultWrite;
-    FsReadStatus status      = storage->resultStatus;
+    auto lengthWrite = storage->resultWrite;
+    auto status      = storage->resultStatus;
 
     for ( int i = 0; i < storage->mappingPages; i++ )
         AddressSpace::unmap(storage->mappingStart + i * PAGE_SIZE);
@@ -463,8 +463,8 @@ void FsDelegateTasked::finishGetLength(Thread* requester, FsTransactionHandlerGe
 
     FsTaskedDelegateTransactionStorageGetLength* storage
         = (FsTaskedDelegateTransactionStorageGetLength*)transactionStorage();
-    int64_t      length = storage->resultLength;
-    FsReadStatus status = storage->resultStatus;
+    auto length = storage->resultLength;
+    auto status = storage->resultStatus;
 
     // Now switch to the requesters space and copy data there
     AddressSpace::switchToSpace(requester->process->pageDirectory);
@@ -554,7 +554,7 @@ void FsDelegateTasked::finishDirectoryRefresh(Thread*                           
  */
 FsTransactionID FsDelegateTasked::requestOpen(Thread*                   requester,
                                               FsNode*                   node,
-                                              char*                     filename,
+                                              const char*               filename,
                                               int32_t                   flags,
                                               int32_t                   mode,
                                               FsTransactionHandlerOpen* handler) {
@@ -687,7 +687,7 @@ void FsDelegateTasked::finishClose(Thread* requester, FsTransactionHandlerClose*
 
     FsTaskedDelegateTransactionStorageClose* storage
         = (FsTaskedDelegateTransactionStorageClose*)transactionStorage();
-    FsDirectoryRefreshStatus status = storage->resultStatus;
+    auto status = storage->resultStatus;
 
     // copy values to the handler
     AddressSpace::switchToSpace(requester->process->pageDirectory);

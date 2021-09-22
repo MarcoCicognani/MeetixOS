@@ -20,14 +20,14 @@
 
 #include "stdlib.h"
 
-#include <eva.h>
+#include <Api.h>
 
 /**
  *
  */
 void abort() {
     // TODO signal
-    Exit(-1);
+    s_exit(-1);
     for ( ;; )
         ;
 }

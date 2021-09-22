@@ -27,7 +27,7 @@
  *
  */
 int setvbuf(FILE* stream, char* buf, int mode, size_t size) {
-    AtomicLock(&stream->lock);
+    s_atomic_lock(&stream->lock);
     int res      = __setvbuf_unlocked(stream, buf, mode, size);
     stream->lock = 0;
     return res;

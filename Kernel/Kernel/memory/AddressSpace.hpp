@@ -25,8 +25,7 @@
 #ifndef EVA_MEMORY_ADDRESS_SPACE
 #define EVA_MEMORY_ADDRESS_SPACE
 
-#include "eva/stdint.h"
-
+#include <Api/StdInt.h>
 #include <memory/AddressSpace.hpp>
 #include <memory/memory.hpp>
 #include <memory/paging.hpp>
@@ -47,11 +46,11 @@ public:
      * @param allowOverride:		whether an existing entry may be overriden
      * @return true if success, false otherwise
      */
-    static bool map(VirtualAddress  virt,
-                    PhysicalAddress phys,
-                    uint32_t        tableFlags,
-                    uint32_t        pageFlags,
-                    bool            allowOverride = false);
+    static bool map(VirtAddr virt,
+                    PhysAddr phys,
+                    uint32_t tableFlags,
+                    uint32_t pageFlags,
+                    bool     allowOverride = false);
 
     /**
      * Maps a page to a page directory that is temporarily mapped into the current address space.
@@ -63,19 +62,19 @@ public:
      * @param pageFlags:				the flags to add on the page entry
      * @param allowOverride:			whether an existing entry may be overriden
      */
-    static void mapToTemporaryMappedDirectory(PageDirectory   directory,
-                                              VirtualAddress  virtualAddress,
-                                              PhysicalAddress physicalAddress,
-                                              uint32_t        tableFlags,
-                                              uint32_t        pageFlags,
-                                              bool            allowOverride = false);
+    static void mapToTemporaryMappedDirectory(PageDirectory directory,
+                                              VirtAddr      virtualAddress,
+                                              PhysAddr      physicalAddress,
+                                              uint32_t      tableFlags,
+                                              uint32_t      pageFlags,
+                                              bool          allowOverride = false);
 
     /**
      * Unmaps the given virtual page in the current address space.
      *
      * @param virt:		the virtual address to unmap
      */
-    static void unmap(VirtualAddress virt);
+    static void unmap(VirtAddr virt);
 
     /**
      * Switches to the given page directory.
@@ -98,7 +97,7 @@ public:
      * @param addr:		the address to resolve
      * @return the physical address
      */
-    static PhysicalAddress virtualToPhysical(VirtualAddress addr);
+    static PhysAddr virtualToPhysical(VirtAddr addr);
 };
 
 #endif

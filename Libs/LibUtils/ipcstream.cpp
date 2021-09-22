@@ -128,8 +128,8 @@ void IPCStream::close(bool flsh) {
     // only pipes need specific finalization
     if ( type == Type::PIPE ) {
         // close the pipes
-        Close(inPipe);
-        Close(outPipe);
+        s_close(inPipe);
+        s_close(outPipe);
 
         // reset descriptors
         inPipe  = FD_NONE;
@@ -226,7 +226,7 @@ bool IPCStream::send(const char* message) {
         if ( !buffered ) {
             // write on pipe now
             FsWriteStatus stat;
-            uint32_t      writed = WriteS(inPipe, message, msglen, &stat);
+            uint32_t      writed = s_write_s(inPipe, message, msglen, &stat);
 
             // check write status
             if ( stat != FS_WRITE_SUCCESSFUL || writed < msglen )
@@ -257,7 +257,7 @@ bool IPCStream::receive(char* buffer) {
     FsReadStatus status;
 
     // read from output stream
-    uint32_t length = ReadS(outPipe, tmpBuf, nodeLength, &status);
+    uint32_t length = s_read_s(outPipe, tmpBuf, nodeLength, &status);
     if ( status == FS_READ_SUCCESSFUL ) {
         // copy local buffer on out buffer
         memcpy(buffer, tmpBuf, length);
@@ -283,10 +283,10 @@ bool IPCStream::send(uint8_t* message, uint32_t size) {
     // if we not working buffered send immediate the message
     if ( !buffered ) {
         // get transaction id
-        MessageTransaction tx = GetMessageTxId();
+        MessageTransaction tx = s_get_message_tx_id();
 
         // send the message
-        if ( SendMessageT(receiver, message, size, tx) == MESSAGE_SEND_STATUS_SUCCESSFUL )
+        if ( s_send_message_t(receiver, message, size, tx) == MESSAGE_SEND_STATUS_SUCCESSFUL )
             return true;
         return false;
     }
@@ -308,11 +308,11 @@ bool IPCStream::receive(uint8_t* buffer) {
 
     // create a local buffer
     uint8_t              tmpBuf[nodeLength];
-    MessageTransaction   tx     = GetMessageTxId();
-    MessageReceiveStatus status = ReceiveMessageT(tmpBuf, nodeLength, tx);
+    MessageTransaction   tx     = s_get_message_tx_id();
+    MessageReceiveStatus status = s_receive_message_t(tmpBuf, nodeLength, tx);
 
     // check receive status
-    if ( status == MESSAGE_SEND_STATUS_SUCCESSFUL ) {
+    if ( status == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         // copy local on out buffer
         memcpy(buffer, tmpBuf, nodeLength);
         return true;
@@ -335,7 +335,7 @@ bool IPCStream::send(int32_t signal) {
     // immediate send with non buffered mode
     if ( !buffered ) {
         // send the signal
-        if ( RaiseSignal(receiver, signal) == RAISE_SIGNAL_STATUS_SUCCESSFUL )
+        if ( s_raise_signal(receiver, signal) == RAISE_SIGNAL_STATUS_SUCCESSFUL )
             return true;
         return false;
     }
@@ -357,7 +357,7 @@ void* IPCStream::share(void* pointer, uint32_t size) {
         return nullptr;
 
     // buffering is not avaible for shared memory
-    return ShareMem(pointer, size, receiver);
+    return s_share_mem(pointer, size, receiver);
 }
 
 /*========================================= Private =========================================*/
@@ -463,17 +463,17 @@ bool IPCStream::flushCache() {
 bool IPCStream::openPipes() {
     // open the read pipe
     FsPipeStatus outStat;
-    File_t       inTmpRead;
-    File_t       outTmpRead;
-    PipeS(&inTmpRead, &outTmpRead, &outStat);
+    FileHandle   inTmpRead;
+    FileHandle   outTmpRead;
+    s_pipe_s(&inTmpRead, &outTmpRead, &outStat);
     if ( outStat != FS_PIPE_SUCCESSFUL )
         return false;
 
     // open the write pipe
     FsPipeStatus inStat;
-    File_t       inTmpWrite;
-    File_t       outTmpWrite;
-    PipeS(&inTmpWrite, &outTmpWrite, &inStat);
+    FileHandle   inTmpWrite;
+    FileHandle   outTmpWrite;
+    s_pipe_s(&inTmpWrite, &outTmpWrite, &inStat);
     if ( outStat != FS_PIPE_SUCCESSFUL )
         return false;
 

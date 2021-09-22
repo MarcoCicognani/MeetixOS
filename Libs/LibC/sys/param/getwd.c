@@ -18,7 +18,7 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "eva.h"
+#include "Api.h"
 #include "stdint.h"
 #include "sys/stat.h"
 
@@ -26,6 +26,6 @@
  *
  */
 char* getwd(char* buf) {
-    GetWorkingDirectory(buf);
+    s_get_working_directory(buf);
     return buf;
 }

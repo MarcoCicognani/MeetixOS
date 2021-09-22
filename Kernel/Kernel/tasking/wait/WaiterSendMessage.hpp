@@ -55,14 +55,14 @@ public:
      */
     virtual bool checkWaiting(Thread* task) {
         // send the message
-        data->status = MessageController::sendMessage(data->receiver,
-                                                      task->id,
-                                                      data->buffer,
-                                                      data->length,
-                                                      data->transaction);
+        data->m_send_status = MessageController::sendMessage(data->m_receiver_thread_id,
+                                                             task->id,
+                                                             data->m_in_buffer,
+                                                             data->m_in_buffer_len,
+                                                             data->m_message_transaction);
 
         // check if keep block
-        if ( data->status == MESSAGE_SEND_STATUS_QUEUE_FULL )
+        if ( data->m_send_status == MESSAGE_SEND_STATUS_QUEUE_FULL )
             return true;
 
         return false;

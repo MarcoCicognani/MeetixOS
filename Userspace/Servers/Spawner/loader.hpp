@@ -25,7 +25,7 @@
 #ifndef __LOADER__
 #define __LOADER__
 
-#include <eva.h>
+#include <Api.h>
 #include <string>
 
 // maximum number of pages to allocate & load at once
@@ -47,10 +47,10 @@ enum LoaderStatus
 class Loader {
 protected:
     ProcessCreationIdentifier procIdent;
-    File_t                    file;
+    FileHandle                file;
 
 public:
-    Loader(ProcessCreationIdentifier target, File_t file) : procIdent(target), file(file) {
+    Loader(ProcessCreationIdentifier target, FileHandle file) : procIdent(target), file(file) {
     }
 
     virtual ~Loader() {

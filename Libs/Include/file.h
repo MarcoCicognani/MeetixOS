@@ -20,8 +20,8 @@
 #ifndef __MEETIX_LIBC_FILE__
 #define __MEETIX_LIBC_FILE__
 
-#include <eva/common.h>
-#include <eva/fs.h>
+#include <Api/Common.h>
+#include <Api/FileSystem.h>
 #include <stdint.h>
 #include <sys/types.h>
 
@@ -46,8 +46,8 @@ typedef struct FILE FILE;
  */
 struct FILE {
     // file informations
-    File_t  file_descriptor; // file descriptor provided by the kernel
-    uint8_t lock;            // operation atomic lock
+    FileHandle file_descriptor; // file descriptor provided by the kernel
+    uint8_t    lock;            // operation atomic lock
 
     // file content informations
     uint8_t* buffer;                     // loaded buffer of file content

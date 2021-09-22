@@ -22,7 +22,7 @@
 #include "HeadlessScreen.hpp"
 #include "screen.hpp"
 
-#include <eva.h>
+#include <Api.h>
 #include <fstream>
 #include <io/keyboard.hpp>
 #include <iostream>
@@ -54,7 +54,7 @@ Login::Login() {
 void Login::LoginEntry() {
     Login* acc = new Login();
 
-    TaskRegisterID("Login");
+    s_task_register_id("Login");
     acc->loginLoop();
 }
 
@@ -85,7 +85,7 @@ void Login::lockLogin() {
         else {
             out->write("\n Wrong PassWord", RGB(255, 255, 255));
             out->updateCursor();
-            Sleep(750);
+            s_sleep(750);
         }
     }
 
@@ -120,7 +120,7 @@ void Login::loginLoop() {
         else {
             out->write("\n Wrong UserName or PassWord", RGB(255, 0, 0));
             out->updateCursor();
-            Sleep(750);
+            s_sleep(750);
         }
     }
 

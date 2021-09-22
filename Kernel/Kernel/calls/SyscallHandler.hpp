@@ -108,7 +108,6 @@ private:
      * Process / Threads creations
      */
     static Thread* fork(Thread* state);
-    static Thread* ramdiskSpawn(Thread* state);
     static Thread* createThread(Thread* state);
     static Thread* getThreadEntry(Thread* state);
     static Thread* configureProcess(Thread* state);
@@ -137,20 +136,10 @@ private:
     static Thread* lowerMalloc(Thread* state);
 
     /**
-     * Serial Log
+     * Serial s_log
      */
     static Thread* log(Thread* state);
     static Thread* setVideoLog(Thread* state);
-
-    /**
-     * Direct ramdisk access
-     */
-    static Thread* ramdiskFind(Thread* state);
-    static Thread* ramdiskInfo(Thread* state);
-    static Thread* ramdiskRead(Thread* state);
-    static Thread* ramdiskChildAt(Thread* state);
-    static Thread* ramdiskFindChild(Thread* state);
-    static Thread* ramdiskChildCount(Thread* state);
 
     /**
      * File operations

@@ -25,7 +25,7 @@
 #ifndef EVA_SYSTEM_SMP_REENTRANTGLOBALLOCK
 #define EVA_SYSTEM_SMP_REENTRANTGLOBALLOCK
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * manage a cpu recursive lock

@@ -25,7 +25,7 @@
 #ifndef EVA_INTERRUPTS_IDT_IDT
 #define EVA_INTERRUPTS_IDT_IDT
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <system/interrupts/descriptors/idt.hpp>
 

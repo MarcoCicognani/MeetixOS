@@ -23,15 +23,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
 #include <components/canvas.hpp>
-#include <eva/memory.h>
+#include <Api/Memory.h>
 
-#define ALIGN_UP(value)		(value + value % 20)
+#define ALIGN_UP(value) (value + value % 20)
 
 /**
  *
  */
 Canvas_t::Canvas_t(Tid partnerThread) : partnerThread(partnerThread) {
-    partnerProcess = GetPidForTid(partnerThread);
+    partnerProcess = s_get_pid_for_tid(partnerThread);
 
     currentBuffer.localMapping = nullptr;
     nextBuffer.localMapping    = nullptr;
@@ -108,7 +108,7 @@ void Canvas_t::createNewBuffer(uint16_t requiredPages) {
     // create a new buffer
     nextBuffer.acknowledged = false;
     nextBuffer.pages        = requiredPages;
-    nextBuffer.localMapping = (uint8_t*)AllocMem(requiredPages * PAGE_SIZE);
+    nextBuffer.localMapping = (uint8_t*)s_alloc_mem(requiredPages * PAGE_SIZE);
 
     if ( nextBuffer.localMapping == 0 ) {
         klog("warning: failed to allocate a buffer for a canvas");
@@ -117,11 +117,11 @@ void Canvas_t::createNewBuffer(uint16_t requiredPages) {
 
     // share buffer with target process
     nextBuffer.remoteMapping
-        = (uint8_t*)ShareMem(nextBuffer.localMapping, requiredPages * PAGE_SIZE, partnerProcess);
+        = (uint8_t*)s_share_mem(nextBuffer.localMapping, requiredPages * PAGE_SIZE, partnerProcess);
 
     if ( nextBuffer.remoteMapping == 0 ) {
         klog("warning: failed to share a buffer for a canvas to proc %i", partnerProcess);
-        Unmap(nextBuffer.localMapping);
+        s_unmap_mem(nextBuffer.localMapping);
         return;
     }
 
@@ -149,7 +149,7 @@ void Canvas_t::requestClientToAcknowledgeNewBuffer() {
         event.header.type        = UI_COMPONENT_EVENT_TYPE_CANVAS_WFA;
         event.header.componentID = listenerInfo.componentID;
         event.newBufferAddress   = (Address)nextBuffer.remoteMapping;
-        SendMessage(listenerInfo.targetThread, &event, sizeof(UiComponentCanvasWfaEvent));
+        s_send_message(listenerInfo.targetThread, &event, sizeof(UiComponentCanvasWfaEvent));
     }
 }
 
@@ -159,7 +159,7 @@ void Canvas_t::requestClientToAcknowledgeNewBuffer() {
 void Canvas_t::clientHasAcknowledgedCurrentBuffer() {
     // previous buffer can be deleted
     if ( currentBuffer.localMapping != nullptr ) {
-        Unmap(currentBuffer.localMapping);
+        s_unmap_mem(currentBuffer.localMapping);
         currentBuffer.localMapping = nullptr;
     }
 

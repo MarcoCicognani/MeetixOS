@@ -25,7 +25,7 @@
 #ifndef EVA_INTERRUPTS_IDT_IDTPOINTER
 #define EVA_INTERRUPTS_IDT_IDTPOINTER
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * Structure of the IDT pointer
@@ -33,6 +33,6 @@
 struct IdtPointer {
     uint16_t limit;
     uint32_t base;
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

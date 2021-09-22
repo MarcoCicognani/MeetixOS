@@ -41,7 +41,7 @@ public:
      * @param out:		the object where store the readed bytes
      * @return whether the operation success
      */
-    static bool readString(File_t file, std::string& out);
+    static bool readString(FileHandle file, std::string& out);
 
     /**
      * read a len bytes from the provided file and store the content to the buffer
@@ -51,7 +51,7 @@ public:
      * @param len:		the quantity of bytes to be readed
      * @return whether the operation success
      */
-    static bool readBytes(File_t file, uint8_t* buffer, size_t len);
+    static bool readBytes(FileHandle file, uint8_t* buffer, size_t len);
 
     /**
      * read a len bytes from the provided file and store the content to the buffer
@@ -62,7 +62,7 @@ public:
      * @param len:		the quantity of bytes to be readed
      * @return whether the operation success
      */
-    static bool readBytes(File_t file, size_t offset, uint8_t* buffer, size_t len);
+    static bool readBytes(FileHandle file, size_t offset, uint8_t* buffer, size_t len);
 
     /**
      * try to read a len bytes from the provided file and store the content to the buffer

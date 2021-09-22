@@ -25,7 +25,7 @@
 #ifndef EVA_FILESYSTEM_TRANSACTION_HANDLER_DISCOVERY_SET_CWD
 #define EVA_FILESYSTEM_TRANSACTION_HANDLER_DISCOVERY_SET_CWD
 
-#include "eva/utils/local.hpp"
+#include "Api/utils/local.hpp"
 #include "filesystem/FsDescriptors.hpp"
 #include "filesystem/FsNode.hpp"
 #include "filesystem/FsTransactionHandlerDiscovery.hpp"
@@ -63,7 +63,7 @@ public:
 
                 Thread* target = (unspawnedTarget != nullptr ? unspawnedTarget : task);
                 String::copy(target->process->workingDirectory, nodeRealpath());
-                data()->result = SET_WORKING_DIRECTORY_SUCCESSFUL;
+                data()->m_working_directory_status = SET_WORKING_DIRECTORY_SUCCESSFUL;
                 logDebug("%! cwd of process %i is now '%s'",
                          "filesystem",
                          target->process->main->id,
@@ -71,33 +71,33 @@ public:
             }
 
             else {
-                data()->result = SET_WORKING_DIRECTORY_NOT_A_FOLDER;
+                data()->m_working_directory_status = SET_WORKING_DIRECTORY_NOT_A_FOLDER;
                 logInfo("%! could not set current working directory to '%s', not a folder",
                         "filesystem",
-                        data()->path);
+                        data()->m_path);
             }
 
         }
 
         else if ( status == FS_DISCOVERY_NOT_FOUND ) {
-            data()->result = SET_WORKING_DIRECTORY_NOT_FOUND;
+            data()->m_working_directory_status = SET_WORKING_DIRECTORY_NOT_FOUND;
             logInfo("%! could not set current working directory to '%s', node not found",
                     "filesystem",
-                    data()->path);
+                    data()->m_path);
         }
 
         else if ( status == FS_DISCOVERY_ERROR ) {
-            data()->result = SET_WORKING_DIRECTORY_ERROR;
+            data()->m_working_directory_status = SET_WORKING_DIRECTORY_ERROR;
             logInfo("%! could not set current working directory to '%s', missing delegate on way",
                     "filesystem",
-                    data()->path);
+                    data()->m_path);
         }
 
         else if ( status == FS_DISCOVERY_BUSY ) {
-            data()->result = SET_WORKING_DIRECTORY_ERROR;
+            data()->m_working_directory_status = SET_WORKING_DIRECTORY_ERROR;
             logInfo("%! could not set current working directory to '%s', delegate busy",
                     "filesystem",
-                    data()->path);
+                    data()->m_path);
         }
 
         return FS_TRANSACTION_HANDLING_DONE;

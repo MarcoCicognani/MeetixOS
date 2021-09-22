@@ -25,8 +25,8 @@
 #ifndef EVA_KERNEL_TASKIN_THREADMANAGER
 #define EVA_KERNEL_TASKIN_THREADMANAGER
 
-#include "eva/kernel.h"
-#include "eva/stdint.h"
+#include "Api/Kernel.h"
+#include "Api/StdInt.h"
 
 #include <system/ProcessorState.hpp>
 #include <tasking/thread.hpp>
@@ -61,10 +61,10 @@ private:
      * @param outUserStackVirt:		the forked user stack
      * @return the physicalAddress of created directory
      */
-    static PhysicalAddress forkCurrentPageDirectory(Process*        process,
-                                                    Thread*         current,
-                                                    VirtualAddress* outKernelStackVirt,
-                                                    VirtualAddress* outUserStackVirt);
+    static PhysAddr forkCurrentPageDirectory(Process*  process,
+                                             Thread*   current,
+                                             VirtAddr* outKernelStackVirt,
+                                             VirtAddr* outUserStackVirt);
 
     /**
      * Allocates the kernel thread stack for a new thread in the given process.
@@ -73,7 +73,7 @@ private:
      * @param outUserStackVirt:		the created user stack
      * @return if the operation end fine
      */
-    static bool createThreadKernelStack(Process* process, VirtualAddress* outKernelStackVirt);
+    static bool createThreadKernelStack(Process* process, VirtAddr* outKernelStackVirt);
 
     /**
      * Allocates the user thread stack for a new thread in the given process.
@@ -82,17 +82,17 @@ private:
      * @param outUserStackVirt:		the created user stack
      * @return if the operation end fine
      */
-    static bool createThreadUserStack(Process* process, VirtualAddress* outUserStackVirt);
+    static bool createThreadUserStack(Process* process, VirtAddr* outUserStackVirt);
 
     /**
      * Frees and unmap the memories between the provided addresses
      *
      * @param start:		the start address
      * @param end:			the end address
-     * @param ranges:		the pointer to the address range pool of the process, if 0 is provided isn't
-     * used
+     * @param ranges:		the pointer to the address range pool of the process, if 0 is
+     * provided isn't used
      */
-    static void freeAndUnmap(VirtualAddress start, VirtualAddress end, AddressRangePool* ranges);
+    static void freeAndUnmap(VirtAddr start, VirtAddr end, AddressRangePool* ranges);
 
     /**
      * show all properties of provided task (used in debug cases)
@@ -119,7 +119,7 @@ public:
      * @param out:			the returned informations
      * @return the created main thread of the process
      */
-    static Thread* createProcessVm86(uint8_t interrupt, Vm86Registers& in, Vm86Registers* out);
+    static Thread* createProcessVm86(uint8_t interrupt, VM86Registers& in, VM86Registers* out);
 
     /**
      * create a new subthread of the provided process

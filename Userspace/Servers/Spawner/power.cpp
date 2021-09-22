@@ -18,7 +18,7 @@
 
 #include "Power.hpp"
 
-#include <eva/utils/local.hpp>
+#include <Api/utils/local.hpp>
 #include <signal.h>
 #include <stdio.h>
 #include <tasking/tasking.hpp>
@@ -39,9 +39,9 @@ void processHaltMachine(int command) {
     std::sort(process.begin(), process.end(), compare);
 
     // send SIGINT signal to all process
-    for (auto& proc_id : process) {
+    for ( auto& proc_id : process ) {
         klog("sending SIGINT to thread %i", proc_id);
-        RaiseSignal(proc_id, SIGINT);
+        s_raise_signal(proc_id, SIGINT);
     }
 
     // shutdown or reboot system

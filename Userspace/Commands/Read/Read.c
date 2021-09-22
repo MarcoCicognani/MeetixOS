@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <eva.h>
+#include <Api.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -68,21 +68,21 @@ int main(int argc, const char* argv[]) {
     // if we haven't to show the help
     if ( !showHelp ) {
         // file descriptor opened
-        File_t file = FD_NONE;
+        FileHandle file = FD_NONE;
 
         // open the file
         int i = 0;
-        while ( (i < argc) && (file = OpenF(argv[i++], O_RDONLY)) != -1 )
+        while ( (i < argc) && (file = s_open_f(argv[i++], O_RDONLY)) != -1 )
 
             // check if file is opened, else exit
             if ( file != -1 ) {
                 // allocate buffer with length of file
-                uint32_t length = Length(file);
+                uint32_t length = s_length(file);
                 uint8_t  buffer[length];
 
                 // read the file
                 uint32_t readed = 0;
-                if ( (readed = Read(file, buffer, length)) < length ) {
+                if ( (readed = s_read(file, buffer, length)) < length ) {
                     fprintf(stderr,
                             "Unable to read all the file, readed %d bytes on %d bytes\n",
                             readed,
@@ -97,7 +97,7 @@ int main(int argc, const char* argv[]) {
                     printf("%x", buffer);
 
                 // close
-                Close(file);
+                s_close(file);
             }
 
             else {

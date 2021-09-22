@@ -25,7 +25,7 @@
 #ifndef SCHEDULER_HPP_
 #define SCHEDULER_HPP_
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <system/ProcessorState.hpp>
 #include <system/smp/GlobalRecursiveLock.hpp>

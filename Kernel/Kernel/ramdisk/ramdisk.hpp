@@ -25,8 +25,8 @@
 #ifndef EVA_RAMDISK_RAMDSIK
 #define EVA_RAMDISK_RAMDSIK
 
-#include "eva/ramdisk.h"
-#include "eva/stdint.h"
+#include "Api/Ramdisk.h"
+#include "Api/StdInt.h"
 
 #include <multiboot/multiboot.hpp>
 #include <ramdisk/RamdiskEntry.hpp>
@@ -122,7 +122,7 @@ public:
      * @param filename:		name of the node
      * @return the new RamdiskEntry
      */
-    RamdiskEntry* createChild(RamdiskEntry* parent, char* filename);
+    RamdiskEntry* createChild(RamdiskEntry* parent, const char* filename);
 };
 
 #endif

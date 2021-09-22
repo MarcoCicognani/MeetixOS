@@ -18,8 +18,8 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "Api.h"
 #include "errno.h"
-#include "eva.h"
 #include "fcntl.h"
 
 #include <stdarg.h>
@@ -40,7 +40,7 @@ int open(const char* pathname, int flags, ...) {
     }
 
     // perform opening syscall
-    File_t fd = OpenFS(pathname, flags, &status);
+    FileHandle fd = s_open_fs(pathname, flags, &status);
 
     if ( status == FS_OPEN_SUCCESSFUL )
         return fd;

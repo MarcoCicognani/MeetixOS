@@ -25,7 +25,7 @@
 #ifndef EVA_MEMORY_PAGE_POOL
 #define EVA_MEMORY_PAGE_POOL
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <memory/bitmap/bitmap.hpp>
 #include <memory/bitmap/BitmapPageAllocator.hpp>
@@ -43,21 +43,21 @@ public:
      * @param bitmapStart:		the start address
      * @param bitmapEnd:		the end address
      */
-    static void initializeFromBitmap(PhysicalAddress bitmapStart, PhysicalAddress bitmapEnd);
+    static void initializeFromBitmap(PhysAddr bitmapStart, PhysAddr bitmapEnd);
 
     /**
      * allocate a new physical address and return it
      *
      * @return the new allocated physical address
      */
-    static PhysicalAddress allocate();
+    static PhysAddr allocate();
 
     /**
      * free the provided address
      *
      * @param base:		the physical address to be freed
      */
-    static void free(PhysicalAddress base);
+    static void free(PhysAddr base);
 
     /**
      * get the physical memory size

@@ -38,8 +38,8 @@ void FileDescriptors::initialize() {
  *
  */
 FileDescriptorContent* FileDescriptors::createDescriptor(FileDescriptorTable* table,
-                                                         File_t               overrideFile_t) {
-    File_t descriptor;
+                                                         FileHandle           overrideFile_t) {
+    FileHandle descriptor;
     if ( overrideFile_t == -1 )
         descriptor = table->nextFileDescriptor++;
 
@@ -57,7 +57,7 @@ FileDescriptorContent* FileDescriptors::createDescriptor(FileDescriptorTable* ta
 /**
  *
  */
-File_t FileDescriptors::map(Pid pid, FsVirtID nodeID, File_t fd, int32_t openFlags) {
+FileHandle FileDescriptors::map(Pid pid, FsVirtID nodeID, FileHandle fd, int32_t openFlags) {
     FileDescriptorTable* processTable = getProcessTable(pid);
 
     FileDescriptorContent* desc = createDescriptor(processTable, fd);
@@ -70,7 +70,7 @@ File_t FileDescriptors::map(Pid pid, FsVirtID nodeID, File_t fd, int32_t openFla
 /**
  *
  */
-void FileDescriptors::unmap(Pid pid, File_t fd) {
+void FileDescriptors::unmap(Pid pid, FileHandle fd) {
     FileDescriptorTable* processTable = getProcessTable(pid);
     auto                 entry        = processTable->descriptors.get(fd);
     if ( entry ) {
@@ -118,7 +118,7 @@ FileDescriptorTable* FileDescriptors::getProcessTable(Pid pid) {
 /**
  *
  */
-FileDescriptorContent* FileDescriptors::get(Pid pid, File_t fd) {
+FileDescriptorContent* FileDescriptors::get(Pid pid, FileHandle fd) {
     FileDescriptorTable* processTable = getProcessTable(pid);
     auto                 entry        = processTable->descriptors.get(fd);
 

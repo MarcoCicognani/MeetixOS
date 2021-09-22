@@ -60,7 +60,7 @@ void __open_file_list_remove(FILE* file) {
  *
  */
 void __open_file_list_lock() {
-    AtomicLock(&open_file_list_lockatom);
+    s_atomic_lock(&open_file_list_lockatom);
 }
 
 /**

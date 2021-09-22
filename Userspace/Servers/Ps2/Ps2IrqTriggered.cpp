@@ -24,7 +24,7 @@
 
 #include "Ps2.hpp"
 
-#include <eva.h>
+#include <Api.h>
 #include <utils/utils.hpp>
 
 #if DRIVER_OPERATION_MODE == DRIVER_OPERATION_MODE_IRQ_TRIGGERED
@@ -34,8 +34,8 @@
  */
 void registerOperationMode() {
     Utils::log("registering irq handlers");
-    RegisterIrqHandler(1, irqHandler);
-    RegisterIrqHandler(12, irqHandler);
+    s_register_irq_handler(1, irqHandler);
+    s_register_irq_handler(12, irqHandler);
 }
 
 /**

@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
+#include <Api.h>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <cwctype>
-#include <eva.h>
 #include <utils/utils.hpp>
 
 /**
@@ -49,9 +49,9 @@ std::string Utils::trim(std::string str) {
 }
 
 /**
- * prints a log on current log interface of the system
+ * prints a s_log on current log interface of the system
  *
- * @param message:		the message to print to log
+ * @param message:		the message to print to s_log
  * @param ...:			parameters for formatted message
  */
 void Utils::log(const std::string& message, ...) {
@@ -62,9 +62,9 @@ void Utils::log(const std::string& message, ...) {
 }
 
 /**
- * prints a log on current log interface of the system
+ * prints a log on current s_log interface of the system
  *
- * @param message:		the message to print to log
+ * @param message:		the message to print to s_log
  * @param ...:			parameters for formatted message
  */
 void Utils::log(const char* message, ...) {
@@ -75,9 +75,9 @@ void Utils::log(const char* message, ...) {
 }
 
 /**
- * prints a log on current log interface of the system
+ * prints a log on current s_log interface of the system
  *
- * @param message:		the message to print to log
+ * @param message:		the message to print to s_log
  * @param l:			arguments list
  */
 void Utils::log(const char* message, va_list l) {
@@ -85,8 +85,8 @@ void Utils::log(const char* message, va_list l) {
     uint32_t buflen = msglen * 2;
     char*    buf    = new char[buflen];
     vsnprintf(buf, buflen, message, l);
-    Log(buf);
-    delete buf;
+    s_log(buf);
+    delete[] buf;
 }
 
 /**

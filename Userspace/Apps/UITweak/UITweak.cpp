@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <eva.h>
+#include <Api.h>
 #include <gui/btnlist.hpp>
 #include <gui/geoshape.hpp>
 #include <gui/label.hpp>
@@ -51,18 +51,18 @@ void findBackgroundsPaths() {
     std::string basepath = "/MeetiX/Configs/WM/Backgrounds/";
 
     // open the background directory
-    FsDirectoryIterator* iterator = OpenDirectory(basepath.c_str());
+    FsDirectoryIterator* iterator = s_open_directory(basepath.c_str());
 
     // read all nodes
     while ( true ) {
         // read the node
         FsReadDirectoryStatus stat;
-        FsDirectoryEntry*     node = ReadDirectoryS(iterator, &stat);
+        FsDirectoryEntry*     node = s_read_directory_s(iterator, &stat);
 
         // only on successful read
         if ( stat == FS_READ_DIRECTORY_SUCCESSFUL ) {
             if ( node )
-                backgrounds.push_back(basepath + node->name);
+                backgrounds.push_back(basepath + node->m_name);
         }
 
         // exit at the end of directory
@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
         // run as background thread the image finder
         // (for one or two image is more slower a thread, but if images are so many thread is more
         // faster)
-        CreateThreadN((void*)&findBackgroundsPaths, "backgroundFinder");
+        s_create_thread_n((void*)&findBackgroundsPaths, "backgroundFinder");
 
         // initialize components
         window   = Window::create();
@@ -191,7 +191,7 @@ int main(int argc, char* argv[]) {
 
         // wait for thread finisching
         while ( !finisced )
-            Yield();
+            s_yield();
 
         // images loaded
         pngPanel->setTitle("");
@@ -202,7 +202,7 @@ int main(int argc, char* argv[]) {
         pngPanel->setPNG(*it, Point(0, 0));
 
         // lock in event mode
-        AtomicBlock(&lock);
+        s_atomic_block(&lock);
 
         // on termination delete all interface objects
         delete buttons;

@@ -36,6 +36,6 @@ void BoundsEventComponent_t::fireBoundsChange(Rectangle& bounds) {
         boundsEvent.header.type        = UI_COMPONENT_EVENT_TYPE_BOUNDS;
         boundsEvent.header.componentID = listenerInfo.componentID;
         boundsEvent.bounds             = bounds;
-        SendMessage(listenerInfo.targetThread, &boundsEvent, sizeof(UiComponentBoundsEvent));
+        s_send_message(listenerInfo.targetThread, &boundsEvent, sizeof(UiComponentBoundsEvent));
     }
 }

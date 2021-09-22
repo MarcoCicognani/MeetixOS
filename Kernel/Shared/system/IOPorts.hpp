@@ -25,7 +25,7 @@
 #ifndef __EVA_SHARED_SYSTEM_IOPORTS__
 #define __EVA_SHARED_SYSTEM_IOPORTS__
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * class to manage the low level I/O on the CPU

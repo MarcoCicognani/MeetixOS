@@ -24,7 +24,7 @@
 
 #include <BuildConfig.hpp>
 #include <calls/SyscallHandler.hpp>
-#include <eva/info.h>
+#include <Api/Info.h>
 #include <memory/physical/PPallocator.hpp>
 #include <system/pci/pci.hpp>
 #include <system/system.hpp>
@@ -36,20 +36,20 @@
  * Returns kernel version
  */
 SYSCALL_HANDLER(ename) {
-    EvaName* data = (EvaName*)SYSCALL_DATA(currentThread->cpuState);
+    KernelName* data = (KernelName*)SYSCALL_DATA(currentThread->cpuState);
 
     // copy loader name & version
-    String::copy(data->loaderName, LOADER_NAME);
-    data->LversionMJ = L_VERSION_MAJOR;
-    data->LversionMN = L_VERSION_MINOR;
-    data->LversionPT = L_VERSION_PATCH;
+    String::copy(data->m_loader_name, LOADER_NAME);
+    data->m_loader_major = L_VERSION_MAJOR;
+    data->m_loader_minor = L_VERSION_MINOR;
+    data->m_loader_patch = L_VERSION_PATCH;
 
     // copy kernel name & version
-    String::copy(data->kernelName, KERNEL_NAME);
-    data->versionMJ = VERSION_MAJOR;
-    data->versionMN = VERSION_MINOR;
-    data->versionSB = VERSION_SUB;
-    data->versionPT = VERSION_PATCH;
+    String::copy(data->m_kernel_name, KERNEL_NAME);
+    data->m_kernel_major = VERSION_MAJOR;
+    data->m_kernel_minor = VERSION_MINOR;
+    data->m_kernel_sub   = VERSION_SUB;
+    data->m_kernel_patch = VERSION_PATCH;
 
     return currentThread;
 }
@@ -58,20 +58,20 @@ SYSCALL_HANDLER(ename) {
  * Returns system specifications
  */
 SYSCALL_HANDLER(sysinfo) {
-    EvaSysInfo* data = (EvaSysInfo*)SYSCALL_DATA(currentThread->cpuState);
+    SystemInfo* data = (SystemInfo*)SYSCALL_DATA(currentThread->cpuState);
 
     // get ram size in KB
-    data->totRam  = (PPallocator::getInitialAmount() * PAGE_SIZE / 1024);
-    data->freeRam = (PPallocator::getFreePageCount() * PAGE_SIZE / 1024);
+    data->m_memory_total_amount = (PPallocator::getInitialAmount() * PAGE_SIZE / 1024);
+    data->m_memory_free_amount  = (PPallocator::getFreePageCount() * PAGE_SIZE / 1024);
 
     // get number of cpu cores
-    data->numberOfCore = System::getNumberOfProcessors();
+    data->m_cpu_count = System::getNumberOfProcessors();
 
     // get the cpu vendor name
     char vendor[13];
     Processor::getVendor(vendor);
     vendor[12] = '\0';
-    String::copy(data->cpuVendor, vendor);
+    String::copy(data->m_cpu_vendor, vendor);
 
     return currentThread;
 }
@@ -82,7 +82,7 @@ SYSCALL_HANDLER(sysinfo) {
 SYSCALL_HANDLER(getPciDeviceCount) {
     SyscallGetPciDeviceCount* data
         = (SyscallGetPciDeviceCount*)SYSCALL_DATA(currentThread->cpuState);
-    data->count = Pci::getDeviceCount();
+    data->m_count = Pci::getDeviceCount();
     return currentThread;
 }
 
@@ -91,23 +91,23 @@ SYSCALL_HANDLER(getPciDeviceCount) {
  */
 SYSCALL_HANDLER(getPciDevice) {
     PciDeviceHeader* data      = (PciDeviceHeader*)SYSCALL_DATA(currentThread->cpuState);
-    PciHeader*       pciHeader = Pci::getDeviceAt(data->position);
-    data->found                = false;
+    PciHeader*       pciHeader = Pci::getDeviceAt(data->m_list_pos);
+    data->m_is_valid           = false;
 
     // only if header is avaible
     if ( pciHeader ) {
-        data->found = true;
+        data->m_is_valid = true;
 
-        data->bus      = pciHeader->bus;
-        data->slot     = pciHeader->slot;
-        data->function = pciHeader->function;
+        data->m_dev_bus      = pciHeader->bus;
+        data->m_dev_slot     = pciHeader->slot;
+        data->m_dev_function = pciHeader->function;
 
-        data->vendorId = pciHeader->vendorId;
-        data->deviceId = pciHeader->deviceId;
+        data->m_vendor_id = pciHeader->vendorId;
+        data->m_device_id = pciHeader->deviceId;
 
-        data->classCode    = pciHeader->classCode;
-        data->subclassCode = pciHeader->subclassCode;
-        data->progIf       = pciHeader->progIf;
+        data->m_class_code    = pciHeader->classCode;
+        data->m_subclass_code = pciHeader->subclassCode;
+        data->m_program       = pciHeader->progIf;
     }
 
     return currentThread;
@@ -118,7 +118,7 @@ SYSCALL_HANDLER(getPciDevice) {
  */
 SYSCALL_HANDLER(getThreadCount) {
     SyscallGetThreadCount* data = (SyscallGetThreadCount*)SYSCALL_DATA(currentThread->cpuState);
-    data->count                 = Tasking::count(data->type);
+    data->m_count               = Tasking::count(data->m_thread_type);
     return currentThread;
 }
 
@@ -127,7 +127,8 @@ SYSCALL_HANDLER(getThreadCount) {
  */
 SYSCALL_HANDLER(getThreadIDs) {
     SyscallGetThreadIDs* data = (SyscallGetThreadIDs*)SYSCALL_DATA(currentThread->cpuState);
-    data->filledIds           = Tasking::getTaskIDs(data->idBuffer, data->idBufferSize, data->type);
+    data->m_stored_ids_count
+        = Tasking::getTaskIDs(data->m_id_buffer, data->m_id_buffer_len, data->m_thread_type);
     return currentThread;
 }
 
@@ -136,34 +137,34 @@ SYSCALL_HANDLER(getThreadIDs) {
  */
 SYSCALL_HANDLER(getThreadDescriptor) {
     ThreadDescriptor* data   = (ThreadDescriptor*)SYSCALL_DATA(currentThread->cpuState);
-    Thread*           thread = Tasking::getTaskById(data->id);
+    Thread*           thread = Tasking::getTaskById(data->m_tid);
 
     // check validity
     if ( thread ) {
         // set the parent process
         data->found = true;
         if ( thread->process->main )
-            data->parent = thread->process->main->id;
+            data->m_parent = thread->process->main->id;
         else
-            data->parent = -1;
+            data->m_parent = -1;
 
         // set the type
-        data->type = thread->type;
+        data->m_thread_type = thread->type;
 
         // provide the stack size
-        data->threadUserStackSize = ThreadManager::getThreadStackSize(thread);
+        data->m_thread_user_stack_size = ThreadManager::getThreadStackSize(thread);
 
         // copy identifier
         const char* threadName = thread->getIdentifier();
         if ( threadName )
-            String::copy(data->identifier, threadName);
+            String::copy(data->m_identifier, threadName);
         else
-            data->identifier[0] = '\0';
+            data->m_identifier[0] = '\0';
 
         // provide infos about rounds wait and scheduled times
-        data->waitCount      = thread->waitCount;
-        data->executionTime  = thread->rounds * APIC_MILLISECONDS_PER_TICK;
-        data->scheduledTimes = thread->rounds;
+        data->m_wait_count      = thread->waitCount;
+        data->m_execution_time  = thread->rounds * APIC_MILLISECONDS_PER_TICK;
+        data->m_scheduled_times = thread->rounds;
     }
 
     else
@@ -177,7 +178,7 @@ SYSCALL_HANDLER(getThreadDescriptor) {
  */
 SYSCALL_HANDLER(getProcessCount) {
     SyscallGetProcessCount* data = (SyscallGetProcessCount*)SYSCALL_DATA(currentThread->cpuState);
-    data->count                  = Tasking::count(THREAD_TYPE_MAIN | THREAD_TYPE_VM86);
+    data->m_count                = Tasking::count(THREAD_TYPE_MAIN | THREAD_TYPE_VM86);
     return currentThread;
 }
 
@@ -186,8 +187,8 @@ SYSCALL_HANDLER(getProcessCount) {
  */
 SYSCALL_HANDLER(getProcessIDs) {
     SyscallGetProcessIDs* data = (SyscallGetProcessIDs*)SYSCALL_DATA(currentThread->cpuState);
-    data->filledIds            = Tasking::getTaskIDs(data->idBuffer,
-                                                     data->idBufferSize,
+    data->m_stored_ids_count   = Tasking::getTaskIDs(data->m_id_buffer,
+                                                     data->m_id_buffer_len,
                                                      THREAD_TYPE_MAIN | THREAD_TYPE_VM86);
     return currentThread;
 }
@@ -197,46 +198,46 @@ SYSCALL_HANDLER(getProcessIDs) {
  */
 SYSCALL_HANDLER(getProcessDescriptor) {
     ProcessDescriptor* data = (ProcessDescriptor*)SYSCALL_DATA(currentThread->cpuState);
-    Thread*            main = Tasking::getTaskById(data->main.id);
+    Thread*            main = Tasking::getTaskById(data->m_main_thread.m_tid);
 
     // check validity
     if ( main ) {
         // set the parent process
-        data->main.found = true;
+        data->m_main_thread.found = true;
         if ( main->process->parent )
-            data->main.parent = main->process->parent->main->id;
+            data->m_main_thread.m_parent = main->process->parent->main->id;
         else
-            data->main.parent = -1;
+            data->m_main_thread.m_parent = -1;
 
         // set the type
-        data->main.type = main->type;
+        data->m_main_thread.m_thread_type = main->type;
 
         // only for main or vm86 provide process size informations
-        data->heapUsed  = ThreadManager::getProcessHeapSize(main);
-        data->imageSize = ThreadManager::getProcessImageSize(main);
+        data->m_heap_size  = ThreadManager::getProcessHeapSize(main);
+        data->m_image_size = ThreadManager::getProcessImageSize(main);
 
         // copy identifier
         const char* name = main->getIdentifier();
         if ( name )
-            String::copy(data->main.identifier, name);
+            String::copy(data->m_main_thread.m_identifier, name);
         else
-            data->main.identifier[0] = '\0';
+            data->m_main_thread.m_identifier[0] = '\0';
 
         // copy process source
         char* sourcePath = main->process->sourcePath;
         if ( sourcePath )
-            String::copy(data->sourcePath, sourcePath);
+            String::copy(data->m_source_path, sourcePath);
         else
-            data->sourcePath[0] = '\0';
+            data->m_source_path[0] = '\0';
 
         // provide infos about rounds wait and scheduled times
-        data->main.waitCount      = main->waitCount;
-        data->main.executionTime  = main->rounds * APIC_MILLISECONDS_PER_TICK;
-        data->main.scheduledTimes = main->rounds;
+        data->m_main_thread.m_wait_count      = main->waitCount;
+        data->m_main_thread.m_execution_time  = main->rounds * APIC_MILLISECONDS_PER_TICK;
+        data->m_main_thread.m_scheduled_times = main->rounds;
     }
 
     else
-        data->main.found = false;
+        data->m_main_thread.found = false;
 
     return currentThread;
 }

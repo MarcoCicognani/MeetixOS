@@ -18,16 +18,16 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "Api.h"
 #include "dirent.h"
 #include "errno.h"
-#include "eva.h"
 #include "malloc.h"
 
 /**
  *
  */
 int closedir(DIR* dir) {
-    CloseDirectory(dir->iter);
+    s_close_directory(dir->iter);
 
     free(dir->entbuf);
     free(dir);

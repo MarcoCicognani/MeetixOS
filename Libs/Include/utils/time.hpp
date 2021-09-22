@@ -20,7 +20,7 @@
 #ifndef MEETIX_LIBRARY_UTILS_TIME
 #define MEETIX_LIBRARY_UTILS_TIME
 
-#include <eva.h>
+#include <Api.h>
 #include <stdint.h>
 
 /**
@@ -40,7 +40,7 @@ typedef int TimeDriverCommand;
  */
 struct TimeDriverHeader {
     TimeDriverCommand command;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  *
@@ -56,7 +56,7 @@ struct TimeDriverCall {
     uint16_t day;
     uint16_t month;
     uint16_t year;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  *
@@ -67,7 +67,7 @@ struct TimeDriverUptime {
     }
 
     uint16_t second;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * static call for control of MeetiX Time

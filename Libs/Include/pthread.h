@@ -97,7 +97,7 @@ pthread_t* pthread_self(void);
 /**
  * Kills the thread identified by the descriptor <thread> with the signal <sig>
  *
- * @param thread:       the descriptor of the thread to kill
+ * @param thread:       the descriptor of the thread to s_kill
  * @param sig:          the signal which send to the thread
  * @return 0 on success, non zero value on error
  */

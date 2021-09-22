@@ -26,7 +26,7 @@
 #define EVA_SHARED_LOGGER_LOGLEVEL
 
 /**
- * define macros for log level
+ * define macros for s_log level
  */
 #define LOG_LEVEL_NONE  3
 #define LOG_LEVEL_INFO  2

@@ -40,7 +40,7 @@ int fflush(FILE* stream) {
     }
 
     // lock file and perform flush
-    AtomicLock(&stream->lock);
+    s_atomic_lock(&stream->lock);
     int res      = __fflush_unlocked(stream);
     stream->lock = 0;
     return res;

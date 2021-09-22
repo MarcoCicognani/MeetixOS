@@ -25,7 +25,7 @@
 #ifndef SYSTEM_TIMING_PIT
 #define SYSTEM_TIMING_PIT
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * standard frequency

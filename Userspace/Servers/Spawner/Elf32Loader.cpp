@@ -47,7 +47,7 @@ LoaderStatus Elf32Loader::load(uintptr_t* outEntryAddr) {
 /**
  *
  */
-LoaderStatus Elf32Loader::readAndValidateElfHeader(File_t file, Elf32Ehdr* hdrBuf) {
+LoaderStatus Elf32Loader::readAndValidateElfHeader(FileHandle file, Elf32Ehdr* hdrBuf) {
     // read header
     if ( !FileUtils::readBytes(file, 0, (uint8_t*)hdrBuf, sizeof(Elf32Ehdr)) ) {
         klog("unable to read ELF header from file %i", file);
@@ -68,13 +68,13 @@ LoaderStatus Elf32Loader::readAndValidateElfHeader(File_t file, Elf32Ehdr* hdrBu
 /**
  *
  */
-LoaderStatus Elf32Loader::checkForElfBinaryAndReset(File_t file) {
+LoaderStatus Elf32Loader::checkForElfBinaryAndReset(FileHandle file) {
     // read and validate ELF header
     Elf32Ehdr    hdrBuf;
     LoaderStatus stat = readAndValidateElfHeader(file, &hdrBuf);
 
     // reset file
-    Seek(file, 0, FS_SEEK_SET);
+    s_seek(file, 0, FS_SEEK_SET);
 
     return stat;
 }
@@ -139,11 +139,11 @@ LoaderStatus Elf32Loader::loadTlsSegment(Elf32Phdr* phdr) {
 
     else {
         // call kernel to write TLS
-        if ( WriteTlsMasterForProcess(procIdent,
-                                      tlsContent,
-                                      numBytesCopy,
-                                      numBytesZero,
-                                      alignment) )
+        if ( s_write_tls_master_for_process(procIdent,
+                                            tlsContent,
+                                            numBytesCopy,
+                                            numBytesZero,
+                                            alignment) )
             result = LS_SUCCESSFUL;
 
         else {
@@ -175,7 +175,7 @@ LoaderStatus Elf32Loader::loadLoadSegment(Elf32Phdr* phdr) {
             step = MAXIMUM_LOAD_PAGES_AT_ONCE;
 
         uint32_t startVirt = memStart + loadedPages * 0x1000;
-        uint8_t* area      = (uint8_t*)CreatePagesInSpaces(procIdent, startVirt, step);
+        uint8_t* area      = (uint8_t*)s_create_pages_in_spaces(procIdent, startVirt, step);
         if ( area == 0 ) {
             klog("unable to allocate necessary pages for spawning process");
             return LS_MEMORY_ERROR;
@@ -216,7 +216,7 @@ LoaderStatus Elf32Loader::loadLoadSegment(Elf32Phdr* phdr) {
         }
 
         // Unmap area
-        Unmap(area);
+        s_unmap_mem(area);
         loadedPages += step;
         offsetInFile += copyAmount;
     }

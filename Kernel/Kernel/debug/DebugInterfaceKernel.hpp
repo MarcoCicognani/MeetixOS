@@ -26,7 +26,7 @@
 #define __EVA_DEBUG_INTERFACE_KERNEL__
 
 #include "debug/DebugInterface.hpp"
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 #include "filesystem/filesystem.hpp"
 #include "filesystem/FsNode.hpp"
 

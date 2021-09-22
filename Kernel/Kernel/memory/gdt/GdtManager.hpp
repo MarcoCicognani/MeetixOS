@@ -25,7 +25,7 @@
 #ifndef EVA_GDT_INITIALIZER
 #define EVA_GDT_INITIALIZER
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <memory/gdt/gdt.hpp>
 #include <memory/gdt/tss.hpp>
@@ -68,14 +68,14 @@ public:
      *
      * @param esp0:		the address of the esp to set
      */
-    static void setTssEsp0(VirtualAddress esp0);
+    static void setTssEsp0(VirtAddr esp0);
 
     /**
      * set the user thread address from the provided address
      *
      * @param userThreadAddr:		the new user thread address
      */
-    static void setUserThreadAddress(VirtualAddress userThreadAddr);
+    static void setUserThreadAddress(VirtAddr userThreadAddr);
 };
 
 #endif

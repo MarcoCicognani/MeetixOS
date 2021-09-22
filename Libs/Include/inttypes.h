@@ -20,7 +20,7 @@
 #ifndef __MEETIX_LIBC_INTTYPES__
 #define __MEETIX_LIBC_INTTYPES__
 
-#include <eva/common.h>
+#include <Api/Common.h>
 #include <stdint.h> // (N1548-7.8-1)
 
 __BEGIN_C

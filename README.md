@@ -16,7 +16,7 @@ research project for me and my IT culture. The sources are released under the GP
 # Kernel Features
 
 - **Multitasking, Multithreadding** and **Multiprocessor (SMP)**
-- **IPC** with **Pipe, Signal, Messages and Shared Memory**
+- **IPC** with **s_pipe, Signal, Messages and Shared Memory**
 - **VM86** support for bios calls
 - **Micro Kernel** Architecture
 - **Memory Paging**
@@ -74,7 +74,7 @@ The system doesn't have many applications or drivers yet, but something to try t
 
 - **cp**: copy command, to copy files.
 - **cpudet**: get all the processor specifications.
-- **echo**: repeat what is provided by arguments.
+- **echo**: repeat what is provided by m_arguments.
 - **ename**: corresponding of uname of unix's world.
 - **find**: semplified find utility.
 - **fspech**: get the file specifications.
@@ -82,10 +82,10 @@ The system doesn't have many applications or drivers yet, but something to try t
 - **idle**: is not a command properly, this program is started by the kernel at boot on each cpu core to maintain the
   cpu usage at 0%.
 - **js**: the **DukTape** javascript interpreter.
-- **kill**: kill a thread or a process.
+- **s_kill**: s_kill a thread or a m_process_creation_identifier.
 - **ls**: list content of a directory.
 - **mx**: a basic shell.
-- **ntf**: send to the desktop a message popup.
+- **ntf**: send to the desktop a m_message_buffer popup.
 - **pcitool**: list the pci devices.
 - **power**: send to the **Spawner** the shutdown or the reboot command.
 - **ps**: list the running processes.

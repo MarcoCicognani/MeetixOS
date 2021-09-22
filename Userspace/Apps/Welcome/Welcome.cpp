@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <eva.h>
+#include <Api.h>
 #include <gui/actionlistener.hpp>
 #include <gui/button.hpp>
 #include <gui/geoshape.hpp>
@@ -102,7 +102,7 @@ void fillPresentation() {
     rg4[0] = "MeetiX OS is an open source software under GPL3 licence";
     rg4[1] = "At the center of the bar is the window name manager, which displays the names of "
              "running applications";
-    rg4[2] = "Only available if you log on as admin.";
+    rg4[2] = "Only available if you s_log on as admin.";
     rg4[3] = "";
     rg4[4] = "";
 
@@ -174,7 +174,7 @@ static void showPage(int index) {
 
         nextButton->setColor(RGB(200, 0, 0), RGB(0, 0, 0));
         nextButton->setFontSize(20);
-        nextButton->setTitle("Exit");
+        nextButton->setTitle("s_exit");
         nextButton->setFontSize(14);
     }
 
@@ -307,7 +307,7 @@ int main(int argc, char* argv[]) {
         lb5->setFontSize(14);
 
         // wait for events
-        AtomicBlock(&blocker);
+        s_atomic_block(&blocker);
 
         // remove labels
         delete lb1;

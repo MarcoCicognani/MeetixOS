@@ -19,7 +19,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "errno.h"
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 #include "unistd.h"
 
 /**
@@ -28,7 +28,7 @@
 ssize_t read(int fd, void* buf, size_t count) {
     // performs syscall
     FsReadStatus stat;
-    int32_t      len = ReadS(fd, buf, count, &stat);
+    int32_t      len = s_read_s(fd, buf, count, &stat);
 
     // check status
     if ( stat == FS_READ_SUCCESSFUL )

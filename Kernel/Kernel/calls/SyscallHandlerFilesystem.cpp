@@ -23,7 +23,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
 #include "calls/SyscallHandler.hpp"
-#include "eva/utils/local.hpp"
+#include "Api/utils/local.hpp"
 #include "filesystem/filesystem.hpp"
 #include "filesystem/FsTransactionHandlerDiscoveryGetLength.hpp"
 #include "filesystem/FsTransactionHandlerDiscoveryOpen.hpp"
@@ -48,16 +48,16 @@ SYSCALL_HANDLER(getWorkingDirectory) {
     char* cwd = currentThread->process->workingDirectory;
     if ( cwd ) {
         size_t length = String::length(cwd);
-        if ( length + 1 > data->maxlen )
-            data->result = GET_WORKING_DIRECTORY_SIZE_EXCEEDED;
+        if ( length + 1 > data->m_out_buffer_len )
+            data->m_working_directory_status = GET_WORKING_DIRECTORY_SIZE_EXCEEDED;
         else {
-            String::copy(data->buffer, cwd);
-            data->result = GET_WORKING_DIRECTORY_SUCCESSFUL;
+            String::copy(data->m_out_buffer, cwd);
+            data->m_working_directory_status = GET_WORKING_DIRECTORY_SUCCESSFUL;
         }
     }
 
     else
-        data->result = GET_WORKING_DIRECTORY_ERROR;
+        data->m_working_directory_status = GET_WORKING_DIRECTORY_ERROR;
 
     return currentThread;
 }
@@ -70,9 +70,9 @@ SYSCALL_HANDLER(getExecutablePath) {
         = (SyscallFsGetExecutablePath*)SYSCALL_DATA(currentThread->cpuState);
 
     if ( !currentThread->process->sourcePath )
-        data->buffer[0] = 0;
+        data->m_out_buffer[0] = 0;
     else
-        String::copy(data->buffer, currentThread->process->sourcePath);
+        String::copy(data->m_out_buffer, currentThread->process->sourcePath);
 
     return currentThread;
 }
@@ -83,11 +83,11 @@ SYSCALL_HANDLER(getExecutablePath) {
 SYSCALL_HANDLER(fsRegisterAsDelegate) {
     SyscallFsRegisterAsDelegate* data
         = (SyscallFsRegisterAsDelegate*)SYSCALL_DATA(currentThread->cpuState);
-    data->result = FileSystem::createDelegate(currentThread,
-                                              data->name,
-                                              data->physMountpointID,
-                                              &data->mountpointID,
-                                              &data->transactionStorage);
+    data->m_register_as_delegate_status = FileSystem::createDelegate(currentThread,
+                                                                     data->m_mountpoint_name,
+                                                                     data->m_phys_mountpoint_id,
+                                                                     &data->m_vfs_mountpoint_id,
+                                                                     &data->m_transaction_storage);
     return currentThread;
 }
 
@@ -97,7 +97,7 @@ SYSCALL_HANDLER(fsRegisterAsDelegate) {
 SYSCALL_HANDLER(fsSetTransactionStatus) {
     SyscallFsSetTransactionStatus* data
         = (SyscallFsSetTransactionStatus*)SYSCALL_DATA(currentThread->cpuState);
-    FsTransactionStore::setStatus(data->transaction, data->status);
+    FsTransactionStore::setStatus(data->m_transaction_id, data->m_transaction_status);
     return currentThread;
 }
 
@@ -108,33 +108,33 @@ SYSCALL_HANDLER(fsCreateNode) {
     SyscallFsCreateNode* data = (SyscallFsCreateNode*)SYSCALL_DATA(currentThread->cpuState);
 
     // check for parent
-    FsNode* parent = FileSystem::getNodeById(data->parentID);
+    FsNode* parent = FileSystem::getNodeById(data->m_vfs_parent_id);
     if ( !parent ) {
-        data->result = FS_CREATE_NODE_STATUS_FAILED_NO_PARENT;
+        data->m_create_node_status = FS_CREATE_NODE_STATUS_FAILED_NO_PARENT;
         return currentThread;
     }
 
     // check for already existing child
-    FsNode* node = parent->findChild(data->name);
+    FsNode* node = parent->findChild(data->m_node_name);
     if ( node )
-        data->result = FS_CREATE_NODE_STATUS_UPDATED;
+        data->m_create_node_status = FS_CREATE_NODE_STATUS_UPDATED;
     else {
         // create the node
         node       = FileSystem::createNode();
-        node->name = new char[String::length(data->name) + 1];
-        String::copy(node->name, data->name);
+        node->name = new char[String::length(data->m_node_name) + 1];
+        String::copy(node->name, data->m_node_name);
         parent->addChild(node);
         DEBUG_INTERFACE_FILESYSTEM_UPDATE_NODE(node);
 
-        data->result = FS_CREATE_NODE_STATUS_CREATED;
+        data->m_create_node_status = FS_CREATE_NODE_STATUS_CREATED;
     }
 
     // set node info
-    node->type     = data->type;
-    node->physFsID = data->physFsID;
+    node->type     = data->m_node_type;
+    node->physFsID = data->m_phys_fs_id;
 
     // return node id
-    data->createdID = node->id;
+    data->m_vfs_node_id = node->id;
     return currentThread;
 }
 
@@ -147,20 +147,23 @@ SYSCALL_HANDLER(setWorkingDirectory) {
 
     // find the target thread
     Thread* target = nullptr;
-    if ( !data->process )
+    if ( !data->m_process_creation_identifier )
         target = currentThread; // any task can do this for himself
     else if ( currentThread->process->securityLevel <= SECURITY_LEVEL_KERNEL )
-        target = (Thread*)data->process; // only kernel-level tasks can do this for other tasks
+        target = (Thread*)data->m_process_creation_identifier; // only kernel-level tasks can do
+                                                               // this for other tasks
     else {
         logWarn(
             "only kernel level tasks are allowed to set the working directory of another process");
-        data->result = SET_WORKING_DIRECTORY_ERROR;
+        data->m_working_directory_status = SET_WORKING_DIRECTORY_ERROR;
         return currentThread;
     }
 
     // get the absolute path to the new working directory
     Local<char> absolutePath(new char[PATH_MAX]);
-    FileSystem::concatAsAbsolutePath(target->process->workingDirectory, data->path, absolutePath());
+    FileSystem::concatAsAbsolutePath(target->process->workingDirectory,
+                                     data->m_path,
+                                     absolutePath());
 
     // if the executor sets the working directory for another thread (that is not yet attached),
     // we must supply this thread as the "unspawned target" to the transaction handler.
@@ -179,7 +182,7 @@ SYSCALL_HANDLER(setWorkingDirectory) {
         return currentThread;
     else {
         logWarn("starting read transaction failed with status (%i)", startStatus);
-        data->result = SET_WORKING_DIRECTORY_ERROR;
+        data->m_working_directory_status = SET_WORKING_DIRECTORY_ERROR;
         return currentThread;
     }
 }
@@ -193,7 +196,7 @@ SYSCALL_HANDLER(fsOpen) {
     // create an absolute path from the given path
     Local<char> targetPath(new char[PATH_MAX]);
     FileSystem::concatAsAbsolutePath(currentThread->process->workingDirectory,
-                                     data->path,
+                                     data->m_path,
                                      targetPath());
 
     // create the handler that works after the node was discovered
@@ -207,7 +210,7 @@ SYSCALL_HANDLER(fsOpen) {
         return currentThread;
     } else {
         logWarn("starting open transaction failed with status (%i)", startStatus);
-        data->status = FS_OPEN_ERROR;
+        data->m_open_status = FS_OPEN_ERROR;
         return currentThread;
     }
 }
@@ -221,8 +224,11 @@ SYSCALL_HANDLER(fsRead) {
     // find the filesystem node
     FsNode*                node;
     FileDescriptorContent* fd;
-    if ( !FileSystem::nodeForDescriptor(currentThread->process->main->id, data->fd, &node, &fd) ) {
-        data->status = FS_READ_INVALID_FD;
+    if ( !FileSystem::nodeForDescriptor(currentThread->process->main->id,
+                                        data->m_open_fd,
+                                        &node,
+                                        &fd) ) {
+        data->m_read_status = FS_READ_INVALID_FD;
         return currentThread;
     }
 
@@ -238,7 +244,7 @@ SYSCALL_HANDLER(fsRead) {
         return currentThread;
     else {
         logWarn("starting read transaction failed with status (%i)", startStatus);
-        data->status = FS_READ_ERROR;
+        data->m_read_status = FS_READ_ERROR;
         return currentThread;
     }
 }
@@ -252,8 +258,11 @@ SYSCALL_HANDLER(fsWrite) {
     // find the filesystem node
     FsNode*                node;
     FileDescriptorContent* fd;
-    if ( !FileSystem::nodeForDescriptor(currentThread->process->main->id, data->fd, &node, &fd) ) {
-        data->status = FS_WRITE_INVALID_FD;
+    if ( !FileSystem::nodeForDescriptor(currentThread->process->main->id,
+                                        data->m_open_fd,
+                                        &node,
+                                        &fd) ) {
+        data->m_write_status = FS_WRITE_INVALID_FD;
         return currentThread;
     }
 
@@ -269,13 +278,13 @@ SYSCALL_HANDLER(fsWrite) {
         return currentThread;
     else {
         logWarn("%! starting write transaction failed with status (%i)", "filesystem", startStatus);
-        data->status = FS_WRITE_ERROR;
+        data->m_write_status = FS_WRITE_ERROR;
         return currentThread;
     }
 }
 
 /**
- * Close a file
+ * s_close a file
  */
 SYSCALL_HANDLER(fsClose) {
     SyscallFsClose* data = (SyscallFsClose*)SYSCALL_DATA(currentThread->cpuState);
@@ -283,8 +292,11 @@ SYSCALL_HANDLER(fsClose) {
     // find the filesystem node
     FsNode*                node;
     FileDescriptorContent* fd;
-    if ( !FileSystem::nodeForDescriptor(currentThread->process->main->id, data->fd, &node, &fd) ) {
-        data->status = FS_CLOSE_INVALID_FD;
+    if ( !FileSystem::nodeForDescriptor(currentThread->process->main->id,
+                                        data->m_open_fd,
+                                        &node,
+                                        &fd) ) {
+        data->m_close_status = FS_CLOSE_INVALID_FD;
         return currentThread;
     }
 
@@ -299,13 +311,13 @@ SYSCALL_HANDLER(fsClose) {
         return currentThread;
     else {
         logWarn("starting close transaction failed with status (%i)", startStatus);
-        data->status = FS_CLOSE_ERROR;
+        data->m_close_status = FS_CLOSE_ERROR;
         return currentThread;
     }
 }
 
 /**
- * Seek the cursor of a file
+ * s_seek the cursor of a file
  */
 SYSCALL_HANDLER(fsSeek) {
     SyscallFsSeek* data = (SyscallFsSeek*)SYSCALL_DATA(currentThread->cpuState);
@@ -313,8 +325,11 @@ SYSCALL_HANDLER(fsSeek) {
     // find the node
     FsNode*                node;
     FileDescriptorContent* fd;
-    if ( !FileSystem::nodeForDescriptor(currentThread->process->main->id, data->fd, &node, &fd) ) {
-        data->status = FS_SEEK_INVALID_FD;
+    if ( !FileSystem::nodeForDescriptor(currentThread->process->main->id,
+                                        data->m_open_fd,
+                                        &node,
+                                        &fd) ) {
+        data->m_seek_status = FS_SEEK_INVALID_FD;
         return currentThread;
     }
 
@@ -330,7 +345,7 @@ SYSCALL_HANDLER(fsSeek) {
         return currentThread;
     else {
         logWarn("starting get-length transaction for seek failed with status (%i)", startStatus);
-        data->status = FS_SEEK_ERROR;
+        data->m_seek_status = FS_SEEK_ERROR;
         return currentThread;
     }
 }
@@ -341,19 +356,19 @@ SYSCALL_HANDLER(fsSeek) {
 SYSCALL_HANDLER(fsLength) {
     SyscallFsLength* data = (SyscallFsLength*)SYSCALL_DATA(currentThread->cpuState);
 
-    bool byFd = (data->mode & SYSCALL_FS_LENGTH_MODE_BY_MASK) == SYSCALL_FS_LENGTH_BY_FD;
-    bool followSymlinks
-        = (data->mode & SYSCALL_FS_LENGTH_MODE_SYMLINK_MASK) == SYSCALL_FS_LENGTH_FOLLOW_SYMLINKS;
+    bool byFd = (data->m_length_mode & SYSCALL_FS_LENGTH_MODE_BY_MASK) == SYSCALL_FS_LENGTH_BY_FD;
+    bool followSymlinks = (data->m_length_mode & SYSCALL_FS_LENGTH_MODE_SYMLINK_MASK)
+                       == SYSCALL_FS_LENGTH_FOLLOW_SYMLINKS;
 
     if ( byFd ) {
         // find the node
         FsNode*                node;
         FileDescriptorContent* fd;
         if ( !FileSystem::nodeForDescriptor(currentThread->process->main->id,
-                                            data->fd,
+                                            data->m_open_fd,
                                             &node,
                                             &fd) ) {
-            data->status = FS_LENGTH_INVALID_FD;
+            data->m_length_status = FS_LENGTH_INVALID_FD;
             return currentThread;
         }
 
@@ -369,7 +384,7 @@ SYSCALL_HANDLER(fsLength) {
             return currentThread;
         else {
             logWarn("starting get-length transaction failed with status (%i)", startStatus);
-            data->status = FS_LENGTH_ERROR;
+            data->m_length_status = FS_LENGTH_ERROR;
             return currentThread;
         }
     }
@@ -378,7 +393,7 @@ SYSCALL_HANDLER(fsLength) {
         // get absolute path for the requested path, relative to process working directory
         Local<char> absolutePath(new char[PATH_MAX]);
         FileSystem::concatAsAbsolutePath(currentThread->process->workingDirectory,
-                                         data->path,
+                                         data->m_path,
                                          absolutePath());
 
         // create and start handler
@@ -393,7 +408,7 @@ SYSCALL_HANDLER(fsLength) {
             return currentThread;
         else {
             logWarn("starting get-length transaction failed with status (%i)", startStatus);
-            data->status = FS_LENGTH_ERROR;
+            data->m_length_status = FS_LENGTH_ERROR;
             return currentThread;
         }
     }
@@ -409,14 +424,17 @@ SYSCALL_HANDLER(fsTell) {
 
     FsNode*                node;
     FileDescriptorContent* fd;
-    if ( FileSystem::nodeForDescriptor(currentThread->process->main->id, data->fd, &node, &fd) ) {
-        data->status = FS_TELL_SUCCESSFUL;
-        data->result = fd->offset;
+    if ( FileSystem::nodeForDescriptor(currentThread->process->main->id,
+                                       data->m_open_fd,
+                                       &node,
+                                       &fd) ) {
+        data->m_tell_status = FS_TELL_SUCCESSFUL;
+        data->m_result      = fd->offset;
     }
 
     else {
-        data->status = FS_TELL_INVALID_FD;
-        data->result = -1;
+        data->m_tell_status = FS_TELL_INVALID_FD;
+        data->m_result      = -1;
     }
     return currentThread;
 }
@@ -425,12 +443,12 @@ SYSCALL_HANDLER(fsTell) {
  * Clone the file descriptors for a new process
  */
 SYSCALL_HANDLER(fsClonefd) {
-    SyscallFsClonefd* data = (SyscallFsClonefd*)SYSCALL_DATA(currentThread->cpuState);
-    data->result           = FileSystem::clonefd(data->sourceFd,
-                                                 data->sourcePid,
-                                                 data->targetFd,
-                                                 data->targetPid,
-                                                 &data->status);
+    SyscallFsCloneFd* data = (SyscallFsCloneFd*)SYSCALL_DATA(currentThread->cpuState);
+    data->m_cloned_fd      = FileSystem::clonefd(data->m_source_fd,
+                                                 data->m_source_proc_id,
+                                                 data->m_target_fd,
+                                                 data->m_target_proc_id,
+                                                 &data->m_clone_fd_status);
     return currentThread;
 }
 
@@ -439,7 +457,8 @@ SYSCALL_HANDLER(fsClonefd) {
  */
 SYSCALL_HANDLER(fsPipe) {
     SyscallFsPipe* data = (SyscallFsPipe*)SYSCALL_DATA(currentThread->cpuState);
-    data->status        = FileSystem::pipe(currentThread, &data->writeFd, &data->readFd);
+    data->m_pipe_status
+        = FileSystem::pipe(currentThread, &data->m_write_end_fd, &data->m_read_end_fd);
     return currentThread;
 }
 
@@ -452,7 +471,7 @@ SYSCALL_HANDLER(fsOpenDirectory) {
     // get absolute path for the requested path, relative to process working directory
     Local<char> absolutePath(new char[PATH_MAX]);
     FileSystem::concatAsAbsolutePath(currentThread->process->workingDirectory,
-                                     data->path,
+                                     data->m_path,
                                      absolutePath());
 
     // create handler
@@ -474,9 +493,9 @@ SYSCALL_HANDLER(fsReadDirectory) {
     Contextual<SyscallFsReadDirectory*> boundData(data, currentThread->process->pageDirectory);
 
     // find the folder to operate on
-    FsNode* folder = FileSystem::getNodeById(data->iterator->nodeID);
+    FsNode* folder = FileSystem::getNodeById(data->m_directory_iterator->m_node_id);
     if ( !folder ) {
-        data->status = FS_READ_DIRECTORY_ERROR;
+        data->m_read_directory_status = FS_READ_DIRECTORY_ERROR;
         return currentThread;
     }
 
@@ -503,7 +522,7 @@ SYSCALL_HANDLER(fsReadDirectory) {
         return currentThread;
     else {
         logWarn("starting read-directory transaction failed with status (%i)", startStatus);
-        data->status = FS_READ_DIRECTORY_ERROR;
+        data->m_read_directory_status = FS_READ_DIRECTORY_ERROR;
         return currentThread;
     }
 }
@@ -513,7 +532,7 @@ SYSCALL_HANDLER(fsReadDirectory) {
  */
 SYSCALL_HANDLER(fsStat) {
     SyscallFsStat* data = (SyscallFsStat*)SYSCALL_DATA(currentThread->cpuState);
-    data->result        = -1;
+    data->m_result      = -1;
     return currentThread;
 }
 
@@ -522,6 +541,6 @@ SYSCALL_HANDLER(fsStat) {
  */
 SYSCALL_HANDLER(fsFstat) {
     SyscallFsFstat* data = (SyscallFsFstat*)SYSCALL_DATA(currentThread->cpuState);
-    data->result         = -1;
+    data->m_result       = -1;
     return currentThread;
 }

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <eva.h>
+#include <Api.h>
 #include <gui/canvas.hpp>
 #include <gui/canvaswfalistener.hpp>
 #include <gui/uispech.hpp>
@@ -39,18 +39,18 @@ CanvasBufferInfo Canvas::getBuffer() {
     if ( nextBuffer ) {
         // unmap old buffer if available
         if ( currentBuffer )
-            Unmap((void*)currentBuffer);
+            s_unmap_mem((void*)currentBuffer);
 
         // store new one
         currentBuffer = nextBuffer;
 
         // tell server we have acknowledged the changed buffer
-        MessageTransaction tx = GetMessageTxId();
+        MessageTransaction tx = s_get_message_tx_id();
 
         UiComponentCanvasAckBufferRequest request;
         request.header.id = UI_PROTOCOL_CANVAS_ACK_BUFFER_REQUEST;
         request.id        = this->id;
-        SendMessageT(UiDelegateTid, &request, sizeof(UiComponentCanvasAckBufferRequest), tx);
+        s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentCanvasAckBufferRequest), tx);
 
         nextBuffer = 0;
     }
@@ -107,10 +107,10 @@ void Canvas::blit(Rectangle rect) {
     header->blitHeight                 = rect.height;
 
     // send blit message
-    MessageTransaction tx = GetMessageTxId();
+    MessageTransaction tx = s_get_message_tx_id();
 
     UiComponentCanvasBlitRequest request;
     request.header.id = UI_PROTOCOL_CANVAS_BLIT;
     request.id        = this->id;
-    SendMessageT(UiDelegateTid, &request, sizeof(UiComponentCanvasBlitRequest), tx);
+    s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentCanvasBlitRequest), tx);
 }

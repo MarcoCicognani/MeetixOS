@@ -25,7 +25,7 @@
  *
  */
 int feof(FILE* stream) {
-    AtomicLock(&stream->lock);
+    s_atomic_lock(&stream->lock);
     int res;
     if ( stream->impl_eof ) {
         res = stream->impl_eof(stream);

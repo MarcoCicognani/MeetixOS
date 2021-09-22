@@ -35,21 +35,21 @@
  *
  */
 bool loadVbeInfo(VbeInfoBlock* target) {
-    Vm86Registers out;
-    Vm86Registers in;
+    VM86Registers out;
+    VM86Registers in;
 
-    FarPointer vbeInfoBlockFp = LINEAR_TO_FP((uint32_t)target);
+    FarPtr vbeInfoBlockFp = LINEAR_TO_FAR_PTR((uint32_t)target);
 
     in.ax = 0x4F00;
     in.bx = 0;
     in.cx = 0;
     in.dx = 0;
-    in.es = FP_SEG(vbeInfoBlockFp);
-    in.di = FP_OFF(vbeInfoBlockFp);
+    in.es = FAR_PTR_SEGMENT(vbeInfoBlockFp);
+    in.di = FAR_PTR_OFFSET(vbeInfoBlockFp);
     in.ds = 0;
     in.si = 0;
 
-    CallVm86(0x10, &in, &out);
+    s_call_vm_86(0x10, &in, &out);
 
     return (out.ax == 0x4F);
 }
@@ -58,17 +58,17 @@ bool loadVbeInfo(VbeInfoBlock* target) {
  *
  */
 bool loadModeInfo(uint16_t mode, ModeInfoBlock* target) {
-    Vm86Registers out;
-    Vm86Registers regs;
+    VM86Registers out;
+    VM86Registers regs;
 
-    FarPointer modeInfoBlockFp = LINEAR_TO_FP((uint32_t)target);
+    FarPtr modeInfoBlockFp = LINEAR_TO_FAR_PTR((uint32_t)target);
 
     regs.ax = 0x4F01;
     regs.cx = mode;
-    regs.es = FP_SEG(modeInfoBlockFp);
-    regs.di = FP_OFF(modeInfoBlockFp);
+    regs.es = FAR_PTR_SEGMENT(modeInfoBlockFp);
+    regs.di = FAR_PTR_OFFSET(modeInfoBlockFp);
 
-    CallVm86(0x10, &regs, &out);
+    s_call_vm_86(0x10, &regs, &out);
 
     return (out.ax == 0x4F);
 }
@@ -77,8 +77,8 @@ bool loadModeInfo(uint16_t mode, ModeInfoBlock* target) {
  *
  */
 bool setVideoMode(uint32_t mode, bool flatFrameBuffer) {
-    Vm86Registers out;
-    Vm86Registers regs;
+    VM86Registers out;
+    VM86Registers regs;
 
     regs.ax = 0x4F02;
     regs.bx = mode;
@@ -86,7 +86,7 @@ bool setVideoMode(uint32_t mode, bool flatFrameBuffer) {
     if ( flatFrameBuffer )
         regs.bx |= 0x4000;
 
-    CallVm86(0x10, &regs, &out);
+    s_call_vm_86(0x10, &regs, &out);
 
     return (out.ax == 0x4F);
 }
@@ -102,7 +102,7 @@ bool setVideoMode(uint32_t       wantedWidth,
     bool debugOutput = false;
 
     // Get VBE mode info
-    VbeInfoBlock* vbeInfoBlock = (VbeInfoBlock*)LowerMalloc(VBE_INFO_BLOCK_SIZE);
+    VbeInfoBlock* vbeInfoBlock = (VbeInfoBlock*)s_lower_malloc(VBE_INFO_BLOCK_SIZE);
 
     if ( !loadVbeInfo(vbeInfoBlock) )
         Utils::log("could not load VBE info block");
@@ -110,7 +110,7 @@ bool setVideoMode(uint32_t       wantedWidth,
         Utils::log("loaded vbe info, version %i", vbeInfoBlock->version);
 
         // Load modes
-        ModeInfoBlock* modeInfoBlock = (ModeInfoBlock*)LowerMalloc(VBE_MODE_INFO_BLOCK_SIZE);
+        ModeInfoBlock* modeInfoBlock = (ModeInfoBlock*)s_lower_malloc(VBE_MODE_INFO_BLOCK_SIZE);
 
         uint32_t bestMatchingMode        = 0;
         uint32_t bestFoundDepthDiff      = -1;
@@ -119,11 +119,11 @@ bool setVideoMode(uint32_t       wantedWidth,
 
         Utils::log("farptr: %d, seg: %d, off: %d, linear: %d",
                    vbeInfoBlock->videoModeFarPtr,
-                   FP_SEG(vbeInfoBlock->videoModeFarPtr),
-                   FP_OFF(vbeInfoBlock->videoModeFarPtr),
-                   FP_TO_LINEAR(vbeInfoBlock->videoModeFarPtr));
+                   FAR_PTR_SEGMENT(vbeInfoBlock->videoModeFarPtr),
+                   FAR_PTR_OFFSET(vbeInfoBlock->videoModeFarPtr),
+                   FAR_PTR_TO_LINEAR(vbeInfoBlock->videoModeFarPtr));
 
-        uint16_t* modes = (uint16_t*)FP_TO_LINEAR(vbeInfoBlock->videoModeFarPtr);
+        uint16_t* modes = (uint16_t*)FAR_PTR_TO_LINEAR(vbeInfoBlock->videoModeFarPtr);
         for ( uint32_t i = 0;; ++i ) {
             uint16_t mode = modes[i];
 
@@ -197,9 +197,9 @@ bool setVideoMode(uint32_t       wantedWidth,
                 // Reloading successful?
                 if ( couldReloadModeInfo ) {
                     // Create MMIO mapping
-                    void* area
-                        = MapMmio((void*)modeInfoBlock->lfbPhysicalBase,
-                                  modeInfoBlock->linBytesPerScanline * modeInfoBlock->resolutionY);
+                    void* area = s_map_mmio((void*)modeInfoBlock->lfbPhysicalBase,
+                                            modeInfoBlock->linBytesPerScanline
+                                                * modeInfoBlock->resolutionY);
 
                     // Write out
                     result.resolutionX      = modeInfoBlock->resolutionX;
@@ -212,10 +212,10 @@ bool setVideoMode(uint32_t       wantedWidth,
             }
         }
 
-        LowerFree(modeInfoBlock);
+        s_lower_free(modeInfoBlock);
     }
 
-    LowerFree(vbeInfoBlock);
+    s_lower_free(vbeInfoBlock);
 
     return successful;
 }
@@ -224,7 +224,7 @@ bool setVideoMode(uint32_t       wantedWidth,
  *
  */
 int main() {
-    if ( !RegisterAsServer(VBE_DRIVER_IDENTIFIER, SECURITY_LEVEL_DRIVER) ) {
+    if ( !s_register_as_server(VBE_DRIVER_IDENTIFIER, SECURITY_LEVEL_DRIVER) ) {
         klog("video driver: could not register with task identifier: %s", VBE_DRIVER_IDENTIFIER);
         return -1;
     }
@@ -236,13 +236,13 @@ int main() {
 
     while ( true ) {
         // wait for incoming request
-        auto status = ReceiveMessage(buf, buflen);
+        auto status = s_receive_message(buf, buflen);
         if ( status != MESSAGE_RECEIVE_STATUS_SUCCESSFUL )
             continue;
 
         MessageHeader*    header    = (MessageHeader*)buf;
         VbeRequestHeader* vbeheader = (VbeRequestHeader*)MESSAGE_CONTENT(buf);
-        uint32_t          requester = header->sender;
+        uint32_t          requester = header->m_sender_tid;
 
         // handle command
         if ( vbeheader->command == VBE_COMMAND_SET_MODE ) {
@@ -261,7 +261,7 @@ int main() {
             if ( setVideoMode(resX, resY, bpp, result) ) {
                 Utils::log("changed video mode to " + resX + 'x' + resY + 'x' + bpp);
                 uint32_t lfbSize                  = result.bytesPerScanline * result.resolutionY;
-                void*    addressInRequestersSpace = ShareMem(result.lfb, lfbSize, requester);
+                void*    addressInRequestersSpace = s_share_mem(result.lfb, lfbSize, requester);
 
                 response.status        = VBE_SET_MODE_STATUS_SUCCESS;
                 response.modeInfo.lfb  = (uint32_t)addressInRequestersSpace;
@@ -278,16 +278,16 @@ int main() {
             }
 
             // send response
-            SendMessageT(header->sender,
-                         &response,
-                         sizeof(VbeSetModeResponse),
-                         header->transaction);
+            s_send_message_t(header->m_sender_tid,
+                             &response,
+                             sizeof(VbeSetModeResponse),
+                             header->m_transaction);
         }
 
         else {
             std::stringstream ukn;
             ukn << "received unknown command " << vbeheader->command << " from task "
-                << header->sender;
+                << header->m_sender_tid;
             Utils::log(ukn.str());
         }
     }

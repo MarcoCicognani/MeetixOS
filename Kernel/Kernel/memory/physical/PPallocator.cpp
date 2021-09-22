@@ -43,7 +43,7 @@ static BitMapPageAllocator physicalAllocator;
  * @param bitmapStart:		the start address
  * @param bitmapEnd:		the end address
  */
-void PPallocator::initializeFromBitmap(PhysicalAddress bitmapStart, PhysicalAddress bitmapEnd) {
+void PPallocator::initializeFromBitmap(PhysAddr bitmapStart, PhysAddr bitmapEnd) {
     // Check bitmap length
     logDebug("%! checking bitmap", "ppa");
     uint32_t bitmapBytes         = bitmapEnd - bitmapStart;
@@ -79,8 +79,8 @@ void PPallocator::initializeFromBitmap(PhysicalAddress bitmapStart, PhysicalAddr
  *
  * @return the new allocated physical address
  */
-PhysicalAddress PPallocator::allocate() {
-    PhysicalAddress page = physicalAllocator.allocate();
+PhysAddr PPallocator::allocate() {
+    PhysAddr page = physicalAllocator.allocate();
     if ( !page ) {
         logInfo("%! critical: physical page allocator has no pages left", "ppa");
         EvaKernel::panic("%! out of physical memory", "ppa");
@@ -97,7 +97,7 @@ PhysicalAddress PPallocator::allocate() {
  *
  * @param base:		the physical address to be freed
  */
-void PPallocator::free(PhysicalAddress page) {
+void PPallocator::free(PhysAddr page) {
     physicalAllocator.markFree(page);
     ++freePageCount;
 

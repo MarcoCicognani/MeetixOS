@@ -18,8 +18,8 @@
  *Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
+#include <Api.h>
 #include <errno.h>
-#include <eva.h>
 #include <pthread.h>
 #include <stdlib.h>
 
@@ -115,7 +115,7 @@ int pthread_create(pthread_t*            thread,
         threadarguments->arg              = arg;
 
         CreateThreadStatus outStatus;
-        thread->id = CreateThreadDS((void*)thread_routine, threadarguments, &outStatus);
+        thread->id = s_create_thread_ds((void*)thread_routine, threadarguments, &outStatus);
 
         // copy the attribute value
         if ( attr )
@@ -145,7 +145,7 @@ int pthread_join(pthread_t* thread, void** retval) {
     if ( thread->attr != PTHREAD_CREATE_JOINABLE )
         return -1;
 
-    Join(thread->id);
+    s_join(thread->id);
     if ( *retval )
         *retval = thread->ret_val;
 
@@ -158,7 +158,7 @@ int pthread_join(pthread_t* thread, void** retval) {
 pthread_t* pthread_self(void) {
     pthread_t* descriptor = malloc(sizeof(pthread_t));
     if ( descriptor ) {
-        descriptor->id = GetTid();
+        descriptor->id = s_get_tid();
         return descriptor;
     }
 
@@ -168,14 +168,14 @@ pthread_t* pthread_self(void) {
 /**
  * Kills the thread identified by the descriptor <thread> with the signal <sig>
  *
- * @param thread:       the descriptor of the thread to kill
+ * @param thread:       the descriptor of the thread to s_kill
  * @param sig:          the signal which send to the thread
  * @return 0 on success, non zero value on error
  */
 int pthread_kill(pthread_t* thread, int sig) {
     if ( !thread )
         return EINVAL;
-    if ( Kill(thread->id) != KILL_STATUS_SUCCESSFUL )
+    if ( s_kill(thread->id) != KILL_STATUS_SUCCESSFUL )
         return -1;
     return 0;
 }

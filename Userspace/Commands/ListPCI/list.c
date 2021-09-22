@@ -24,7 +24,7 @@
 
 #include "list.h"
 
-#include <eva/info.h>
+#include <Api/Info.h>
 #include <stdio.h>
 
 /**
@@ -151,7 +151,7 @@ PCIClassMapping PCI_CLASSCODE_MAPPINGS[] = {
     { 0x0C, 0x01, 0x00, "Serial Bus Controller", "ACCESS.bus" },
     { 0x0C, 0x02, 0x00, "Serial Bus Controller", "SSA" },
     { 0x0C, 0x03, 0x00, "Serial Bus Controller", "USB (Universal Host Controller Spec.)" },
-    { 0x0C, 0x03, 0x10, "Serial Bus Controller", "USB (Open Host Controller Spec.)" },
+    { 0x0C, 0x03, 0x10, "Serial Bus Controller", "USB (s_open Host Controller Spec.)" },
     { 0x0C,
       0x03,
       0x20,
@@ -196,7 +196,7 @@ PCIClassMapping PCI_CLASSCODE_MAPPINGS[] = {
       0x10,
       0x00,
       "Data Acq./Signal Proc. Controllers",
-      "Communications Sync. + Time and Frequency Test/Measurement" },
+      "Communications Sync. + Time and Frequency s_test/Measurement" },
     { 0x11, 0x20, 0x00, "Data Acq./Signal Proc. Controllers", "Management Card" },
     { 0x11, 0x80, 0x00, "Data Acq./Signal Proc. Controllers", "Other" },
 
@@ -208,7 +208,7 @@ PCIClassMapping PCI_CLASSCODE_MAPPINGS[] = {
  */
 int pciList() {
     // read how many devices there are
-    uint32_t count = GetPciDeviceCount();
+    uint32_t count = s_get_pci_device_count();
     if ( !count ) {
         fprintf(stderr, "failed to query the kernel for the number of PCI devices");
         return 1;
@@ -259,7 +259,7 @@ int pciList() {
 
     for ( uint32_t pos = 0; pos < count; pos++ ) {
         PciDeviceHeader hdr;
-        if ( !GetPciDevice(pos, &hdr) ) {
+        if ( !s_get_pci_device(pos, &hdr) ) {
             fprintf(stderr, "failed to query the kernel for PCI devices %i", pos);
             return 1;
         }
@@ -269,13 +269,13 @@ int pciList() {
         PCIClassMapping* matchingNoProgifEntry = 0;
         for ( int i = 0; i < sizeof(PCI_CLASSCODE_MAPPINGS) / sizeof(PCIClassMapping); i++ ) {
             PCIClassMapping* table = &PCI_CLASSCODE_MAPPINGS[i];
-            if ( table->classCode == hdr.classCode && table->subclassCode == hdr.subclassCode
-                 && table->progIf == hdr.progIf ) {
+            if ( table->classCode == hdr.m_class_code && table->subclassCode == hdr.m_subclass_code
+                 && table->progIf == hdr.m_program ) {
                 matchingEntry = table;
                 break;
 
-            } else if ( table->classCode == hdr.classCode
-                        && table->subclassCode == hdr.subclassCode ) {
+            } else if ( table->classCode == hdr.m_class_code
+                        && table->subclassCode == hdr.m_subclass_code ) {
                 matchingNoProgifEntry = table;
                 break;
             }
@@ -294,11 +294,11 @@ int pciList() {
             subclassName = matchingNoProgifEntry->subclassName;
         }
         printf("\xB3 %02x \xB3 %02x \xB3 %02x \xB3 %04x \xB3 %04x \xB3 %.22s \xB3 %.22s \xB3",
-               hdr.bus,
-               hdr.slot,
-               hdr.function,
-               hdr.vendorId,
-               hdr.deviceId,
+               hdr.m_dev_bus,
+               hdr.m_dev_slot,
+               hdr.m_dev_function,
+               hdr.m_vendor_id,
+               hdr.m_device_id,
                className,
                subclassName);
     }

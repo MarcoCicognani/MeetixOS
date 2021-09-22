@@ -16,9 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "eva/calls/calls.h"
-
 #include <calls/SyscallHandler.hpp>
+#include <Api/Syscalls/CallsData.h>
 #include <logger/logger.hpp>
 #include <tasking/communication/MessageController.hpp>
 #include <tasking/tasking.hpp>

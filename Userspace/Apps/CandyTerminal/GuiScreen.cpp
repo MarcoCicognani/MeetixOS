@@ -24,7 +24,7 @@
 
 #include "GuiScreen.hpp"
 
-#include <eva.h>
+#include <Api.h>
 #include <io/keyboard.hpp>
 #include <list>
 #include <string.h>
@@ -174,8 +174,8 @@ bool GuiScreen::initialize() {
 
     font = FontLoader::get("consolas");
 
-    CreateThreadD((void*)paintEntry, this);
-    CreateThreadD((void*)blinkCursorEntry, this);
+    s_create_thread_d((void*)paintEntry, this);
+    s_create_thread_d((void*)blinkCursorEntry, this);
     return true;
 }
 
@@ -185,7 +185,7 @@ bool GuiScreen::initialize() {
 void GuiScreen::blinkCursorEntry(GuiScreen* screen) {
     while ( true ) {
         screen->blinkCursor();
-        Sleep(500);
+        s_sleep(500);
     }
 }
 
@@ -250,7 +250,7 @@ CharLayout* GuiScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
 
         cairo_t* cr = getGraphics();
         if ( !cr ) {
-            Sleep(100);
+            s_sleep(100);
             continue;
         }
 
@@ -266,7 +266,7 @@ CharLayout* GuiScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
         // paint cursor
         bool blinkON = false;
         if ( focused ) {
-            blinkON = (Millis() - lastInputTime < 300) || cursorBlink;
+            blinkON = (s_millis() - lastInputTime < 300) || cursorBlink;
 
             if ( blinkON ) {
                 cairo_save(cr);
@@ -321,7 +321,7 @@ CharLayout* GuiScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
         canvas->blit(Rectangle(0, 0, bufferSize.width, bufferSize.height));
 
         paintUpToDate = true;
-        AtomicBlock(&paintUpToDate);
+        s_atomic_block(&paintUpToDate);
     }
 }
 
@@ -409,7 +409,7 @@ void GuiScreen::writeChar(char c) {
  */
 Keyboard::Info GuiScreen::readInput() {
     if ( !inputBuffer.size() )
-        AtomicBlock(&inputBufferEmpty);
+        s_atomic_block(&inputBufferEmpty);
 
     inputBufferLock.lock();
 
@@ -479,7 +479,7 @@ int GuiScreen::getCursorY() {
 void GuiScreen::bufferInput(const Keyboard::Info& info) {
     inputBufferLock.lock();
     inputBuffer.push_back(info);
-    lastInputTime    = Millis();
+    lastInputTime    = s_millis();
     inputBufferEmpty = false;
     inputBufferLock.unlock();
 }
@@ -495,7 +495,7 @@ void GuiScreen::repaint() {
  *
  */
 void GuiScreen::setFocused(bool _focused) {
-    lastInputTime = Millis();
+    lastInputTime = s_millis();
     focused       = _focused;
 }
 

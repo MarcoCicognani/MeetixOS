@@ -45,7 +45,7 @@ void TemporaryPagingUtil::initialize() {
     uint32_t end   = CONST_KERNEL_TEMPORARY_VIRTUAL_ADDRESS_RANGES_END;
     logDebug("%! initializing with range %h to %h", "vtemp", start, end);
 
-    for ( VirtualAddress i = start; i < end; i = i + PAGE_SIZE )
+    for ( VirtAddr i = start; i < end; i = i + PAGE_SIZE )
         addressStack.push(i);
 }
 
@@ -55,8 +55,8 @@ void TemporaryPagingUtil::initialize() {
  * @param phys:		the physical address to map
  * @return the virtual address
  */
-VirtualAddress TemporaryPagingUtil::map(PhysicalAddress phys) {
-    VirtualAddress virt = addressStack.pop();
+VirtAddr TemporaryPagingUtil::map(PhysAddr phys) {
+    VirtAddr virt = addressStack.pop();
     if ( !virt )
         EvaKernel::panic("%! unable to temporary map physical address %h, no free addresses",
                          "vtemp",
@@ -71,7 +71,7 @@ VirtualAddress TemporaryPagingUtil::map(PhysicalAddress phys) {
  *
  * @param virt:		the virtual address to be unmapped
  */
-void TemporaryPagingUtil::unmap(VirtualAddress virt) {
+void TemporaryPagingUtil::unmap(VirtAddr virt) {
     AddressSpace::unmap(virt);
     addressStack.push(virt);
 }

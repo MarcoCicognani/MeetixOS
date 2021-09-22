@@ -19,16 +19,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "errno.h"
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 #include "unistd.h"
 
 /**
- * POSIX wrapper for <Write>
+ * POSIX wrapper for <s_write>
  */
 ssize_t write(int fd, const void* buf, size_t count) {
     // performs write
     FsWriteStatus stat;
-    int32_t       len = WriteS(fd, buf, count, &stat);
+    int32_t       len = s_write_s(fd, buf, count, &stat);
 
     // check return status
     if ( stat == FS_WRITE_SUCCESSFUL )

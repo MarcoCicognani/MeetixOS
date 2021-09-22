@@ -21,7 +21,7 @@
 #include "stdlib.h"
 #include "string.h"
 
-#include <eva.h>
+#include <Api.h>
 
 /**
  *
@@ -32,7 +32,7 @@ int setenv(const char* key, const char* val, int overwrite) {
     sprintf(args, "--sentenv %s=%s", key, val);
 
     // exec shell and check status
-    if ( Spawn("/Bins/MxSh", args, "/", SECURITY_LEVEL_APPLICATION) == SPAWN_STATUS_SUCCESSFUL )
+    if ( s_spawn("/Bins/MxSh", args, "/", SECURITY_LEVEL_APPLICATION) == SPAWN_STATUS_SUCCESSFUL )
         return 0;
 
     return -1;

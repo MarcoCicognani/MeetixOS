@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <eva.h>
+#include <Api.h>
 #include <tasking/thread.hpp>
 
 /**
@@ -36,6 +36,6 @@ void Thread::execute(Thread* thread) {
  * @return the id of new thread
  */
 Tid Thread::start() {
-    id = CreateThreadD((void*)&execute, this);
+    id = s_create_thread_d((void*)&execute, this);
     return id;
 }

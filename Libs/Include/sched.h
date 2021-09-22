@@ -20,7 +20,7 @@
 #ifndef __MEETIX_LIBC_SCHED__
 #define __MEETIX_LIBC_SCHED__
 
-#include <eva/common.h>
+#include <Api/Common.h>
 
 __BEGIN_C
 

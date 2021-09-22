@@ -105,7 +105,7 @@ string ButtonMenu::parseCurrent(const pair<string, string>& current) {
 
     // add button to list
     buttons.add(current.first,
-                [command]() { Spawn(command.c_str(), "", "/", SECURITY_LEVEL_APPLICATION); });
+                [command]() { s_spawn(command.c_str(), "", "/", SECURITY_LEVEL_APPLICATION); });
 
     // return icon path
     return icon;

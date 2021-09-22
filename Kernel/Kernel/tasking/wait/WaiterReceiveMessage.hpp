@@ -56,18 +56,18 @@ public:
      */
     virtual bool checkWaiting(Thread* task) {
         // if break is issued, stop sleeping
-        if ( data->breakCondition != 0 && *data->breakCondition ) {
-            data->status = MESSAGE_RECEIVE_STATUS_INTERRUPTED;
+        if ( data->m_break_condition != 0 && *data->m_break_condition ) {
+            data->m_receive_status = MESSAGE_RECEIVE_STATUS_INTERRUPTED;
             return false;
         }
 
-        data->status = MessageController::receiveMessage(task->id,
-                                                         data->buffer,
-                                                         data->maximum,
-                                                         data->transaction);
+        data->m_receive_status = MessageController::receiveMessage(task->id,
+                                                                   data->m_out_buffer,
+                                                                   data->m_out_buffer_len,
+                                                                   data->m_message_transaction);
 
         // if queue is empty, continue sleeping
-        if ( data->status == MESSAGE_RECEIVE_STATUS_QUEUE_EMPTY )
+        if ( data->m_receive_status == MESSAGE_RECEIVE_STATUS_QUEUE_EMPTY )
             return true;
 
         // stop sleeping

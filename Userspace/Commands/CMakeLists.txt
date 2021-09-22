@@ -1,3 +1,5 @@
+set(CMAKE_CXX_STANDARD 20)
+
 add_subdirectory(Copy)
 add_subdirectory(CpuDetect)
 add_subdirectory(Echo)

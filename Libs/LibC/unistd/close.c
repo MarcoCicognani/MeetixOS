@@ -19,15 +19,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "errno.h"
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 #include "unistd.h"
 
 /**
- * POSIX wrapper for <Close>
+ * POSIX wrapper for <s_close>
  */
 int close(int filedes) {
     // performs syscall
-    FsCloseStatus status = Close(filedes);
+    FsCloseStatus status = s_close(filedes);
 
     // check status
     if ( status == FS_CLOSE_SUCCESSFUL )

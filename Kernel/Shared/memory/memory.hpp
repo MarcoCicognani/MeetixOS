@@ -25,8 +25,8 @@
 #ifndef EVA_SHARED_MEMORY_MEMORY
 #define EVA_SHARED_MEMORY_MEMORY
 
-#include "eva/stdint.h"
-#include "eva/types.h"
+#include "Api/StdInt.h"
+#include "Api/Types.h"
 
 #include <stddef.h>
 

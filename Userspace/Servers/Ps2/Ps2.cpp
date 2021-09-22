@@ -24,7 +24,7 @@
 
 #include "Ps2.hpp"
 
-#include <eva.h>
+#include <Api.h>
 #include <io/ps2.hpp>
 #include <math.h>
 #include <sstream>
@@ -60,13 +60,13 @@ Ps2SharedArea* sharedArea;
  */
 int main() {
     // register
-    if ( !RegisterAsServer(PS2_DRIVER_IDENTIFIER, SECURITY_LEVEL_DRIVER) ) {
+    if ( !s_register_as_server(PS2_DRIVER_IDENTIFIER, SECURITY_LEVEL_DRIVER) ) {
         klog("Ps2Driver: failed to register as %s", PS2_DRIVER_IDENTIFIER);
         return 1;
     }
 
     // set up shared memory
-    sharedArea = (Ps2SharedArea*)AllocMem(sizeof(Ps2SharedArea));
+    sharedArea = (Ps2SharedArea*)s_alloc_mem(sizeof(Ps2SharedArea));
     if ( !sharedArea ) {
         Utils::log("failed to allocate transfer memory area");
         return 1;
@@ -87,23 +87,27 @@ int main() {
     // wait for control requests
     size_t   buflen = sizeof(MessageHeader) + sizeof(Ps2RegisterRequest);
     uint8_t* buf    = new uint8_t[buflen];
-    Tid      tid    = GetTid();
+    Tid      tid    = s_get_tid();
     while ( true ) {
-        MessageReceiveStatus stat = ReceiveMessage(buf, buflen);
+        MessageReceiveStatus stat = s_receive_message(buf, buflen);
 
         if ( stat == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
             MessageHeader*      mes = (MessageHeader*)buf;
             Ps2RegisterRequest* req = (Ps2RegisterRequest*)MESSAGE_CONTENT(buf);
 
             // share area with requester
-            Pid            requesterPid = GetPidForTid(mes->sender);
-            Ps2SharedArea* sharedInTarget
-                = (Ps2SharedArea*)ShareMem((void*)sharedArea, sizeof(Ps2SharedArea), requesterPid);
+            Pid            requesterPid   = s_get_pid_for_tid(mes->m_sender_tid);
+            Ps2SharedArea* sharedInTarget = (Ps2SharedArea*)s_share_mem((void*)sharedArea,
+                                                                        sizeof(Ps2SharedArea),
+                                                                        requesterPid);
 
             // send response
             Ps2RegisterResponse response;
             response.area = sharedInTarget;
-            SendMessageT(mes->sender, &response, sizeof(Ps2RegisterResponse), mes->transaction);
+            s_send_message_t(mes->m_sender_tid,
+                             &response,
+                             sizeof(Ps2RegisterResponse),
+                             mes->m_transaction);
         }
     }
 }
@@ -192,7 +196,7 @@ void handleMouseData(uint8_t b) {
                 int16_t offY = valY - ((flags << 3) & 0x100);
 
                 // wait for handling and set
-                AtomicBlock(&sharedArea->mouse.atomUnhandled);
+                s_atomic_block(&sharedArea->mouse.atomUnhandled);
 
                 // write data
                 sharedArea->mouse.moveX = offX;
@@ -214,7 +218,7 @@ void handleMouseData(uint8_t b) {
  */
 void handleKeyboardData(uint8_t b) {
     // wait for handling and set
-    AtomicBlock(&sharedArea->keyboard.atomUnhandled);
+    s_atomic_block(&sharedArea->keyboard.atomUnhandled);
 
     // write data
     sharedArea->keyboard.scancode = b;

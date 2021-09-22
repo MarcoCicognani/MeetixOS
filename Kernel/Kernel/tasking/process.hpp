@@ -25,7 +25,7 @@
 #ifndef EVA_MULTITASKING_PROCESS_
 #define EVA_MULTITASKING_PROCESS_
 
-#include "eva/types.h"
+#include "Api/Types.h"
 
 #include <memory/collections/AddressRangePool.hpp>
 #include <system/smp/GlobalLock.hpp>
@@ -86,19 +86,19 @@ public:
      * memory allocation informations
      */
     AddressRangePool virtualRanges; // process memory ranges
-    VirtualAddress   imageStart;    // the virtual address of the image start
-    VirtualAddress   imageEnd;      // the virtual address of the image end
-    VirtualAddress   heapStart;     // begin of the process heap
-    VirtualAddress   heapBreak;     // end of the process heap
+    VirtAddr         imageStart;    // the virtual address of the image start
+    VirtAddr         imageEnd;      // the virtual address of the image end
+    VirtAddr         heapStart;     // begin of the process heap
+    VirtAddr         heapBreak;     // end of the process heap
     uint32_t         heapPages;     // heap pages count
 
     /**
      * thread-local storage copy
      */
-    VirtualAddress tlsMasterInProcLocation; // master copy of the tls
-    VirtualAddress tlsMasterCopysize;       // tls copy size
-    VirtualAddress tlsMasterTotalsize;      // local-storage total size
-    VirtualAddress tlsMasterAlignment;      // tls alignment
+    VirtAddr tlsMasterInProcLocation; // master copy of the tls
+    VirtAddr tlsMasterCopysize;       // tls copy size
+    VirtAddr tlsMasterTotalsize;      // local-storage total size
+    VirtAddr tlsMasterAlignment;      // tls alignment
 
     /**
      * current process page directory

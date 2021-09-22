@@ -67,7 +67,7 @@ void __fini_stdio() {
     FILE* f = __open_file_list;
     while ( f ) {
         FILE* n = f->next;
-        if ( AtomicTryLock(&n->lock) ) {
+        if ( s_atomic_try_lock(&n->lock) ) {
             __fflush_unlocked(f);
             __fclose_static_unlocked(f);
             n->lock = 0;

@@ -26,7 +26,7 @@
 #define EVA_FILESYSTEM_FILESYSTEM
 
 #include "debug/DebugInterfaceKernel.hpp"
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 #include "filesystem/FsDelegate.hpp"
 #include "filesystem/FsNode.hpp"
 #include "filesystem/FsTransactionHandler.hpp"
@@ -113,13 +113,13 @@ public:
      *
      * @return one of the {FsRegisterAsDelegateStatus} codes
      */
-    static FsRegisterAsDelegateStatus createDelegate(Thread*   thread,
-                                                     char*     name,
-                                                     FsPhysID  physMountpointID,
-                                                     FsVirtID* outMountpointID,
-                                                     Address*  outTransactionStorage);
+    static FsRegisterAsDelegateStatus createDelegate(Thread*     thread,
+                                                     const char* name,
+                                                     FsPhysID    physMountpointID,
+                                                     FsVirtID*   outMountpointID,
+                                                     Address*    outTransactionStorage);
     static bool
-    nodeForDescriptor(Pid pid, File_t fd, FsNode** outNode, FileDescriptorContent** outFd);
+    nodeForDescriptor(Pid pid, FileHandle fd, FsNode** outNode, FileDescriptorContent** outFd);
 
     /**
      * If the in path is absolute (starts with a '/') it is simply copied to the out buffer.
@@ -135,7 +135,7 @@ public:
      * @param out
      * 		the output buffer of at least {PATH_MAX} bytes size
      */
-    static void concatAsAbsolutePath(char* relativeBase, char* in, char* out);
+    static void concatAsAbsolutePath(const char* relativeBase, const char* in, char* out);
 
     /**
      * Opens a file, creating a file descriptor for the given node within
@@ -155,7 +155,7 @@ public:
      *
      * @return a file descriptor
      */
-    static File_t mapFile(Pid pid, FsNode* node, int32_t openFlags, File_t fd = -1);
+    static FileHandle mapFile(Pid pid, FsNode* node, int32_t openFlags, FileHandle fd = -1);
 
     /**
      *
@@ -165,16 +165,16 @@ public:
     /**
      *
      */
-    static File_t clonefd(File_t           sourceFd,
-                          Pid              sourcePid,
-                          File_t           targetFd,
-                          Pid              targetPid,
-                          FsClonefdStatus* outStatus);
+    static FileHandle clonefd(FileHandle       sourceFd,
+                              Pid              sourcePid,
+                              FileHandle       targetFd,
+                              Pid              targetPid,
+                              FsCloneFdStatus* outStatus);
 
     /**
      *
      */
-    static FsPipeStatus pipe(Thread* thread, File_t* outWrite, File_t* outRead);
+    static FsPipeStatus pipe(Thread* thread, FileHandle* outWrite, FileHandle* outRead);
 
     /**
      *

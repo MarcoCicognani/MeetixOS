@@ -24,7 +24,7 @@
 
 #include "tasking/ThreadManager.hpp"
 
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 #include "EvangelionNG.hpp"
 #include "filesystem/filesystem.hpp"
 #include "logger/logger.hpp"
@@ -53,17 +53,17 @@
  */
 Thread* ThreadManager::createThread(Process* process, ThreadType type) {
     // create the stacks
-    VirtualAddress kernelStackPageVirt;
+    VirtAddr kernelStackPageVirt;
     if ( !createThreadKernelStack(process, &kernelStackPageVirt) )
         return 0;
 
-    VirtualAddress userStackAreaStart;
+    VirtAddr userStackAreaStart;
     if ( !createThreadUserStack(process, &userStackAreaStart) )
         return 0;
 
     // calculate stack locations
-    VirtualAddress esp0 = kernelStackPageVirt + PAGE_SIZE;
-    VirtualAddress esp  = userStackAreaStart + PAGE_SIZE;
+    VirtAddr esp0 = kernelStackPageVirt + PAGE_SIZE;
+    VirtAddr esp  = userStackAreaStart + PAGE_SIZE;
 
     // create initial state on the kernel stack
     ProcessorState* state = (ProcessorState*)(esp0 - sizeof(ProcessorState));
@@ -103,7 +103,7 @@ PageDirectory ThreadManager::initializePageDirectoryForProcess() {
     PageDirectory currentPd = (PageDirectory)CONST_RECURSIVE_PAGE_DIRECTORY_ADDRESS;
 
     // allocate a page for the directory
-    PhysicalAddress physPd = PPallocator::allocate();
+    PhysAddr physPd = PPallocator::allocate();
 
     // temporarily map it
     PageDirectory tempPd = (PageDirectory)TemporaryPagingUtil::map(physPd);
@@ -123,7 +123,7 @@ PageDirectory ThreadManager::initializePageDirectoryForProcess() {
     tempPd[1023] = physPd | DEFAULT_KERNEL_TABLE_FLAGS;
 
     // remove the temporary mapping
-    TemporaryPagingUtil::unmap((VirtualAddress)tempPd);
+    TemporaryPagingUtil::unmap((VirtAddr)tempPd);
 
     return (PageDirectory)physPd;
 }
@@ -137,14 +137,14 @@ PageDirectory ThreadManager::initializePageDirectoryForProcess() {
  * @param outUserStackVirt:		the forked user stack
  * @return the physicalAddress of created directory
  */
-PhysicalAddress ThreadManager::forkCurrentPageDirectory(Process*        process,
-                                                        Thread*         sourceThread,
-                                                        VirtualAddress* outKernelStackVirt,
-                                                        VirtualAddress* outUserStackVirt) {
+PhysAddr ThreadManager::forkCurrentPageDirectory(Process*  process,
+                                                 Thread*   sourceThread,
+                                                 VirtAddr* outKernelStackVirt,
+                                                 VirtAddr* outUserStackVirt) {
     PageDirectory currentPd = (PageDirectory)CONST_RECURSIVE_PAGE_DIRECTORY_ADDRESS;
 
     // create the directory
-    PhysicalAddress physPd = PPallocator::allocate();
+    PhysAddr physPd = PPallocator::allocate();
 
     // temporary map directory
     PageDirectory tempPd = (PageDirectory)TemporaryPagingUtil::map(physPd);
@@ -163,7 +163,7 @@ PhysicalAddress ThreadManager::forkCurrentPageDirectory(Process*        process,
                 uint32_t  tableFlags = currentPd[ti] & (PAGE_ALIGN_MASK);
 
                 // create a new table
-                PhysicalAddress clonedTablePhys = PPallocator::allocate();
+                PhysAddr  clonedTablePhys = PPallocator::allocate();
                 PageTable clonedTableTemp = (PageTable)TemporaryPagingUtil::map(clonedTablePhys);
 
                 // copy page table entries
@@ -180,7 +180,7 @@ PhysicalAddress ThreadManager::forkCurrentPageDirectory(Process*        process,
                         clonedTableTemp[pi] = 0;
                 }
 
-                TemporaryPagingUtil::unmap((VirtualAddress)clonedTableTemp);
+                TemporaryPagingUtil::unmap((VirtAddr)clonedTableTemp);
 
                 // insert into new page directory
                 tempPd[ti] = clonedTablePhys | tableFlags;
@@ -198,15 +198,15 @@ PhysicalAddress ThreadManager::forkCurrentPageDirectory(Process*        process,
     tempPd[1023] = physPd | DEFAULT_KERNEL_TABLE_FLAGS;
 
     // clone entire user stack area
-    VirtualAddress userStackVirtRange
+    VirtAddr userStackVirtRange
         = process->virtualRanges.allocate(THREAD_USER_STACK_RESERVED_VIRTUAL_PAGES);
-    VirtualAddress userStackStart
+    VirtAddr userStackStart
         = userStackVirtRange
         + (THREAD_USER_STACK_RESERVED_VIRTUAL_PAGES - sourceThread->userStackPages) * PAGE_SIZE;
 
     for ( uint8_t i = 0; i < sourceThread->userStackPages; i++ ) {
-        PhysicalAddress userStackPhys    = PPallocator::allocate();
-        VirtualAddress  userStackPageOff = userStackStart + i * PAGE_SIZE;
+        PhysAddr userStackPhys    = PPallocator::allocate();
+        VirtAddr userStackPageOff = userStackStart + i * PAGE_SIZE;
         AddressSpace::mapToTemporaryMappedDirectory(tempPd,
                                                     userStackPageOff,
                                                     userStackPhys,
@@ -214,7 +214,7 @@ PhysicalAddress ThreadManager::forkCurrentPageDirectory(Process*        process,
                                                     DEFAULT_USER_PAGE_FLAGS,
                                                     true);
 
-        VirtualAddress userStackPageTemp = TemporaryPagingUtil::map(userStackPhys);
+        VirtAddr userStackPageTemp = TemporaryPagingUtil::map(userStackPhys);
         Memory::copy((uint8_t*)userStackPageTemp,
                      (uint8_t*)(sourceThread->userStackAreaStart + i * PAGE_SIZE),
                      PAGE_SIZE);
@@ -222,11 +222,11 @@ PhysicalAddress ThreadManager::forkCurrentPageDirectory(Process*        process,
     }
 
     // unmap the temporary mapped directory
-    TemporaryPagingUtil::unmap((VirtualAddress)tempPd);
+    TemporaryPagingUtil::unmap((VirtAddr)tempPd);
 
     // copy kernel stack
-    VirtualAddress  kernelStackVirt = EvaKernel::evaKernelRangePool->allocate(1);
-    PhysicalAddress kernelStackPhys = PPallocator::allocate();
+    VirtAddr kernelStackVirt = EvaKernel::evaKernelRangePool->allocate(1);
+    PhysAddr kernelStackPhys = PPallocator::allocate();
 
     AddressSpace::map(kernelStackVirt,
                       kernelStackPhys,
@@ -266,9 +266,9 @@ PhysicalAddress ThreadManager::forkCurrentPageDirectory(Process*        process,
  * @param outUserStackVirt:		the created user stack
  * @return if the operation end fine
  */
-bool ThreadManager::createThreadKernelStack(Process* process, VirtualAddress* outKernelStackVirt) {
+bool ThreadManager::createThreadKernelStack(Process* process, VirtAddr* outKernelStackVirt) {
     // perform stack mapping
-    VirtualAddress kernelStackVirt = EvaKernel::evaKernelRangePool->allocate(1);
+    VirtAddr kernelStackVirt = EvaKernel::evaKernelRangePool->allocate(1);
     if ( !kernelStackVirt ) {
         if ( process->main ) {
             logWarn("%! thread creation for process %i failed: kernel virtual ranges are full",
@@ -284,7 +284,7 @@ bool ThreadManager::createThreadKernelStack(Process* process, VirtualAddress* ou
     }
 
     // allocate physical locations
-    PhysicalAddress kernelStackPhys = PPallocator::allocate();
+    PhysAddr kernelStackPhys = PPallocator::allocate();
 
     // map kernel stack (global space)
     AddressSpace::map(kernelStackVirt,
@@ -304,9 +304,9 @@ bool ThreadManager::createThreadKernelStack(Process* process, VirtualAddress* ou
  * @param outUserStackVirt:		the created user stack
  * @return if the operation end fine
  */
-bool ThreadManager::createThreadUserStack(Process* process, VirtualAddress* outUserStackVirt) {
+bool ThreadManager::createThreadUserStack(Process* process, VirtAddr* outUserStackVirt) {
     // prepare user stack virtual range and address
-    VirtualAddress userStackVirtRange
+    VirtAddr userStackVirtRange
         = process->virtualRanges.allocate(THREAD_USER_STACK_RESERVED_VIRTUAL_PAGES);
     if ( !userStackVirtRange ) {
         if ( process->main ) {
@@ -326,21 +326,21 @@ bool ThreadManager::createThreadUserStack(Process* process, VirtualAddress* outU
     }
 
     // user stack is at the end of the range
-    VirtualAddress userStackVirt
+    VirtAddr userStackVirt
         = userStackVirtRange + (THREAD_USER_STACK_RESERVED_VIRTUAL_PAGES - 1) * PAGE_SIZE;
 
     // allocate physical locations
-    PhysicalAddress userStackPhys = PPallocator::allocate();
+    PhysAddr userStackPhys = PPallocator::allocate();
 
     // map directory temporary and map user stack
     PageDirectory tempPd
-        = (PageDirectory)TemporaryPagingUtil::map((PhysicalAddress)process->pageDirectory);
+        = (PageDirectory)TemporaryPagingUtil::map((PhysAddr)process->pageDirectory);
     AddressSpace::mapToTemporaryMappedDirectory(tempPd,
                                                 userStackVirt,
                                                 userStackPhys,
                                                 DEFAULT_USER_TABLE_FLAGS,
                                                 DEFAULT_USER_PAGE_FLAGS);
-    TemporaryPagingUtil::unmap((VirtualAddress)tempPd);
+    TemporaryPagingUtil::unmap((VirtAddr)tempPd);
 
     // set out parameters
     *outUserStackVirt = userStackVirt;
@@ -352,16 +352,14 @@ bool ThreadManager::createThreadUserStack(Process* process, VirtualAddress* outU
  *
  * @param start:		the start address
  * @param end:			the end address
- * @param ranges:		the pointer to the address range pool of the process, if 0 is provided
- * isn't used
+ * @param ranges:		the pointer to the address range pool of the process, if 0 is
+ * provided isn't used
  */
-void ThreadManager::freeAndUnmap(VirtualAddress    start,
-                                 VirtualAddress    end,
-                                 AddressRangePool* ranges) {
+void ThreadManager::freeAndUnmap(VirtAddr start, VirtAddr end, AddressRangePool* ranges) {
     // parse all the addresses
-    for ( VirtualAddress address = start; address < end; address += PAGE_SIZE ) {
+    for ( VirtAddr address = start; address < end; address += PAGE_SIZE ) {
         // free the physical page
-        PhysicalAddress paddress = AddressSpace::virtualToPhysical(address);
+        PhysAddr paddress = AddressSpace::virtualToPhysical(address);
         PPreferenceTracker::decrement(paddress);
         PPallocator::free(paddress);
 
@@ -448,20 +446,20 @@ Thread* ThreadManager::createProcess(SecurityLevel securityLevel, Process* paren
  * @param out:			the returned informations
  * @return the created main thread of the process
  */
-Thread* ThreadManager::createProcessVm86(uint8_t interrupt, Vm86Registers& in, Vm86Registers* out) {
+Thread* ThreadManager::createProcessVm86(uint8_t interrupt, VM86Registers& in, VM86Registers* out) {
     Process* process       = new Process(SECURITY_LEVEL_KERNEL);
     process->pageDirectory = initializePageDirectoryForProcess();
 
     // create kernel stack
-    VirtualAddress kernelStackVirt;
+    VirtAddr kernelStackVirt;
     if ( !createThreadKernelStack(process, &kernelStackVirt) )
         return 0;
 
     // allocate user stack in lower memory
-    VirtualAddress userStackVirt = (uint32_t)LowerHeap::allocate(0x2000);
+    VirtAddr userStackVirt = (uint32_t)LowerHeap::allocate(0x2000);
 
     // initialize the state
-    VirtualAddress esp0 = kernelStackVirt + PAGE_SIZE;
+    VirtAddr esp0 = kernelStackVirt + PAGE_SIZE;
 
     ProcessorStateVm86* state = (ProcessorStateVm86*)(esp0 - sizeof(ProcessorStateVm86));
     Memory::setBytes(state, 0, sizeof(ProcessorStateVm86));
@@ -473,8 +471,8 @@ Thread* ThreadManager::createProcessVm86(uint8_t interrupt, Vm86Registers& in, V
     state->defaultFrame.esi = in.si;
     state->defaultFrame.edi = in.di;
 
-    state->defaultFrame.eip    = FP_OFF(ivt->entry[interrupt]);
-    state->defaultFrame.cs     = FP_SEG(ivt->entry[interrupt]);
+    state->defaultFrame.eip    = FAR_PTR_OFFSET(ivt->entry[interrupt]);
+    state->defaultFrame.cs     = FAR_PTR_SEGMENT(ivt->entry[interrupt]);
     state->defaultFrame.eflags = 0x20202;
     state->defaultFrame.esp    = 0x1000;
     state->defaultFrame.ss     = (((userStackVirt & ~(0xFFF)) + 0x1000) >> 4);
@@ -567,8 +565,8 @@ Thread* ThreadManager::fork(Thread* sourceThread) {
         CONST_USER_VIRTUAL_RANGES_START,
         CONST_KERNEL_AREA_START); // TODO clone virtual ranges during forking
 
-    VirtualAddress kernelStackVirt;
-    VirtualAddress userStackVirt;
+    VirtAddr kernelStackVirt;
+    VirtAddr userStackVirt;
     process->pageDirectory = (PageDirectory)
         forkCurrentPageDirectory(process, sourceThread, &kernelStackVirt, &userStackVirt);
 
@@ -580,7 +578,7 @@ Thread* ThreadManager::fork(Thread* sourceThread) {
     process->imageStart = parent->imageStart;
 
     // create main thread
-    VirtualAddress esp0 = kernelStackVirt + PAGE_SIZE;
+    VirtAddr esp0 = kernelStackVirt + PAGE_SIZE;
 
     Thread* thread          = new Thread(THREAD_TYPE_MAIN);
     thread->cpuState        = (ProcessorState*)(esp0 - sizeof(ProcessorState));
@@ -615,9 +613,9 @@ void ThreadManager::prepareThreadLocalStorage(Thread* thread) {
             = ALIGN_UP(process->tlsMasterTotalsize, process->tlsMasterAlignment);
 
         // allocate virtual range with aligned size of TLS + size of {UserThread}
-        uint32_t       requiredSize  = tlsMasterAlignedTotalAize + sizeof(UserThread);
-        uint32_t       requiredPages = PAGE_ALIGN_UP(requiredSize) / PAGE_SIZE;
-        VirtualAddress tlsCopyVirt
+        uint32_t requiredSize  = tlsMasterAlignedTotalAize + sizeof(UserThread);
+        uint32_t requiredPages = PAGE_ALIGN_UP(requiredSize) / PAGE_SIZE;
+        VirtAddr tlsCopyVirt
             = process->virtualRanges.allocate(requiredPages,
                                               PROC_VIRTUAL_RANGE_FLAG_PHYSICAL_OWNER);
 
@@ -627,7 +625,7 @@ void ThreadManager::prepareThreadLocalStorage(Thread* thread) {
         // temporarily switch to target process directory, copy TLS contents
         AddressSpace::switchToSpace(process->pageDirectory);
         for ( uint32_t i = 0; i < requiredPages; i++ ) {
-            PhysicalAddress phys = PPallocator::allocate();
+            PhysAddr phys = PPallocator::allocate();
             AddressSpace::map(tlsCopyVirt + i * PAGE_SIZE,
                               phys,
                               DEFAULT_USER_TABLE_FLAGS,
@@ -642,9 +640,9 @@ void ThreadManager::prepareThreadLocalStorage(Thread* thread) {
                      process->tlsMasterCopysize);
 
         // fill user thread
-        VirtualAddress userThreadLoc = tlsCopyVirt + tlsMasterAlignedTotalAize;
-        UserThread*    userThread    = (UserThread*)userThreadLoc;
-        userThread->self             = userThread;
+        VirtAddr    userThreadLoc = tlsCopyVirt + tlsMasterAlignedTotalAize;
+        UserThread* userThread    = (UserThread*)userThreadLoc;
+        userThread->m_self        = userThread;
 
         // switch back
         AddressSpace::switchToSpace(current);

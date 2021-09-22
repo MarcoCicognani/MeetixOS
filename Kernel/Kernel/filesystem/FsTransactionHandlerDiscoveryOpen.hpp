@@ -67,7 +67,7 @@ public:
             else if ( startStatus == FS_TRANSACTION_START_IMMEDIATE_FINISH )
                 return FS_TRANSACTION_HANDLING_DONE;
             else {
-                data()->status = FS_OPEN_ERROR;
+                data()->m_open_status = FS_OPEN_ERROR;
                 logWarn("%! failed to start actual open handler after node discovery",
                         "filesystem");
                 return FS_TRANSACTION_HANDLING_DONE;
@@ -76,8 +76,8 @@ public:
         }
 
         else if ( status == FS_DISCOVERY_ERROR || status == FS_DISCOVERY_BUSY ) {
-            data()->fd     = -1;
-            data()->status = FS_OPEN_ERROR;
+            data()->m_open_fd     = -1;
+            data()->m_open_status = FS_OPEN_ERROR;
         }
 
         return FS_TRANSACTION_HANDLING_DONE;

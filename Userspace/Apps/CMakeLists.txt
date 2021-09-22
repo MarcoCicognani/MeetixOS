@@ -1,3 +1,5 @@
+set(CMAKE_CXX_STANDARD 20)
+
 add_subdirectory(Calculator)
 add_subdirectory(CandyNote)
 add_subdirectory(CandyShell)

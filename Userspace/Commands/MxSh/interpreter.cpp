@@ -96,8 +96,8 @@ void MXinterpreter::wait(LsStatement* stat) {
     string identifier = stat->pairs[0]->value;
     Utils::log("Waiting for task which register '%s'", identifier.c_str());
 
-    while ( TaskGetID(identifier.c_str()) < 0 )
-        Yield();
+    while ( s_task_get_id(identifier.c_str()) < 0 )
+        s_yield();
 
     Utils::log("ID '%s' registered", identifier.c_str());
 }
@@ -114,7 +114,7 @@ void MXinterpreter::sleep(LsStatement* stat) {
 
     Utils::log("Sleeping for %d", time);
 
-    Sleep(time);
+    s_sleep(time);
 }
 
 /**
@@ -176,11 +176,11 @@ string MXinterpreter::findParam(LsStatement* stat, string key, string def) {
  */
 Pid MXinterpreter::execWithSpawner(string path, string args, SecurityLevel slvl) {
     auto pid          = -1;
-    auto spawn_status = SpawnP(path.c_str(), args.c_str(), "/", slvl, &pid);
+    auto spawn_status = s_spawn_p(path.c_str(), args.c_str(), "/", slvl, &pid);
 
     if ( spawn_status != SPAWN_STATUS_SUCCESSFUL ) {
         std::stringstream ss;
-        ss << "failed to spawn '" << path << "' with code " << spawn_status;
+        ss << "failed to s_spawn '" << path << "' with code " << spawn_status;
 
         Utils::log(ss.str().c_str());
         cout << ss.str() << endl;

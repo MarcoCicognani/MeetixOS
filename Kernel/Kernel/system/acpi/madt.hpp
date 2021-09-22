@@ -25,7 +25,7 @@
 #ifndef SYSTEM_ACPI_MADT
 #define SYSTEM_ACPI_MADT
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <system/acpi/AcpiTableHeader.hpp>
 
@@ -37,7 +37,7 @@ struct MadtHeader {
 
     uint32_t localControllerAddress;
     uint32_t flags;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Header that each entry has
@@ -45,7 +45,7 @@ struct MadtHeader {
 struct MadtEntryHeader {
     uint8_t deviceType;
     uint8_t recordLength;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Entry describing a local APIC
@@ -55,7 +55,7 @@ struct MadtLapicEntry {
     uint8_t         processorId;
     uint8_t         apicId;
     uint32_t        flags;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Entry describing an IO APIC
@@ -67,7 +67,7 @@ struct MadtIoapicEntry {
     uint8_t  reserved0;
     uint32_t ioapicAddress;
     uint32_t globalSystemInterruptBase;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Entry describing an interrupt source override
@@ -79,7 +79,7 @@ struct MadtInterruptSrcOverrideEntry {
     uint8_t  irqSource;
     uint32_t globalSystemInterrupt;
     uint16_t flags;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Multiple APIC Descriptor Table

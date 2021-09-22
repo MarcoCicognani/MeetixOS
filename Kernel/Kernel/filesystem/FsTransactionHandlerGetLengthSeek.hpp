@@ -54,12 +54,12 @@ public:
     virtual void performAfterwork(Thread* thread) {
         if ( status == FS_LENGTH_SUCCESSFUL ) {
             // add amount to offset
-            if ( data()->mode == FS_SEEK_CUR )
-                fd->offset += data()->amount;
-            else if ( data()->mode == FS_SEEK_SET )
-                fd->offset = data()->amount;
-            else if ( data()->mode == FS_SEEK_END )
-                fd->offset = length - data()->amount;
+            if ( data()->m_seek_mode == FS_SEEK_CUR )
+                fd->offset += data()->m_offset;
+            else if ( data()->m_seek_mode == FS_SEEK_SET )
+                fd->offset = data()->m_offset;
+            else if ( data()->m_seek_mode == FS_SEEK_END )
+                fd->offset = length - data()->m_offset;
 
             // validate offset
             if ( fd->offset > length )
@@ -67,13 +67,13 @@ public:
             if ( fd->offset < 0 )
                 fd->offset = 0;
 
-            data()->result = fd->offset;
-            data()->status = FS_SEEK_SUCCESSFUL;
+            data()->m_result      = fd->offset;
+            data()->m_seek_status = FS_SEEK_SUCCESSFUL;
         }
 
         else {
-            data()->result = -1;
-            data()->status = FS_SEEK_ERROR;
+            data()->m_result      = -1;
+            data()->m_seek_status = FS_SEEK_ERROR;
         }
     }
 };

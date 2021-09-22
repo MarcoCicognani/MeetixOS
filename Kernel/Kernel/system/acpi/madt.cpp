@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "eva/types.h"
+#include "Api/Types.h"
 
 #include <logger/logger.hpp>
 #include <system/acpi/madt.hpp>

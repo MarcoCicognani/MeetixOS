@@ -25,9 +25,9 @@
 #ifndef PHYSICALPAGESHARETRACKER_HPP_
 #define PHYSICALPAGESHARETRACKER_HPP_
 
-#include "eva/kernel.h"
-#include "eva/stdint.h"
-#include "eva/types.h"
+#include "Api/Kernel.h"
+#include "Api/StdInt.h"
+#include "Api/Types.h"
 
 /**
  * count references of a process
@@ -54,7 +54,7 @@ public:
      *
      * @param address:		the new address to add
      */
-    static void increment(PhysicalAddress address);
+    static void increment(PhysAddr address);
 
     /**
      * decrement the references to the provided address
@@ -62,7 +62,7 @@ public:
      * @param address:		the physical address to be unreferenced
      * @return the number of references to the provided address
      */
-    static int16_t decrement(PhysicalAddress address);
+    static int16_t decrement(PhysAddr address);
 };
 
 #endif

@@ -24,7 +24,7 @@
 
 #include "EvangelionNG.hpp"
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 #include "executable/Elf32Loader.hpp"
 #include "filesystem/filesystem.hpp"
 #include "kernelloader/SetupInformation.hpp"
@@ -162,7 +162,7 @@ uint32_t EvaKernel::loadRamdisk(MultibootModule* ramdiskModule) {
         = PAGE_ALIGN_UP(ramdiskModule->moduleEnd - ramdiskModule->moduleStart) / PAGE_SIZE;
 
     // allocate memory to a new virtual address
-    VirtualAddress ramdiskNewLocation = EvaKernel::evaKernelRangePool->allocate(ramdiskPages);
+    VirtAddr ramdiskNewLocation = EvaKernel::evaKernelRangePool->allocate(ramdiskPages);
 
     // not enough memory, Panic
     if ( !ramdiskNewLocation )
@@ -170,9 +170,8 @@ uint32_t EvaKernel::loadRamdisk(MultibootModule* ramdiskModule) {
 
     // copy the module on kernel physical memory
     for ( int i = 0; i < ramdiskPages; i++ ) {
-        VirtualAddress  virt = ramdiskNewLocation + i * PAGE_SIZE;
-        PhysicalAddress phys
-            = AddressSpace::virtualToPhysical(ramdiskModule->moduleStart + i * PAGE_SIZE);
+        VirtAddr virt = ramdiskNewLocation + i * PAGE_SIZE;
+        PhysAddr phys = AddressSpace::virtualToPhysical(ramdiskModule->moduleStart + i * PAGE_SIZE);
         AddressSpace::map(virt, phys, DEFAULT_KERNEL_TABLE_FLAGS, DEFAULT_KERNEL_PAGE_FLAGS);
     }
 
@@ -205,8 +204,8 @@ void EvaKernel::run(SetupInformation* info) {
     PRETTY_BOOT_STATUS("Unmapping old address space area", 41, GREEN);
 
     // unmap info and loader
-    PhysicalAddress initialPdPhysical = info->initialPageDirectoryPhysical;
-    for ( VirtualAddress i = CONST_LOWER_MEMORY_END; i < CONST_KERNEL_AREA_START; i += PAGE_SIZE )
+    PhysAddr initialPdPhysical = info->initialPageDirectoryPhysical;
+    for ( VirtAddr i = CONST_LOWER_MEMORY_END; i < CONST_KERNEL_AREA_START; i += PAGE_SIZE )
         AddressSpace::unmap(i);
 
     // begin basic system initialization
@@ -218,7 +217,7 @@ void EvaKernel::run(SetupInformation* info) {
  *
  * @param initialPdPhysical:	the physical page where initialize
  */
-void EvaKernel::runBasicSystemPackage(PhysicalAddress initialPdPhysical) {
+void EvaKernel::runBasicSystemPackage(PhysAddr initialPdPhysical) {
     // initialize the paging
     PRETTY_BOOT_STATUS("Initializing Paging", 42, GREEN);
     TemporaryPagingUtil::initialize();

@@ -300,8 +300,9 @@ extern "C" {
 #    define DUK_TYPE_BOOLEAN   3 /* Ecmascript boolean: 0 or 1 */
 #    define DUK_TYPE_NUMBER    4 /* Ecmascript number: double */
 #    define DUK_TYPE_STRING    5 /* Ecmascript string: CESU-8 / extended UTF-8 encoded */
-#    define DUK_TYPE_OBJECT    6 /* Ecmascript object: includes objects, arrays, functions, threads \
-                                  */
+#    define DUK_TYPE_OBJECT                                                                        \
+        6 /* Ecmascript object: includes objects, arrays, functions, threads                       \
+           */
 #    define DUK_TYPE_BUFFER    7 /* fixed or dynamic, garbage collected byte buffer */
 #    define DUK_TYPE_POINTER   8 /* raw void pointer */
 #    define DUK_TYPE_LIGHTFUNC 9 /* lightweight function pointer */
@@ -1606,12 +1607,15 @@ DUK_EXTERNAL_DECL duk_idx_t duk_push_error_object_stash(duk_context*  ctx,
 #    define DUK_DATE_FLAG_LOCALTIME (1 << 4) /* convert time value to local time */
 #    define DUK_DATE_FLAG_SUB1900                                                                  \
         (1 << 5) /* getter: subtract 1900 from year when getting year part */
-#    define DUK_DATE_FLAG_TOSTRING_DATE (1 << 6) /* include date part in string conversion result  \
-                                                  */
-#    define DUK_DATE_FLAG_TOSTRING_TIME (1 << 7) /* include time part in string conversion result  \
-                                                  */
-#    define DUK_DATE_FLAG_TOSTRING_LOCALE (1 << 8) /* use locale specific formatting if available  \
-                                                    */
+#    define DUK_DATE_FLAG_TOSTRING_DATE                                                            \
+        (1 << 6) /* include date part in string conversion result                                  \
+                  */
+#    define DUK_DATE_FLAG_TOSTRING_TIME                                                            \
+        (1 << 7) /* include time part in string conversion result                                  \
+                  */
+#    define DUK_DATE_FLAG_TOSTRING_LOCALE                                                          \
+        (1 << 8) /* use locale specific formatting if available                                    \
+                  */
 #    define DUK_DATE_FLAG_TIMESETTER                                                               \
         (1 << 9) /* setter: call is a time setter (affects hour, min, sec, ms); otherwise date     \
                     setter (affects year, month, day-in-month) */

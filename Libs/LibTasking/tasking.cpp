@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <eva/utils/local.hpp>
+#include <Api/utils/local.hpp>
 #include <tasking/tasking.hpp>
 
 /**
@@ -26,7 +26,7 @@
 std::vector<Tid> Tasking::getThreadIDs() {
     // get the thread count
     std::vector<Tid> tids;
-    uint32_t   tcount = GetThreadCount();
+    uint32_t         tcount = s_get_thread_count();
 
     // only if call success
     if ( tcount > 0 ) {
@@ -34,7 +34,7 @@ std::vector<Tid> Tasking::getThreadIDs() {
         Local<Tid> buffer(new Tid[tcount]);
 
         // get the tids and copy to the list
-        uint32_t copied = GetThreadTids(buffer(), tcount);
+        uint32_t copied = s_get_thread_ids(buffer(), tcount);
         for ( int i = 0; i < copied; i++ )
             tids.push_back(buffer()[i]);
     }
@@ -48,7 +48,7 @@ std::vector<Tid> Tasking::getThreadIDs() {
 std::vector<Pid> Tasking::getProcessIDs() {
     // get the thread count
     std::vector<Pid> pids;
-    uint32_t   pcount = GetProcessCount();
+    uint32_t         pcount = s_get_process_count();
 
     // only if call success
     if ( pcount > 0 ) {
@@ -56,7 +56,7 @@ std::vector<Pid> Tasking::getProcessIDs() {
         Local<Tid> buffer(new Tid[pcount]);
 
         // get the tids and copy to the list
-        uint32_t copied = GetProcessPids(buffer(), pcount);
+        uint32_t copied = s_get_process_ids(buffer(), pcount);
         for ( int i = 0; i < copied; i++ )
             pids.push_back(buffer()[i]);
     }
@@ -75,9 +75,9 @@ std::vector<ProcessDescriptor> Tasking::getProcess() {
     // check validity
     if ( !proc_ids.empty() ) {
         // get all descriptors by thread IDs
-        for (auto& pid : proc_ids ) {
+        for ( auto& pid : proc_ids ) {
             ProcessDescriptor process;
-            if ( GetProcessDescriptor(pid, &process) )
+            if ( s_get_process_descriptor(pid, &process) )
                 descriptors.push_back(process);
         }
     }
@@ -96,9 +96,9 @@ std::vector<ThreadDescriptor> Tasking::getThreads() {
     // check validity
     if ( !tids.empty() ) {
         // get all descriptors by tids
-        for (auto& tid : tids) {
+        for ( auto& tid : tids ) {
             ThreadDescriptor thread;
-            if ( GetThreadDescriptor(tid, &thread) )
+            if ( s_get_thread_descriptor(tid, &thread) )
                 descriptors.push_back(thread);
         }
     }

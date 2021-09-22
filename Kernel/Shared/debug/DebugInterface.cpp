@@ -37,7 +37,7 @@ bool DebugInterfaceInitialized = false;
 static uint16_t serialPort;
 
 /**
- * on full log interface use buffering
+ * on full s_log interface use buffering
  */
 #if DEBUG_INTERFACE_MODE == DEBUG_INTERFACE_MODE_FULL
 static const int logBufferLength = 512;
@@ -56,7 +56,7 @@ void DebugInterface::initialize(uint16_t port) {
 }
 
 /**
- * writes a log character on serial buffer
+ * writes a s_log character on serial buffer
  *
  * @param c:	the character to write
  */
@@ -87,7 +87,7 @@ void DebugInterface::writeLogCharacter(char c) {
 }
 
 /**
- * writes a log byte byte on serial buffer
+ * writes a s_log byte byte on serial buffer
  *
  * @param value:	the value to write
  */
@@ -96,7 +96,7 @@ void DebugInterface::writeByte(uint8_t value) {
 }
 
 /**
- * writes a log short value on serial buffer
+ * writes a s_log short value on serial buffer
  *
  * @param value:	the value to write
  */
@@ -106,7 +106,7 @@ void DebugInterface::writeShort(uint16_t value) {
 }
 
 /**
- * writes a log integer value on serial buffer
+ * writes a s_log integer value on serial buffer
  *
  * @param value:	the value to write
  */
@@ -118,7 +118,7 @@ void DebugInterface::writeInt(uint32_t value) {
 }
 
 /**
- * writes a log long value on serial buffer
+ * writes a s_log long value on serial buffer
  *
  * @param value:	the value to write
  */
@@ -134,7 +134,7 @@ void DebugInterface::writeLong(uint64_t value) {
 }
 
 /**
- * writes a log string on serial buffer
+ * writes a s_log string on serial buffer
  *
  * @param string:	the string to write
  */

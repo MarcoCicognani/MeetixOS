@@ -20,9 +20,9 @@
 #ifndef MEETIX_LIBRARY_UI_COMPONENT
 #define MEETIX_LIBRARY_UI_COMPONENT
 
+#include <Api.h>
 #include <cstdint>
-#include <eva.h>
-#include <eva/utils/local.hpp>
+#include <Api/utils/local.hpp>
 #include <graphics/metrics/rectangle.hpp>
 #include <gui/boundseventcomponent.hpp>
 #include <gui/componentregistry.hpp>
@@ -68,18 +68,18 @@ protected:
             return 0;
 
         // send initialization request
-        MessageTransaction tx = GetMessageTxId();
+        MessageTransaction tx = s_get_message_tx_id();
 
         UiCreateComponentRequest request;
         request.header.id = UI_PROTOCOL_CREATE_COMPONENT;
         request.type      = ComponentConstant;
-        SendMessageT(UiDelegateTid, &request, sizeof(UiCreateComponentRequest), tx);
+        s_send_message_t(UiDelegateTid, &request, sizeof(UiCreateComponentRequest), tx);
 
         // read response
         size_t         bufferSize = sizeof(MessageHeader) + sizeof(UiCreateComponentResponse);
         Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
-        if ( ReceiveMessageT(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+        if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
             UiCreateComponentResponse* response
                 = (UiCreateComponentResponse*)MESSAGE_CONTENT(buffer());
 

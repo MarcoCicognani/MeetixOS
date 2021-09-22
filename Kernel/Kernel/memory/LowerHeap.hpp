@@ -25,7 +25,7 @@
 #ifndef MEMORY_LOWERMEM_ALLOC
 #define MEMORY_LOWERMEM_ALLOC
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <stddef.h>
 

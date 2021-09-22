@@ -27,7 +27,7 @@
  *
  */
 int putc(int c, FILE* stream) {
-    AtomicLock(&stream->lock);
+    s_atomic_lock(&stream->lock);
     int res      = __fputc_unlocked(c, stream);
     stream->lock = 0;
     return res;

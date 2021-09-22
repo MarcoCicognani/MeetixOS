@@ -25,8 +25,7 @@
 #ifndef EVA_SHARED_SYSTEM_CPU
 #define EVA_SHARED_SYSTEM_CPU
 
-#include "eva/stdint.h"
-
+#include <Api/StdInt.h>
 #include <system/interrupts/lapic.hpp>
 
 /**

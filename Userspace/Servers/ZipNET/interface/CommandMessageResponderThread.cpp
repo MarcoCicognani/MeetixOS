@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <eva.h>
+#include <Api.h>
 #include <events/EventProcessor.hpp>
 #include <gui/uispech.hpp>
 #include <interface/CommandMessageResponderThread.hpp>
@@ -33,17 +33,20 @@
  *
  */
 [[noreturn]] void CommandMessageResponderThread::run() {
-    TaskRegisterID("messageResponder");
+    s_task_register_id("messageResponder");
     EventProcessor* eventProcessor = ZipNET::instance()->eventProcessor;
     while ( true ) {
         // wait until messages are added
-        AtomicLock(&bufferEmpty);
+        s_atomic_lock(&bufferEmpty);
 
         // process all
         while ( buffer.size() > 0 ) {
             // get reference to response from the queue
             CommandMessageResponse_t& response = buffer.back();
-            SendMessageT(response.target, response.message, response.length, response.transaction);
+            s_send_message_t(response.target,
+                             response.message,
+                             response.length,
+                             response.transaction);
 
             // delete message buffer
             delete (MessageHeader*)response.message;

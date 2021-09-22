@@ -37,8 +37,8 @@
  */
 VMResult Virtual8086Monitor::handleGpf(Thread* current) {
     ProcessorStateVm86* ctx = (ProcessorStateVm86*)current->cpuState;
-    uint8_t*  ip  = (uint8_t*)SEGOFF_TO_LINEAR(ctx->defaultFrame.cs, ctx->defaultFrame.eip);
-    uint16_t* sp  = (uint16_t*)SEGOFF_TO_LINEAR(ctx->defaultFrame.ss, ctx->defaultFrame.esp);
+    uint8_t*  ip = (uint8_t*)SEGMENT_OFFSET_TO_LINEAR(ctx->defaultFrame.cs, ctx->defaultFrame.eip);
+    uint16_t* sp = (uint16_t*)SEGMENT_OFFSET_TO_LINEAR(ctx->defaultFrame.ss, ctx->defaultFrame.esp);
     uint32_t* esp = (uint32_t*)sp;
 
     bool operands32 = false;
@@ -143,8 +143,8 @@ VMResult Virtual8086Monitor::handleGpf(Thread* current) {
                     else
                         sp[2] &= ~EFLAG_IF;
 
-                    ctx->defaultFrame.cs  = FP_SEG(ivt->entry[ip[1]]);
-                    ctx->defaultFrame.eip = FP_OFF(ivt->entry[ip[1]]);
+                    ctx->defaultFrame.cs  = FAR_PTR_SEGMENT(ivt->entry[ip[1]]);
+                    ctx->defaultFrame.eip = FAR_PTR_OFFSET(ivt->entry[ip[1]]);
 
                     ++current->getVm86Information()->interruptRecursionLevel;
 

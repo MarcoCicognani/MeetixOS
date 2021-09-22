@@ -24,7 +24,7 @@
 
 #include "filesystem/FsDelegateRamdisk.hpp"
 
-#include "eva/utils/local.hpp"
+#include "Api/utils/local.hpp"
 #include "EvangelionNG.hpp"
 #include "filesystem/filesystem.hpp"
 #include "logger/logger.hpp"
@@ -161,7 +161,7 @@ void FsDelegateRamdisk::finishRead(Thread*                requester,
 FsTransactionID FsDelegateRamdisk::requestWrite(Thread*                    requester,
                                                 FsNode*                    node,
                                                 int64_t                    length,
-                                                Contextual<uint8_t*>       buffer,
+                                                Contextual<const uint8_t*> buffer,
                                                 FileDescriptorContent*     fd,
                                                 FsTransactionHandlerWrite* handler) {
     // start/repeat transaction
@@ -325,7 +325,7 @@ void FsDelegateRamdisk::finishDirectoryRefresh(Thread*                          
  */
 FsTransactionID FsDelegateRamdisk::requestOpen(Thread*                   requester,
                                                FsNode*                   node,
-                                               char*                     filename,
+                                               const char*               filename,
                                                int32_t                   flags,
                                                int32_t                   mode,
                                                FsTransactionHandlerOpen* handler) {

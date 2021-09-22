@@ -33,7 +33,7 @@ PPreferenceCountDirectory directory;
  *
  * @param address:		the new address to add
  */
-void PPreferenceTracker::increment(PhysicalAddress address) {
+void PPreferenceTracker::increment(PhysAddr address) {
     uint32_t ti = TABLE_IN_DIRECTORY_INDEX(address);
     uint32_t pi = PAGE_IN_TABLE_INDEX(address);
 
@@ -53,7 +53,7 @@ void PPreferenceTracker::increment(PhysicalAddress address) {
  * @param address:		the physical address to be unreferenced
  * @return the number of references to the provided address
  */
-int16_t PPreferenceTracker::decrement(PhysicalAddress address) {
+int16_t PPreferenceTracker::decrement(PhysAddr address) {
     uint32_t ti = TABLE_IN_DIRECTORY_INDEX(address);
     uint32_t pi = PAGE_IN_TABLE_INDEX(address);
 

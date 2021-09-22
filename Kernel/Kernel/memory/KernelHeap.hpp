@@ -25,7 +25,7 @@
 #ifndef MEMORY_EVA_HEAP_ALLOCATOR
 #define MEMORY_EVA_HEAP_ALLOCATOR
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <memory/memory.hpp>
 #include <memory/paging.hpp>
@@ -46,7 +46,7 @@ public:
      * @param start:	the start address
      * @param end:		the end address
      */
-    static void initialize(VirtualAddress start, VirtualAddress end);
+    static void initialize(VirtAddr start, VirtAddr end);
 
     /**
      * Expands the heap space by {KERNEL_HEAP_EXPAND_STEP} bytes.

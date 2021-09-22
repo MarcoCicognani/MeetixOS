@@ -27,7 +27,7 @@ bool PngComponent::setPNG(std::string path, Point postion) {
         return false;
 
     // send initialization request
-    MessageTransaction tx = GetMessageTxId();
+    MessageTransaction tx = s_get_message_tx_id();
 
     size_t pathLen;
     if ( path.length() > MAX_PATH )
@@ -43,13 +43,13 @@ bool PngComponent::setPNG(std::string path, Point postion) {
     request.pathToPng[pathLen] = 0;
     request.pngPosition        = postion;
 
-    SendMessageT(UiDelegateTid, &request, sizeof(UiComponentSetupPng), tx);
+    s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentSetupPng), tx);
 
     // read response
     size_t  bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetupPngResponse);
     uint8_t buffer[bufferSize];
 
-    if ( ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         UiComponentSetupPngResponse* response
             = (UiComponentSetupPngResponse*)MESSAGE_CONTENT(buffer);
         if ( response->status == UI_PROTOCOL_SUCCESS )

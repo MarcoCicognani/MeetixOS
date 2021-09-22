@@ -25,7 +25,7 @@
 #ifndef EVA_INTERRUPTS_PIC
 #define EVA_INTERRUPTS_PIC
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * PIC constants

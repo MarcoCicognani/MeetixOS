@@ -27,8 +27,8 @@
 #include "GuiScreen.hpp"
 #include "HeadlessScreen.hpp"
 
+#include <Api.h>
 #include <dirent.h>
-#include <eva.h>
 #include <fstream>
 #include <gui/ui.hpp>
 #include <io/keyboard.hpp>
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 
     // headless may only run once
     if ( headless ) {
-        if ( TaskGetID("CandyText") != -1 ) {
+        if ( s_task_get_id("CandyText") != -1 ) {
             cerr << "error: CandyShell can only be executed once when in headless mode" << endl;
             Utils::log("error: CandyShell can only be executed once when in headless mode");
             return -1;
@@ -87,9 +87,9 @@ int main(int argc, char* argv[]) {
     if ( headless ) {
         login = new Login(); // instantiate object
 
-        Tid LoginThread = CreateThread((void*)&Login::LoginEntry); // create thread and get Tid
+        Tid LoginThread = s_create_thread((void*)&Login::LoginEntry); // create thread and get Tid
 
-        Join(LoginThread); // join to thread
+        s_join(LoginThread); // join to thread
     }
 
     // instantiate a shell
@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
 
     // join all tty
     while ( candyShellThreads.size() > 0 ) {
-        Join(candyShellThreads[0]);
+        s_join(candyShellThreads[0]);
     }
 
     delete inf;
@@ -109,17 +109,17 @@ int main(int argc, char* argv[]) {
 
 /**
  * Prepares the shell application for execution. Loads the current keyboard
- * layout and disables video log to avoid interfering with headless mode.
+ * layout and disables video s_log to avoid interfering with headless mode.
  */
 void CandyShell::prepare() {
     // register as the shell task when headless
     if ( headless ) {
-        TaskRegisterID("CandyText");
+        s_task_register_id("CandyText");
         Utils::log("initializing headless CandyShell");
         Environment::set("SYSTEM_LEVEL", "textual");
 
         // disable video logging
-        SetVideoLog(false);
+        s_set_video_log(false);
     }
 
     else
@@ -142,7 +142,8 @@ void CandyShell::prepare() {
 void CandyShell::createShell(CreateShellInfo* inf) {
     history = new History();
 
-    candyShellThreads.push_back(CreateThreadD((void*)&CandyShell::shellStartRoutine, (void*)inf));
+    candyShellThreads.push_back(
+        s_create_thread_d((void*)&CandyShell::shellStartRoutine, (void*)inf));
 }
 
 /*
@@ -157,7 +158,7 @@ void CandyShell::exit(Screen* dsp) {
     delete history;
 
     // kill itself
-    Kill(GetPid());
+    s_kill(s_get_pid());
 }
 
 /**
@@ -169,7 +170,7 @@ void CandyShell::shellStartRoutine(CreateShellInfo* inf) {
 
     string name = threadName.str();
 
-    TaskRegisterID(name.c_str());
+    s_task_register_id(name.c_str());
 
     // create new shell
     CandyShell* shell = new CandyShell();
@@ -241,7 +242,7 @@ void CandyShell::switchTo(CandyShell* shell) {
  *
  */
 SetWorkingDirectoryStatus CandyShell::writeWorkingDirectory() {
-    return SetWorkingDirectory(workingDirectory.c_str());
+    return s_set_working_directory(workingDirectory.c_str());
 }
 
 /**
@@ -249,7 +250,7 @@ SetWorkingDirectoryStatus CandyShell::writeWorkingDirectory() {
  */
 void CandyShell::readWorkingDirectory() {
     char* buf = new char[PATH_MAX];
-    GetWorkingDirectory(buf);
+    s_get_working_directory(buf);
 
     workingDirectory = string(buf);
 
@@ -261,12 +262,12 @@ void CandyShell::readWorkingDirectory() {
  *
  */
 void CandyShell::run(CreateShellInfo* inf) {
-    hostname      = Environment::getHostname();
-    currentUser   = Environment::getLoggedUser();
+    hostname       = Environment::getHostname();
+    currentUser    = Environment::getLoggedUser();
     currentUser[0] = static_cast<char>(toupper(currentUser[0]));
-    homeDirectory = "/Users/" + currentUser;
+    homeDirectory  = "/Users/" + currentUser;
 
-    SetWorkingDirectory(homeDirectory.c_str());
+    s_set_working_directory(homeDirectory.c_str());
     readWorkingDirectory();
 
     screen->clean();
@@ -307,7 +308,7 @@ void CandyShell::run(CreateShellInfo* inf) {
     while ( true ) {
         // wait for activity
         inactive = false;
-        AtomicBlock(&inactive);
+        s_atomic_block(&inactive);
         // screen->write("hey\n");
         screen->updateCursor();
 
@@ -375,10 +376,10 @@ void CandyShell::run(CreateShellInfo* inf) {
  *
  */
 void CandyShell::runCommand(string command) {
-    File_t termIn;
-    File_t termOut;
-    File_t termErr;
-    Pid    lastPid;
+    FileHandle termIn;
+    FileHandle termOut;
+    FileHandle termErr;
+    Pid        lastPid;
 
     if ( !runTermCommand(command, &termIn, &termOut, &termErr, &lastPid) )
         return;
@@ -388,7 +389,7 @@ void CandyShell::runCommand(string command) {
     inData.continueInput = true;
     inData.stdinWriteEnd = termIn;
     inData.shell         = this;
-    Tid rin              = CreateThreadD((void*)&standardInThread, (void*)&inData);
+    Tid rin              = s_create_thread_d((void*)&standardInThread, (void*)&inData);
 
     StandardOutThreadData outData;
     outData.id            = "stdOut";
@@ -396,7 +397,7 @@ void CandyShell::runCommand(string command) {
     outData.err           = false;
     outData.stdoutReadEnd = termOut;
     outData.screen        = screen;
-    Tid rout              = CreateThreadD((void*)&standardOutThread, (void*)&outData);
+    Tid rout              = s_create_thread_d((void*)&standardOutThread, (void*)&outData);
 
     StandardOutThreadData errData;
     errData.id            = "stdErrOut";
@@ -404,41 +405,41 @@ void CandyShell::runCommand(string command) {
     errData.err           = true;
     errData.stdoutReadEnd = termErr;
     errData.screen        = screen;
-    Tid rerr              = CreateThreadD((void*)&standardOutThread, (void*)&errData);
+    Tid rerr              = s_create_thread_d((void*)&standardOutThread, (void*)&errData);
 
     inData.intPid = lastPid;
 
     // wait for process to exit
-    Join(lastPid);
+    s_join(lastPid);
     inData.continueInput = false;
     outData.stop         = true;
     errData.stop         = true;
 
     // wait for input thread before leaving
-    Join(rin);
-    Join(rout);
-    Join(rerr);
+    s_join(rin);
+    s_join(rout);
+    s_join(rerr);
 }
 
 /**
  *
  */
-bool CandyShell::runTermCommand(string  command,
-                                File_t* termIn,
-                                File_t* termOut,
-                                File_t* termErr,
-                                Pid*    intPid) {
+bool CandyShell::runTermCommand(string      command,
+                                FileHandle* termIn,
+                                FileHandle* termOut,
+                                FileHandle* termErr,
+                                Pid*        intPid) {
     // create initial pipe
     FsPipeStatus firstPipeStat;
-    File_t       firstPipeW;
-    File_t       firstPipeR;
-    PipeS(&firstPipeW, &firstPipeR, &firstPipeStat);
+    FileHandle   firstPipeW;
+    FileHandle   firstPipeR;
+    s_pipe_s(&firstPipeW, &firstPipeR, &firstPipeStat);
     if ( firstPipeStat != FS_PIPE_SUCCESSFUL ) {
         screen->write("unable to create process pipe", RGB(255, 0, 0));
         return false;
     }
-    *termIn           = firstPipeW;
-    File_t lastStdout = firstPipeR;
+    *termIn               = firstPipeW;
+    FileHandle lastStdout = firstPipeR;
 
     // split by pipes
     string         part;
@@ -463,26 +464,26 @@ bool CandyShell::runTermCommand(string  command,
         // create pipes
         FsPipeStatus pipeStat;
 
-        File_t outPipeW;
-        File_t outPipeR;
-        PipeS(&outPipeW, &outPipeR, &pipeStat);
+        FileHandle outPipeW;
+        FileHandle outPipeR;
+        s_pipe_s(&outPipeW, &outPipeR, &pipeStat);
         if ( pipeStat != FS_PIPE_SUCCESSFUL ) {
             screen->write("unable to create process out pipe", RGB(255, 0, 0));
             return false;
         }
 
         // execute it
-        Pid    spawnedPid;
-        File_t spawnedStdio[3];
-        File_t inStdio[3];
+        Pid        spawnedPid;
+        FileHandle spawnedStdio[3];
+        FileHandle inStdio[3];
         inStdio[0] = lastStdout;
         inStdio[1] = outPipeW;
         inStdio[2] = FD_NONE;
 
         if ( i == numparts - 1 ) { // stderr only for last
-            File_t errPipeW;
-            File_t errPipeR;
-            PipeS(&errPipeW, &errPipeR, &pipeStat);
+            FileHandle errPipeW;
+            FileHandle errPipeR;
+            s_pipe_s(&errPipeW, &errPipeR, &pipeStat);
             if ( pipeStat != FS_PIPE_SUCCESSFUL ) {
                 screen->write("unable to create process err pipe", RGB(255, 0, 0));
                 return false;
@@ -493,21 +494,21 @@ bool CandyShell::runTermCommand(string  command,
 
         if ( !execute(path, args, &spawnedPid, spawnedStdio, inStdio) ) {
             // closing pipe
-            Close(outPipeW);
-            Close(outPipeR);
+            s_close(outPipeW);
+            s_close(outPipeR);
 
             return false;
         }
 
         // close stderr in last
         if ( i == numparts - 1 )
-            Close(inStdio[2]);
+            s_close(inStdio[2]);
 
         // close write end of this pipe in this process
-        Close(outPipeW);
+        s_close(outPipeW);
 
         // close read end of previous pipe in this process
-        Close(lastStdout);
+        s_close(lastStdout);
 
         // next one uses this as output
         lastStdout = outPipeR;
@@ -658,9 +659,9 @@ bool CandyShell::handleBuiltin(string command) {
             path = path.substr(0, spacePos);
         }
 
-        Pid    pid;
-        File_t out_stdio[3];
-        File_t inStdio[3];
+        Pid        pid;
+        FileHandle out_stdio[3];
+        FileHandle inStdio[3];
         inStdio[0] = FD_NONE;
         inStdio[1] = FD_NONE;
         inStdio[2] = FD_NONE;
@@ -705,7 +706,7 @@ bool CandyShell::handleBuiltin(string command) {
             stringstream msg;
             msg << "sleeping for " << ms << "ms... ";
             screen->write(msg.str(), RGB(255, 255, 255));
-            Sleep(ms);
+            s_sleep(ms);
             screen->write("awake!\n", RGB(255, 255, 255));
         }
 
@@ -825,13 +826,13 @@ bool CandyShell::handleBuiltin(string command) {
  *
  */
 void CandyShell::standardOutThread(StandardOutThreadData* data) {
-    TaskRegisterID(data->id);
+    s_task_register_id(data->id);
     int   buflen = 1024;
     char* buf    = new char[buflen];
 
     while ( true ) {
         FsReadStatus stat;
-        int          read = ReadS(data->stdoutReadEnd, buf, buflen, &stat);
+        int          read = s_read_s(data->stdoutReadEnd, buf, buflen, &stat);
 
         if ( stat == FS_READ_SUCCESSFUL ) {
             Color_t localColor = (data->err ? RGB(255, 0, 0) : RGB(255, 255, 255));
@@ -867,7 +868,7 @@ void CandyShell::standardOutThread(StandardOutThreadData* data) {
  *
  */
 void CandyShell::standardInThread(StandardInThreadData* data) {
-    TaskRegisterID(data->id);
+    s_task_register_id(data->id);
     string line;
 
     while ( data->continueInput ) {
@@ -878,12 +879,12 @@ void CandyShell::standardInThread(StandardInThreadData* data) {
 
         if ( stat == SHELL_INPUT_STATUS_EXIT ) {
             if ( data->intPid != -1 )
-                RaiseSignal(data->intPid, SIGINT);
+                s_raise_signal(data->intPid, SIGINT);
         }
 
         else if ( stat == SHELL_INPUT_STATUS_SCREEN_SWITCH ) {
             data->shell->switchToNext();
-            AtomicBlock(&data->shell->inactive);
+            s_atomic_block(&data->shell->inactive);
         }
 
         else if ( stat == SHELL_INPUT_STATUS_DEFAULT ) {
@@ -932,11 +933,11 @@ bool CandyShell::findExecutable(string name, string& out) {
 /**
  *
  */
-bool CandyShell::execute(string shortpath,
-                         string args,
-                         Pid*   outPid,
-                         File_t outStdio[3],
-                         File_t inStdio[3]) {
+bool CandyShell::execute(string     shortpath,
+                         string     args,
+                         Pid*       outPid,
+                         FileHandle outStdio[3],
+                         FileHandle inStdio[3]) {
     // check for command in path
     string realpath;
     if ( !findExecutable(shortpath, realpath) ) {
@@ -945,13 +946,13 @@ bool CandyShell::execute(string shortpath,
     }
 
     // spawn binary
-    SpawnStatus status = SpawnPOI(realpath.c_str(),
-                                  args.c_str(),
-                                  workingDirectory.c_str(),
-                                  SECURITY_LEVEL_APPLICATION,
-                                  outPid,
-                                  outStdio,
-                                  inStdio);
+    SpawnStatus status = s_spawn_poi(realpath.c_str(),
+                                     args.c_str(),
+                                     workingDirectory.c_str(),
+                                     SECURITY_LEVEL_APPLICATION,
+                                     outPid,
+                                     outStdio,
+                                     inStdio);
 
     if ( status == SPAWN_STATUS_SUCCESSFUL ) {
         return true;

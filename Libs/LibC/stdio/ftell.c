@@ -34,7 +34,7 @@ long int ftell(FILE* stream) {
  *
  */
 off_t ftello(FILE* stream) {
-    AtomicLock(&stream->lock);
+    s_atomic_lock(&stream->lock);
     int res      = __ftello_unlocked(stream);
     stream->lock = 0;
     return res;

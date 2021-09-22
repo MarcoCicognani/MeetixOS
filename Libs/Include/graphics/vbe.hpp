@@ -47,7 +47,7 @@ public:
     VbeModeInfo(uint16_t w, uint16_t h, uint16_t bp, uint16_t bps, uint32_t fb)
         : resX(w), resY(h), bpp(bp), bpsl(bps), lfb(fb) {
     }
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * vbe command type
@@ -73,7 +73,7 @@ public:
      */
     VbeRequestHeader(VbeCommand cmd) : command(cmd) {
     }
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * vbe request status type
@@ -104,7 +104,7 @@ public:
     VbeSetModeRequest(VbeCommand cmd, uint16_t w, uint16_t h, uint8_t bp)
         : header(cmd), width(w), height(h), bpp(bp) {
     }
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * response of the driver
@@ -112,7 +112,7 @@ public:
 struct VbeSetModeResponse {
     VbeSetModeStatus status;   // status code
     VbeModeInfo      modeInfo; // if successed, filled with the mode info setupped
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * static class to manage the default video driver

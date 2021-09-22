@@ -26,7 +26,7 @@
  *
  */
 int raise(int sig) {
-    RaiseSignalStatus status = RaiseSignal(GetTid(), sig);
+    RaiseSignalStatus status = s_raise_signal(s_get_tid(), sig);
 
     if ( status == RAISE_SIGNAL_STATUS_SUCCESSFUL ) {
         return 0;

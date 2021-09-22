@@ -69,7 +69,7 @@ FsTransactionID FsDelegatePipe::requestRead(Thread*                   requester,
         id = FsTransactionStore::nextTransaction();
 
     // find the right pipe
-    Pipe* pipe = Pipes::get(node->physFsID);
+    auto pipe = Pipes::get(node->physFsID);
     if ( pipe == nullptr ) {
         // cancel with error if pipe not found
         handler->result = -1;
@@ -158,7 +158,7 @@ void FsDelegatePipe::finishRead(Thread*                requester,
 FsTransactionID FsDelegatePipe::requestWrite(Thread*                    requester,
                                              FsNode*                    node,
                                              int64_t                    length,
-                                             Contextual<uint8_t*>       buffer,
+                                             Contextual<const uint8_t*> buffer,
                                              FileDescriptorContent*     fd,
                                              FsTransactionHandlerWrite* handler) {
     // start/repeat transaction
@@ -170,7 +170,7 @@ FsTransactionID FsDelegatePipe::requestWrite(Thread*                    requeste
         id = FsTransactionStore::nextTransaction();
 
     // find the pipe to write to
-    Pipe* pipe = Pipes::get(node->physFsID);
+    auto pipe = Pipes::get(node->physFsID);
     if ( pipe == nullptr ) {
         handler->result = -1;
         handler->status = FS_WRITE_ERROR;
@@ -257,7 +257,7 @@ FsTransactionID FsDelegatePipe::requestGetLength(Thread*                        
                                                  FsTransactionHandlerGetLength* handler) {
     FsTransactionID id = FsTransactionStore::nextTransaction();
 
-    Pipe* pipe = Pipes::get(node->physFsID);
+    auto pipe = Pipes::get(node->physFsID);
     if ( pipe ) {
         handler->length = pipe->capacity;
         handler->status = FS_LENGTH_SUCCESSFUL;
@@ -307,7 +307,7 @@ void FsDelegatePipe::finishDirectoryRefresh(Thread*                             
  */
 FsTransactionID FsDelegatePipe::requestOpen(Thread*                   requester,
                                             FsNode*                   node,
-                                            char*                     filename,
+                                            const char*               filename,
                                             int32_t                   flags,
                                             int32_t                   mode,
                                             FsTransactionHandlerOpen* handler) {

@@ -18,9 +18,9 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "Api.h"
 #include "errno.h"
-#include "eva.h"
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 #include "string.h"
 
 /**

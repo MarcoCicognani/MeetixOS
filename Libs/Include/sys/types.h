@@ -20,8 +20,8 @@
 #ifndef __MEETIX_LIBC_TYPES__
 #define __MEETIX_LIBC_TYPES__
 
-#include <eva.h>
-#include <eva/common.h>
+#include <Api.h>
+#include <Api/Common.h>
 
 __BEGIN_C
 

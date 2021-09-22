@@ -20,7 +20,7 @@
 #ifndef MEETIX_LIBRARY_UI_NOTIFICATION
 #define MEETIX_LIBRARY_UI_NOTIFICATION
 
-#include <eva.h>
+#include <Api.h>
 #include <graphics/color.hpp>
 #include <string>
 
@@ -60,7 +60,7 @@ typedef struct {
 
     // animation type
     MessageAnimation_t animation;
-} __attribute__((packed)) Notification_t;
+} A_PACKED Notification_t;
 
 /*
  * static class to send message notification on user interface

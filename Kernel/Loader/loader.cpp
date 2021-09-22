@@ -152,7 +152,7 @@ uint32_t EvaLoader::findFreeMemory(MultibootInformation* info, uint32_t start, i
     logInfo("%! searching for %i free pages (starting at %h)", "Eva Loader", count, start);
 
     // parsing each physical addres from start to 32bit max range
-    PhysicalAddress location = start;
+    PhysAddr location = start;
     while ( location < 0xFFFFFFFF ) {
         bool notWithinModule = true;
 

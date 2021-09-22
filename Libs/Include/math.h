@@ -20,8 +20,8 @@
 #ifndef __MEETIX_LIBC_MATH__
 #define __MEETIX_LIBC_MATH__
 
-#include <eva/common.h>
-#include <eva/stdint.h>
+#include <Api/Common.h>
+#include <Api/StdInt.h>
 
 __BEGIN_C
 

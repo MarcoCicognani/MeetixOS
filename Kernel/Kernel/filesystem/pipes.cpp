@@ -46,7 +46,7 @@ void Pipes::initialize() {
 PipeID Pipes::create() {
     PipeID id = -1;
 
-    Pipe* pipe       = new Pipe();
+    auto pipe        = new Pipe();
     pipe->buffer     = new uint8_t[PIPE_DEFAULT_CAPACITY];
     pipe->write      = pipe->buffer;
     pipe->read       = pipe->buffer;
@@ -69,7 +69,7 @@ Pipe* Pipes::get(PipeID id) {
     HashMap<PipeID, Pipe*>::MapNode_t* entry = pipes->get(id);
     if ( entry )
         return entry->value;
-    return 0;
+    return nullptr;
 }
 
 /**
@@ -78,12 +78,12 @@ Pipe* Pipes::get(PipeID id) {
 void Pipes::addReference(PipeID id, Pid pid) {
     HashMap<PipeID, Pipe*>::MapNode_t* pipeEntry = pipes->get(id);
     if ( pipeEntry ) {
-        Pipe* pipe = pipeEntry->value;
+        auto pipe = pipeEntry->value;
 
-        ListEntry<Pid>* entry = new ListEntry<Pid>;
-        entry->value          = pid;
-        entry->next           = pipe->references;
-        pipe->references      = entry;
+        auto entry       = new ListEntry<Pid>;
+        entry->value     = pid;
+        entry->next      = pipe->references;
+        pipe->references = entry;
     }
 }
 
@@ -106,7 +106,7 @@ bool Pipes::hasReferenceFromOtherProcess(Pipe* pipe, Pid pid) {
 void Pipes::removeReference(PipeID id, Pid pid) {
     HashMap<PipeID, Pipe*>::MapNode_t* pipeEntry = pipes->get(id);
     if ( pipeEntry ) {
-        Pipe* pipe = pipeEntry->value;
+        auto pipe = pipeEntry->value;
 
         // find entry and remove
         ListEntry<Pid>* prev  = 0;

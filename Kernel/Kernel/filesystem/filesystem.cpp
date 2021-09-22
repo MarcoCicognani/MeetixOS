@@ -24,7 +24,7 @@
 
 #include "filesystem/filesystem.hpp"
 
-#include "eva/utils/local.hpp"
+#include "Api/utils/local.hpp"
 #include "filesystem/FsDelegate.hpp"
 #include "filesystem/FsDelegateMount.hpp"
 #include "filesystem/FsDelegatePipe.hpp"
@@ -182,16 +182,12 @@ void FileSystem::processClosed(Pid pid) {
 
         auto nodeEntry = nodes->get(content->nodeID);
         if ( nodeEntry ) {
-            FsCloseStatus stat = unmapFile(pid, nodeEntry->value, content);
-
-            if ( stat == FS_CLOSE_SUCCESSFUL ) {
+            if ( !unmapFile(pid, nodeEntry->value, content) ) {
                 logDebug("%! successfully closed fd %i when exiting process %i",
                          "filesystem",
                          content->id,
                          pid);
-            }
-
-            else {
+            } else {
                 logDebug("%! failed to close fd %i when exiting process %i with status %i",
                          "filesystem",
                          content->id,
@@ -216,7 +212,7 @@ void FileSystem::processForked(Pid source, Pid fork) {
           ++iter ) {
         FileDescriptorContent* content = iter->value;
 
-        FsClonefdStatus stat;
+        FsCloneFdStatus stat;
         clonefd(content->id, source, content->id, fork, &stat);
         logDebug("%! forking cloned fd %i from process %i -> %i with status %i",
                  "filesystem",
@@ -230,7 +226,7 @@ void FileSystem::processForked(Pid source, Pid fork) {
 /**
  *
  */
-File_t FileSystem::mapFile(Pid pid, FsNode* node, int32_t openFlags, File_t fd) {
+FileHandle FileSystem::mapFile(Pid pid, FsNode* node, int32_t openFlags, FileHandle fd) {
     if ( node->type == FS_NODE_TYPE_FILE )
         return FileDescriptors::map(pid, node->id, fd, openFlags);
 
@@ -311,7 +307,7 @@ void FileSystem::getRealPathToNode(FsNode* node, char* out) {
 /**
  *
  */
-void FileSystem::concatAsAbsolutePath(char* relativeBase, char* in, char* out) {
+void FileSystem::concatAsAbsolutePath(const char* relativeBase, const char* in, char* out) {
     // check if valid input
     int lenIn = String::length(in);
     if ( lenIn == 0 ) {
@@ -336,11 +332,11 @@ void FileSystem::concatAsAbsolutePath(char* relativeBase, char* in, char* out) {
 /**
  *
  */
-FsRegisterAsDelegateStatus FileSystem::createDelegate(Thread*   thread,
-                                                      char*     name,
-                                                      FsPhysID  physMountpointID,
-                                                      FsVirtID* outMountpointID,
-                                                      Address*  outTransactionStorage) {
+FsRegisterAsDelegateStatus FileSystem::createDelegate(Thread*     thread,
+                                                      const char* name,
+                                                      FsPhysID    physMountpointID,
+                                                      FsVirtID*   outMountpointID,
+                                                      Address*    outTransactionStorage) {
     FsNode* existing = root->findChild(name);
     if ( existing )
         return FS_REGISTER_AS_DELEGATE_FAILED_EXISTING;
@@ -382,7 +378,7 @@ FsRegisterAsDelegateStatus FileSystem::createDelegate(Thread*   thread,
  *
  */
 bool FileSystem::nodeForDescriptor(Pid                     pid,
-                                   File_t                  fd,
+                                   FileHandle              fd,
                                    FsNode**                outNode,
                                    FileDescriptorContent** outFd) {
     // find file descriptor
@@ -405,15 +401,15 @@ bool FileSystem::nodeForDescriptor(Pid                     pid,
 /**
  *
  */
-File_t FileSystem::clonefd(File_t           sourceFd,
-                           Pid              sourcePid,
-                           File_t           targetFd,
-                           Pid              targetPid,
-                           FsClonefdStatus* outStatus) {
+FileHandle FileSystem::clonefd(FileHandle       sourceFd,
+                               Pid              sourcePid,
+                               FileHandle       targetFd,
+                               Pid              targetPid,
+                               FsCloneFdStatus* outStatus) {
     FsNode*                sourceNode;
     FileDescriptorContent* sourceFdContent;
     if ( !nodeForDescriptor(sourcePid, sourceFd, &sourceNode, &sourceFdContent) ) {
-        *outStatus = FS_CLONEFD_INVALID_SOURCE_FD;
+        *outStatus = FS_CLONE_FD_INVALID_SOURCE_FD;
         return -1;
     }
 
@@ -428,27 +424,27 @@ File_t FileSystem::clonefd(File_t           sourceFd,
     }
 
     // open new file descriptor
-    File_t created = mapFile(targetPid, sourceNode, 0, targetFd);
+    FileHandle created = mapFile(targetPid, sourceNode, 0, targetFd);
     if ( created != -1 ) {
         // clone fd contents
         FileDescriptorContent* createdFdContent = 0;
         FsNode*                createdNode      = 0;
         if ( !nodeForDescriptor(targetPid, created, &createdNode, &createdFdContent) ) {
-            *outStatus = FS_CLONEFD_ERROR;
+            *outStatus = FS_CLONE_FD_ERROR;
             return -1;
         }
         sourceFdContent->cloneInto(createdFdContent);
 
         // operation fine
-        *outStatus = FS_CLONEFD_SUCCESSFUL;
+        *outStatus = FS_CLONE_FD_SUCCESSFUL;
         return created;
     }
 
-    *outStatus = FS_CLONEFD_ERROR;
+    *outStatus = FS_CLONE_FD_ERROR;
     return -1;
 }
 
-FsPipeStatus FileSystem::pipe(Thread* thread, File_t* outWrite, File_t* outRead) {
+FsPipeStatus FileSystem::pipe(Thread* thread, FileHandle* outWrite, FileHandle* outRead) {
     FsNode* node = createNode();
     node->type   = FS_NODE_TYPE_PIPE;
     pipeRoot->addChild(node);

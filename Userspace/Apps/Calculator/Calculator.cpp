@@ -222,7 +222,7 @@ int main(int argc, char* argv[]) {
         window->setVisible(true);
 
         // lock application, if unlock the flag ui closing and terminating
-        AtomicBlock(&blocker);
+        s_atomic_block(&blocker);
 
         delete display;
         delete window;

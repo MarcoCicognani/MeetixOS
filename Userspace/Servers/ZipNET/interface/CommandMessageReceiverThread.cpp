@@ -39,11 +39,11 @@ void CommandMessageReceiverThread::run() {
 
     while ( !stop ) {
         // receive messages
-        MessageReceiveStatus stat = ReceiveMessageTMB(buffer,
-                                                      bufferLength,
-                                                      MESSAGE_TRANSACTION_NONE,
-                                                      MESSAGE_RECEIVE_MODE_BLOCKING,
-                                                      &stop);
+        MessageReceiveStatus stat = s_receive_message_tmb(buffer,
+                                                          bufferLength,
+                                                          MESSAGE_TRANSACTION_NONE,
+                                                          MESSAGE_RECEIVE_MODE_BLOCKING,
+                                                          &stop);
 
         if ( stop )
             break;
@@ -52,7 +52,7 @@ void CommandMessageReceiverThread::run() {
             MessageHeader* requestMessage = (MessageHeader*)buffer;
 
             // add message to the event processing queue
-            size_t   messageTotalSize = sizeof(MessageHeader) + requestMessage->length;
+            size_t   messageTotalSize = sizeof(MessageHeader) + requestMessage->m_message_len;
             uint8_t* messageCopy      = new uint8_t[messageTotalSize];
             memcpy(messageCopy, buffer, messageTotalSize);
 

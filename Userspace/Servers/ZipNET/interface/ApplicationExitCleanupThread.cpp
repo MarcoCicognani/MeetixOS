@@ -29,10 +29,10 @@
  *
  */
 void ApplicationExitCleanupThread::run() {
-    TaskRegisterID("exitCleaner");
+    s_task_register_id("exitCleaner");
 
     // wait until the thread finish
-    Join(pid);
+    s_join(pid);
 
     // tell the command receiver to quit
     commandReceiver->stop = true;

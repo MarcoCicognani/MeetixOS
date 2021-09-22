@@ -25,7 +25,7 @@
 #ifndef EVA_FILESYSTEM_FILESYSTEMRAMDISKTASKED
 #define EVA_FILESYSTEM_FILESYSTEMRAMDISKTASKED
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 #include "filesystem/FsDelegate.hpp"
 #include "memory/contextual.hpp"
 #include "tasking/tasking.hpp"
@@ -36,7 +36,7 @@
 class FsDelegateTasked : public FsDelegate {
 private:
     Contextual<void*> transactionStorage;
-    PhysicalAddress   transactionStoragePhys;
+    PhysAddr          transactionStoragePhys;
     Thread*           delegateThread;
 
 public:
@@ -61,7 +61,7 @@ public:
      *
      * @return true if the preparation was successful
      */
-    bool prepare(VirtualAddress* outTransactionStorage);
+    bool prepare(VirtAddr* outTransactionStorage);
 
     /**
      *
@@ -108,7 +108,7 @@ public:
     virtual FsTransactionID requestWrite(Thread*                    requester,
                                          FsNode*                    node,
                                          int64_t                    length,
-                                         Contextual<uint8_t*>       buffer,
+                                         Contextual<const uint8_t*> buffer,
                                          FileDescriptorContent*     fd,
                                          FsTransactionHandlerWrite* handler);
 
@@ -149,7 +149,7 @@ public:
      */
     virtual FsTransactionID requestOpen(Thread*                   requester,
                                         FsNode*                   node,
-                                        char*                     filename,
+                                        const char*               filename,
                                         int32_t                   flags,
                                         int32_t                   mode,
                                         FsTransactionHandlerOpen* handler);

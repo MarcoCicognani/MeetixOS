@@ -34,8 +34,8 @@
  * from 0x00000000 to reservedAreaEnd.
  *
  * @param reservedAreaEnd:		end of the reserved kernel area
- * @param setupInformation:		setup information struct use to store physical page directory
- * location
+ * @param setupInformation:		setup information struct use to store physical page
+ * directory location
  */
 void PagingInitializer::initialize(uint32_t reservedAreaEnd, SetupInformation* setupInformation) {
     uint32_t pageDirectoryAddress                  = EvaLoader::getPhysicalAllocator()->allocate();

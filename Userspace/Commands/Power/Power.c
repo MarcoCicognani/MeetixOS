@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <eva.h>
+#include <Api.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -37,9 +37,9 @@ int main(int argc, char* argv[]) {
     if ( argc < 2 ) {
         usage(argv[0]);
     } else if ( !strcmp(argv[1], "-s") || !strcmp(argv[1], "--shutdown") ) {
-        ShutdownSystem();
+        s_shutdown_system();
     } else if ( !strcmp(argv[1], "-r") || !strcmp(argv[1], "--reboot") ) {
-        RebootSystem();
+        s_reboot_system();
     } else {
         usage(argv[0]);
     }

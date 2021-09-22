@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <eva.h>
+#include <Api.h>
 #include <stdio.h>
 #include <string.h>
 #include <tasking/tasking.hpp>
@@ -44,17 +44,17 @@ void usage(const char* cmd_name) {
 
 // compare by id
 static inline bool compare_by_tid(const ThreadDescriptor& task1, const ThreadDescriptor& task2) {
-    return task1.id > task2.id;
+    return task1.m_tid > task2.m_tid;
 }
 
 // compare by Name
 static inline bool compare_by_name(const ThreadDescriptor& task1, const ThreadDescriptor& task2) {
-    return strcmp(task1.identifier, task2.identifier) > 0;
+    return strcmp(task1.m_identifier, task2.m_identifier) > 0;
 }
 
 // compare by Memory
 static inline bool compare_by_memory(const ThreadDescriptor& task1, const ThreadDescriptor& task2) {
-    return task1.threadUserStackSize > task2.threadUserStackSize;
+    return task1.m_thread_user_stack_size > task2.m_thread_user_stack_size;
 }
 
 /*
@@ -108,13 +108,13 @@ int main(int argc, const char* argv[]) {
                 "Execution time (ms)",
                 "Scheduled Time",
                 "User Stack (kb)");
-        for (auto& thread : threads)
+        for ( auto& thread : threads )
             println("%5i %-56s %-20d %-20d %5ikb",
-                    thread.id,
-                    thread.identifier,
-                    thread.executionTime,
-                    thread.scheduledTimes,
-                    thread.threadUserStackSize);
+                    thread.m_tid,
+                    thread.m_identifier,
+                    thread.m_execution_time,
+                    thread.m_scheduled_times,
+                    thread.m_thread_user_stack_size);
     }
 
     else

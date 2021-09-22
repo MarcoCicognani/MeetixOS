@@ -25,7 +25,7 @@
  *
  */
 void fseterr(FILE* stream) {
-    AtomicLock(&stream->lock);
+    s_atomic_lock(&stream->lock);
     if ( stream->impl_seterr ) {
         stream->impl_seterr(stream);
     } else {

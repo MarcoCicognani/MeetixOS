@@ -30,14 +30,14 @@ using CompareFn = bool (*)(const ProcessDescriptor& task1, const ProcessDescript
  * compare by id
  */
 static inline bool compare_by_pid(const ProcessDescriptor& task1, const ProcessDescriptor& task2) {
-    return task1.main.id > task2.main.id;
+    return task1.m_main_thread.m_tid > task2.m_main_thread.m_tid;
 }
 
 /*
  * compare by Name
  */
 static inline bool compare_by_name(const ProcessDescriptor& task1, const ProcessDescriptor& task2) {
-    return strcmp(task1.main.identifier, task2.main.identifier) > 0;
+    return strcmp(task1.m_main_thread.m_identifier, task2.m_main_thread.m_identifier) > 0;
 }
 
 /*
@@ -45,19 +45,19 @@ static inline bool compare_by_name(const ProcessDescriptor& task1, const Process
  */
 static inline bool compare_by_memory(const ProcessDescriptor& task1,
                                      const ProcessDescriptor& task2) {
-    return task1.heapUsed > task2.heapUsed;
+    return task1.m_heap_size > task2.m_heap_size;
 }
 
 /*
  * get memory usage from kernel and show a percentage bar on screen
  */
 void showTotalMemoryUsage() {
-    EvaSysInfo info;
-    Sysinfo(&info);
+    SystemInfo info;
+    s_system_info(&info);
 
     // TODO get width from shell
-    auto width   = (info.totRam / 1024) / 10;
-    auto used    = (info.totRam / 1024) - (info.freeRam / 1024);
+    auto width   = (info.m_memory_total_amount / 1024) / 10;
+    auto used    = (info.m_memory_total_amount / 1024) - (info.m_memory_free_amount / 1024);
     auto percent = used / 100 * width;
     auto cells   = (width * percent) / 100;
 
@@ -70,7 +70,7 @@ void showTotalMemoryUsage() {
             putc(' ', stdout);
     }
 
-    printf("] %d/%dMB\n\n", used, info.totRam / 1024);
+    printf("] %d/%dMB\n\n", used, info.m_memory_total_amount / 1024);
 }
 
 /**
@@ -87,16 +87,16 @@ void show_processes(CompareFn compare, bool useMegabytes) {
     // print on screen
     println("%5s %6s %6s %-18s %-38s", "PID", "HEAP", "IMAGE", "NAME", "PATH");
     for ( auto& proc_data : procs_list ) {
-        proc_data.imageSize
-            = (proc_data.imageSize > 1024 ? proc_data.imageSize / 1024 : proc_data.imageSize);
-        proc_data.heapUsed
-            = (proc_data.heapUsed > 1024 ? proc_data.heapUsed / 1024 : proc_data.heapUsed);
+        proc_data.m_image_size = (proc_data.m_image_size > 1024 ? proc_data.m_image_size / 1024
+                                                                : proc_data.m_image_size);
+        proc_data.m_heap_size
+            = (proc_data.m_heap_size > 1024 ? proc_data.m_heap_size / 1024 : proc_data.m_heap_size);
         println("%5d %6d %6d %-18s %-38s",
-                proc_data.main.id,
-                proc_data.heapUsed,
-                proc_data.imageSize / 1024,
-                proc_data.main.identifier,
-                proc_data.sourcePath);
+                proc_data.m_main_thread.m_tid,
+                proc_data.m_heap_size,
+                proc_data.m_image_size / 1024,
+                proc_data.m_main_thread.m_identifier,
+                proc_data.m_source_path);
     }
 }
 

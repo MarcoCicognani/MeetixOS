@@ -25,7 +25,7 @@
 #ifndef EVA_FILESYSTEM_FILEDESCRIPTORS
 #define EVA_FILESYSTEM_FILEDESCRIPTORS
 
-#include "eva/fs.h"
+#include "Api/FileSystem.h"
 #include "filesystem/pipes.hpp"
 
 #include <tasking/process.hpp>
@@ -35,10 +35,10 @@
  *
  */
 struct FileDescriptorContent {
-    File_t   id;
-    int64_t  offset;
-    FsVirtID nodeID;
-    int32_t  openFlags;
+    FileHandle id;
+    int64_t    offset;
+    FsVirtID   nodeID;
+    int32_t    openFlags;
 
     void cloneInto(FileDescriptorContent* other) {
         other->offset    = offset;
@@ -51,8 +51,8 @@ struct FileDescriptorContent {
  *
  */
 struct FileDescriptorTable {
-    File_t                                  nextFileDescriptor = 3; // skips stdin/stdout/stderr
-    HashMap<File_t, FileDescriptorContent*> descriptors;
+    FileHandle                                  nextFileDescriptor = 3; // skips stdin/stdout/stderr
+    HashMap<FileHandle, FileDescriptorContent*> descriptors;
 };
 
 /**
@@ -61,16 +61,16 @@ struct FileDescriptorTable {
 class FileDescriptors {
 private:
     static FileDescriptorContent* createDescriptor(FileDescriptorTable* table,
-                                                   File_t               overrideFile_t = -1);
+                                                   FileHandle           overrideFile_t = -1);
 
 public:
     static void initialize();
 
-    static File_t map(Pid pid, FsVirtID nodeID, File_t fd, int32_t openFlags);
-    static void   unmap(Pid pid, File_t fd);
-    static void   unmapAll(Pid pid);
+    static FileHandle map(Pid pid, FsVirtID nodeID, FileHandle fd, int32_t openFlags);
+    static void       unmap(Pid pid, FileHandle fd);
+    static void       unmapAll(Pid pid);
 
-    static FileDescriptorContent* get(Pid pid, File_t fd);
+    static FileDescriptorContent* get(Pid pid, FileHandle fd);
     static FileDescriptorTable*   getProcessTable(Pid pid);
 };
 

@@ -48,25 +48,25 @@ public:
     static std::string trim(std::string str);
 
     /**
-     * prints a log on current log interface of the system
+     * prints a s_log on current log interface of the system
      *
-     * @param message:		the message to print to log
+     * @param message:		the message to print to s_log
      * @param ...:			parameters for formatted message
      */
     static void log(const std::string& message, ...);
 
     /**
-     * prints a log on current log interface of the system
+     * prints a log on current s_log interface of the system
      *
-     * @param message:		the message to print to log
+     * @param message:		the message to print to s_log
      * @param ...:			parameters for formatted message
      */
     static void log(const char* message, ...);
 
     /**
-     * prints a log on current log interface of the system
+     * prints a log on current s_log interface of the system
      *
-     * @param message:		the message to print to log
+     * @param message:		the message to print to s_log
      * @param l:			arguments list
      */
     static void log(const char* message, va_list l);

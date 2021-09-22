@@ -77,6 +77,6 @@ public:
         return Point(x + p.x, y + p.y);
     }
 
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

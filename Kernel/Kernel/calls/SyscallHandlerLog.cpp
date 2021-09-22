@@ -17,21 +17,24 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
 #include <calls/SyscallHandler.hpp>
+#include <Api/utils/local.hpp>
 #include <logger/logger.hpp>
 #include <tasking/process.hpp>
 
 /**
- * Writes a message to the system log.
+ * Writes a message to the system s_log.
  */
 SYSCALL_HANDLER(log) {
     Process*    process = currentThread->process;
     SyscallLog* data    = (SyscallLog*)SYSCALL_DATA(currentThread->cpuState);
 
     // % signs are not permitted, because the internal logger would get confused.
-    uint32_t len = String::length(data->message);
+    uint32_t    len = String::length(data->m_message_buffer);
+    Local<char> local_message{ String::duplicate(data->m_message_buffer) };
+
     for ( uint32_t i = 0; i < len; i++ )
-        if ( data->message[i] == '%' )
-            data->message[i] = '!';
+        if ( local_message()[i] == '%' )
+            local_message()[i] = '!';
 
     const char* taskIdent = currentThread->getIdentifier();
     if ( !taskIdent )
@@ -39,22 +42,20 @@ SYSCALL_HANDLER(log) {
 
     // If the task has an identifier, do log with name:
     const char* prefix = "*";
-    if ( taskIdent != 0 ) {
-        logInfo("%! (%i:%i) %s", taskIdent, process->main->id, currentThread->id, data->message);
-    }
-
-    else {
-        logInfo("%! (%i:%i) %s", prefix, process->main->id, currentThread->id, data->message);
+    if ( taskIdent ) {
+        logInfo("%! (%i:%i) %s", taskIdent, process->main->id, currentThread->id, local_message());
+    } else {
+        logInfo("%! (%i:%i) %s", prefix, process->main->id, currentThread->id, local_message());
     }
 
     return currentThread;
 }
 
 /**
- * Sets the log output to the screen enabled or disabled.
+ * Sets the s_log output to the screen enabled or disabled.
  */
 SYSCALL_HANDLER(setVideoLog) {
     SyscallSetVideoLog* data = (SyscallSetVideoLog*)SYSCALL_DATA(currentThread->cpuState);
-    Logger::setVideo(data->enabled);
+    Logger::setVideo(data->m_enable);
     return currentThread;
 }

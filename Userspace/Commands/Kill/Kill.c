@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <eva.h>
+#include <Api.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,7 +28,7 @@
  */
 void usage(const char* cmdname) {
     println("");
-    println("Kill command utility");
+    println("s_kill command utility");
     println("");
     println("usage: %s [filter] <task-id>");
     println("avaible filters");
@@ -38,7 +38,7 @@ void usage(const char* cmdname) {
 }
 
 /**
- * kill command utility
+ * s_kill command utility
  */
 int main(int argc, const char* argv[]) {
     // create flag for help
@@ -79,23 +79,23 @@ int main(int argc, const char* argv[]) {
             procname[0] = '\0';
 
             // check if the target is a process or a Thread
-            if ( GetPidForTid(target) == target ) {
+            if ( s_get_pid_for_tid(target) == target ) {
                 strcpy(tasktype, "Process");
 
                 // only if we have a process we can restart it
                 if ( restart )
-                    TaskGetIdentifier(target, procname);
+                    s_get_task_identifier(target, procname);
             } else
                 strcpy(tasktype, "Thread");
 
             // call kernel to kill the target
-            switch ( Kill(target) ) {
+            switch ( s_kill(target) ) {
                 case KILL_STATUS_SUCCESSFUL:
                     {
                         println("%s %d successfully killed", tasktype, target);
                         if ( restart && procname[0] ) {
                             Pid pid;
-                            SpawnP(procname, "", "/", SECURITY_LEVEL_APPLICATION, &pid);
+                            s_spawn_p(procname, "", "/", SECURITY_LEVEL_APPLICATION, &pid);
                             println("restarted process %s with Pid %d", procname, pid);
                         } else if ( restart && !procname[0] )
                             fprintf(stderr, "unable to restart a Thread\n");

@@ -33,7 +33,7 @@ TaskManagerThread_t::TaskManagerThread_t(Label_t* where, const Rectangle& bounds
  *
  */
 void TaskManagerThread_t::run() {
-    TaskRegisterID("taskManager");
+    s_task_register_id("taskManager");
 
     internal->setVisible(true);
     internal->setColor(0, RGB(255, 255, 255));
@@ -46,6 +46,6 @@ void TaskManagerThread_t::run() {
             titles << " | " << current->getTitle() << " | ";
 
         internal->setTitle(titles.str());
-        Sleep(100);
+        s_sleep(100);
     }
 }

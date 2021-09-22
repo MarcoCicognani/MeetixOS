@@ -24,7 +24,7 @@
 
 #include "filesystem/FsDelegateMount.hpp"
 
-#include "eva/utils/local.hpp"
+#include "Api/utils/local.hpp"
 #include "EvangelionNG.hpp"
 #include "filesystem/filesystem.hpp"
 #include "logger/logger.hpp"
@@ -91,7 +91,7 @@ void FsDelegateMount::finishRead(Thread*                requester,
 FsTransactionID FsDelegateMount::requestWrite(Thread*                    requester,
                                               FsNode*                    node,
                                               int64_t                    length,
-                                              Contextual<uint8_t*>       buffer,
+                                              Contextual<const uint8_t*> buffer,
                                               FileDescriptorContent*     fd,
                                               FsTransactionHandlerWrite* handler) {
     // start/repeat transaction
@@ -167,7 +167,7 @@ void FsDelegateMount::finishDirectoryRefresh(Thread*                            
  */
 FsTransactionID FsDelegateMount::requestOpen(Thread*                   requester,
                                              FsNode*                   node,
-                                             char*                     filename,
+                                             const char*               filename,
                                              int32_t                   flags,
                                              int32_t                   mode,
                                              FsTransactionHandlerOpen* handler) {

@@ -20,7 +20,7 @@
 #ifndef MEETIX_LIBRARY_TASKING_THREAD
 #define MEETIX_LIBRARY_TASKING_THREAD
 
-#include <eva.h>
+#include <Api.h>
 
 /**
  * base class incpired by the thread class of java environment

@@ -50,7 +50,7 @@ FsTransactionStatus FsTransactionStore::getStatus(FsTransactionID id) {
     auto entry = store->get(id);
     if ( entry )
         return entry->value;
-    return 0;
+    return FS_TRANSACTION_FINISHED;
 }
 
 /**

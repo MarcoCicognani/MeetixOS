@@ -16,9 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
+#include <Api.h>
 #include <ctype.h>
-#include <eva.h>
-#include <eva/elf32.h>
+#include <Api/ELF32.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,10 +38,10 @@ void usage(const char* cmdname) {
 /*
  * read elf header
  */
-bool readElfHeader(File_t file, uint8_t* buffer) {
+bool readElfHeader(FileHandle file, uint8_t* buffer) {
     // read the elf header
     FsReadStatus stat;
-    size_t       read = ReadS(file, buffer, sizeof(Elf32Ehdr), &stat);
+    size_t       read = s_read_s(file, buffer, sizeof(Elf32Ehdr), &stat);
 
     // ckeck for status
     if ( stat != FS_READ_SUCCESSFUL || read <= 0 )
@@ -139,7 +139,7 @@ const char* getStrVersion(int32_t code) {
 /*
  * try to read the file as elf
  */
-bool tryElf(File_t      file,
+bool tryElf(FileHandle  file,
             const char* elftype,
             const char* arch,
             const char* ident,
@@ -174,7 +174,7 @@ bool tryElf(File_t      file,
 /*
  * print the file with specification
  */
-void scanFile(File_t file) {
+void scanFile(FileHandle file) {
     // try to read as elf file
     {
         char* elftype = NULL;
@@ -213,7 +213,7 @@ void scanFile(File_t file) {
     uint8_t buffer[strlen(SCRIPT_BEGIN) + strlen(jsDir)];
 
     // read from file
-    Read(file, buffer, strlen(buffer));
+    s_read(file, buffer, strlen(buffer));
 
     // print result
     if ( !strcmp(buffer, jsBegin) )
@@ -236,7 +236,7 @@ void scanFile(File_t file) {
     uint8_t buffer[strlen(SCRIPT_BEGIN) + strlen(mxDir)];
 
     // read from file
-    Read(file, buffer, strlen(buffer));
+    s_read(file, buffer, strlen(buffer));
 
     // print result
     if ( !strcmp(buffer, mxBegin) )
@@ -251,13 +251,13 @@ void scanFile(File_t file) {
     bool utf8text  = true;
 
     // get first the file length
-    uint64_t flength = Length(file);
+    uint64_t flength = s_length(file);
 
     // create buffer
     uint8_t buffer[flength / 2];
 
     // we read only the half of file, is enougth to undestand if is a text file
-    int32_t read = Read(file, buffer, flength / 2);
+    int32_t read = s_read(file, buffer, flength / 2);
 
     // read file
     for ( int index = 0; index < flength; ++index ) {
@@ -310,13 +310,13 @@ int main(int argc, char* argv[]) {
         // check for path
         if ( path ) {
             // open the file
-            File_t file = FD_NONE;
-            if ( (file = OpenF(path, O_RDONLY)) != FD_NONE ) {
+            FileHandle file = FD_NONE;
+            if ( (file = s_open_f(path, O_RDONLY)) != FD_NONE ) {
                 // parse the file and print on screen the properties
                 scanFile(file);
 
                 // always close the file after usage
-                Close(file);
+                s_close(file);
             } else
                 fprintf(stderr, "unable to open the file %s", path);
         }

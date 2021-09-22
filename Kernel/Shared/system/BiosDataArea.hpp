@@ -25,7 +25,7 @@
 #ifndef EVA_SHARED_SYSTEM_BIOSDATAAREA
 #define EVA_SHARED_SYSTEM_BIOSDATAAREA
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * COM port information within the BIOS data area
@@ -35,7 +35,7 @@ struct ComPortInformation {
     uint16_t com2;
     uint16_t com3;
     uint16_t com4;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * LPT information
@@ -44,7 +44,7 @@ struct LptInformation {
     uint16_t lpt1;
     uint16_t lpt2;
     uint16_t lpt3;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Bios data area structure
@@ -56,7 +56,7 @@ struct BiosDataArea {
     uint16_t ebdaShiftedAddr; // must be left-shifted by 4
 
     // Other data is currently not used
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Pointer to the bios data area

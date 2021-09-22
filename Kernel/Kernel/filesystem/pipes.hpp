@@ -25,8 +25,8 @@
 #ifndef EVA_FILESYSTEM_PIPES
 #define EVA_FILESYSTEM_PIPES
 
-#include "eva/kernel.h"
-#include "eva/stdint.h"
+#include "Api/Kernel.h"
+#include "Api/StdInt.h"
 #include "filesystem/pipes.hpp"
 #include "tasking/process.hpp"
 #include "utils/ListEntry.hpp"

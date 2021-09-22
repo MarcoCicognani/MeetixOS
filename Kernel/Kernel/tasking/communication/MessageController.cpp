@@ -124,7 +124,7 @@ MessageHeader* get(size_t size) {
  */
 void release(MessageHeader* msg) {
     // calculate the size of the message
-    size_t size = sizeof(MessageHeader) + msg->length;
+    size_t size = sizeof(MessageHeader) + msg->m_message_len;
 
     // readd the address to the corresponding pool
     if ( size < 32 )
@@ -161,7 +161,7 @@ void MessageController::clear(Tid tid) {
     MessageQueueHead* head = entry->value;
     MessageHeader*    m    = head->first;
     while ( m ) {
-        MessageHeader* after = m->next;
+        MessageHeader* after = m->m_next;
         release(m);
         m = after;
     }
@@ -212,20 +212,20 @@ MessageSendStatus MessageController::sendMessage(Tid                target,
     // create message
     MessageHeader* message = get(sizeof(MessageHeader) + contentLen);
     if ( !message )
-        return MESSAGE_RECEIVE_STATUS_FAILED;
-    message->transaction = tx;
-    message->sender      = source;
-    message->length      = contentLen;
+        return MESSAGE_SEND_STATUS_FAILED;
+    message->m_transaction = tx;
+    message->m_sender_tid  = source;
+    message->m_message_len = contentLen;
     Memory::copy(MESSAGE_CONTENT(message), content, contentLen);
 
     // append to queue
     if ( !queue->first )
         queue->first = message;
     if ( queue->last )
-        queue->last->next = message;
-    message->previous = queue->last;
-    message->next     = 0;
-    queue->last       = message;
+        queue->last->m_next = message;
+    message->m_previous = queue->last;
+    message->m_next     = 0;
+    queue->last         = message;
 
     // increment queue total content length
     queue->total += contentLen;
@@ -237,8 +237,8 @@ MessageSendStatus MessageController::sendMessage(Tid                target,
  * Copy the last received message on the message queue of the target on <out> buffer
  *
  * @param target:		the identifier of the thread that have to receive the message
- * @param out:			the pointer to the userspace instance of the MessageHeader where write
- * the last message
+ * @param out:			the pointer to the userspace instance of the MessageHeader where
+ * write the last message
  * @param max:			the size of the <out> buffer
  * @param tx:			the transaction identifier
  */
@@ -271,11 +271,11 @@ MessageReceiveStatus MessageController::receiveMessage(Tid                target
     else {
         MessageHeader* n = queue->first;
         while ( n ) {
-            if ( n->transaction == tx ) {
+            if ( n->m_transaction == tx ) {
                 message = n;
                 break;
             }
-            n = n->next;
+            n = n->m_next;
         }
     }
 
@@ -284,7 +284,7 @@ MessageReceiveStatus MessageController::receiveMessage(Tid                target
         return MESSAGE_RECEIVE_STATUS_QUEUE_EMPTY;
 
     // check if message exceeds bounds
-    size_t contentLen = message->length;
+    size_t contentLen = message->m_message_len;
     if ( (sizeof(MessageHeader) + contentLen) > max )
         return MESSAGE_RECEIVE_STATUS_EXCEEDS_BUFFER_SIZE;
 
@@ -292,20 +292,20 @@ MessageReceiveStatus MessageController::receiveMessage(Tid                target
     Memory::copy(out, message, sizeof(MessageHeader) + contentLen);
 
     // erase from queue
-    if ( message->next )
-        message->next->previous = message->previous;
+    if ( message->m_next )
+        message->m_next->m_previous = message->m_previous;
     else {
-        queue->last = message->previous;
+        queue->last = message->m_previous;
         if ( queue->last )
-            queue->last->next = 0;
+            queue->last->m_next = 0;
     }
 
-    if ( message->previous )
-        message->previous->next = message->next;
+    if ( message->m_previous )
+        message->m_previous->m_next = message->m_next;
     else {
-        queue->first = message->next;
+        queue->first = message->m_next;
         if ( queue->first )
-            queue->first->previous = 0;
+            queue->first->m_previous = 0;
     }
 
     // free the message

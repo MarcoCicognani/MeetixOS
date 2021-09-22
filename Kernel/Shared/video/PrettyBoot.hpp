@@ -25,7 +25,7 @@
 #ifndef EVA_SHARED_VIDEO_PRETTYBOOT
 #define EVA_SHARED_VIDEO_PRETTYBOOT
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <BuildConfig.hpp>
 #include <stdarg.h>

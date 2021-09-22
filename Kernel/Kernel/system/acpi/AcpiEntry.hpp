@@ -25,8 +25,8 @@
 #ifndef SYSTEM_ACPI_ACPIENTRY
 #define SYSTEM_ACPI_ACPIENTRY
 
-#include "eva/kernel.h"
-#include "eva/stdint.h"
+#include "Api/Kernel.h"
+#include "Api/StdInt.h"
 
 #include <system/acpi/AcpiTableHeader.hpp>
 #include <system/acpi/rsdp.hpp>

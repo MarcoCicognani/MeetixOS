@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <eva.h>
+#include <Api.h>
 #include <string>
 
 #ifndef __SPAWNER__
@@ -84,14 +84,14 @@ void processSpawnRequest(SpawnCommandSpawnRequest* request, Tid requester, Messa
  * @param outErr
  * 		read end of stderr of the process
  */
-bool setupStdio(Pid     createdPid,
-                Pid     requesterPid,
-                File_t* outInw,
-                File_t* outOutr,
-                File_t* outErr,
-                File_t  inStdin,
-                File_t  inStdout,
-                File_t  inStderr);
+bool setupStdio(Pid         createdPid,
+                Pid         requesterPid,
+                FileHandle* outInw,
+                FileHandle* outOutr,
+                FileHandle* outErr,
+                FileHandle  inStdin,
+                FileHandle  inStdout,
+                FileHandle  inStderr);
 
 /**
  * Places the given command line arguments in the kernel buffer
@@ -107,7 +107,7 @@ void writeCliArgs(ProcessCreationIdentifier targetProc, const char* args);
 /**
  *
  */
-BinaryFormat detectFormat(File_t file);
+BinaryFormat detectFormat(FileHandle file);
 
 /**
  * Spawns the binary at <path> passing the arguments <args>. As security level,
@@ -131,11 +131,11 @@ SpawnStatus spawn(const char*   path,
                   SecurityLevel sec_lvl,
                   Pid           requesterPid,
                   Pid*          outPid,
-                  File_t*       outStdin,
-                  File_t*       outStdout,
-                  File_t*       outStderr,
-                  File_t        inStdin,
-                  File_t        inStdout,
-                  File_t        inStderr);
+                  FileHandle*   outStdin,
+                  FileHandle*   outStdout,
+                  FileHandle*   outStderr,
+                  FileHandle    inStdin,
+                  FileHandle    inStdout,
+                  FileHandle    inStderr);
 
 #endif

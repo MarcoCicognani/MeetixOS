@@ -38,7 +38,8 @@ Font_t::Font_t(const std::string& name,
                uint32_t           sourceLength,
                FontStyle          style,
                bool               hint)
-    : name(name), data(nullptr), face(nullptr), okay(false), style(style), activeSize(0), hint(hint) {
+    : name(name), data(nullptr), face(nullptr), okay(false), style(style), activeSize(0),
+      hint(hint) {
     data = new uint8_t[sourceLength];
     memcpy(data, source, sourceLength);
 
@@ -98,7 +99,7 @@ Font_t* Font_t::fromFile(FILE* in, const std::string& name) {
         return existing;
 
     // get the length of the file
-    int64_t length = Length(fileno(in));
+    int64_t length = s_length(fileno(in));
     if ( length == -1 )
         return nullptr;
 

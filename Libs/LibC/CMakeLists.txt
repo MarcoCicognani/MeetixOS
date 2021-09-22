@@ -90,7 +90,7 @@ add_library(LibC
         main.c
         signal/raise.c
         signal/sig_handlers.c
-        signal/signal.c
+        signal/Signal.c
         pthread.c
         _conformity.c
         musl/math/lroundl.c
@@ -392,7 +392,7 @@ add_library(LibC
         stdlib/ldiv.c
         stdlib/qsort.c
         stdlib/exit.c
-        stdlib/system.c
+        stdlib/System.c
         stdlib/getenv.c
         stdlib/atol.c
         stdlib/atof.c

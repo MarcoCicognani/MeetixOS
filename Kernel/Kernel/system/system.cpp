@@ -46,10 +46,10 @@ static uint32_t   processorsAvailable = 0;
  * Used on the BSP to initialize AP processors and interrupt controllers
  *
  * @param initialPageDirectoryPhysical:		physical address of the initial page
- *							 				directory, used for AP
- *startup
+ *							 				directory, used
+ *for AP startup
  */
-void System::initializeBasicSystemPackage(PhysicalAddress initialPageDirectoryPhysical) {
+void System::initializeBasicSystemPackage(PhysAddr initialPageDirectoryPhysical) {
     // Check if the required CPU features are available
     if ( Processor::supportsCpuid() ) {
         logDebug("%! supports CPUID", "cpu");

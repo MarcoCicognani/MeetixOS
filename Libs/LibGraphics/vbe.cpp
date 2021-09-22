@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <eva.h>
+#include <Api.h>
 #include <graphics/vbe.hpp>
 
 /**
@@ -31,21 +31,21 @@
  */
 bool Vbe::setMode(uint16_t width, uint16_t height, uint8_t bpp, VbeModeInfo& out) {
     // identify vbe driver
-    Tid driverTid = TaskGetID(VBE_DRIVER_IDENTIFIER);
+    Tid driverTid = s_task_get_id(VBE_DRIVER_IDENTIFIER);
     if ( driverTid == -1 )
         return false;
 
     // gte the transaction id
-    MessageTransaction transaction = GetMessageTxId();
+    MessageTransaction transaction = s_get_message_tx_id();
 
     // create mode-setting request
     VbeSetModeRequest request(VBE_COMMAND_SET_MODE, width, height, bpp);
-    SendMessageT(driverTid, &request, sizeof(VbeSetModeRequest), transaction);
+    s_send_message_t(driverTid, &request, sizeof(VbeSetModeRequest), transaction);
 
     // receive response
     size_t  buflen = sizeof(MessageHeader) + sizeof(VbeSetModeResponse);
     uint8_t buf[buflen];
-    auto    status = ReceiveMessageT(buf, buflen, transaction);
+    auto    status = s_receive_message_t(buf, buflen, transaction);
     if ( status == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         VbeSetModeResponse* response = (VbeSetModeResponse*)MESSAGE_CONTENT(buf);
         if ( response->status == VBE_SET_MODE_STATUS_SUCCESS ) {

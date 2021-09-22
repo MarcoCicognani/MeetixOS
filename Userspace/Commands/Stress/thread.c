@@ -18,7 +18,7 @@
 
 #include "tests.h"
 
-#include <eva.h>
+#include <Api.h>
 #include <pthread.h>
 #include <sched.h>
 #include <signal.h>
@@ -36,14 +36,14 @@ uint8_t  _verbose    = false;
  */
 static void threadRoutine(void* arg) {
     int count    = *((int*)arg);
-    Tid threadID = GetTid();
+    Tid threadID = s_get_tid();
     if ( _verbose )
         println("Hi from the MeetiX thread %i, count start from %i", threadID, count);
     while ( live ) {
         count++;
         if ( _verbose )
             println("Hi from the MeetiX thread %i, count is %i", threadID, count);
-        Yield();
+        s_yield();
     }
 
     if ( _verbose )
@@ -81,12 +81,12 @@ int testThread(uint8_t verbose) {
     Tid tids[threadCount];
     _verbose = verbose;
     for ( int i = 0; i < threadCount; i++ ) {
-        tids[i] = CreateThreadD((void*)threadRoutine, &i);
+        tids[i] = s_create_thread_d((void*)threadRoutine, &i);
         if ( _verbose )
             println("Created thread number %i with tid %i", i, tids[i]);
     }
 
-    println("Created %i threads, waiting for 5 seconds until to kill all", threadCount);
+    println("Created %i threads, waiting for 5 seconds until to s_kill all", threadCount);
     sleep(5);
 
     // after this instruction all threads when become on the while conditions breaks
@@ -94,7 +94,7 @@ int testThread(uint8_t verbose) {
 
     // wait for last termination
     for ( int i = 0; i < threadCount; i++ )
-        Join(tids[i]);
+        s_join(tids[i]);
 
     println("Bye bye");
 }
@@ -111,7 +111,7 @@ int testPosixThread(uint8_t verbose) {
             println("Created pthread number %i with tid %i", i, pthreads[i].id);
     }
 
-    println("Created %i threads, waiting for 5 seconds until to kill all", threadCount);
+    println("Created %i threads, waiting for 5 seconds until to s_kill all", threadCount);
     sleep(5);
 
     // after this instruction all threads when become on the while conditions breaks

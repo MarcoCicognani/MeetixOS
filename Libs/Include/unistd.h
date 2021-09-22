@@ -20,7 +20,7 @@
 #ifndef __MEETIX_LIBC_UNISTD__
 #define __MEETIX_LIBC_UNISTD__
 
-#include <eva/common.h>
+#include <Api/Common.h>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -76,47 +76,47 @@ int chdir(const char* path);
 ssize_t read(int fd, void* buf, size_t count);
 
 /**
- * POSIX wrapper for <Write>
+ * POSIX wrapper for <s_write>
  */
 ssize_t write(int fd, const void* buf, size_t count);
 
 /**
- * POSIX wrapper for <Seek>
+ * POSIX wrapper for <s_seek>
  */
 off_t lseek(int fd, off_t offset, int whence);
 
 /**
- * POSIX wrapper for <Tell>
+ * POSIX wrapper for <s_tell>
  */
 long int tell(int filedes);
 
 /**
- * POSIX wrapper for <Close>
+ * POSIX wrapper for <s_close>
  */
 int close(int filedes);
 
 /**
- * POSIX wrapper for <Sbrk>
+ * POSIX wrapper for <s_set_break>
  */
 void* sbrk(intptr_t increment);
 
 /**
- * POSIX wrapper for <GetTid>
+ * POSIX wrapper for <s_get_tid>
  */
 pid_t getpid();
 
 /**
- * POSIX wrapper for <GetPid>
+ * POSIX wrapper for <s_get_pid>
  */
 pid_t getppid();
 
 /**
- * POSIX wrapper for <Sleep>, but with seconds instead of milliseconds
+ * POSIX wrapper for <s_sleep>, but with seconds instead of milliseconds
  */
 unsigned sleep(unsigned seconds);
 
 /**
- * POSIX wrapper for <GetWorkingDirectory>
+ * POSIX wrapper for <s_get_working_directory>
  */
 char* getcwd(char* buf, size_t size);
 

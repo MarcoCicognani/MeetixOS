@@ -57,7 +57,7 @@ void ChunkAllocator::merge() {
  * @param start:	the starting address
  * @param end:		the ending address
  */
-void ChunkAllocator::initialize(VirtualAddress start, VirtualAddress end) {
+void ChunkAllocator::initialize(VirtAddr start, VirtAddr end) {
     first       = (ChunkHeader*)start;
     first->used = false;
     first->size = end - start - sizeof(ChunkHeader);
@@ -69,7 +69,7 @@ void ChunkAllocator::initialize(VirtualAddress start, VirtualAddress end) {
  *
  * @param size:		the size of the expansion
  */
-void ChunkAllocator::expand(VirtualAddress size) {
+void ChunkAllocator::expand(VirtAddr size) {
     // Find last chunk
     ChunkHeader* last = first;
     while ( last->next )

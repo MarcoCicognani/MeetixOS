@@ -36,7 +36,7 @@ FsTransactionHandlerDirectoryRefresh::startTransaction(Thread* thread) {
     // take the delegate
     FsDelegate* delegate = folder->getDelegate();
     if ( delegate == nullptr ) {
-        data()->status = FS_READ_DIRECTORY_ERROR;
+        data()->m_read_directory_status = FS_READ_DIRECTORY_ERROR;
         logWarn("%! reading directory failed due to missing delegate on node %i",
                 "filesystem",
                 folder->id);

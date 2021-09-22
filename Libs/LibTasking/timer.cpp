@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <eva.h>
+#include <Api.h>
 #include <sstream>
 #include <tasking/timer.hpp>
 #include <utility>
@@ -40,7 +40,7 @@ Timer::Timer(const TimeSpan& tm, Functor_t func, bool begin)
  */
 Timer::~Timer() {
     lock = false;
-    Kill(timedThreadID);
+    s_kill(timedThreadID);
 }
 
 /**
@@ -56,19 +56,19 @@ bool Timer::start() {
     if ( timedThreadID == -1 ) {
         // create the name for the timer
         std::stringstream name;
-        name << GetTid() << "timer";
+        name << s_get_tid() << "timer";
 
         // create the function body
         Functor_t body = [this] {
             while ( true ) {
-                function();         // execute the function provided
-                Sleep(timing);      // sleep for the timing provided
-                AtomicBlock(&lock); // lock if necessary
+                function();            // execute the function provided
+                s_sleep(timing);       // sleep for the timing provided
+                s_atomic_block(&lock); // lock if necessary
             }
         };
 
         // create the thread now
-        timedThreadID = CreateThreadN((void*)body.target<void*>(), name.str().c_str());
+        timedThreadID = s_create_thread_n((void*)body.target<void*>(), name.str().c_str());
 
         // check success
         if ( timedThreadID != -1 )

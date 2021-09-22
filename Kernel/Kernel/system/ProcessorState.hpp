@@ -25,7 +25,7 @@
 #ifndef EVA_MULTITASKING_CPU_STATE
 #define EVA_MULTITASKING_CPU_STATE
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * Image of the stack on interrupt
@@ -55,7 +55,7 @@ struct ProcessorState {
     uint32_t eflags;
     uint32_t esp;
     uint32_t ss;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Image of the stack on interrupt from a VM86 task
@@ -69,6 +69,6 @@ struct ProcessorStateVm86 {
     uint32_t ds;
     uint32_t fs;
     uint32_t gs;
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

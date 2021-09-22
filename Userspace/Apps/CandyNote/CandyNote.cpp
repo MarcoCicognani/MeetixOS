@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
     editor->mainLoop();
 
     uint8_t s = true;
-    AtomicBlock(&s);
+    s_atomic_block(&s);
     delete editor;
 }
 
@@ -169,7 +169,7 @@ void CandyNote_t::mainLoop() {
     }
 
     while ( true ) {
-        AtomicBlock(&waiting);
+        s_atomic_block(&waiting);
         readInput();
 
         switch ( state ) {

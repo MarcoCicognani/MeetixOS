@@ -36,6 +36,6 @@ struct GdtEntry {
     uint16_t limitHigh   : 4;
     uint8_t  granularity : 4;
     uint8_t  baseHigh    : 8;
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

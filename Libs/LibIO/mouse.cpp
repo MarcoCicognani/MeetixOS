@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <eva.h>
+#include <Api.h>
 #include <io/mouse.hpp>
 #include <io/ps2.hpp>
 
@@ -31,7 +31,7 @@ Mouse::Info Mouse::read() {
             return Info();
 
     // wait until incoming data is here (and the driver unsets the atom)
-    AtomicBlock(&ps2Area->mouse.atomNothingQueued);
+    s_atomic_block(&ps2Area->mouse.atomNothingQueued);
 
     // take info from the shared memory
     Info event;

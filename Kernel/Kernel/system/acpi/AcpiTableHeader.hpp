@@ -25,7 +25,7 @@
 #ifndef SYSTEM_ACPI_ACPISDTHEADER
 #define SYSTEM_ACPI_ACPISDTHEADER
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * ACPI Table descriptor
@@ -40,6 +40,6 @@ struct AcpiTableHeader {
     uint32_t oemRevision;
     uint32_t creatorId;
     uint32_t creatorRevision;
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

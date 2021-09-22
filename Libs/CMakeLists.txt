@@ -1,3 +1,5 @@
+set(CMAKE_CXX_STANDARD 20)
+
 add_subdirectory(CRTs)
 add_subdirectory(LibApi)
 add_subdirectory(LibC)

@@ -42,14 +42,14 @@ FsTransactionHandlerFinishStatus
 FsTransactionHandlerReadDirectory::finishTransaction(Thread* thread, FsDelegate* delegate) {
     // check if it was called after a refresh, and the status of the refresh was good
     if ( causingHandler != nullptr && causingHandler->status != FS_DIRECTORY_REFRESH_SUCCESSFUL ) {
-        data()->status = FS_READ_DIRECTORY_ERROR;
+        data()->m_read_directory_status = FS_READ_DIRECTORY_ERROR;
         return FS_TRANSACTION_HANDLING_DONE;
     }
 
     // find node at position
     FsNode* item = nullptr;
 
-    int position = data()->iterator->position;
+    int position = data()->m_directory_iterator->m_position;
 
     int  iterpos = 0;
     auto iter    = folder->children;
@@ -64,15 +64,17 @@ FsTransactionHandlerReadDirectory::finishTransaction(Thread* thread, FsDelegate*
 
     // EOD if none found
     if ( item == nullptr ) {
-        data()->status = FS_READ_DIRECTORY_EOD;
+        data()->m_read_directory_status = FS_READ_DIRECTORY_EOD;
         return FS_TRANSACTION_HANDLING_DONE;
     }
 
     // copy data to output
-    Memory::copy(data()->iterator->entryBuffer.name, item->name, String::length(item->name) + 1);
-    ++data()->iterator->position;
-    data()->iterator->entryBuffer.nodeID = item->id;
-    data()->iterator->entryBuffer.type   = item->type;
-    data()->status                       = FS_READ_DIRECTORY_SUCCESSFUL;
+    Memory::copy(data()->m_directory_iterator->m_entry_buffer.m_name,
+                 item->name,
+                 String::length(item->name) + 1);
+    ++data()->m_directory_iterator->m_position;
+    data()->m_directory_iterator->m_entry_buffer.m_node_id   = item->id;
+    data()->m_directory_iterator->m_entry_buffer.m_node_type = item->type;
+    data()->m_read_directory_status                          = FS_READ_DIRECTORY_SUCCESSFUL;
     return FS_TRANSACTION_HANDLING_DONE;
 }

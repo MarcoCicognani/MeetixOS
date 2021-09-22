@@ -68,7 +68,7 @@ Elf32SpawnStatus Elf32Loader::spawnFromRamdisk(const char*    path,
         // Create the process
         Thread* mainThread = ThreadManager::createProcess(securityLevel, nullptr);
         if ( !mainThread ) {
-            logWarn("%! failed to create main thread to spawn ELF binary from ramdisk", "elf32");
+            logWarn("%! failed to create main thread to s_spawn ELF binary from ramdisk", "elf32");
             return Elf32SpawnStatus::PROCESS_CREATION_FAILED;
         }
 

@@ -71,7 +71,7 @@ public:
         bool    alt;      // alt pressed flag
         bool    shift;    // alt pressed flag
         uint8_t scancode; // scancode of the readed character
-    } __attribute__((packed));
+    } A_PACKED;
 
     /**
      * keyboard infos,

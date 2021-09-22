@@ -39,7 +39,7 @@ void GraphicFrontEnd_t::initialize() {
 
     window->onClose([] {
         UI::close();
-        Kill(GetTid());
+        s_kill(s_get_tid());
     });
 
     textBox = Textfield::create();

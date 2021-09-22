@@ -25,7 +25,7 @@
  *
  */
 void rewind(FILE* stream) {
-    AtomicLock(&stream->lock);
+    s_atomic_lock(&stream->lock);
     __fseeko_unlocked(stream, 0, SEEK_SET);
     __clearerr_unlocked(stream);
     stream->lock = 0;

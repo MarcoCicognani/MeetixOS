@@ -20,8 +20,8 @@
 #ifndef __MEETIX_LIBC_SIGNAL__
 #define __MEETIX_LIBC_SIGNAL__
 
-#include <eva/common.h>
-#include <eva/signal.h>
+#include <Api/Common.h>
+#include <Api/Signal.h>
 
 __BEGIN_C
 

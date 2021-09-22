@@ -109,7 +109,7 @@ void GdtManager::initialize() {
  *
  * @param esp0:		the address of the esp to set
  */
-void GdtManager::setTssEsp0(VirtualAddress esp0) {
+void GdtManager::setTssEsp0(VirtAddr esp0) {
     gdtList[System::currentProcessorId()]->tss.esp0 = esp0;
 }
 
@@ -118,7 +118,7 @@ void GdtManager::setTssEsp0(VirtualAddress esp0) {
  *
  * @param userThreadAddr:		the new user thread address
  */
-void GdtManager::setUserThreadAddress(VirtualAddress userThreadAddr) {
+void GdtManager::setUserThreadAddress(VirtAddr userThreadAddr) {
     GdtListEntry* listEntry = gdtList[System::currentProcessorId()];
     Gdt::createGate(&listEntry->entry[6],
                     userThreadAddr,

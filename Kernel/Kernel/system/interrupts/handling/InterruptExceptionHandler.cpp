@@ -180,25 +180,25 @@ Thread* InterruptExceptionHandler::handleGeneralProtectionFault(Thread* currentT
  * @return a new thread
  */
 Thread* InterruptExceptionHandler::handlePageFault(Thread* currentThread) {
-    VirtualAddress  accessedVirtual  = PAGE_ALIGN_DOWN(getCR2());
-    PhysicalAddress accessedPhysical = AddressSpace::virtualToPhysical(accessedVirtual);
+    VirtAddr accessedVirtual  = PAGE_ALIGN_DOWN(getCR2());
+    PhysAddr accessedPhysical = AddressSpace::virtualToPhysical(accessedVirtual);
 
     // handle-able stack overflow?
     if ( currentThread->type == THREAD_TYPE_SUB || currentThread->type == THREAD_TYPE_MAIN ) {
         // calculate the virtual stack area
-        VirtualAddress stackAreaStart
+        VirtAddr stackAreaStart
             = currentThread->userStackAreaStart
             - (THREAD_USER_STACK_RESERVED_VIRTUAL_PAGES - currentThread->userStackPages)
                   * PAGE_SIZE;
-        VirtualAddress stackAreaEnd
+        VirtAddr stackAreaEnd
             = currentThread->userStackAreaStart + currentThread->userStackPages * PAGE_SIZE;
 
         if ( accessedVirtual >= stackAreaStart && accessedVirtual < stackAreaEnd ) {
             // start at the accessed page
-            VirtualAddress unmappedNext = PAGE_ALIGN_DOWN(accessedVirtual);
+            VirtAddr unmappedNext = PAGE_ALIGN_DOWN(accessedVirtual);
             while ( unmappedNext < currentThread->userStackAreaStart ) {
                 // map physical pages until mapped stack-start is reached
-                PhysicalAddress addPagePhys = PPallocator::allocate();
+                PhysAddr addPagePhys = PPallocator::allocate();
                 AddressSpace::map(unmappedNext,
                                   addPagePhys,
                                   DEFAULT_USER_TABLE_FLAGS,
@@ -225,9 +225,9 @@ Thread* InterruptExceptionHandler::handlePageFault(Thread* currentThread) {
         PageTable table = CONST_RECURSIVE_PAGE_TABLE(ti);
         if ( table[pi] != 0 ) {
             // get new physical page
-            PhysicalAddress newPhysPhysical = PPallocator::allocate();
+            PhysAddr newPhysPhysical = PPallocator::allocate();
             // map it temporary
-            VirtualAddress newPhysTemp = TemporaryPagingUtil::map(newPhysPhysical);
+            VirtAddr newPhysTemp = TemporaryPagingUtil::map(newPhysPhysical);
             // copy contents
             Memory::copy((uint8_t*)newPhysTemp, (uint8_t*)accessedVirtual, PAGE_SIZE);
             // write new mapping
@@ -246,7 +246,7 @@ Thread* InterruptExceptionHandler::handlePageFault(Thread* currentThread) {
 
             logDebug("%! (%i:%i) entry %i/%i copied",
                      "cow",
-                     currentThread->process->main->id,
+                     currentThread->process->main->m_proc_id,
                      currentThread->id,
                      ti,
                      pi);
@@ -261,18 +261,6 @@ Thread* InterruptExceptionHandler::handlePageFault(Thread* currentThread) {
             System::currentProcessorId(),
             currentThread->id);
     dump(currentThread);
-
-    auto ebp = reinterpret_cast<VirtualAddress*>(currentThread->cpuState->ebp);
-    logInfo("%# stack trace:");
-    for ( int frame = 0; frame < 5; ++frame ) {
-        auto eip = ebp[1];
-        if ( eip == 0 ) {
-            break;
-        }
-        ebp = reinterpret_cast<VirtualAddress*>(ebp[0]);
-        logInfo("%#  %h", eip);
-    }
-
     return Tasking::schedule();
 }
 
@@ -353,6 +341,7 @@ void InterruptExceptionHandler::dump(Thread* currentThread) {
     logInfo("%#    ecx: %h      edx: %h", cpuState->ecx, cpuState->edx);
     logInfo("%#    esp: %h   state@: %h", cpuState->esp, cpuState);
     logInfo("%#   intr: %h    error: %h", cpuState->intr, cpuState->error);
+    printStackTrace(cpuState);
 }
 
 /**
@@ -363,10 +352,10 @@ void InterruptExceptionHandler::dump(Thread* currentThread) {
 void InterruptExceptionHandler::printStackTrace(ProcessorState* state) {
     // This function is not very safe, use with caution.
     // Disallowed in anything but debug mode.
-#if LOG_LEVEL == LOG_LEVEL_DEBUG
+    //#if LOG_LEVEL == LOG_LEVEL_DEBUG
     logInfo("%! Stack trace:", "exception");
 
-    uint32_t* ebp = (uint32_t*)state->ebp;
+    auto ebp = (uint32_t*)state->ebp;
     for ( uint32_t frame = 0; frame < 5; ++frame ) {
         uint32_t eip = ebp[1];
         if ( eip == 0 )
@@ -376,5 +365,5 @@ void InterruptExceptionHandler::printStackTrace(ProcessorState* state) {
         // uint32_t* arguments = &ebp[2];
         logInfo("%#  %h", eip);
     }
-#endif
+    //#endif
 }

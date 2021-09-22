@@ -25,8 +25,8 @@
 #ifndef EVA_INTERRUPTS_REQUEST_HANDLERS
 #define EVA_INTERRUPTS_REQUEST_HANDLERS
 
-#include "eva/kernel.h"
-#include "eva/stdint.h"
+#include "Api/Kernel.h"
+#include "Api/StdInt.h"
 
 #include <system/ProcessorState.hpp>
 #include <tasking/thread.hpp>

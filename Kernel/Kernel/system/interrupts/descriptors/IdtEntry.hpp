@@ -25,7 +25,7 @@
 #ifndef EVA_INTERRUPTS_IDT_IDTENTRY
 #define EVA_INTERRUPTS_IDT_IDTENTRY
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * Structure of an IDT entry
@@ -36,6 +36,6 @@ struct IdtEntry {
     uint8_t  zero;
     uint8_t  flags;
     uint16_t baseHigh;
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <eva.h>
+#include <Api.h>
 #include <fstream>
 #include <utils/environment.hpp>
 #include <utils/fparser.hpp>
@@ -48,11 +48,11 @@ void Environment::set(const string& key, const string& var) {
     string request = "--setenv " + key + '=' + var;
 
     // exec shell
-    SpawnStatus status = Spawn("/Bins/MxSh", request.c_str(), "/", SECURITY_LEVEL_APPLICATION);
+    SpawnStatus status = s_spawn("/Bins/MxSh", request.c_str(), "/", SECURITY_LEVEL_APPLICATION);
 
     // check exec state
     if ( status != SPAWN_STATUS_SUCCESSFUL )
-        Utils::log("setEnvVar: failed to spawn mx process");
+        Utils::log("setEnvVar: failed to s_spawn mx process");
 }
 
 /**

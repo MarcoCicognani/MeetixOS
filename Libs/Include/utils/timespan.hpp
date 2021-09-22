@@ -20,7 +20,7 @@
 #ifndef MEETIX_LIBRARY_UTILS_TIMESPAN
 #define MEETIX_LIBRARY_UTILS_TIMESPAN
 
-#include <eva/types.h>
+#include <Api/Types.h>
 
 /**
  * time span container, permits to create a formatted timing
@@ -92,6 +92,6 @@ public:
         second      = 0;
         millisecond = 0;
     }
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

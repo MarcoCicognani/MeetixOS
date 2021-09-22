@@ -142,7 +142,7 @@ void MsgBox::show(std::string msg) {
     showComponents();
 
     // wait response from box
-    AtomicBlock(&waiter);
+    s_atomic_block(&waiter);
 
     // deallocate components
     garbageDelete();
@@ -163,7 +163,7 @@ void MsgBox::show(std::string msg, std::string title) {
     showComponents();
 
     // wait response from box
-    AtomicBlock(&waiter);
+    s_atomic_block(&waiter);
 
     // deallocate components
     garbageDelete();
@@ -185,7 +185,7 @@ PressedButton MsgBox::showAndGetResponse(std::string msg, std::string title) {
 
     // wait response from box
     while ( response == BUTTON_NONE )
-        Yield();
+        s_yield();
 
     // deallocate components
     garbageDelete();

@@ -98,6 +98,6 @@ public:
         return !(*this == p);
     }
 
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

@@ -18,9 +18,9 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "Api.h"
 #include "dirent.h"
 #include "errno.h"
-#include "eva.h"
 #include "malloc.h"
 
 /**
@@ -28,7 +28,7 @@
  */
 DIR* opendir(const char* path) {
     FsOpenDirectoryStatus stat;
-    FsDirectoryIterator*  iter = OpenDirectoryS(path, &stat);
+    FsDirectoryIterator*  iter = s_open_directory_s(path, &stat);
 
     if ( stat == FS_OPEN_DIRECTORY_SUCCESSFUL ) {
         DIR* dir    = (DIR*)malloc(sizeof(DIR));

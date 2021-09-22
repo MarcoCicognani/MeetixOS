@@ -26,7 +26,7 @@ bool ColoredComponent::setColor(Color_t shapeColor, Color_t titleColor) {
     if ( !UiInitialized )
         return false;
 
-    MessageTransaction tx = GetMessageTxId();
+    MessageTransaction tx = s_get_message_tx_id();
 
     UiComponentColor request;
     request.header.id  = UI_PROTOCOL_SET_COMPONENT_COLOR;
@@ -34,13 +34,13 @@ bool ColoredComponent::setColor(Color_t shapeColor, Color_t titleColor) {
     request.shapeColor = shapeColor;
     request.titleColor = titleColor;
 
-    SendMessageT(UiDelegateTid, &request, sizeof(UiComponentColor), tx);
+    s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentColor), tx);
 
     // read response
     size_t  bufferSize = sizeof(MessageHeader) + sizeof(UiComponentColorResponse);
     uint8_t buffer[bufferSize];
 
-    if ( ReceiveMessageT(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         UiComponentColorResponse* response = (UiComponentColorResponse*)MESSAGE_CONTENT(buffer);
         if ( response->status == UI_PROTOCOL_SUCCESS ) {
             return true;

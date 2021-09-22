@@ -25,8 +25,8 @@
 #ifndef VBE_DRIVER
 #define VBE_DRIVER
 
+#include <Api.h>
 #include <cstdint>
-#include <eva.h>
 
 /**
  *
@@ -39,21 +39,21 @@ struct VbeInfoBlock {
     uint16_t version;
 
     // OEM string pointer
-    FarPointer oemStringFarPtr;
+    FarPtr oemStringFarPtr;
     // Capability information
     uint8_t capabilities[4];
     // Video modes
-    FarPointer videoModeFarPtr;
+    FarPtr videoModeFarPtr;
 
     // Size of video memory in 64KiB blocks
     uint16_t memoryBlockCount;
 
     // OEM information
-    uint16_t   oemSoftwareRevision;
-    FarPointer oemVendorNameStringFarPtr;
-    FarPointer oemProductNameStringFarPtr;
-    FarPointer oemProductRevisionFarPtr;
-} __attribute__((packed));
+    uint16_t oemSoftwareRevision;
+    FarPtr   oemVendorNameStringFarPtr;
+    FarPtr   oemProductNameStringFarPtr;
+    FarPtr   oemProductRevisionFarPtr;
+} A_PACKED;
 
 /**
  *
@@ -61,14 +61,14 @@ struct VbeInfoBlock {
 #define VBE_MODE_INFO_BLOCK_SIZE 256
 struct ModeInfoBlock {
     // 0
-    uint16_t   modeAttributes;
-    uint8_t    windowAttributesA;
-    uint8_t    windowAttributesB;
-    uint16_t   granularityKb;
-    uint16_t   windowSizeKb;
-    uint16_t   segmentA;
-    uint16_t   segmentB;
-    FarPointer windowFunctionFarPtr;
+    uint16_t modeAttributes;
+    uint8_t  windowAttributesA;
+    uint8_t  windowAttributesB;
+    uint16_t granularityKb;
+    uint16_t windowSizeKb;
+    uint16_t segmentA;
+    uint16_t segmentB;
+    FarPtr   windowFunctionFarPtr;
 
     // 16
     uint16_t bytesPerScanline;
@@ -111,7 +111,7 @@ struct ModeInfoBlock {
     uint8_t  linReservedMaskSize;
     uint8_t  linReservedFieldPosition;
     uint32_t maxPixelClock;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Info about the enabled video mode

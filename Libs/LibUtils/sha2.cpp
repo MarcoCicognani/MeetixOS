@@ -115,7 +115,7 @@ typedef u_int64_t sha2_word64; /* Exactly 8 bytes */
 
 #endif /* SHA2_USE_INTTYPES_H */
 
-/*** SHA-256/384/512 Various Length Definitions ***********************/
+/*** SHA-256/384/512 Various s_length Definitions ***********************/
 /* NOTE: Most of these are in sha2.h */
 #define SHA256_SHORT_BLOCK_LENGTH (SHA256_BLOCK_LENGTH - 8)
 #define SHA384_SHORT_BLOCK_LENGTH (SHA384_BLOCK_LENGTH - 16)

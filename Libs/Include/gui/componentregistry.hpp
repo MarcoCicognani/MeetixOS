@@ -21,8 +21,8 @@
 #define MEETIX_LIBRARY_UI_COMPONENT_REGISTRY
 
 #include <gui/uispech.hpp>
-#include <tasking/lock.hpp>
 #include <map>
+#include <tasking/lock.hpp>
 
 // forward declaration
 class Component;

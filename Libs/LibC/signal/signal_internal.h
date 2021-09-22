@@ -21,7 +21,7 @@
 #ifndef __MEETIX_LIBC_SIGNAL_INTERNAL__
 #define __MEETIX_LIBC_SIGNAL_INTERNAL__
 
-#include "eva.h"
+#include "Api.h"
 #include "signal.h"
 
 __BEGIN_C

@@ -25,7 +25,7 @@
 #ifndef EVA_LOADER_KERNEL_LOADER_
 #define EVA_LOADER_KERNEL_LOADER_
 
-#include "eva/elf32.h"
+#include "Api/ELF32.h"
 
 #include <kernelloader/SetupInformation.hpp>
 #include <multiboot/multiboot.hpp>

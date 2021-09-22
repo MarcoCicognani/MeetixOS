@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <eva.h>
-#include <eva/utils/llist.hpp>
+#include <Api.h>
+#include <Api/utils/llist.hpp>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -89,7 +89,7 @@ bool findOn(char*         directory,
 
     // open the directory
     FsOpenDirectoryStatus stat;
-    FsDirectoryIterator*  iterator = OpenDirectoryS(directory, &stat);
+    FsDirectoryIterator*  iterator = s_open_directory_s(directory, &stat);
     if ( stat != FS_OPEN_DIRECTORY_SUCCESSFUL ) {
         fprintf(stderr, "failed to open the '%s' directory\n", directory);
         return finded;
@@ -99,23 +99,23 @@ bool findOn(char*         directory,
     while ( true ) {
         // read each node
         FsReadDirectoryStatus stat;
-        FsDirectoryEntry*     node = ReadDirectoryS(iterator, &stat);
+        FsDirectoryEntry*     node = s_read_directory_s(iterator, &stat);
 
         // node readed succesful
         if ( stat == FS_READ_DIRECTORY_SUCCESSFUL ) {
             // always check for allocated node
             if ( node ) {
                 // first check if the filename and the node name match
-                if ( !strcmp(node->name, filename) ) {
-                    *type  = node->type;
+                if ( !strcmp(node->m_name, filename) ) {
+                    *type  = node->m_node_type;
                     finded = true;
                     break;
                 }
 
                 // if we are in recursive mode, the filename and the node name not match
                 // and the node is a directory add to directory stack
-                if ( recursive && node->type == FS_NODE_TYPE_FOLDER ) {
-                    addToStack(dirstack, node->name);
+                if ( recursive && node->m_node_type == FS_NODE_TYPE_FOLDER ) {
+                    addToStack(dirstack, node->m_name);
                     break;
                 }
             } else
@@ -128,7 +128,7 @@ bool findOn(char*         directory,
     }
 
     // always close directory
-    CloseDirectory(iterator);
+    s_close_directory(iterator);
 
     return finded;
 }
@@ -226,7 +226,7 @@ int main(int argc, const char* argv[]) {
         if ( filename ) {
             // get first the working directory
             char* curdir = new char[PATH_MAX];
-            GetWorkingDirectory(curdir);
+            s_get_working_directory(curdir);
 
             // check if syscall successful
             if ( curdir ) {

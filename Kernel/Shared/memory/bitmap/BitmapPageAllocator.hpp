@@ -25,7 +25,7 @@
 #ifndef EVA_SHARED_MEMORY_BITMAPPHYSICALPAGEALLOCATOR
 #define EVA_SHARED_MEMORY_BITMAPPHYSICALPAGEALLOCATOR
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <memory/bitmap/bitmap.hpp>
 

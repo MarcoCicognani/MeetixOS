@@ -24,7 +24,7 @@
 
 #include "HeadlessScreen.hpp"
 
-#include <eva.h>
+#include <Api.h>
 #include <string.h>
 #include <utils/utils.hpp>
 
@@ -49,7 +49,7 @@ HeadlessScreen::HeadlessScreen() {
  *
  */
 void HeadlessScreen::clean() {
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
     for ( uint32_t off = 0; off < SCREEN_HEIGHT * SCREEN_WIDTH * 2; off = off + 2 ) {
         outputBuffer[off]     = ' ';
         outputBuffer[off + 1] = (uint8_t)RGB(0, 0, 0);
@@ -62,7 +62,7 @@ void HeadlessScreen::clean() {
  *
  */
 void HeadlessScreen::activate() {
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
     memcpy((uint8_t*)VIDEO_MEMORY, outputBuffer, SCREEN_HEIGHT * SCREEN_WIDTH * 2);
     outputCurrent = outputVideoDirect;
     lock          = false;
@@ -89,7 +89,7 @@ bool HeadlessScreen::setColor(std::string color) {
  *
  */
 void HeadlessScreen::deactivate() {
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
     memcpy(outputBuffer, (uint8_t*)VIDEO_MEMORY, SCREEN_HEIGHT * SCREEN_WIDTH * 2);
     outputCurrent = outputBuffer;
     lock          = false;
@@ -99,7 +99,7 @@ void HeadlessScreen::deactivate() {
  *
  */
 void HeadlessScreen::moveCursor(uint16_t x, uint16_t y) {
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
     uint16_t position = (y * SCREEN_WIDTH) + x;
 
     Utils::Cpu::outportByte(0x3D4, 0x0F);
@@ -137,7 +137,7 @@ void HeadlessScreen::writeChar(char c, Color_t color) {
  *
  */
 void HeadlessScreen::backspace() {
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
     offset                  = offset - 2;
     outputCurrent[offset++] = ' ';
     ++offset; // keep color
@@ -157,7 +157,7 @@ void HeadlessScreen::cleanLine(int lineLength) {
  *
  */
 void HeadlessScreen::write(std::string message, Color_t color, bool visible) {
-    AtomicLock(&lock);
+    s_atomic_lock(&lock);
     char* p = (char*)message.c_str();
 
     if ( visible ) {

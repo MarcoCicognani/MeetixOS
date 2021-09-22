@@ -25,7 +25,7 @@
 #ifndef EVA_RAMDISK_RAMDISKENTRY
 #define EVA_RAMDISK_RAMDISKENTRY
 
-#include "eva/ramdisk.h"
+#include "Api/Ramdisk.h"
 
 /**
  * descriptor of a ramdisk entry

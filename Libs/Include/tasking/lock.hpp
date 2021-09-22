@@ -20,7 +20,7 @@
 #ifndef MEETIX_LIBRARY_TASKING_LOCK
 #define MEETIX_LIBRARY_TASKING_LOCK
 
-#include <eva.h>
+#include <Api.h>
 
 /**
  * class that permits to create an high level locker
@@ -44,7 +44,7 @@ public:
      * perform the lock
      */
     virtual void lock() {
-        AtomicLock(&locked);
+        s_atomic_lock(&locked);
     }
 
     /**

@@ -58,7 +58,7 @@ FsTransactionHandlerFinishStatus
 FsTransactionHandlerClose::finishTransaction(Thread* thread, FsDelegate* delegate) {
     delegate->finishClose(thread, this);
 
-    data()->status = status;
+    data()->m_close_status = status;
 
     // once delegate says closing was successful, unmap it
     if ( status == FS_CLOSE_SUCCESSFUL ) {

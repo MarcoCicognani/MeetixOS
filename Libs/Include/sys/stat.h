@@ -20,8 +20,8 @@
 #ifndef __MEETIX_LIBC_SYS_STAT__
 #define __MEETIX_LIBC_SYS_STAT__
 
-#include <eva/common.h>
-#include <eva/stdint.h>
+#include <Api/Common.h>
+#include <Api/StdInt.h>
 #include <sys/types.h>
 #include <time.h>
 

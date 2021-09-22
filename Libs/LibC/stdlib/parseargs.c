@@ -18,8 +18,8 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "Api.h"
 #include "ctype.h"
-#include "eva.h"
 #include "libgen.h"
 #include "malloc.h"
 #include "stdio.h"
@@ -60,7 +60,7 @@
 char* get_executable_name() {
     // read path for the executable
     char* absoluteExecPath = (char*)malloc(PATH_MAX);
-    GetExecutablePath(absoluteExecPath);
+    s_get_executable_path(absoluteExecPath);
 
     // find base name
     char* execBaseName = basename(absoluteExecPath);
@@ -89,7 +89,7 @@ int parseargs(int* out_argc, char*** out_args) {
     if ( unparsedCommandLine == NULL ) {
         return -1;
     }
-    CliArgsRelease(unparsedCommandLine);
+    s_cli_args_release(unparsedCommandLine);
 
     // count arguments
     char* pos  = unparsedCommandLine;

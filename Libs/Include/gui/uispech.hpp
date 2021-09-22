@@ -20,7 +20,7 @@
 #ifndef MEETIX_LIBRARY_UI_INTERFACE_SPECIFICATION
 #define MEETIX_LIBRARY_UI_INTERFACE_SPECIFICATION
 
-#include <eva.h>
+#include <Api.h>
 #include <graphics/color.hpp>
 #include <graphics/metrics/dimension.hpp>
 #include <graphics/metrics/rectangle.hpp>
@@ -139,7 +139,7 @@ typedef uint8_t UiLayoutManager;
  */
 typedef struct {
     UiProtocolCommandID id;
-} __attribute__((packed)) UiMessageHeader;
+} A_PACKED UiMessageHeader;
 
 /*
  * Request to initialize interface communications. The window server creates a
@@ -148,7 +148,7 @@ typedef struct {
  */
 typedef struct {
     UiMessageHeader header;
-} __attribute__((packed)) UiInitializeRequest;
+} A_PACKED UiInitializeRequest;
 
 /*
  * Response for initializing interface communications.
@@ -163,7 +163,7 @@ typedef struct {
     UiProtocolStatus status;
     Tid              windowServerDelegateThread;
     Tid              windowServerCleanUPThread;
-} __attribute__((packed)) UiInitializeResponse;
+} A_PACKED UiInitializeResponse;
 
 /*
  * Request sent to create a component.
@@ -171,7 +171,7 @@ typedef struct {
 typedef struct {
     UiMessageHeader header;
     UiComponentType type;
-} __attribute__((packed)) UiCreateComponentRequest;
+} A_PACKED UiCreateComponentRequest;
 
 /*
  * Response when creating a component.
@@ -180,7 +180,7 @@ typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
     UiComponentID    id;
-} __attribute__((packed)) UiCreateComponentResponse;
+} A_PACKED UiCreateComponentResponse;
 
 /*
  * Request to delete a component of current process.
@@ -188,24 +188,24 @@ typedef struct {
 typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
-} __attribute__((packed)) UiRemoveComponentRequest;
+} A_PACKED UiRemoveComponentRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiRemoveComponentResponse;
+} A_PACKED UiRemoveComponentResponse;
 
 /*
  * Request / response to delete component map of current process.
  */
 typedef struct {
     UiMessageHeader header;
-} __attribute__((packed)) UiRemoveComponentMapRequest;
+} A_PACKED UiRemoveComponentMapRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiRemoveComponentMapResponse;
+} A_PACKED UiRemoveComponentMapResponse;
 
 /*
  * Request/response for adding a child
@@ -214,12 +214,12 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   parent;
     UiComponentID   child;
-} __attribute__((packed)) UiComponentAddChildRequest;
+} A_PACKED UiComponentAddChildRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiComponentAddChildResponse;
+} A_PACKED UiComponentAddChildResponse;
 
 /*
  * Request/response for setting bounds
@@ -228,12 +228,12 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
     Rectangle       bounds;
-} __attribute__((packed)) UiComponentSetBoundsRequest;
+} A_PACKED UiComponentSetBoundsRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiComponentSetBoundsResponse;
+} A_PACKED UiComponentSetBoundsResponse;
 
 /*
  * Request/response for getting bounds
@@ -241,13 +241,13 @@ typedef struct {
 typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
-} __attribute__((packed)) UiComponentGetBoundsRequest;
+} A_PACKED UiComponentGetBoundsRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
     Rectangle        bounds;
-} __attribute__((packed)) UiComponentGetBoundsResponse;
+} A_PACKED UiComponentGetBoundsResponse;
 
 /*
  * Request/response for setting components (in)visible
@@ -256,12 +256,12 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
     bool            visible;
-} __attribute__((packed)) UiComponentSetVisibleRequest;
+} A_PACKED UiComponentSetVisibleRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiComponentSetVisibleResponse;
+} A_PACKED UiComponentSetVisibleResponse;
 
 /*
  * Request/response for setting the title on a titled component
@@ -270,12 +270,12 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
     char            title[UI_COMPONENT_TITLE_MAXIMUM];
-} __attribute__((packed)) UiComponentSetTitleRequest;
+} A_PACKED UiComponentSetTitleRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiComponentSetTitleResponse;
+} A_PACKED UiComponentSetTitleResponse;
 
 /*
  *	request/response for setting ghost title on a titled component
@@ -284,12 +284,12 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
     char            title[UI_COMPONENT_TITLE_MAXIMUM];
-} __attribute__((packed)) UiComponentSetGhostTitleRequest;
+} A_PACKED UiComponentSetGhostTitleRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiComponentSetGhostTitleResponse;
+} A_PACKED UiComponentSetGhostTitleResponse;
 
 /*
  * Request/response for getting the title on a titled component
@@ -297,13 +297,13 @@ typedef struct {
 typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
-} __attribute__((packed)) UiComponentGetTitleRequest;
+} A_PACKED UiComponentGetTitleRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
     char             title[UI_COMPONENT_TITLE_MAXIMUM];
-} __attribute__((packed)) UiComponentGetTitleResponse;
+} A_PACKED UiComponentGetTitleResponse;
 
 /*
  *	Request/response for set font on title
@@ -312,12 +312,12 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
     char            fontName[MAX_PATH];
-} __attribute__((packed)) UiComponentSetTitleFontRequest;
+} A_PACKED UiComponentSetTitleFontRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiComponentSetTitleFontResponse;
+} A_PACKED UiComponentSetTitleFontResponse;
 
 /*
  * Request/response for getting a numeric property
@@ -326,13 +326,13 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
     int             property;
-} __attribute__((packed)) UiComponentGetNumericPropertyRequest;
+} A_PACKED UiComponentGetNumericPropertyRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
     uint32_t         value;
-} __attribute__((packed)) UiComponentGetNumericPropertyResponse;
+} A_PACKED UiComponentGetNumericPropertyResponse;
 
 /*
  * Request/response for setting a numeric property
@@ -342,12 +342,12 @@ typedef struct {
     UiComponentID   id;
     int             property;
     uint32_t        value;
-} __attribute__((packed)) UiComponentSetNumericPropertyRequest;
+} A_PACKED UiComponentSetNumericPropertyRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiComponentSetNumericPropertyResponse;
+} A_PACKED UiComponentSetNumericPropertyResponse;
 
 /*
  * Request/response for acknowledging the buffer update of a canvas/blitting the canvas
@@ -355,12 +355,12 @@ typedef struct {
 typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
-} __attribute__((packed)) UiComponentCanvasAckBufferRequest;
+} A_PACKED UiComponentCanvasAckBufferRequest;
 
 typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
-} __attribute__((packed)) UiComponentCanvasBlitRequest;
+} A_PACKED UiComponentCanvasBlitRequest;
 
 /*
  * Canvas shared memory header
@@ -372,7 +372,7 @@ typedef struct {
     uint16_t blitY;
     uint16_t blitWidth;
     uint16_t blitHeight;
-} __attribute__((packed)) UiCanvasSharedMemoryHeader;
+} A_PACKED UiCanvasSharedMemoryHeader;
 
 /*
  * Request to register the desktop canvas
@@ -380,12 +380,12 @@ typedef struct {
 typedef struct {
     UiMessageHeader header;
     UiComponentID   canvasID;
-} __attribute__((packed)) UiRegisterDesktopCanvasRequest;
+} A_PACKED UiRegisterDesktopCanvasRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiRegisterDesktopCanvasResponse;
+} A_PACKED UiRegisterDesktopCanvasResponse;
 
 /*
  * Event handler registration functions
@@ -395,12 +395,12 @@ typedef struct {
     UiComponentID        id;
     UiComponentEventType eventType;
     Tid                  targetThread;
-} __attribute__((packed)) UiComponentSetListenerRequest;
+} A_PACKED UiComponentSetListenerRequest;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiComponentSetListenerResponse;
+} A_PACKED UiComponentSetListenerResponse;
 
 /*
  * Event structures
@@ -409,31 +409,31 @@ typedef struct {
     UiMessageHeader      header;
     UiComponentEventType type;
     UiComponentID        componentID;
-} __attribute__((packed)) UiComponentEventHeader;
+} A_PACKED UiComponentEventHeader;
 
 typedef struct {
     UiComponentEventHeader header;
-} __attribute__((packed)) UiComponentActionEvent;
+} A_PACKED UiComponentActionEvent;
 
 typedef struct {
     UiComponentEventHeader header;
     Rectangle              bounds;
-} __attribute__((packed)) UiComponentBoundsEvent;
+} A_PACKED UiComponentBoundsEvent;
 
 typedef struct {
     UiComponentEventHeader header;
     Address                newBufferAddress;
-} __attribute__((packed)) UiComponentCanvasWfaEvent;
+} A_PACKED UiComponentCanvasWfaEvent;
 
 typedef struct {
     UiComponentEventHeader header;
     Keyboard::InfoBasic    keyInfo;
-} __attribute__((packed)) UiComponentKeyEvent;
+} A_PACKED UiComponentKeyEvent;
 
 typedef struct {
     UiComponentEventHeader header;
     uint8_t                nowFocused;
-} __attribute__((packed)) UiComponentFocusEvent;
+} A_PACKED UiComponentFocusEvent;
 
 /*
  *	component png setup/response
@@ -444,12 +444,12 @@ typedef struct {
 
     char  pathToPng[MAX_PATH];
     Point pngPosition;
-} __attribute__((packed)) UiComponentSetupPng;
+} A_PACKED UiComponentSetupPng;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiComponentSetupPngResponse;
+} A_PACKED UiComponentSetupPngResponse;
 
 /*
  *	Component color setup/response
@@ -460,12 +460,12 @@ typedef struct {
 
     Color_t shapeColor;
     Color_t titleColor;
-} __attribute__((packed)) UiComponentColor;
+} A_PACKED UiComponentColor;
 
 typedef struct {
     UiMessageHeader  header;
     UiProtocolStatus status;
-} __attribute__((packed)) UiComponentColorResponse;
+} A_PACKED UiComponentColorResponse;
 
 /*
  *	change background
@@ -474,18 +474,18 @@ typedef struct {
     UiMessageHeader header;
 
     char path[MAX_PATH];
-} __attribute__((packed)) UiChangeBackgroundRequest;
+} A_PACKED UiChangeBackgroundRequest;
 
 typedef struct {
     UiProtocolStatus status;
-} __attribute__((packed)) UiChangeBackgroundResponse;
+} A_PACKED UiChangeBackgroundResponse;
 
 /*
  *	send get resolution request
  */
 typedef struct {
     UiMessageHeader header;
-} __attribute__((packed)) UiGetResolution;
+} A_PACKED UiGetResolution;
 
 /*
  *	get resolution of screen
@@ -493,14 +493,14 @@ typedef struct {
 typedef struct {
     UiProtocolStatus status;
     Dimension        resolution;
-} __attribute__((packed)) UiGetResolutionResponse;
+} A_PACKED UiGetResolutionResponse;
 
 /*
  *	close event of window
  */
 typedef struct {
     UiComponentEventHeader header;
-} __attribute__((packed)) UiComponentCloseEvent;
+} A_PACKED UiComponentCloseEvent;
 
 /*
  *	request/response of focus event of component
@@ -509,11 +509,11 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
     bool            focus;
-} __attribute__((packed)) UiComponentFocusRequest;
+} A_PACKED UiComponentFocusRequest;
 
 typedef struct {
     UiProtocolStatus status;
-} __attribute__((packed)) UiComponentFocusResponse;
+} A_PACKED UiComponentFocusResponse;
 
 /*
  * request/response to set label font size
@@ -522,11 +522,11 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
     int             size;
-} __attribute__((packed)) UiSetFontSizeRequest;
+} A_PACKED UiSetFontSizeRequest;
 
 typedef struct {
     UiProtocolStatus status;
-} __attribute__((packed)) UiSetFontSizeResponse;
+} A_PACKED UiSetFontSizeResponse;
 
 /*
  *	request/reponse to set title alignment
@@ -535,11 +535,11 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
     TextAlignment   alignment;
-} __attribute__((packed)) UiSetTitleAlignmentRequest;
+} A_PACKED UiSetTitleAlignmentRequest;
 
 typedef struct {
     UiProtocolStatus status;
-} __attribute__((packed)) UiSetTitleAlignmentResponse;
+} A_PACKED UiSetTitleAlignmentResponse;
 
 /*
  *	request/response to register task manager on component
@@ -548,11 +548,11 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
     Rectangle       bounds;
-} __attribute__((packed)) UiRegisterTaskManagerRequest;
+} A_PACKED UiRegisterTaskManagerRequest;
 
 typedef struct {
     UiProtocolStatus status;
-} __attribute__((packed)) UiRegisterTaskManagerResponse;
+} A_PACKED UiRegisterTaskManagerResponse;
 
 /*
  * request/response to change form of mouse cursor
@@ -560,11 +560,11 @@ typedef struct {
 typedef struct {
     UiMessageHeader header;
     char            name[50];
-} __attribute__((packed)) UiSetMouseCursorFormRequest;
+} A_PACKED UiSetMouseCursorFormRequest;
 
 typedef struct {
     UiProtocolStatus status;
-} __attribute__((packed)) UiSetMouseCursorFormResponse;
+} A_PACKED UiSetMouseCursorFormResponse;
 
 /*
  * Mouse events
@@ -593,6 +593,6 @@ typedef struct {
     Point                  position;
     MouseEventType         type;
     MouseButton            buttons;
-} __attribute__((packed)) UiComponentMouseEvent;
+} A_PACKED UiComponentMouseEvent;
 
 #endif

@@ -43,11 +43,11 @@
  * @param allowOverride:		whether an existing entry may be overriden
  * @return true if success, false otherwise
  */
-bool AddressSpace::map(VirtualAddress  virtualAddr,
-                       PhysicalAddress physicalAddr,
-                       uint32_t        tableFlags,
-                       uint32_t        pageFlags,
-                       bool            allowOverride) {
+bool AddressSpace::map(VirtAddr virtualAddr,
+                       PhysAddr physicalAddr,
+                       uint32_t tableFlags,
+                       uint32_t pageFlags,
+                       bool     allowOverride) {
     // check if addresses are aligned
     if ( (virtualAddr & PAGE_ALIGN_MASK) || (physicalAddr & PAGE_ALIGN_MASK) )
         EvaKernel::panic("%! tried to map unaligned addresses: virt %h to phys %h",
@@ -65,7 +65,7 @@ bool AddressSpace::map(VirtualAddress  virtualAddr,
 
     // create table if it does not exist
     if ( !directory[ti] ) {
-        PhysicalAddress newTablePhys = PPallocator::allocate();
+        PhysAddr newTablePhys = PPallocator::allocate();
         if ( !newTablePhys )
             EvaKernel::panic("%! no pages left for mapping", "addrspace");
 
@@ -143,12 +143,12 @@ bool AddressSpace::map(VirtualAddress  virtualAddr,
  * @param pageFlags:				the flags to add on the page entry
  * @param allowOverride:			whether an existing entry may be overriden
  */
-void AddressSpace::mapToTemporaryMappedDirectory(PageDirectory   directory,
-                                                 VirtualAddress  virtualAddr,
-                                                 PhysicalAddress physicalAddr,
-                                                 uint32_t        tableFlags,
-                                                 uint32_t        pageFlags,
-                                                 bool            allowOverride) {
+void AddressSpace::mapToTemporaryMappedDirectory(PageDirectory directory,
+                                                 VirtAddr      virtualAddr,
+                                                 PhysAddr      physicalAddr,
+                                                 uint32_t      tableFlags,
+                                                 uint32_t      pageFlags,
+                                                 bool          allowOverride) {
     // check if addresses are aligned
     if ( (virtualAddr & PAGE_ALIGN_MASK) || (physicalAddr & PAGE_ALIGN_MASK) )
         EvaKernel::panic("%! tried to map unaligned addresses: virt %h to phys %h",
@@ -162,13 +162,13 @@ void AddressSpace::mapToTemporaryMappedDirectory(PageDirectory   directory,
 
     // create table if it does not exist
     if ( !directory[ti] ) {
-        PhysicalAddress newTablePhys = PPallocator::allocate();
+        PhysAddr newTablePhys = PPallocator::allocate();
         if ( !newTablePhys )
             EvaKernel::panic("%! no pages left for mapping", "addrspace");
 
         // temporary map the table and insert it
-        VirtualAddress tempTableAddr = TemporaryPagingUtil::map(newTablePhys);
-        PageTable      table         = (PageTable)tempTableAddr;
+        VirtAddr  tempTableAddr = TemporaryPagingUtil::map(newTablePhys);
+        PageTable table         = (PageTable)tempTableAddr;
         for ( uint32_t i = 0; i < 1024; i++ )
             table[i] = 0;
 
@@ -184,10 +184,10 @@ void AddressSpace::mapToTemporaryMappedDirectory(PageDirectory   directory,
     }
 
     // Insert address into table
-    PhysicalAddress tablePhys = (directory[ti] & ~PAGE_ALIGN_MASK);
+    PhysAddr tablePhys = (directory[ti] & ~PAGE_ALIGN_MASK);
 
-    VirtualAddress tempTableAddr = TemporaryPagingUtil::map(tablePhys);
-    PageTable      table         = (PageTable)tempTableAddr;
+    VirtAddr  tempTableAddr = TemporaryPagingUtil::map(tablePhys);
+    PageTable table         = (PageTable)tempTableAddr;
     if ( !table[pi] || allowOverride )
         table[pi] = physicalAddr | pageFlags;
 
@@ -210,7 +210,7 @@ void AddressSpace::mapToTemporaryMappedDirectory(PageDirectory   directory,
  *
  * @param virt:		the virtual address to unmap
  */
-void AddressSpace::unmap(VirtualAddress virtualAddress) {
+void AddressSpace::unmap(VirtAddr virtualAddress) {
     uint32_t ti = TABLE_IN_DIRECTORY_INDEX(virtualAddress);
     uint32_t pi = PAGE_IN_TABLE_INDEX(virtualAddress);
 
@@ -255,7 +255,7 @@ PageDirectory AddressSpace::getCurrentSpace() {
  * @param addr:		the address to resolve
  * @return the physical address
  */
-PhysicalAddress AddressSpace::virtualToPhysical(VirtualAddress addr) {
+PhysAddr AddressSpace::virtualToPhysical(VirtAddr addr) {
     uint32_t  ti    = TABLE_IN_DIRECTORY_INDEX(addr);
     uint32_t  pi    = PAGE_IN_TABLE_INDEX(addr);
     PageTable table = CONST_RECURSIVE_PAGE_TABLE(ti);

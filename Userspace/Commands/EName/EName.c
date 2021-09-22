@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <eva.h>
+#include <Api.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -104,8 +104,8 @@ int main(int argc, const char* argv[]) {
         case ALL:
             {
                 // call kernel to get ename info
-                EvaName ename;
-                Ename(&ename);
+                KernelName ename;
+                s_kernel_name(&ename);
 
                 // print infos
                 println("");
@@ -114,27 +114,27 @@ int main(int argc, const char* argv[]) {
                         getenv("HOSTNAME"),
                         getenv("VERSION"));
                 println(" Loader: %-15s v%d.%d.%c",
-                        ename.loaderName,
-                        ename.LversionMJ,
-                        ename.LversionMN,
-                        ename.LversionPT);
+                        ename.m_loader_name,
+                        ename.m_loader_major,
+                        ename.m_loader_minor,
+                        ename.m_loader_patch);
                 println(" Kernel: %-15s v%d.%d.%d.%c",
-                        ename.kernelName,
-                        ename.versionMJ,
-                        ename.versionMN,
-                        ename.versionSB,
-                        ename.versionPT);
+                        ename.m_kernel_name,
+                        ename.m_kernel_major,
+                        ename.m_kernel_minor,
+                        ename.m_kernel_sub,
+                        ename.m_kernel_patch);
 
                 // call kernel to get some system infos
-                EvaSysInfo info;
-                Sysinfo(&info);
+                SystemInfo info;
+                s_system_info(&info);
 
                 // print infos
                 println("");
                 println(" RAM: used %iMB on %iMB",
-                        (info.totRam - info.freeRam) / 1024,
-                        info.totRam / 1024);
-                println(" CPU: %d avaible core, vendor: %s", info.numberOfCore, info.cpuVendor);
+                        (info.m_memory_total_amount - info.m_memory_free_amount) / 1024,
+                        info.m_memory_total_amount / 1024);
+                println(" CPU: %d avaible core, vendor: %s", info.m_cpu_count, info.m_cpu_vendor);
                 println("");
             }
             break;
@@ -153,22 +153,22 @@ int main(int argc, const char* argv[]) {
         case ENAME:
             {
                 // call kernel to get ename info
-                EvaName ename;
-                Ename(&ename);
+                KernelName ename;
+                s_kernel_name(&ename);
 
                 // print infos
                 println("");
                 println(" Loader: %-15s v%d.%d.%c",
-                        ename.loaderName,
-                        ename.LversionMJ,
-                        ename.LversionMN,
-                        ename.LversionPT);
+                        ename.m_loader_name,
+                        ename.m_loader_major,
+                        ename.m_loader_minor,
+                        ename.m_loader_patch);
                 println(" Kernel: %-15s v%d.%d.%d.%c",
-                        ename.kernelName,
-                        ename.versionMJ,
-                        ename.versionMN,
-                        ename.versionSB,
-                        ename.versionPT);
+                        ename.m_kernel_name,
+                        ename.m_kernel_major,
+                        ename.m_kernel_minor,
+                        ename.m_kernel_sub,
+                        ename.m_kernel_patch);
                 println("");
             }
             break;
@@ -176,46 +176,46 @@ int main(int argc, const char* argv[]) {
         case LOADER:
             {
                 // call kernel to get ename info
-                EvaName ename;
-                Ename(&ename);
+                KernelName ename;
+                s_kernel_name(&ename);
 
                 // print infos
                 println(" Loader: %-15s v%d.%d.%c",
-                        ename.loaderName,
-                        ename.LversionMJ,
-                        ename.LversionMN,
-                        ename.LversionPT);
+                        ename.m_loader_name,
+                        ename.m_loader_major,
+                        ename.m_loader_minor,
+                        ename.m_loader_patch);
             }
             break;
 
         case KERNEL:
             {
                 // call kernel to get ename info
-                EvaName ename;
-                Ename(&ename);
+                KernelName ename;
+                s_kernel_name(&ename);
 
                 // print infos
                 println(" Kernel: %-15s v%d.%d.%d.%c",
-                        ename.kernelName,
-                        ename.versionMJ,
-                        ename.versionMN,
-                        ename.versionSB,
-                        ename.versionPT);
+                        ename.m_kernel_name,
+                        ename.m_kernel_major,
+                        ename.m_kernel_minor,
+                        ename.m_kernel_sub,
+                        ename.m_kernel_patch);
             }
             break;
 
         case INFO:
             {
                 // call kernel to get some system infos
-                EvaSysInfo info;
-                Sysinfo(&info);
+                SystemInfo info;
+                s_system_info(&info);
 
                 // print infos
                 println("");
                 println(" RAM: used %iMB on %iMB",
-                        (info.totRam - info.freeRam) / 1024,
-                        info.totRam / 1024);
-                println(" CPU: %d avaible core, vendor: %s", info.numberOfCore, info.cpuVendor);
+                        (info.m_memory_total_amount - info.m_memory_free_amount) / 1024,
+                        info.m_memory_total_amount / 1024);
+                println(" CPU: %d avaible core, vendor: %s", info.m_cpu_count, info.m_cpu_vendor);
                 println("");
             }
             break;

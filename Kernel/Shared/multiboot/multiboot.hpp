@@ -25,7 +25,7 @@
 #ifndef EVA_SHARED_MULTIBOOT_MULTIBOOT
 #define EVA_SHARED_MULTIBOOT_MULTIBOOT
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 /**
  * Multiboot related constants
@@ -41,7 +41,7 @@ struct MultibootAoutSymbolTable {
     uint32_t strSize;
     uint32_t address;
     uint32_t reserved;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * ELF section header
@@ -51,7 +51,7 @@ struct MultibootElfSectionHeaderTable {
     uint32_t size;
     uint32_t addr;
     uint32_t shndx;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Structure of the multiboot information. This struct is
@@ -72,7 +72,7 @@ struct MultibootInformation {
     } tables;
     uint32_t memoryMapLength;
     uint32_t memoryMapAddress;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Structure of a multiboot module.
@@ -82,7 +82,7 @@ struct MultibootModule {
     uint32_t moduleEnd;
     char*    path;
     uint32_t reserved;
-} __attribute__((packed));
+} A_PACKED;
 
 /**
  * Structure of one entry in the memory map.
@@ -94,6 +94,6 @@ struct MultibootMmap {
     uint32_t lengthLower;
     uint32_t lengthHigher;
     uint32_t type;
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

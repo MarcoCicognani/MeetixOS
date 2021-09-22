@@ -24,8 +24,8 @@
 
 #include "InputReceiver.hpp"
 
+#include <Api.h>
 #include <components/cursor.hpp>
-#include <eva.h>
 #include <io/keyboard.hpp>
 #include <io/mouse.hpp>
 
@@ -33,8 +33,8 @@
  *
  */
 void InputReceiver::initialize() {
-    CreateThreadN((void*)InputReceiver::startReceiveMouseEvents, "keyReceiver");
-    CreateThreadN((void*)InputReceiver::startReceiveKeyEvents, "mouseReceiver");
+    s_create_thread_n((void*)InputReceiver::startReceiveMouseEvents, "keyReceiver");
+    s_create_thread_n((void*)InputReceiver::startReceiveKeyEvents, "mouseReceiver");
 }
 
 /**
@@ -56,9 +56,9 @@ void InputReceiver::startReceiveKeyEvents() {
  *
  */
 void InputReceiver::startReceiveMouseEvents() {
-    ZipNET*           instance   = ZipNET::instance();
+    ZipNET*         instance   = ZipNET::instance();
     EventProcessor* eventQueue = instance->eventProcessor;
-    Dimension         resolution = instance->videoOutput->getResolution();
+    Dimension       resolution = instance->videoOutput->getResolution();
 
     Mouse::Info info;
     while ( true ) {

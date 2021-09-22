@@ -21,7 +21,7 @@
 #include "../main_internal.h"
 #include "stdlib.h"
 
-#include <eva.h>
+#include <Api.h>
 
 /**
  * Global destructor routine
@@ -39,6 +39,6 @@ void exit(int code) {
     _fini();
 
     // quit task
-    Exit(code);
+    s_exit(code);
     __builtin_unreachable();
 }

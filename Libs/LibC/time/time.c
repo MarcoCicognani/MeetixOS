@@ -20,14 +20,14 @@
 
 #include "time.h"
 
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 
 /**
  *
  */
 time_t time(time_t* out) {
     // TODO Millis must be reworked to return an actual time
-    uint64_t millis = Millis();
+    uint64_t millis = s_millis();
     *out            = millis;
     return millis;
 }

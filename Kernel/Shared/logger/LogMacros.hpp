@@ -28,7 +28,7 @@
 #include <BuildConfig.hpp>
 
 /**
- * define a log macros for info logging
+ * define a s_log macros for info logging
  */
 #if LOG_LEVEL <= LOG_LEVEL_INFO
 #    define logInfo(msg...)  Logger::println(msg)
@@ -41,7 +41,7 @@
 #endif
 
 /**
- * define a log macros for warning logging
+ * define a s_log macros for warning logging
  */
 #if LOG_LEVEL <= LOG_LEVEL_WARN
 #    define logWarn(msg...)  Logger::println(msg)
@@ -54,7 +54,7 @@
 #endif
 
 /**
- * define a log macros for debug logging
+ * define a s_log macros for debug logging
  */
 #if LOG_LEVEL <= LOG_LEVEL_DEBUG
 #    define logDebug(msg...)  Logger::println(msg)

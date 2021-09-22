@@ -25,7 +25,7 @@
 #ifndef EVA_FILESYSTEM_FILESYSTEMRAMDISKPIPE
 #define EVA_FILESYSTEM_FILESYSTEMRAMDISKPIPE
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 #include "filesystem/FsDelegate.hpp"
 #include "memory/contextual.hpp"
 #include "tasking/tasking.hpp"
@@ -78,7 +78,7 @@ public:
     virtual FsTransactionID requestWrite(Thread*                    requester,
                                          FsNode*                    node,
                                          int64_t                    length,
-                                         Contextual<uint8_t*>       buffer,
+                                         Contextual<const uint8_t*> buffer,
                                          FileDescriptorContent*     fd,
                                          FsTransactionHandlerWrite* handler);
 
@@ -119,7 +119,7 @@ public:
      */
     virtual FsTransactionID requestOpen(Thread*                   requester,
                                         FsNode*                   node,
-                                        char*                     filename,
+                                        const char*               filename,
                                         int32_t                   flags,
                                         int32_t                   mode,
                                         FsTransactionHandlerOpen* handler);

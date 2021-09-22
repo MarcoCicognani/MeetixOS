@@ -25,10 +25,10 @@
 #ifndef SYSTEM_ACPI_ACPI
 #define SYSTEM_ACPI_ACPI
 
-#include "eva/kernel.h"
-#include "eva/stdint.h"
-#include "eva/types.h"
-#include "eva/utils/llist.hpp"
+#include "Api/Kernel.h"
+#include "Api/StdInt.h"
+#include "Api/Types.h"
+#include "Api/utils/llist.hpp"
 
 #include <system/acpi/AcpiEntry.hpp>
 #include <system/acpi/AcpiTableHeader.hpp>
@@ -84,7 +84,7 @@ private:
      *
      * @return the length of the table or 0 if failed
      */
-    static uint32_t getLengthOfUnmappedSDT(PhysicalAddress tableLocation);
+    static uint32_t getLengthOfUnmappedSDT(PhysAddr tableLocation);
 
     /**
      * Maps the table at the given physical address into the virtual space.
@@ -93,7 +93,7 @@ private:
      *
      * @return the header of the mapped table or nullptr
      */
-    static AcpiTableHeader* mapSDT(PhysicalAddress tableLocation);
+    static AcpiTableHeader* mapSDT(PhysAddr tableLocation);
 
     /**
      * Validates the whole system descriptor table with the given header
@@ -116,7 +116,7 @@ private:
      * @param index:		the index of the RSD entry
      * @return the physical address of the entry
      */
-    static PhysicalAddress getRSDTentry(uint32_t index);
+    static PhysAddr getRSDTentry(uint32_t index);
 };
 
 #endif

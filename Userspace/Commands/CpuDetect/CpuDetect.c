@@ -193,7 +193,7 @@ int doINTeL(int argc, char* argv[]) {
                         break;
 
                     case 7:
-                        println("Write-back enhanced DX2");
+                        println("s_write-back enhanced DX2");
                         break;
 
                     case 8:

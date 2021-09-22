@@ -27,7 +27,7 @@
 
 #include "loader.hpp"
 
-#include <eva/elf32.h>
+#include <Api/ELF32.h>
 
 /**
  *
@@ -49,7 +49,7 @@ enum Elf32ValidationStatus
 class Elf32Loader : public Loader {
 public:
     //
-    Elf32Loader(ProcessCreationIdentifier target, File_t file) : Loader(target, file) {
+    Elf32Loader(ProcessCreationIdentifier target, FileHandle file) : Loader(target, file) {
     }
 
     //
@@ -60,8 +60,8 @@ public:
     virtual LoaderStatus load(uintptr_t* outEntryAddr);
 
     //
-    static LoaderStatus readAndValidateElfHeader(File_t file, Elf32Ehdr* hdrBuf);
-    static LoaderStatus checkForElfBinaryAndReset(File_t file);
+    static LoaderStatus readAndValidateElfHeader(FileHandle file, Elf32Ehdr* hdrBuf);
+    static LoaderStatus checkForElfBinaryAndReset(FileHandle file);
 
 private:
     //

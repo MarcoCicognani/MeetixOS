@@ -30,7 +30,7 @@
 #include <tasking/wait/waiter.hpp>
 
 /**
- * Waiter implementation used for threads that performs the {Sleep} system call
+ * Waiter implementation used for threads that performs the {s_sleep} system call
  */
 class WaiterSleep : public Waiter {
 private:

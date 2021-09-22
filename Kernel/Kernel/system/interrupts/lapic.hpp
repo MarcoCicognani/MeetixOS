@@ -25,8 +25,8 @@
 #ifndef EVA_SYSTEM_INTERRUPTS_APIC
 #define EVA_SYSTEM_INTERRUPTS_APIC
 
-#include "eva/stdint.h"
-#include "eva/types.h"
+#include "Api/StdInt.h"
+#include "Api/Types.h"
 
 #define EXPECTED_APIC_PHYSICAL_ADDRESS 0xFEE00000
 
@@ -141,7 +141,7 @@ public:
      *
      * @param lapicAddress:		the physical address of the lapic
      */
-    static void prepare(PhysicalAddress lapicAddress);
+    static void prepare(PhysAddr lapicAddress);
 
     /**
      * start the interrupt timer

@@ -33,7 +33,7 @@
  */
 class ApplicationExitCleanupThread : public Thread {
 private:
-    Tid                             pid;
+    Tid                           pid;
     CommandMessageReceiverThread* commandReceiver;
 
 public:

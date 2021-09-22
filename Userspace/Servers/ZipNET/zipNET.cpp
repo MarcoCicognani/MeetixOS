@@ -71,7 +71,7 @@ int main() {
  */
 void ZipNET::launch() {
     // disable video log
-    SetVideoLog(false);
+    s_set_video_log(false);
 
     // initialize the video output
     videoOutput = new VbeVideoOutput_t();
@@ -123,9 +123,9 @@ void ZipNET::launch() {
  */
 [[noreturn]] void lockCheck() {
     while ( true ) {
-        if ( Millis() - renderStart > 6000 )
+        if ( s_millis() - renderStart > 6000 )
             Utils::log("window server has frozen");
-        Sleep(1000);
+        s_sleep(1000);
     }
 }
 
@@ -136,7 +136,7 @@ void ZipNET::launch() {
     global.resize(screenBounds.width, screenBounds.height);
     Environment::set("SYSTEM_LEVEL", "interactive");
 
-    CreateThreadN((void*)lockCheck, "lockCheck");
+    s_create_thread_n((void*)lockCheck, "lockCheck");
 
     Cursor::instance().nextPosition = Point(screenBounds.width / 2, screenBounds.height / 2);
 
@@ -146,7 +146,7 @@ void ZipNET::launch() {
     uint64_t renderTime;
 
     while ( true ) {
-        renderStart = Millis();
+        renderStart = s_millis();
         eventProcessor->processMouseState();
         eventProcessor->process();
 
@@ -165,12 +165,12 @@ void ZipNET::launch() {
         blit(&global);
 
         // limit to 60 fps
-        renderTime = Millis() - renderStart;
+        renderTime = s_millis() - renderStart;
         if ( renderTime < (1000 / 60) )
-            Sleep((1000 / 60) - renderTime);
+            s_sleep((1000 / 60) - renderTime);
 
         // wait for next rendering
-        AtomicLock(&renderAtom);
+        s_atomic_lock(&renderAtom);
     }
 }
 

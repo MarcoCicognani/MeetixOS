@@ -73,6 +73,6 @@ public:
         return !(*this == rhs);
     }
 
-} __attribute__((packed));
+} A_PACKED;
 
 #endif

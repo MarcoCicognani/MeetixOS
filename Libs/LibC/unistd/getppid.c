@@ -18,12 +18,12 @@
  *                                                                           *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
 #include "unistd.h"
 
 /**
- * POSIX wrapper for <GetPid>
+ * POSIX wrapper for <s_get_pid>
  */
 pid_t getppid() {
-    return GetPid();
+    return s_get_pid();
 }

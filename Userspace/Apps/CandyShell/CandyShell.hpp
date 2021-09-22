@@ -24,7 +24,7 @@
 #include "screen.hpp"
 #include "standardIO.hpp"
 
-#include <eva.h>
+#include <Api.h>
 #include <stdint.h>
 #include <vector>
 
@@ -108,13 +108,20 @@ public:
      *
      */
     void runCommand(string command);
-    bool
-    runTermCommand(string command, File_t* termIn, File_t* termOut, File_t* termErr, Pid* intPid);
+    bool runTermCommand(string      command,
+                        FileHandle* termIn,
+                        FileHandle* termOut,
+                        FileHandle* termErr,
+                        Pid*        intPid);
 
     /**
      *
      */
-    bool execute(string shortpath, string args, Pid* outPid, File_t outStdio[3], File_t inStdio[3]);
+    bool execute(string     shortpath,
+                 string     args,
+                 Pid*       outPid,
+                 FileHandle outStdio[3],
+                 FileHandle inStdio[3]);
 
     SetWorkingDirectoryStatus writeWorkingDirectory();
     void                      readWorkingDirectory();

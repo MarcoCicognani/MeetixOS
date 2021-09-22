@@ -33,7 +33,7 @@ uint64_t tmpnam_next   = 0;
  */
 char* tmpnam(char* buf) {
     // lock tmpnam
-    AtomicLock(&tmpnam_lock);
+    s_atomic_lock(&tmpnam_lock);
 
     // set buffers
     if ( buf == NULL ) {

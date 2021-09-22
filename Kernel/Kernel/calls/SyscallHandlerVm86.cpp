@@ -22,8 +22,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "eva/calls/calls.h"
-#include "eva/kernel.h"
+#include "Api/Kernel.h"
+#include "Api/Syscalls/CallsData.h"
 
 #include <calls/SyscallHandler.hpp>
 #include <EvangelionNG.hpp>
@@ -46,31 +46,31 @@ SYSCALL_HANDLER(callVm86) {
 
     if ( currentThread->process->securityLevel <= SECURITY_LEVEL_DRIVER ) {
         // Copy in registers
-        Vm86Registers in = data->in;
+        VM86Registers in = data->m_in_registers;
 
         // Create temporary out struct
-        Vm86Registers* temporaryOut = new Vm86Registers();
+        VM86Registers* temporaryOut = new VM86Registers();
 
         // Create task
-        Thread* vm86task = ThreadManager::createProcessVm86(data->interrupt, in, temporaryOut);
+        Thread* vm86task = ThreadManager::createProcessVm86(data->m_interrupt, in, temporaryOut);
         Tasking::addTask(vm86task);
         logDebug("%! task %i creates vm86 task %i to call interrupt %h",
-                 "syscall",
+                 "do_syscall",
                  currentThread->id,
                  vm86task->id,
-                 data->interrupt);
+                 data->m_interrupt);
 
         // Set wait
         currentThread->wait(new WaiterCallVm86(data, temporaryOut, vm86task->id));
 
-        data->status = VM86_CALL_STATUS_SUCCESSFUL;
+        data->m_call_status = VM86_CALL_STATUS_SUCCESSFUL;
     }
 
     else {
         logWarn("%! task %i tried to do vm86 call but is not permitted",
-                "syscall",
+                "do_syscall",
                 currentThread->id);
-        data->status = VM86_CALL_STATUS_FAILED_NOT_PERMITTED;
+        data->m_call_status = VM86_CALL_STATUS_FAILED_NOT_PERMITTED;
     }
 
     return Tasking::schedule();

@@ -25,7 +25,7 @@
 #ifndef EVA_MULTITASKING_WAIT_MANAGER_FS_TRANSACTION
 #define EVA_MULTITASKING_WAIT_MANAGER_FS_TRANSACTION
 
-#include "eva/utils/local.hpp"
+#include "Api/utils/local.hpp"
 #include "filesystem/FsTransactionHandler.hpp"
 #include "logger/logger.hpp"
 #include "tasking/wait/waiter.hpp"
@@ -50,8 +50,8 @@ public:
      * filled constructor
      *
      * @param handler:			the handler to call when the transaction is finished.
-     *							This handler will be deleted after the finish-transaction function was
-     *called
+     *							This handler will be deleted after the finish-transaction
+     *function was called
      * @param transactionID:	the id of the transaction that we handle to
      * @param delegate:			the filesystem delegate
      */

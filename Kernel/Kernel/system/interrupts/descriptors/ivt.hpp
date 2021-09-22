@@ -25,7 +25,7 @@
 #ifndef INTERRUPTS_IVT
 #define INTERRUPTS_IVT
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <memory/memory.hpp>
 
@@ -33,8 +33,8 @@
  * Interrupt vector table struct, used for VM86 calls
  */
 struct Ivt {
-    FarPointer entry[256];
-} __attribute__((packed));
+    FarPtr entry[256];
+} A_PACKED;
 
 /**
  * Global IVT used

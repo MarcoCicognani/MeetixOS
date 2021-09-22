@@ -50,13 +50,13 @@ public:
      */
     virtual void performAfterwork(Thread* thread) {
         if ( status == FS_LENGTH_SUCCESSFUL ) {
-            data()->status = FS_LENGTH_SUCCESSFUL;
-            data()->length = length;
+            data()->m_length_status = FS_LENGTH_SUCCESSFUL;
+            data()->m_length        = length;
         }
 
         else {
-            data()->status = status;
-            data()->length = -1;
+            data()->m_length_status = status;
+            data()->m_length        = -1;
         }
     }
 };

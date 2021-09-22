@@ -25,9 +25,9 @@
 #ifndef EVA_INTERRUPTS_IOAPIC
 #define EVA_INTERRUPTS_IOAPIC
 
-#include "eva/kernel.h"
-#include "eva/stdint.h"
-#include "eva/types.h"
+#include "Api/Kernel.h"
+#include "Api/StdInt.h"
+#include "Api/Types.h"
 
 /**
  * The two memory-mapped offsets of the IOAPIC
@@ -109,8 +109,8 @@ private:
     /**
      * memory informations
      */
-    PhysicalAddress physicalAddress; // address on physical memory
-    VirtualAddress  virtualAddress;  // address on virtual memory
+    PhysAddr physicalAddress; // address on physical memory
+    VirtAddr virtualAddress;  // address on virtual memory
 
     /**
      * interrupt informations
@@ -131,10 +131,7 @@ public:
      * @param physicalAddress:				physicalAddress allocation
      * @param globalSystemInterruptBase:	interrupt informations
      */
-    IoApic(uint32_t        id,
-           PhysicalAddress physicalAddress,
-           uint32_t        globalSystemInterruptBase,
-           IoApic*         next)
+    IoApic(uint32_t id, PhysAddr physicalAddress, uint32_t globalSystemInterruptBase, IoApic* next)
         : id(id), next(next), physicalAddress(physicalAddress), virtualAddress(0),
           globalSystemInterruptBase(globalSystemInterruptBase), redirectEntryCount(0) {
     }

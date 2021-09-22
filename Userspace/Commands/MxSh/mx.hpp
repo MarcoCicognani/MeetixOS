@@ -96,9 +96,9 @@ public:
 
     // destructor
     ~MXShell() {
-//        delete environment;
-//        delete interpreter;
-//        delete scriptParser;
+        //        delete environment;
+        //        delete interpreter;
+        //        delete scriptParser;
     }
 
     /*

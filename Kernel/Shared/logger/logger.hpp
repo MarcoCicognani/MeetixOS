@@ -25,7 +25,7 @@
 #ifndef EVA_SHARED_LOGGER_LOGGER
 #define EVA_SHARED_LOGGER_LOGGER
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <logger/LogMacros.hpp>
 #include <stdarg.h>

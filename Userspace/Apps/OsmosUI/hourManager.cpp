@@ -42,6 +42,6 @@ void SecondaryThread::HourManagerThread(Label* hourLabel) {
         hourLabel->setTitle(hourStr.str());
 
         // wait 1 second
-        Sleep(1000);
+        s_sleep(1000);
     }
 }

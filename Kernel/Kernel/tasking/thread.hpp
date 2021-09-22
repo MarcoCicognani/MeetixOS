@@ -25,9 +25,9 @@
 #ifndef EVA_MULTITASKING_THREAD
 #define EVA_MULTITASKING_THREAD
 
-#include "eva/calls/calls.h"
-#include "eva/kernel.h"
-#include "eva/signal.h"
+#include "Api/Kernel.h"
+#include "Api/Signal.h"
+#include "Api/Syscalls/CallsData.h"
 #include "memory/collections/AddressRangePool.hpp"
 #include "memory/paging.hpp"
 
@@ -53,7 +53,7 @@ public:
      * internal data
      */
     bool           cpuIf;                   // cpu if flag
-    Vm86Registers* out;                     // out register instance
+    VM86Registers* out;                     // out register instance
     uint32_t       interruptRecursionLevel; // level of interrupt recursive
 };
 
@@ -148,12 +148,12 @@ public:
     /**
      * memory informations
      */
-    VirtualAddress kernelStackPageVirt; // kernel space memory stack
-    VirtualAddress kernelStackEsp0;     // kernel space esp stack
-    VirtualAddress userStackAreaStart;  // user space stack
-    VirtualAddress userThreadAddr;      // copy of virtual address of thread in user space
-    VirtualAddress tlsCopyVirt;         // copy of virtual tls
-    uint8_t        userStackPages;      // pages used by user space stack
+    VirtAddr kernelStackPageVirt; // kernel space memory stack
+    VirtAddr kernelStackEsp0;     // kernel space esp stack
+    VirtAddr userStackAreaStart;  // user space stack
+    VirtAddr userThreadAddr;      // copy of virtual address of thread in user space
+    VirtAddr tlsCopyVirt;         // copy of virtual tls
+    uint8_t  userStackPages;      // pages used by user space stack
 
     /**
      * instance of interruption info

@@ -274,7 +274,7 @@ void mainloop() {
                 }
             }
         }
-        Yield();
+        s_yield();
     }
 
     delete timer;

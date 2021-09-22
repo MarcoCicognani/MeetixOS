@@ -42,7 +42,7 @@ void ActionComponent_t::fireAction() {
         UiComponentActionEvent actionEvent;
         actionEvent.header.type        = UI_COMPONENT_EVENT_TYPE_ACTION;
         actionEvent.header.componentID = listenerInfo.componentID;
-        SendMessage(listenerInfo.targetThread, &actionEvent, sizeof(UiComponentActionEvent));
+        s_send_message(listenerInfo.targetThread, &actionEvent, sizeof(UiComponentActionEvent));
     }
 }
 

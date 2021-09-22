@@ -25,7 +25,7 @@
 #ifndef EVA_SHARED_SYSTEM_SYSTEM
 #define EVA_SHARED_SYSTEM_SYSTEM
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <system/processor.hpp>
 
@@ -38,10 +38,10 @@ public:
      * Used on the BSP to initialize AP processors and interrupt controllers
      *
      * @param initialPageDirectoryPhysical:		physical address of the initial page
-     *							 				directory, used for AP
-     *startup
+     *							 				directory, used
+     *for AP startup
      */
-    static void initializeBasicSystemPackage(PhysicalAddress initialPageDirectoryPhysical);
+    static void initializeBasicSystemPackage(PhysAddr initialPageDirectoryPhysical);
 
     /**
      * Used on the APs for initialization

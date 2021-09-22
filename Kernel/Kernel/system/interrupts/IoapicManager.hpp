@@ -25,9 +25,9 @@
 #ifndef EVA_INTERRUPTS_IOAPICMANAGER
 #define EVA_INTERRUPTS_IOAPICMANAGER
 
-#include "eva/kernel.h"
-#include "eva/stdint.h"
-#include "eva/utils/llist.hpp"
+#include "Api/Kernel.h"
+#include "Api/StdInt.h"
+#include "Api/utils/llist.hpp"
 
 #include <system/interrupts/ioapic.hpp>
 
@@ -43,8 +43,7 @@ public:
      * @param ioapicAddress:				the physical address of the IOApic
      * @param globalSystemInterruptBase:	base interrupt managed by IOApic
      */
-    static void
-    create(uint32_t id, PhysicalAddress ioapicAddress, uint32_t globalSystemInterruptBase);
+    static void create(uint32_t id, PhysAddr ioapicAddress, uint32_t globalSystemInterruptBase);
 
     /**
      * return the list with all IoApic entries

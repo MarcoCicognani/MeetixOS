@@ -25,7 +25,7 @@
 #ifndef EVA_SHARED_SETUP_INFORMATION
 #define EVA_SHARED_SETUP_INFORMATION
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <multiboot/multiboot.hpp>
 

@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <eva.h>
+#include <Api.h>
 #include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
             FILE* dest = fopen(pathdest, "w");
 
             // create a buffer with size of file
-            uint32_t buffsize = Length(fileno(tocopy));
+            uint32_t buffsize = s_length(fileno(tocopy));
             uint8_t  buffer[buffsize];
 
             // read and write

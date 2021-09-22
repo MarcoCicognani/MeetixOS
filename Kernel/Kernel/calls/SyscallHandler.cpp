@@ -22,10 +22,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "eva/calls/calls.h"
-
 #include <BuildConfig.hpp>
 #include <calls/SyscallHandler.hpp>
+#include <Api/Syscalls/CallsData.h>
 #include <EvangelionNG.hpp>
 #include <executable/Elf32Loader.hpp>
 #include <logger/logger.hpp>
@@ -46,128 +45,96 @@
 #define IS_VALID_CODE(code) code < SYSCALL_COUNT
 
 /**
- * Create the syscall table for handlers.
- * The syscall table is an array that contains the references
+ * Create the do_syscall table for handlers.
+ * The do_syscall table is an array that contains the references
  * of the functions that handles the corresponding call code
  */
 const SysCallHandler::CallHandler SysCallHandler::handlers[] = {
-    // Process / Threads interaction
-    [SYSCALL_JOIN]                         = &SysCallHandler::join,
-    [SYSCALL_YIELD]                        = &SysCallHandler::yield,
-    [SYSCALL_CALL_VM86]                    = &SysCallHandler::callVm86,
-    [SYSCALL_GET_THREAD_ID]                = &SysCallHandler::getTid,
-    [SYSCALL_GET_PROCESS_ID]               = &SysCallHandler::getPid,
-    [SYSCALL_GET_THREAD_NAME]              = &SysCallHandler::getThreadName,
-    [SYSCALL_GET_MILLISECONDS]             = &SysCallHandler::millis,
-    [SYSCALL_REGISTER_THREAD_NAME]         = &SysCallHandler::registerThreadName,
-    [SYSCALL_GET_PARENT_PROCESS_ID]        = &SysCallHandler::getParentPid,
-    [SYSCALL_GET_THREAD_ID_FOR_NAME]       = &SysCallHandler::getTidByName,
-    [SYSCALL_GET_PROCESS_ID_FOR_THREAD_ID] = &SysCallHandler::getPidForTid,
+    [SYSCALL_THREAD_CREATE]          = &SysCallHandler::createThread,
+    [SYSCALL_THREAD_GET_ENTRY]       = &SysCallHandler::getThreadEntry,
+    [SYSCALL_THREAD_JOIN]            = &SysCallHandler::join,
+    [SYSCALL_THREAD_YIELD]           = &SysCallHandler::yield,
+    [SYSCALL_THREAD_GET_ID]          = &SysCallHandler::getTid,
+    [SYSCALL_THREAD_GET_NAME]        = &SysCallHandler::getThreadName,
+    [SYSCALL_THREAD_SET_NAME]        = &SysCallHandler::registerThreadName,
+    [SYSCALL_THREAD_GET_ID_FOR_NAME] = &SysCallHandler::getTidByName,
+    [SYSCALL_THREAD_SLEEP]           = &SysCallHandler::sleep,
+    [SYSCALL_THREAD_EXIT]            = &SysCallHandler::exit,
+    [SYSCALL_THREAD_KILL]            = &SysCallHandler::kill,
+    [SYSCALL_EXIT_THREAD]            = &SysCallHandler::exitThread,
 
-    // Servers controller
-    [SYSCALL_SERVER_MANAGE]      = &SysCallHandler::serverManage,
-    [SYSCALL_REGISTER_AS_SERVER] = &SysCallHandler::registerAsServer,
+    [SYSCALL_PROCESS_FORK]                  = &SysCallHandler::fork,
+    [SYSCALL_PROCESS_GET_ID]                = &SysCallHandler::getPid,
+    [SYSCALL_PROCESS_GET_PARENT_ID]         = &SysCallHandler::getParentPid,
+    [SYSCALL_PROCESS_GET_ID_FOR_THREAD_ID]  = &SysCallHandler::getPidForTid,
+    [SYSCALL_PROCESS_CALL_VM86]             = &SysCallHandler::callVm86,
+    [SYSCALL_PROCESS_STORE_CLI_ARGUMENTS]   = &SysCallHandler::cliArgsStore,
+    [SYSCALL_PROCESS_RELEASE_CLI_ARGUMENTS] = &SysCallHandler::cliArgsRelease,
 
-    // Process/Thread termination
-    [SYSCALL_EXIT]        = &SysCallHandler::exit,
-    [SYSCALL_KILL]        = &SysCallHandler::kill,
-    [SYSCALL_EXIT_THREAD] = &SysCallHandler::exitThread,
+    [SYSCALL_SCHEDULER_GET_MILLISECONDS] = &SysCallHandler::millis,
 
-    // Signals and interrupts managing
-    [SYSCALL_RAISE_SIGNAL]              = &SysCallHandler::raiseSignal,
-    [SYSCALL_REGISTER_IRQ_HANDLER]      = &SysCallHandler::registerIrqHandler,
-    [SYSCALL_REGISTER_SIGNAL_HANDLER]   = &SysCallHandler::registerSignalHandler,
-    [SYSCALL_RESTORE_INTERRUPTED_STATE] = &SysCallHandler::restoreInterruptedState,
+    [SYSCALL_SIGNAL_RAISE]                = &SysCallHandler::raiseSignal,
+    [SYSCALL_SIGNAL_REGISTER_HANDLER]     = &SysCallHandler::registerSignalHandler,
+    [SYSCALL_SIGNAL_IRQ_REGISTER_HANDLER] = &SysCallHandler::registerIrqHandler,
+    [SYSCALL_SIGNAL_IRQ_WAIT]             = &SysCallHandler::waitForIrq,
+    [SYSCALL_SIGNAL_RESTORE_STATE]        = &SysCallHandler::restoreInterruptedState,
 
-    // Thread waiting
-    [SYSCALL_SLEEP]        = &SysCallHandler::sleep,
-    [SYSCALL_ATOMIC_LOCK]  = &SysCallHandler::atomicWait,
-    [SYSCALL_WAIT_FOR_IRQ] = &SysCallHandler::waitForIrq,
+    [SYSCALL_LOCK_ATOMIC] = &SysCallHandler::atomicWait,
 
-    // Process arguments managing
-    [SYSCALL_STORE_CLI_ARGUMENTS]   = &SysCallHandler::cliArgsStore,
-    [SYSCALL_RELEASE_CLI_ARGUMENTS] = &SysCallHandler::cliArgsRelease,
-
-    // Process / Threads creation
-    [SYSCALL_FORK]                         = &SysCallHandler::fork,
-    [SYSCALL_RAMDISK_SPAWN]                = &SysCallHandler::ramdiskSpawn,
-    [SYSCALL_CREATE_THREAD]                = &SysCallHandler::createThread,
-    [SYSCALL_GET_THREAD_ENTRY]             = &SysCallHandler::getThreadEntry,
-    [SYSCALL_CONFIGURE_PROCESS]            = &SysCallHandler::configureProcess,
-    [SYSCALL_CREATE_EMPTY_PROCESS]         = &SysCallHandler::createEmptyProcess,
+    [SYSCALL_PROCESS_CONFIGURE]            = &SysCallHandler::configureProcess,
+    [SYSCALL_PROCESS_CREATE_EMPTY]         = &SysCallHandler::createEmptyProcess,
     [SYSCALL_CREATE_PAGES_IN_SPACE]        = &SysCallHandler::createPagesInSpace,
     [SYSCALL_GET_CREATED_PROCESS_ID]       = &SysCallHandler::getCreatedProcessId,
     [SYSCALL_ATTACH_CREATED_PROCESS]       = &SysCallHandler::attachCreatedProcess,
     [SYSCALL_CANCEL_PROCESS_CREATION]      = &SysCallHandler::cancelProcessCreation,
     [SYSCALL_WRITE_TLS_MASTER_FOR_PROCESS] = &SysCallHandler::writeTlsMasterForProcess,
 
-    // Thread messaging
     [SYSCALL_MESSAGE_SEND]    = &SysCallHandler::sendMessage,
     [SYSCALL_MESSAGE_RECEIVE] = &SysCallHandler::receiveMessage,
 
-    // Memory management
-    [SYSCALL_SBRK]                  = &SysCallHandler::sbrk,
-    [SYSCALL_UNMAP]                 = &SysCallHandler::unmap,
-    [SYSCALL_SHARE_MEMORY]          = &SysCallHandler::shareMem,
-    [SYSCALL_MAP_MMIO_AREA]         = &SysCallHandler::mapMmio,
-    [SYSCALL_ALLOCATE_MEMORY]       = &SysCallHandler::allocMem,
-    [SYSCALL_LOWER_MEMORY_FREE]     = &SysCallHandler::lowerFree,
-    [SYSCALL_LOWER_MEMORY_ALLOCATE] = &SysCallHandler::lowerMalloc,
+    [SYSCALL_MEMORY_SBRK]           = &SysCallHandler::sbrk,
+    [SYSCALL_MEMORY_UNMAP]          = &SysCallHandler::unmap,
+    [SYSCALL_MEMORY_SHARE]          = &SysCallHandler::shareMem,
+    [SYSCALL_MEMORY_MAP_MMIO]       = &SysCallHandler::mapMmio,
+    [SYSCALL_MEMORY_ALLOCATE]       = &SysCallHandler::allocMem,
+    [SYSCALL_MEMORY_LOWER_FREE]     = &SysCallHandler::lowerFree,
+    [SYSCALL_MEMORY_LOWER_ALLOCATE] = &SysCallHandler::lowerMalloc,
 
-    // Log management
-    [SYSCALL_LOG]           = &SysCallHandler::log,
-    [SYSCALL_SET_VIDEO_LOG] = &SysCallHandler::setVideoLog,
+    [SYSCALL_LOG]              = &SysCallHandler::log,
+    [SYSCALL_LOG_TOGGLE_VIDEO] = &SysCallHandler::setVideoLog,
 
-    // Direct ramdisk access
-    [SYSCALL_RAMDISK_FIND]        = &SysCallHandler::ramdiskFind,
-    [SYSCALL_RAMDISK_INFO]        = &SysCallHandler::ramdiskInfo,
-    [SYSCALL_RAMDISK_READ]        = &SysCallHandler::ramdiskRead,
-    [SYSCALL_RAMDISK_CHILD_AT]    = &SysCallHandler::ramdiskChildAt,
-    [SYSCALL_RAMDISK_FIND_CHILD]  = &SysCallHandler::ramdiskFindChild,
-    [SYSCALL_RAMDISK_CHILD_COUNT] = &SysCallHandler::ramdiskChildCount,
-
-    // File operations
-    [SYSCALL_FS_OPEN]   = &SysCallHandler::fsOpen,
-    [SYSCALL_FS_READ]   = &SysCallHandler::fsRead,
-    [SYSCALL_FS_STAT]   = &SysCallHandler::fsStat,
-    [SYSCALL_FS_CLOSE]  = &SysCallHandler::fsClose,
-    [SYSCALL_FS_FSTAT]  = &SysCallHandler::fsFstat,
-    [SYSCALL_FS_WRITE]  = &SysCallHandler::fsWrite,
-    [SYSCALL_FS_LENGTH] = &SysCallHandler::fsLength,
-
-    // File System operations
-    [SYSCALL_FS_PIPE]           = &SysCallHandler::fsPipe,
-    [SYSCALL_FS_SEEK]           = &SysCallHandler::fsSeek,
-    [SYSCALL_FS_TELL]           = &SysCallHandler::fsTell,
-    [SYSCALL_FS_CLONEFD]        = &SysCallHandler::fsClonefd,
-    [SYSCALL_FS_OPEN_DIRECTORY] = &SysCallHandler::fsOpenDirectory,
-    [SYSCALL_FS_READ_DIRECTORY] = &SysCallHandler::fsReadDirectory,
-
-    // Userspace File System driver
+    [SYSCALL_FS_OPEN]                   = &SysCallHandler::fsOpen,
+    [SYSCALL_FS_READ]                   = &SysCallHandler::fsRead,
+    [SYSCALL_FS_STAT]                   = &SysCallHandler::fsStat,
+    [SYSCALL_FS_CLOSE]                  = &SysCallHandler::fsClose,
+    [SYSCALL_FS_FSTAT]                  = &SysCallHandler::fsFstat,
+    [SYSCALL_FS_WRITE]                  = &SysCallHandler::fsWrite,
+    [SYSCALL_FS_LENGTH]                 = &SysCallHandler::fsLength,
+    [SYSCALL_FS_PIPE]                   = &SysCallHandler::fsPipe,
+    [SYSCALL_FS_SEEK]                   = &SysCallHandler::fsSeek,
+    [SYSCALL_FS_TELL]                   = &SysCallHandler::fsTell,
+    [SYSCALL_FS_CLONEFD]                = &SysCallHandler::fsClonefd,
+    [SYSCALL_FS_OPEN_DIRECTORY]         = &SysCallHandler::fsOpenDirectory,
+    [SYSCALL_FS_READ_DIRECTORY]         = &SysCallHandler::fsReadDirectory,
     [SYSCALL_FS_CREATE_NODE]            = &SysCallHandler::fsCreateNode,
     [SYSCALL_FS_REGISTER_AS_DELEGATE]   = &SysCallHandler::fsRegisterAsDelegate,
     [SYSCALL_FS_SET_TRANSACTION_STATUS] = &SysCallHandler::fsSetTransactionStatus,
+    [SYSCALL_GET_EXECUTABLE_PATH]       = &SysCallHandler::getExecutablePath,
+    [SYSCALL_GET_WORKING_DIRECTORY]     = &SysCallHandler::getWorkingDirectory,
+    [SYSCALL_SET_WORKING_DIRECTORY]     = &SysCallHandler::setWorkingDirectory,
+    [SYSCALL_ENAME]                     = &SysCallHandler::ename,
+    [SYSCALL_SYSINFO]                   = &SysCallHandler::sysinfo,
+    [SYSCALL_GET_PCI_COUNT]             = &SysCallHandler::getPciDeviceCount,
+    [SYSCALL_GET_PCI_DEVICE]            = &SysCallHandler::getPciDevice,
+    [SYSCALL_GET_THREAD_COUNT]          = &SysCallHandler::getThreadCount,
+    [SYSCALL_GET_THREAD_IDS_LIST]       = &SysCallHandler::getThreadIDs,
+    [SYSCALL_GET_THREAD_DESCRIPTOR]     = &SysCallHandler::getThreadDescriptor,
+    [SYSCALL_GET_PROCESS_COUNT]         = &SysCallHandler::getProcessCount,
+    [SYSCALL_GET_PROCESS_IDS_LIST]      = &SysCallHandler::getProcessIDs,
+    [SYSCALL_GET_PROCESS_DESCRIPTOR]    = &SysCallHandler::getProcessDescriptor,
 
-    // Path utils
-    [SYSCALL_GET_EXECUTABLE_PATH]   = &SysCallHandler::getExecutablePath,
-    [SYSCALL_GET_WORKING_DIRECTORY] = &SysCallHandler::getWorkingDirectory,
-    [SYSCALL_SET_WORKING_DIRECTORY] = &SysCallHandler::setWorkingDirectory,
-
-    // System Infos
-    [SYSCALL_ENAME]          = &SysCallHandler::ename,
-    [SYSCALL_SYSINFO]        = &SysCallHandler::sysinfo,
-    [SYSCALL_GET_PCI_COUNT]  = &SysCallHandler::getPciDeviceCount,
-    [SYSCALL_GET_PCI_DEVICE] = &SysCallHandler::getPciDevice,
-
-    // Thread Infos
-    [SYSCALL_GET_THREAD_COUNT]      = &SysCallHandler::getThreadCount,
-    [SYSCALL_GET_THREAD_IDS_LIST]   = &SysCallHandler::getThreadIDs,
-    [SYSCALL_GET_THREAD_DESCRIPTOR] = &SysCallHandler::getThreadDescriptor,
-
-    // Process Infos
-    [SYSCALL_GET_PROCESS_COUNT]      = &SysCallHandler::getProcessCount,
-    [SYSCALL_GET_PROCESS_IDS_LIST]   = &SysCallHandler::getProcessIDs,
-    [SYSCALL_GET_PROCESS_DESCRIPTOR] = &SysCallHandler::getProcessDescriptor,
+    [SYSCALL_SERVER_MANAGE]      = &SysCallHandler::serverManage,
+    [SYSCALL_REGISTER_AS_SERVER] = &SysCallHandler::registerAsServer,
 };
 
 /**
@@ -184,8 +151,8 @@ SYSCALL_HANDLER(handle) {
     // The system call could not be handled, this might mean that the
     // process was compiled for a deprecated/messed up API library and
     // is therefore not able to run well.
-    logDebug("%! process %i tried to use non-existing syscall %i",
-             "syscall",
+    logDebug("%! process %i tried to use non-existing do_syscall %i",
+             "do_syscall",
              currentThread->id,
              index);
 

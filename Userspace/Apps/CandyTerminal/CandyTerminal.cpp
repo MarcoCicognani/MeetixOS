@@ -73,7 +73,7 @@ void CandyTerminal::execute() {
     }
 
     // disable video logging
-    SetVideoLog(false);
+    s_set_video_log(false);
 
     // start shell
     startShell();
@@ -85,13 +85,13 @@ void CandyTerminal::execute() {
     outInfo->threadName  = "CandyTerminal/StandardOutput";
     outInfo->errorOutput = false;
     outInfo->terminal    = this;
-    CreateThreadD((void*)&outputRoutine, outInfo);
+    s_create_thread_d((void*)&outputRoutine, outInfo);
 
     auto errInfo         = new OutputRoutineStartinfo();
     errInfo->threadName  = "CandyTerminal/ErrorOutput";
     errInfo->errorOutput = true;
     errInfo->terminal    = this;
-    CreateThreadD((void*)&outputRoutine, errInfo);
+    s_create_thread_d((void*)&outputRoutine, errInfo);
 
     inputRoutine();
 }
@@ -101,11 +101,11 @@ void CandyTerminal::execute() {
  */
 void CandyTerminal::initializeScreen() {
     if ( headless ) {
-        if ( TaskGetID("CandyTermText") != -1 ) {
+        if ( s_task_get_id("CandyTermText") != -1 ) {
             fprintf(stderr, "CandyTerminal: Can only be executed once when in headless mode");
             return;
         }
-        TaskRegisterID("CandyTermText");
+        s_task_register_id("CandyTermText");
 
         screen = new HeadlessScreen();
         return;
@@ -124,49 +124,49 @@ void CandyTerminal::initializeScreen() {
 void CandyTerminal::startShell() {
     // create input & output pipes
     FsPipeStatus stdinStat;
-    File_t       shellinW;
-    File_t       shellinR;
-    PipeS(&shellinW, &shellinR, &stdinStat);
+    FileHandle   shellinW;
+    FileHandle   shellinR;
+    s_pipe_s(&shellinW, &shellinR, &stdinStat);
     if ( stdinStat != FS_PIPE_SUCCESSFUL ) {
         Utils::log("CandyTerminal: Failed to setup stdin pipe for shell");
         return;
     }
 
     FsPipeStatus stdoutStat;
-    File_t       shelloutW;
-    File_t       shelloutR;
-    PipeS(&shelloutW, &shelloutR, &stdoutStat);
+    FileHandle   shelloutW;
+    FileHandle   shelloutR;
+    s_pipe_s(&shelloutW, &shelloutR, &stdoutStat);
     if ( stdoutStat != FS_PIPE_SUCCESSFUL ) {
         Utils::log("CandyTerminal: Failed to setup stdout pipe for shell");
         return;
     }
 
     FsPipeStatus stderrStat;
-    File_t       shellerrW;
-    File_t       shellerrR;
-    PipeS(&shellerrW, &shellerrR, &stderrStat);
+    FileHandle   shellerrW;
+    FileHandle   shellerrR;
+    s_pipe_s(&shellerrW, &shellerrR, &stderrStat);
     if ( stderrStat != FS_PIPE_SUCCESSFUL ) {
         Utils::log("CandyTerminal: Failed to setup stderr pipe for shell");
         return;
     }
 
     // spawn binary
-    Pid    outPid;
-    File_t stdioIN[3];
+    Pid        outPid;
+    FileHandle stdioIN[3];
     stdioIN[0] = shellinR;
     stdioIN[1] = shelloutW;
     stdioIN[2] = shellerrW;
-    File_t      stdioTarget[3];
-    SpawnStatus status = SpawnPOI("/Bins/MxSh",
-                                  "-sh",
-                                  "/",
-                                  SECURITY_LEVEL_APPLICATION,
-                                  &outPid,
-                                  stdioTarget,
-                                  stdioIN);
+    FileHandle  stdioTarget[3];
+    SpawnStatus status = s_spawn_poi("/Bins/MxSh",
+                                     "-sh",
+                                     "/",
+                                     SECURITY_LEVEL_APPLICATION,
+                                     &outPid,
+                                     stdioTarget,
+                                     stdioIN);
 
     if ( status != SPAWN_STATUS_SUCCESSFUL ) {
-        Utils::log("CandyTerminal: Failed to spawn mx shell process");
+        Utils::log("CandyTerminal: Failed to s_spawn mx shell process");
         return;
     }
 
@@ -231,7 +231,7 @@ void CandyTerminal::inputRoutine() {
             else if ( (readInput.ctrl && readInput.key == "KEY_C")
                       || (readInput.key == "KEY_ESC") ) {
                 if ( currentProcess )
-                    RaiseSignal(currentProcess, SIGINT);
+                    s_raise_signal(currentProcess, SIGINT);
             }
 
             else if ( readInput.key == "KEY_BACKSPACE" && readInput.pressed ) {
@@ -304,7 +304,7 @@ void CandyTerminal::inputRoutine() {
  *
  */
 void CandyTerminal::outputRoutine(OutputRoutineStartinfo* info) {
-    TaskRegisterID(info->threadName);
+    s_task_register_id(info->threadName);
 
     int   buflen = 1024;
     char* buffer = new char[buflen];
@@ -313,10 +313,10 @@ void CandyTerminal::outputRoutine(OutputRoutineStartinfo* info) {
 
     while ( true ) {
         FsReadStatus stat;
-        int r = ReadS(info->errorOutput ? info->terminal->shellERR : info->terminal->shellOUT,
-                      buffer,
-                      buflen,
-                      &stat);
+        int r = s_read_s(info->errorOutput ? info->terminal->shellERR : info->terminal->shellOUT,
+                         buffer,
+                         buflen,
+                         &stat);
 
         if ( stat == FS_READ_SUCCESSFUL ) {
             for ( int i = 0; i < r; i++ ) {

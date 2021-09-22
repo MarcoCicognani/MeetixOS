@@ -20,7 +20,7 @@
 #ifndef __MEETIX_LIBC_STDIO__
 #define __MEETIX_LIBC_STDIO__
 
-#include <eva.h>
+#include <Api.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <sys/types.h>
@@ -523,7 +523,7 @@ int fileno(FILE* stream);
 FILE* fdopen(int fd, const char* mode);
 
 /**
- * Formatted writing to the kernel log.
+ * Formatted writing to the kernel s_log.
  *
  * @param format:	format string to use
  * @varargs:		optional argument list
@@ -531,7 +531,7 @@ FILE* fdopen(int fd, const char* mode);
 void klog(const char* format, ...);
 
 /**
- * Formatted writing to the kernel log.
+ * Formatted writing to the kernel s_log.
  *
  * @param format:	format string to use
  * @param args:		argument list

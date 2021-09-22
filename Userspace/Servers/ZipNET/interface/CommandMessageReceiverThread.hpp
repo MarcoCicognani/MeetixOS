@@ -32,7 +32,7 @@
  */
 class CommandMessageReceiverThread : public Thread {
 public:
-    uint8_t stop = false;
+    bool stop = false;
 
     /**
      *

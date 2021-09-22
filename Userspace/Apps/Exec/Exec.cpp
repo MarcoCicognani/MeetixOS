@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <eva.h>
+#include <Api.h>
 #include <gui/actionlistener.hpp>
 #include <gui/button.hpp>
 #include <gui/label.hpp>
@@ -60,13 +60,13 @@ public:
                 string arg = content.substr(space + 1);
 
                 // exec
-                if ( Spawn(app.c_str(), arg.c_str(), "/", SECURITY_LEVEL_APPLICATION)
+                if ( s_spawn(app.c_str(), arg.c_str(), "/", SECURITY_LEVEL_APPLICATION)
                      != SPAWN_STATUS_SUCCESSFUL )
                     MsgBox::show("Unable to exec " + app, "Exec");
             }
 
             // only exec provided name
-            else if ( Spawn(content.c_str(), "", "/", SECURITY_LEVEL_APPLICATION)
+            else if ( s_spawn(content.c_str(), "", "/", SECURITY_LEVEL_APPLICATION)
                       != SPAWN_STATUS_SUCCESSFUL )
                 MsgBox::show("Unable to exec " + content, "Exec");
 
@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) {
         window->setVisible(true);
 
         // event mode
-        AtomicBlock(&lock);
+        s_atomic_block(&lock);
 
         // remove components
         delete launch;

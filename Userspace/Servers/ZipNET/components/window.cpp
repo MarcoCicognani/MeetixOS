@@ -568,7 +568,7 @@ void Window_t::closeAll() {
         UiComponentCloseEvent postedEvent;
         postedEvent.header.type        = UI_COMPONENT_EVENT_TYPE_CLOSE;
         postedEvent.header.componentID = info.componentID;
-        SendMessage(info.targetThread, &postedEvent, sizeof(UiComponentCloseEvent));
+        s_send_message(info.targetThread, &postedEvent, sizeof(UiComponentCloseEvent));
     }
     setVisible(false);
 }

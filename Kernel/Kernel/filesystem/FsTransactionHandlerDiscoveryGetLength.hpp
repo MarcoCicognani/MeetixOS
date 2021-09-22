@@ -63,15 +63,15 @@ public:
             else if ( startStatus == FS_TRANSACTION_START_IMMEDIATE_FINISH )
                 return FS_TRANSACTION_HANDLING_DONE;
             else {
-                data()->status = FS_LENGTH_ERROR;
+                data()->m_length_status = FS_LENGTH_ERROR;
                 logWarn("%! failed to start get-length handler after node discovery", "filesystem");
                 return FS_TRANSACTION_HANDLING_DONE;
             }
         }
 
         else {
-            data()->length = -1;
-            data()->status = FS_LENGTH_ERROR;
+            data()->m_length        = -1;
+            data()->m_length_status = FS_LENGTH_ERROR;
             return FS_TRANSACTION_HANDLING_DONE;
         }
     }

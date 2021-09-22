@@ -21,7 +21,7 @@
 #include "stdlib.h"
 #include "string.h"
 
-#include <eva.h>
+#include <Api.h>
 
 /**
  *
@@ -30,7 +30,7 @@ char* getenv(const char* key) {
     // open the environment file
     FILE* env = fopen("/MeetiX/Configs/Env/Global", "r");
 
-    if (env) {
+    if ( env ) {
         // create the line buffer
         const int buflen = 1024;
         const int keylen = strlen(key);

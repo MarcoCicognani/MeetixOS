@@ -76,11 +76,11 @@ void Smp::initializeCore(Processor* cpu) {
  * @param initialPageDirectoryPhysical
  *		the first physical address where the initialization begin
  */
-void Smp::initialize(PhysicalAddress initialPageDirectoryPhysical) {
+void Smp::initialize(PhysAddr initialPageDirectoryPhysical) {
     // Write values to lower memory for use within startup code
     *((uint32_t*)CONST_SMP_STARTUP_AREA_PAGE_DIRECTORY) = initialPageDirectoryPhysical;
     *((uint32_t*)CONST_SMP_STARTUP_AREA_AP_START_ADDRESS)
-        = (VirtualAddress)EvaKernel::runAdvancedSystemPackage;
+        = (VirtAddr)EvaKernel::runAdvancedSystemPackage;
     *((uint32_t*)CONST_SMP_STARTUP_AREA_AP_COUNTER) = 0;
 
     logDebug("%! initial page directory for APs: %h",
@@ -94,14 +94,14 @@ void Smp::initialize(PhysicalAddress initialPageDirectoryPhysical) {
              *((uint32_t*)CONST_SMP_STARTUP_AREA_AP_COUNTER));
 
     // Create enough stacks for all APs
-    PhysicalAddress* stackArray = (PhysicalAddress*)CONST_SMP_STARTUP_AREA_AP_STACK_ARRAY;
+    PhysAddr* stackArray = (PhysAddr*)CONST_SMP_STARTUP_AREA_AP_STACK_ARRAY;
     for ( uint32_t i = 0; i < System::getNumberOfProcessors(); i++ ) {
-        PhysicalAddress stackPhysical = PPallocator::allocate();
+        PhysAddr stackPhysical = PPallocator::allocate();
         if ( !stackPhysical ) {
             logInfo("%*%! could not allocate physical page for AP stack", 0x0C, "smp");
             return;
         }
-        VirtualAddress stackVirtual = EvaKernel::evaKernelRangePool->allocate(1);
+        VirtAddr stackVirtual = EvaKernel::evaKernelRangePool->allocate(1);
         if ( !stackPhysical ) {
             logInfo("%*%! could not allocate virtual range for AP stack", 0x0C, "smp");
             return;
@@ -112,8 +112,8 @@ void Smp::initialize(PhysicalAddress initialPageDirectoryPhysical) {
                           DEFAULT_KERNEL_TABLE_FLAGS,
                           DEFAULT_KERNEL_PAGE_FLAGS);
 
-        VirtualAddress stackTop = (stackVirtual + PAGE_SIZE);
-        stackArray[i]           = stackTop;
+        VirtAddr stackTop = (stackVirtual + PAGE_SIZE);
+        stackArray[i]     = stackTop;
 
         logDebug("%! created AdvancedPackage stack (%h) placed at %h",
                  "smp",

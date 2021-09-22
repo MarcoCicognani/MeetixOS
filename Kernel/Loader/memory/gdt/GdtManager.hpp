@@ -25,7 +25,7 @@
 #ifndef EVA_LOADER_MEMORY_GDT_GDT_INITIALIZER
 #define EVA_LOADER_MEMORY_GDT_GDT_INITIALIZER
 
-#include "eva/stdint.h"
+#include "Api/StdInt.h"
 
 #include <memory/gdt/gdt.hpp>
 

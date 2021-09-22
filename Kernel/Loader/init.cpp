@@ -68,7 +68,7 @@ extern "C" void initializeLoader(MultibootInformation* multibootStruct, uint32_t
     ConsoleVideo::setColor(32);
     logInfon("Evangelion Loader");
     ConsoleVideo::setColor(0x0F);
-    logInfo(" Version %d.%d.%s", L_VERSION_MAJOR, L_VERSION_MINOR, L_VERSION_PATCH);
+    logInfo(" Version %i.%i.%c", L_VERSION_MAJOR, L_VERSION_MINOR, L_VERSION_PATCH);
     logInfo("");
 
     // check magic number and continue initialization

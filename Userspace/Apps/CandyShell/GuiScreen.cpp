@@ -26,7 +26,7 @@
 
 #include "CandyShell.hpp"
 
-#include <eva.h>
+#include <Api.h>
 #include <io/keyboard.hpp>
 #include <list>
 #include <string.h>
@@ -53,7 +53,7 @@ class InputKeyListener : public KeyListener {
     virtual void handleKeyEvent(KeyEvent& e) {
         waitingInputLock.lock();
         waitingInput.push_back(Keyboard::instance().fullKeyInfo(e.info));
-        lastInput        = Millis();
+        lastInput        = s_millis();
         noInputAvailable = false;
         waitingInputLock.unlock();
     }
@@ -92,7 +92,7 @@ public:
     virtual void handleFocusChanged(bool nowFocused) {
         focus        = nowFocused;
         paintIsFresh = false;
-        lastInput    = Millis();
+        lastInput    = s_millis();
     }
 };
 
@@ -143,8 +143,8 @@ void GuiScreen::initialize() {
     font      = FontLoader::get("consolas");
     viewModel = TextLayouter::getInstance()->initializeBuffer();
 
-    CreateThreadN((void*)&paintEntry, "canvas");
-    CreateThreadN((void*)&blinkCursorThread, "blinker");
+    s_create_thread_n((void*)&paintEntry, "canvas");
+    s_create_thread_n((void*)&blinkCursorThread, "blinker");
 }
 
 /**
@@ -158,7 +158,7 @@ void GuiScreen::blinkCursorThread() {
     while ( true ) {
         cursorBlink  = !cursorBlink;
         paintIsFresh = false;
-        Sleep(300);
+        s_sleep(300);
     }
 }
 
@@ -176,7 +176,7 @@ void GuiScreen::paint() {
 
         cr = getGraphics();
         if ( !cr ) {
-            Sleep(100);
+            s_sleep(100);
             continue;
         }
 
@@ -233,7 +233,7 @@ void GuiScreen::paint() {
         }
 
         // paint cursor
-        if ( (Millis() - lastInput < 300) || cursorBlink ) {
+        if ( (s_millis() - lastInput < 300) || cursorBlink ) {
             cairo_save(cr);
             // cursor
             cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(fontColor));
@@ -246,7 +246,7 @@ void GuiScreen::paint() {
         canvas->blit(Rectangle(0, 0, bufferSize.width, bufferSize.height));
 
         paintIsFresh = true;
-        AtomicBlock(&paintIsFresh);
+        s_atomic_block(&paintIsFresh);
     }
 }
 
@@ -402,9 +402,9 @@ void GuiScreen::write(string message, Color_t color, bool visible) {
 Keyboard::Info GuiScreen::readInput(bool* cancelCondition) {
     if ( waitingInput.size() == 0 ) {
         if ( cancelCondition )
-            AtomicBlockDual(&noInputAvailable, (uint8_t*)&cancelCondition);
+            s_atomic_block_dual(&noInputAvailable, (uint8_t*)&cancelCondition);
         else
-            AtomicBlock(&noInputAvailable);
+            s_atomic_block(&noInputAvailable);
     }
 
     waitingInputLock.lock();

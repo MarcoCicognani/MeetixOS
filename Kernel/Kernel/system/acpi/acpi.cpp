@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "eva/types.h"
+#include "Api/Types.h"
 
 #include <EvangelionNG.hpp>
 #include <logger/logger.hpp>
@@ -91,7 +91,7 @@ void Acpi::gatherInformation() {
 
         // Go through the existing root entries
         for ( uint32_t i = 0; i < getRSDTentryCount(); i++ ) {
-            PhysicalAddress entry = getRSDTentry(i);
+            PhysAddr entry = getRSDTentry(i);
             if ( entry != 0 ) {
                 AcpiTableHeader* sdt = mapSDT(entry);
 
@@ -119,7 +119,7 @@ void Acpi::gatherInformation() {
  * @param rsdp:		the rsdp descriptor where we start mapping
  */
 void Acpi::prepareRootSDT(RsdpDescriptor* rsdp) {
-    PhysicalAddress rootTableLocation = 0;
+    PhysAddr rootTableLocation = 0;
 
     rootIsXSDT = false;
 
@@ -177,11 +177,11 @@ void Acpi::prepareRootSDT(RsdpDescriptor* rsdp) {
  *
  * @return the length of the table or 0 if failed
  */
-uint32_t Acpi::getLengthOfUnmappedSDT(PhysicalAddress tableLocation) {
+uint32_t Acpi::getLengthOfUnmappedSDT(PhysAddr tableLocation) {
     // Align the location down, we will allocate 2 pages to make sure the
     // header is within the range
-    PhysicalAddress physStart   = PAGE_ALIGN_DOWN(tableLocation);
-    VirtualAddress  virtualBase = EvaKernel::evaKernelRangePool->allocate(2);
+    PhysAddr physStart   = PAGE_ALIGN_DOWN(tableLocation);
+    VirtAddr virtualBase = EvaKernel::evaKernelRangePool->allocate(2);
 
     if ( !AddressSpace::map(virtualBase,
                             physStart,
@@ -220,7 +220,7 @@ uint32_t Acpi::getLengthOfUnmappedSDT(PhysicalAddress tableLocation) {
  *
  * @return the header of the mapped table or nullptr
  */
-AcpiTableHeader* Acpi::mapSDT(PhysicalAddress tableLocation) {
+AcpiTableHeader* Acpi::mapSDT(PhysAddr tableLocation) {
     // Retrieve the tables length
     uint32_t tableLength = getLengthOfUnmappedSDT(tableLocation);
     if ( !tableLength ) {
@@ -240,15 +240,15 @@ AcpiTableHeader* Acpi::mapSDT(PhysicalAddress tableLocation) {
     }
 
     // Down/upalign physical range
-    PhysicalAddress physStart = PAGE_ALIGN_DOWN(tableLocation);
-    PhysicalAddress physEnd   = PAGE_ALIGN_UP(tableLocation + tableLength);
+    PhysAddr physStart = PAGE_ALIGN_DOWN(tableLocation);
+    PhysAddr physEnd   = PAGE_ALIGN_UP(tableLocation + tableLength);
 
     // Calculate offset of header within first page
     uint32_t mappingOffset = tableLocation - physStart;
 
     // Calculate amount of physical pages and allocate virtual range
-    uint32_t       pages       = (physEnd - physStart) / PAGE_SIZE;
-    VirtualAddress virtualBase = EvaKernel::evaKernelRangePool->allocate(pages);
+    uint32_t pages       = (physEnd - physStart) / PAGE_SIZE;
+    VirtAddr virtualBase = EvaKernel::evaKernelRangePool->allocate(pages);
 
     // Could not find a virtual range of that size
     if ( !virtualBase ) {
@@ -259,7 +259,7 @@ AcpiTableHeader* Acpi::mapSDT(PhysicalAddress tableLocation) {
     }
 
     // Map the pages
-    for ( VirtualAddress off = 0; off < (physEnd - physStart); off = off + PAGE_SIZE )
+    for ( VirtAddr off = 0; off < (physEnd - physStart); off = off + PAGE_SIZE )
         AddressSpace::map(virtualBase + off,
                           physStart + off,
                           DEFAULT_KERNEL_TABLE_FLAGS,
@@ -313,8 +313,8 @@ uint32_t Acpi::getRSDTentryCount() {
  * @param index:		the index of the RSD entry
  * @return the physical address of the entry
  */
-PhysicalAddress Acpi::getRSDTentry(uint32_t index) {
-    VirtualAddress startOfEntries = ((VirtualAddress)rootHeader) + sizeof(AcpiTableHeader);
+PhysAddr Acpi::getRSDTentry(uint32_t index) {
+    VirtAddr startOfEntries = ((VirtAddr)rootHeader) + sizeof(AcpiTableHeader);
 
     if ( rootIsXSDT )
         return ((uint64_t*)startOfEntries)[index];

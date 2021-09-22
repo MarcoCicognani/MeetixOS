@@ -21,8 +21,8 @@
 #define __MEETIX_LIBC_DIR__
 
 #include <dirent.h>
-#include <eva/common.h>
-#include <eva/fs.h>
+#include <Api/Common.h>
+#include <Api/FileSystem.h>
 #include <stdint.h>
 #include <sys/types.h>
 
