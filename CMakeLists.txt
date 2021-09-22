@@ -35,6 +35,9 @@ set(RD_IMAGE_INSTALL_MODULES ${RD_IMAGE_INSTALL_ROOT}/MeetiX/Kernel/Modules)
 set(CMAKE_CXX_FLAGS "-fdiagnostics-color=always")
 set(CMAKE_C_FLAGS "-fdiagnostics-color=always")
 
+set(CMAKE_CXX_FLAGS_RELEASE "-g0")
+set(CMAKE_C_FLAGS_RELEASE "-g0")
+
 # Project sub-directories
 add_subdirectory(Kernel)
 add_subdirectory(Libs)
