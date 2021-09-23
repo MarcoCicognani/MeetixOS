@@ -13,8 +13,6 @@
 #pragma once
 
 #include <Api/Common.h>
-#include <stdarg.h>
-#include <stddef.h>
 
 __BEGIN_C
 
