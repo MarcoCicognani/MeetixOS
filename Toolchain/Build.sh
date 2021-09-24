@@ -73,7 +73,7 @@ require_tool wget
 require_tool tar
 require_tool cmake
 require_tool ninja
-require_tool grub-mkresque
+require_tool grub-mkrescue
 require_tool xorriso
 
 # Safe creation of build dir
