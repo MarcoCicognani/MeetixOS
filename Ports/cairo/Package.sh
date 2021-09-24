@@ -7,11 +7,11 @@ port_unpack() {
 }
 
 port_build() {
-    PKG_CONFIG=meetix-pkg-config.sh                           \
+    PKG_CONFIG=meetix-pkg-config.sh                              \
     CFLAGS="-DCAIRO_NO_MUTEX=1 -I$SOURCE_DIR/Libs/Include/pixman-1 -I$SOURCE_DIR/Libs/Include/freetype2"        \
-        ../$UNPACKED_DIR/configure --disable-shared           \
-                                   --host=i686-pc-meetix      \
-                                   --prefix="$TOOLCHAIN_ROOT" \
+        ../$UNPACKED_DIR/configure --disable-shared              \
+                                   --host=i686-pc-meetix         \
+                                   --prefix="$TOOLCHAIN_ROOT"    \
                                    --enable-xlib=no || exit 1
 
     make -j$BUILD_JOBS || exit 1
