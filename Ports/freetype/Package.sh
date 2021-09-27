@@ -16,5 +16,5 @@ port_build() {
     make -j$BUILD_JOBS || exit 1
     make -j$BUILD_JOBS install || exit 1
 
-    ln -sf "$TOOLCHAIN_ROOT/include/freetype2" "$SOURCE_DIR/Libs/Include/freetype2"
+    ln -sf "$TOOLCHAIN_ROOT/include/freetype2" "$SOURCE_DIR/Libs/Headers/freetype2"
 }

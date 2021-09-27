@@ -166,15 +166,15 @@ VMResult Virtual8086Monitor::handleGpf(Thread* current) {
                     ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) + 6) & 0xffff;
 
                     if ( current->getVm86Information()->interruptRecursionLevel == 0 ) {
-                        current->getVm86Information()->m_out_buffer->ax = ctx->defaultFrame.eax;
-                        current->getVm86Information()->m_out_buffer->bx = ctx->defaultFrame.ebx;
-                        current->getVm86Information()->m_out_buffer->cx = ctx->defaultFrame.ecx;
-                        current->getVm86Information()->m_out_buffer->dx = ctx->defaultFrame.edx;
+                        current->getVm86Information()->out->ax = ctx->defaultFrame.eax;
+                        current->getVm86Information()->out->bx = ctx->defaultFrame.ebx;
+                        current->getVm86Information()->out->cx = ctx->defaultFrame.ecx;
+                        current->getVm86Information()->out->dx = ctx->defaultFrame.edx;
 
-                        current->getVm86Information()->m_out_buffer->di = ctx->defaultFrame.edi;
-                        current->getVm86Information()->m_out_buffer->si = ctx->defaultFrame.esi;
-                        current->getVm86Information()->m_out_buffer->ds = ctx->ds;
-                        current->getVm86Information()->m_out_buffer->es = ctx->es;
+                        current->getVm86Information()->out->di = ctx->defaultFrame.edi;
+                        current->getVm86Information()->out->si = ctx->defaultFrame.esi;
+                        current->getVm86Information()->out->ds = ctx->ds;
+                        current->getVm86Information()->out->es = ctx->es;
 
                         return VMResult::FINISHED;
                     }

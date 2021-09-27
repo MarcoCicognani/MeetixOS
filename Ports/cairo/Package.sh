@@ -8,7 +8,7 @@ port_unpack() {
 
 port_build() {
     PKG_CONFIG=meetix-pkg-config.sh                              \
-    CFLAGS="-DCAIRO_NO_MUTEX=1 -I$SOURCE_DIR/Libs/Include/pixman-1 -I$SOURCE_DIR/Libs/Include/freetype2"        \
+    CFLAGS="-DCAIRO_NO_MUTEX=1 -I$SOURCE_DIR/Libs/Headers/pixman-1 -I$SOURCE_DIR/Libs/Headers/freetype2"        \
         ../$UNPACKED_DIR/configure --disable-shared              \
                                    --host=i686-pc-meetix         \
                                    --prefix="$TOOLCHAIN_ROOT"    \
@@ -17,5 +17,5 @@ port_build() {
     make -j$BUILD_JOBS || exit 1
     make -j$BUILD_JOBS install || exit 1
 
-    ln -fs "$TOOLCHAIN_ROOT/include/cairo" "$SOURCE_DIR/Libs/Include/cairo"
+    ln -fs "$TOOLCHAIN_ROOT/include/cairo" "$SOURCE_DIR/Libs/Headers/cairo"
 }

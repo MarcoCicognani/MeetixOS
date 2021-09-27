@@ -35,7 +35,7 @@ SYSCALL_HANDLER(serverManage) {
         Process* server = Tasking::getServer(data->identifier);
         if ( server ) {
             // send a message to the server
-            MessageSendStatus status = MessageController::sendMessage(server->main->m_thread_id,
+            MessageSendStatus status = MessageController::sendMessage(server->main->id,
                                                                       currentThread->id,
                                                                       (uint8_t*)&data->buffer,
                                                                       sizeof(ServerManageBuffer),

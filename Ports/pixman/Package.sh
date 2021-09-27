@@ -13,5 +13,5 @@ port_build() {
     make -j$BUILD_JOBS || exit 1
     make -j$BUILD_JOBS install || exit 1
 
-    ln -fs "$TOOLCHAIN_ROOT/include/pixman-1" "$SOURCE_DIR/Libs/Include/pixman-1"
+    ln -fs "$TOOLCHAIN_ROOT/include/pixman-1" "$SOURCE_DIR/Libs/Headers/pixman-1"
 }

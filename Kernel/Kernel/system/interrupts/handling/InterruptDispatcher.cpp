@@ -77,7 +77,7 @@ ProcessorState* InterruptDispatcher::handle(ProcessorState* cpuState) {
     // sanity check
     if ( currentThread->waitManager ) {
         EvaKernel::panic("scheduled thread %i had a wait manager ('%s')",
-                         currentThread->m_thread_id,
+                         currentThread->id,
                          currentThread->waitManager->debugName());
     }
 

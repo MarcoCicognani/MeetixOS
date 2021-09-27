@@ -6,9 +6,9 @@
       <file path="$PROJECT_DIR$/Build" />
       <file path="$PROJECT_DIR$/Build/Ports" />
       <file path="$PROJECT_DIR$/Build/Release" />
-      <file path="$PROJECT_DIR$/Libs/Include/cairo" />
-      <file path="$PROJECT_DIR$/Libs/Include/freetype2" />
-      <file path="$PROJECT_DIR$/Libs/Include/pixman-1" />
+      <file path="$PROJECT_DIR$/Libs/Headers/cairo" />
+      <file path="$PROJECT_DIR$/Libs/Headers/freetype2" />
+      <file path="$PROJECT_DIR$/Libs/Headers/pixman-1" />
       <file path="$PROJECT_DIR$/Toolchain/Local" />
       <file path="$PROJECT_DIR$/Toolchain/NewLocal" />
       <file path="$PROJECT_DIR$/Toolchain/Tarballs" />
