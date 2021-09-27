@@ -1,38 +1,29 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                           *
- *  Ghost, a micro-kernel based operating system for the x86 architecture    *
- *  Copyright (C) 2015, Max Schlüssel <lokoxe@gmail.com>                     *
- *                                                                           *
- *  This program is free software: you can redistribute it and/or modify     *
- *  it under the terms of the GNU General Public License as published by     *
- *  the Free Software Foundation, either version 3 of the License, or        *
- *  (at your option) any later version.                                      *
- *                                                                           *
- *  This program is distributed in the hope that it will be useful,          *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *  GNU General Public License for more details.                             *
- *                                                                           *
- *  You should have received a copy of the GNU General Public License        *
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                           *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-#include "errno.h"
-#include "stdio.h"
-
 /**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
  *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
+
+#include "stdio_internal.h"
+
+#include <errno.h>
+#include <stdio.h>
+
 int feof(FILE* stream) {
-    s_atomic_lock(&stream->lock);
+    s_atomic_lock(&stream->m_lock);
     int res;
-    if ( stream->impl_eof ) {
-        res = stream->impl_eof(stream);
+    if ( stream->m_impl_eof ) {
+        res = stream->m_impl_eof(stream);
     } else {
         errno = ENOTSUP;
         res   = EOF;
     }
-    stream->lock = 0;
+    stream->m_lock = false;
     return res;
 }

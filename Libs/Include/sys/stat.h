@@ -1,36 +1,27 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani & D. Morandi]                  *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
-#ifndef __MEETIX_LIBC_SYS_STAT__
-#define __MEETIX_LIBC_SYS_STAT__
+#pragma once
 
 #include <Api/Common.h>
-#include <Api/StdInt.h>
+#include <fcntl.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <time.h>
 
 __BEGIN_C
 
-typedef uint32_t mode_t;
+/* ------------------------------------------ C defines ----------------------------------------- */
 
-// POSIX stat flags
-// TODO kernel must understand these
 #define S_IXOTH 01
 #define S_IWOTH 02
 #define S_IROTH 03
@@ -44,12 +35,13 @@ typedef uint32_t mode_t;
 #define S_IRUSR 0400
 #define S_IRWXU 0700
 
-// TODO
 #define S_ISREG(mode)  1
 #define S_ISDIR(mode)  0
 #define S_ISCHR(mode)  0
 #define S_ISBLK(mode)  0
 #define S_ISFIFO(mode) 0
+
+/* ------------------------------------------- C types ------------------------------------------ */
 
 struct stat {
     dev_t     st_dev;
@@ -66,17 +58,14 @@ struct stat {
     blkcnt_t  st_blocks;
 };
 
-/**
- * TODO
- */
-int    stat(const char* pathname, struct stat* buf);
-int    fstat(int fd, struct stat* buf);
-int    lstat(const char* pathname, struct stat* buf);
-int    chmod(const char* pathname, mode_t mode);
-int    fchmod(int fd, mode_t mode);
-mode_t umask(mode_t mask);
-int    mkdir(const char* path, mode_t mode);
+/* ------------------------------------ C function prototypes ----------------------------------- */
+
+int    stat(const char*, struct stat*);
+int    fstat(int, struct stat*);
+int    lstat(const char*, struct stat*);
+int    chmod(const char*, mode_t);
+int    fchmod(int, mode_t);
+mode_t umask(mode_t);
+int    mkdir(const char*, mode_t);
 
 __END_C
-
-#endif

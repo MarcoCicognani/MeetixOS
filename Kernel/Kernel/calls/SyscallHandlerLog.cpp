@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <calls/SyscallHandler.hpp>
 #include <Api/utils/local.hpp>
+#include <calls/SyscallHandler.hpp>
 #include <logger/logger.hpp>
 #include <tasking/process.hpp>
 

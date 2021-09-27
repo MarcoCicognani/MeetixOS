@@ -17,8 +17,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
 #include <Api.h>
-#include <ctype.h>
 #include <Api/ELF32.h>
+#include <ctype.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>

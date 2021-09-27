@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <calls/SyscallHandler.hpp>
 #include <Api/Syscalls/CallsData.h>
+#include <calls/SyscallHandler.hpp>
 #include <logger/logger.hpp>
 #include <tasking/communication/MessageController.hpp>
 #include <tasking/tasking.hpp>
@@ -35,7 +35,7 @@ SYSCALL_HANDLER(serverManage) {
         Process* server = Tasking::getServer(data->identifier);
         if ( server ) {
             // send a message to the server
-            MessageSendStatus status = MessageController::sendMessage(server->main->id,
+            MessageSendStatus status = MessageController::sendMessage(server->main->m_thread_id,
                                                                       currentThread->id,
                                                                       (uint8_t*)&data->buffer,
                                                                       sizeof(ServerManageBuffer),

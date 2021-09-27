@@ -21,8 +21,8 @@
 #define MEETIX_LIBRARY_UI_COMPONENT
 
 #include <Api.h>
-#include <cstdint>
 #include <Api/utils/local.hpp>
+#include <cstdint>
 #include <graphics/metrics/rectangle.hpp>
 #include <gui/boundseventcomponent.hpp>
 #include <gui/componentregistry.hpp>

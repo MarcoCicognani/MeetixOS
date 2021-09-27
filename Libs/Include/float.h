@@ -1,32 +1,24 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
-#ifndef __MEETIX_LIBC_FLOAT__
-#define __MEETIX_LIBC_FLOAT__
-
-// This header originates from the musl C library http://www.musl-libc.org/
+#pragma once
 
 #include <Api/Common.h>
 
 __BEGIN_C
 
-int __flt_rounds();
+/* ------------------------------------------ C defines ----------------------------------------- */
+
+int __flt_rounds(void);
 #define FLT_ROUNDS (__flt_rounds())
 
 #define FLT_RADIX 2
@@ -64,19 +56,14 @@ int __flt_rounds();
 #define LDBL_HAS_SUBNORM 1
 #define LDBL_DECIMAL_DIG DECIMAL_DIG
 
-// Definitions for x86_64 architecture
 #ifdef __x86_64__
 #    error "not implemented for this architecture"
-
-// Definitions for x86 architecture
 #elif __i386__
-
 #    ifdef __FLT_EVAL_METHOD__
 #        define FLT_EVAL_METHOD __FLT_EVAL_METHOD__
 #    else
 #        define FLT_EVAL_METHOD 2
 #    endif
-
 #    define LDBL_TRUE_MIN 3.6451995318824746025e-4951L
 #    define LDBL_MIN      3.3621031431120935063e-4932L
 #    define LDBL_MAX      1.1897314953572317650e+4932L
@@ -91,13 +78,8 @@ int __flt_rounds();
 #    define LDBL_MAX_10_EXP 4932
 
 #    define DECIMAL_DIG 21
-
-// other architectures
 #else
 #    error "architecture not supported"
-
 #endif
 
 __END_C
-
-#endif

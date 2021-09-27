@@ -22,9 +22,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
+#include <Api/Syscalls/CallsData.h>
 #include <BuildConfig.hpp>
 #include <calls/SyscallHandler.hpp>
-#include <Api/Syscalls/CallsData.h>
 #include <EvangelionNG.hpp>
 #include <executable/Elf32Loader.hpp>
 #include <logger/logger.hpp>

@@ -32,7 +32,7 @@
  * @brief Shows the message on the s_log for a non implemented function
  */
 #define __NOT_IMPLEMENTED(name)                                                                    \
-    s_log("'" #name "' is not implemented");                                                       \
+    s_log("Warning: Function '" #name "' is not implemented");                                     \
     s_exit(0);
 
 /**
@@ -40,7 +40,7 @@
  */
 #define __DEBUG_TRACE_ENABLED 0
 #if __DEBUG_TRACE_ENABLED
-#    define __DEBUG_TRACE(function) Log(#    function);
+#    define __DEBUG_TRACE(function) s_log(#    function);
 #else
 #    define __DEBUG_TRACE(function)
 #endif
@@ -48,4 +48,8 @@
 /**
  * @brief Compiler attributes
  */
-#define A_PACKED __attribute__((packed))
+#define A_PACKED   __attribute__((packed))
+#define A_WEAK     __attribute__((weak))
+#define A_UNUSED   __attribute__((unused))
+#define A_NOINLINE __attribute__((noinline))
+#define A_NORETURN __attribute__((noreturn))

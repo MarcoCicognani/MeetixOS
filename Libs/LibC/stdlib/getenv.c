@@ -1,61 +1,45 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani & D. Morandi]                  *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
-
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
-
-#include <Api.h>
-
 /**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
  *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 char* getenv(const char* key) {
-    // open the environment file
-    FILE* env = fopen("/MeetiX/Configs/Env/Global", "r");
+    FILE* env_stream = fopen("/MeetiX/Configs/Env/Global", "r");
 
-    if ( env ) {
-        // create the line buffer
-        const int buflen = 1024;
-        const int keylen = strlen(key);
-        char*     line   = malloc(sizeof(char) * buflen);
+    if ( env_stream ) {
+        usize env_buf_len = 1024;
+        usize env_key_len = strlen(key);
+        char* env_buf     = malloc(sizeof(char) * env_buf_len);
 
-        // read the file
-        while ( readline(env, line) ) {
-            // get separator character
-            char* separator = strchr(line, '=');
+        /* read file line by line */
+        while ( readline(env_stream, env_buf, env_buf_len) ) {
+            char* env_var_separator = strchr(env_buf, '=');
 
-            // compare the provided key
-            if ( keylen == (int)(separator - line) && !strncmp(key, line, keylen) ) {
-                // clos the file
-                fclose(env);
+            /* is this the key? */
+            if ( env_key_len == (usize)(env_var_separator - env_buf)
+                 && !strncmp(key, env_buf, env_key_len) ) {
+                fclose(env_stream);
 
-                // return the value
-                return ++separator;
+                /* skip the separator */
+                return ++env_var_separator;
             }
 
-            // reset the buffer
-            memset(line, '\0', buflen);
+            memset(env_buf, '\0', env_buf_len);
         }
 
-        // variable not found, close file and return
-        fclose(env);
+        /* drop the stream */
+        fclose(env_stream);
     }
     return NULL;
 }

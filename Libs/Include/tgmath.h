@@ -1,38 +1,21 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
-
-#ifndef __MEETIX_LIBC_TGMATH__
-#define __MEETIX_LIBC_TGMATH__
-
-// This header originates from the musl C library http://www.musl-libc.org/
-
-/*
- the return types are only correct with gcc (__GNUC__)
- otherwise they are long double or long double complex
-
- the long double version of a function is never chosen when
- sizeof(double) == sizeof(long double)
- (but the return type is set correctly with gcc)
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
+
+#pragma once
 
 #include <complex.h>
 #include <math.h>
+
+/* ------------------------------------------ C defines ----------------------------------------- */
 
 #define __IS_FP(x)   (sizeof((x) + 1ULL) == sizeof((x) + 1.0f))
 #define __IS_CX(x)   (__IS_FP(x) && sizeof(x) == sizeof((x) + I))
@@ -51,42 +34,19 @@
 /* return type */
 
 #ifdef __GNUC__
-/*
- the result must be casted to the right type
- (otherwise the result type is determined by the conversion
- rules applied to all the function return types so it is long
- double or long double complex except for integral functions)
-
- this cannot be done in c99, so the typeof gcc extension is
- used and that the type of ?: depends on wether an operand is
- a null pointer constant or not
- (in c11 _Generic can be used)
-
- the c arguments below must be integer constant expressions
- so they can be in null pointer constants
- (__IS_FP above was carefully chosen this way)
- */
-/* if c then t else void */
-#    define __type1(c, t) __typeof__(*(0 ? (t*)0 : (void*)!(c)))
-/* if c then t1 else t2 */
+#    define __type1(c, t)      __typeof__(*(0 ? (t*)0 : (void*)!(c)))
 #    define __type2(c, t1, t2) __typeof__(*(0 ? (__type1(c, t1)*)0 : (__type1(!(c), t2)*)0))
-/* cast to double when x is integral, otherwise use typeof(x) */
-#    define __RETCAST(x) (__type2(__IS_FP(x), __typeof__(x), double))
-/* 2 args case, should work for complex types (cpow) */
+#    define __RETCAST(x)       (__type2(__IS_FP(x), __typeof__(x), double))
 #    define __RETCAST_2(x, y)                                                                      \
         (__type2(__IS_FP(x) && __IS_FP(y), __typeof__((x) + (y)), __typeof__((x) + (y) + 1.0)))
-/* 3 args case (fma only) */
 #    define __RETCAST_3(x, y, z)                                                                   \
         (__type2(__IS_FP(x) && __IS_FP(y) && __IS_FP(z),                                           \
                  __typeof__((x) + (y) + (z)),                                                      \
                  __typeof__((x) + (y) + (z) + 1.0)))
-/* drop complex from the type of x */
-/* TODO: wrong when sizeof(long double)==sizeof(double) */
 #    define __RETCAST_REAL(x)                                                                      \
         (__type2(__IS_FP(x) && sizeof((x) + I) == sizeof(float complex),                           \
                  float,                                                                            \
                  __type2(sizeof((x) + 1.0 + I) == sizeof(double complex), double, long double)))
-/* add complex to the type of x */
 #    define __RETCAST_CX(x) (__typeof__(__RETCAST(x) 0 + I))
 #else
 #    define __RETCAST(x)
@@ -99,27 +59,21 @@
 /* function selection */
 
 #define __tg_real_nocast(fun, x) (__FLT(x) ? fun##f(x) : __LDBL(x) ? fun##l(x) : fun(x))
-
-#define __tg_real(fun, x) (__RETCAST(x) __tg_real_nocast(fun, x))
-
+#define __tg_real(fun, x)        (__RETCAST(x) __tg_real_nocast(fun, x))
 #define __tg_real_2_1(fun, x, y)                                                                   \
     (__RETCAST(x)(__FLT(x) ? fun##f(x, y) : __LDBL(x) ? fun##l(x, y) : fun(x, y)))
-
 #define __tg_real_2(fun, x, y)                                                                     \
     (__RETCAST_2(x, y)(__FLT(x) && __FLT(y) ? fun##f(x, y)                                         \
                        : __LDBL((x) + (y))  ? fun##l(x, y)                                         \
                                             : fun(x, y)))
-
 #define __tg_complex(fun, x)                                                                       \
     (__RETCAST_CX(x)(__FLTCX((x) + I) && __IS_FP(x) ? fun##f(x)                                    \
                      : __LDBLCX((x) + I)            ? fun##l(x)                                    \
                                                     : fun(x)))
-
 #define __tg_complex_retreal(fun, x)                                                               \
     (__RETCAST_REAL(x)(__FLTCX((x) + I) && __IS_FP(x) ? fun##f(x)                                  \
                        : __LDBLCX((x) + I)            ? fun##l(x)                                  \
                                                       : fun(x)))
-
 #define __tg_real_complex(fun, x)                                                                  \
     (__RETCAST(x)(__FLTCX(x)    ? c##fun##f(x)                                                     \
                   : __DBLCX(x)  ? c##fun(x)                                                        \
@@ -127,19 +81,14 @@
                   : __FLT(x)    ? fun##f(x)                                                        \
                   : __LDBL(x)   ? fun##l(x)                                                        \
                                 : fun(x)))
-
-/* special cases */
-
 #define __tg_real_remquo(x, y, z)                                                                  \
     (__RETCAST_2(x, y)(__FLT(x) && __FLT(y) ? remquof(x, y, z)                                     \
                        : __LDBL((x) + (y))  ? remquol(x, y, z)                                     \
                                             : remquo(x, y, z)))
-
 #define __tg_real_fma(x, y, z)                                                                     \
     (__RETCAST_3(x, y, z)(__FLT(x) && __FLT(y) && __FLT(z) ? fmaf(x, y, z)                         \
                           : __LDBL((x) + (y) + (z))        ? fmal(x, y, z)                         \
                                                            : fma(x, y, z)))
-
 #define __tg_real_complex_pow(x, y)                                                                \
     (__RETCAST_2(x, y)(__FLTCX((x) + (y)) && __IS_FP(x) && __IS_FP(y) ? cpowf(x, y)                \
                        : __FLTCX((x) + (y))                           ? cpow(x, y)                 \
@@ -148,7 +97,6 @@
                        : __FLT(x) && __FLT(y)                         ? powf(x, y)                 \
                        : __LDBL((x) + (y))                            ? powl(x, y)                 \
                                                                       : pow(x, y)))
-
 #define __tg_real_complex_fabs(x)                                                                  \
     (__RETCAST_REAL(x)(__FLTCX(x)    ? cabsf(x)                                                    \
                        : __DBLCX(x)  ? cabs(x)                                                     \
@@ -156,8 +104,6 @@
                        : __FLT(x)    ? fabsf(x)                                                    \
                        : __LDBL(x)   ? fabsl(x)                                                    \
                                      : fabs(x)))
-
-/* suppress any macros in math.h or complex.h */
 
 #undef acos
 #undef acosh
@@ -220,8 +166,6 @@
 #undef tgamma
 #undef trunc
 
-/* tg functions */
-
 #define acos(x)          __tg_real_complex(acos, (x))
 #define acosh(x)         __tg_real_complex(acosh, (x))
 #define asin(x)          __tg_real_complex(asin, (x))
@@ -282,5 +226,3 @@
 #define tanh(x)          __tg_real_complex(tanh, (x))
 #define tgamma(x)        __tg_real(tgamma, (x))
 #define trunc(x)         __tg_real(trunc, (x))
-
-#endif

@@ -1,28 +1,22 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
-#ifndef __MEETIX_LIBC_COMPLEX__
-#define __MEETIX_LIBC_COMPLEX__
+#pragma once
 
 #include <Api/Common.h>
 
 __BEGIN_C
+
+/* ------------------------------------------ C defines ----------------------------------------- */
 
 #define complex _Complex
 #ifdef __GNUC__
@@ -31,6 +25,8 @@ __BEGIN_C
 #    define _Complex_I (0.0f + 1.0fi)
 #endif
 #define I _Complex_I
+
+/* ------------------------------------ C function prototypes ----------------------------------- */
 
 double complex      cacos(double complex);
 float complex       cacosf(float complex);
@@ -151,5 +147,3 @@ long double creall(long double complex);
 #endif
 
 __END_C
-
-#endif

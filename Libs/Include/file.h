@@ -1,24 +1,16 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
-#ifndef __MEETIX_LIBC_FILE__
-#define __MEETIX_LIBC_FILE__
+#pragma once
 
 #include <Api/Common.h>
 #include <Api/FileSystem.h>
@@ -27,56 +19,44 @@
 
 __BEGIN_C
 
-#define G_FILE_UNGET_PRESERVED_SPACE 4 // space preserved for ungetc-calls
+/* ------------------------------------------ C defines ----------------------------------------- */
 
-#define G_FILE_FLAG_EOF                    (1 << 26) // end of file reached
-#define G_FILE_FLAG_ERROR                  (1 << 27) // when a file error has occured
-#define G_FILE_FLAG_BUFFER_SET             (1 << 28) // whether the buffer was ever set
-#define G_FILE_FLAG_BUFFER_DIRECTION_READ  (1 << 29) // last access was read
-#define G_FILE_FLAG_BUFFER_DIRECTION_WRITE (1 << 30) // last access was write
-#define G_FILE_FLAG_BUFFER_OWNER_LIBRARY                                                           \
-    (1 << 31) // buffer is owned by the library (was created in setvbuf for example)
+#define FILE_UNGET_PRESERVED_SPACE 4 /* space preserved for ungetc-calls */
 
-// define a type from struct declaration
-typedef struct FILE FILE;
+#define FILE_FLAG_EOF                    (1 << 26) /* end of file reached */
+#define FILE_FLAG_ERROR                  (1 << 27) /* when a file error has occured */
+#define FILE_FLAG_BUFFER_SET             (1 << 28) /* whether the buffer was ever set */
+#define FILE_FLAG_BUFFER_DIRECTION_READ  (1 << 29) /* last access was read */
+#define FILE_FLAG_BUFFER_DIRECTION_WRITE (1 << 30) /* last access was write */
+#define FILE_FLAG_BUFFER_OWNER_LIBRARY   (1 << 31) /* buffer was created in setvbuf */
 
-/**
- * Represents a stream. Used by stdio-related functions.
- * (N1548-7.21.1-2)
- */
-struct FILE {
-    // file informations
-    FileHandle file_descriptor; // file descriptor provided by the kernel
-    uint8_t    lock;            // operation atomic lock
+/* ------------------------------------------- C types ------------------------------------------ */
 
-    // file content informations
-    uint8_t* buffer;                     // loaded buffer of file content
-    size_t   buffer_size;                // size of loaded buffer
-    uint8_t  buffer_mode;                // buffered active flag
-    size_t   buffered_bytes_write;       // buffered bytes count to write
-    size_t   buffered_bytes_read;        // buffered bytes count to read
-    size_t   buffered_bytes_read_offset; // buffered offset
+typedef struct FILE {
+    FileHandle m_fd;
+    u8         m_lock;
+    u8*        m_io_buffer;
+    usize      m_io_buffer_len;
+    u8         m_buffer_mode;
+    usize      m_buffered_bytes_write;
+    usize      m_buffered_bytes_read;
+    usize      m_buffered_bytes_read_offset;
+    usize      m_flags;
 
-    // file operations
-    ssize_t (*impl_read)(void* buf, size_t len, FILE* stream);        // read implementation
-    ssize_t (*impl_write)(const void* buf, size_t len, FILE* stream); // write implementation
-    int (*impl_seek)(FILE*, off_t, int);                              // seek implementation
-    off_t (*impl_tell)(FILE*);                                        // tell implementation
-    int (*impl_close)(FILE*);                                         // close implementation
-    FILE* (*impl_reopen)(const char*, const char*, FILE*);            // reopen implementation
-    int (*impl_fileno)(FILE*);                                        // fileno implementation
-    int (*impl_eof)(FILE*);                                           // eof implementation
-    int (*impl_error)(FILE*);                                         // error implementation
-    void (*impl_clearerr)(FILE*);                                     // clear error implementation
-    void (*impl_seterr)(FILE*);                                       // set error implementation
+    isize (*m_impl_read)(void*, usize, struct FILE*);
+    isize (*m_impl_write)(const void*, usize, struct FILE*);
+    int (*m_impl_seek)(struct FILE*, off_t, int);
+    off_t (*m_impl_tell)(struct FILE*);
+    int (*m_impl_close)(struct FILE*);
+    struct FILE* (*m_impl_reopen)(const char*, const char*, struct FILE*);
+    int (*m_impl_fileno)(struct FILE*);
+    int (*m_impl_eof)(struct FILE*);
+    int (*m_impl_error)(struct FILE*);
+    void (*m_impl_clear_err)(struct FILE*);
+    void (*m_impl_set_err)(struct FILE*);
 
-    uint32_t flags; // file flags
-
-    // linkage pointers
-    FILE* prev; // previous opened file
-    FILE* next; // next opened file
-};
+    struct FILE* m_prev_stream;
+    struct FILE* m_next_stream;
+} FILE;
 
 __END_C
-
-#endif

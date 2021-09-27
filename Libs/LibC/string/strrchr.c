@@ -1,42 +1,28 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                           *
- *  Ghost, a micro-kernel based operating system for the x86 architecture    *
- *  Copyright (C) 2015, Max Schlüssel <lokoxe@gmail.com>                     *
- *                                                                           *
- *  This program is free software: you can redistribute it and/or modify     *
- *  it under the terms of the GNU General Public License as published by     *
- *  the Free Software Foundation, either version 3 of the License, or        *
- *  (at your option) any later version.                                      *
- *                                                                           *
- *  This program is distributed in the hope that it will be useful,          *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *  GNU General Public License for more details.                             *
- *                                                                           *
- *  You should have received a copy of the GNU General Public License        *
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                           *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-#include "stdbool.h"
-#include "stdint.h"
-#include "string.h"
-
 /**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
  *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
+
+#include <stdbool.h>
+#include <string.h>
+
 char* strrchr(const char* str, int c) {
-    const char* rstr = str + strlen(str);
+    const char* rev_str = str + strlen(str);
 
     while ( true ) {
-        if ( *rstr == c ) {
-            return (char*)rstr;
-        }
-        if ( str == rstr ) {
+        if ( *rev_str == c )
+            return (char*)rev_str;
+        if ( str == rev_str )
             break;
-        }
-        --rstr;
-    }
 
+        --rev_str;
+    }
     return NULL;
 }

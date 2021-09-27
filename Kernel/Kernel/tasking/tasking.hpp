@@ -150,8 +150,8 @@ public:
      * concat a numeric id to the task identifier if task id is already in use
      *
      * @param target:					the target thread to adjust
-     * @param firstExist:				the first existing thread with same name that
-     * we shall set
+     * @param firstExist:				the first existing thread with same name
+     * that we shall set
      * @param preferredIdentifier:		identifier to adjust and set to target
      * @return the setupped identifier for the target
      */

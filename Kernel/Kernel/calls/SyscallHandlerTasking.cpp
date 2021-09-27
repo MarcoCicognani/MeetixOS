@@ -74,7 +74,7 @@ SYSCALL_HANDLER(getPid) {
  * Return the number of milliseconds that the current scheduler runs
  */
 SYSCALL_HANDLER(millis) {
-    SyscallMillis* data = (SyscallMillis*)SYSCALL_DATA(currentThread->cpuState);
+    SyscallMillis* data   = (SyscallMillis*)SYSCALL_DATA(currentThread->cpuState);
     data->m_millis_amount = Tasking::currentScheduler()->getMilliseconds();
     return currentThread;
 }
@@ -149,8 +149,9 @@ SYSCALL_HANDLER(getTidByName) {
  */
 SYSCALL_HANDLER(registerThreadName) {
     SyscallTaskIDRegister* data = (SyscallTaskIDRegister*)SYSCALL_DATA(currentThread->cpuState);
-    data->m_success
-        = Tasking::registerTaskForIdentifier(currentThread, data->m_identifier, data->m_selected_identifier);
+    data->m_success             = Tasking::registerTaskForIdentifier(currentThread,
+                                                                     data->m_identifier,
+                                                                     data->m_selected_identifier);
     return currentThread;
 }
 
@@ -173,7 +174,7 @@ SYSCALL_HANDLER(kill) {
 
     // else kill only current thread
     else {
-        target->alive = false;
+        target->alive       = false;
         data->m_kill_status = KILL_STATUS_SUCCESSFUL;
     }
 
@@ -231,7 +232,8 @@ SYSCALL_HANDLER(atomicWait) {
 
     // check if atom 1 is set and atom 2 is NULL or set
     if ( *data->m_atom_1 && (!data->m_atom_2 || *data->m_atom_2) ) {
-        currentThread->wait(new WaiterAtomicWait(data->m_atom_1, data->m_atom_2, data->m_set_on_finish));
+        currentThread->wait(
+            new WaiterAtomicWait(data->m_atom_1, data->m_atom_2, data->m_set_on_finish));
         return Tasking::schedule();
     }
 
@@ -334,9 +336,9 @@ SYSCALL_HANDLER(registerSignalHandler) {
         SignalHandler* handler = &(currentThread->process->signalHandlers[data->m_signal]);
 
         data->m_previous_handler = handler->handler;
-        handler->handler      = data->m_user_handler;
-        handler->callback     = data->m_return_callback;
-        handler->threadID     = currentThread->id;
+        handler->handler         = data->m_user_handler;
+        handler->callback        = data->m_return_callback;
+        handler->threadID        = currentThread->id;
         data->m_register_status  = REGISTER_SIGNAL_HANDLER_STATUS_SUCCESSFUL;
 
         logDebug("%! signal handler %h registered for signal %i",

@@ -57,16 +57,16 @@ static void* pthreadRoutine(void* arg) {
     int        count = *((int*)arg);
     pthread_t* self  = pthread_self();
     if ( _verbose )
-        println("Hi from the pthread %i, count start from %i", self->id, count);
+        println("Hi from the pthread %i, count start from %i", self->m_thread_id, count);
     while ( live ) {
         count++;
         if ( _verbose )
-            println("Hi from the pthread %i, count is %i", self->id, count);
+            println("Hi from the pthread %i, count is %i", self->m_thread_id, count);
         sched_yield();
     }
 
     if ( _verbose )
-        println("Bye bye from pthread %i", self->id);
+        println("Bye bye from pthread %i", self->m_thread_id);
 
     int* intptr = malloc(sizeof(int));
     if ( intptr )
@@ -108,7 +108,7 @@ int testPosixThread(uint8_t verbose) {
     for ( int i = 0; i < threadCount; i++ ) {
         pthread_create(&pthreads[i], NULL, pthreadRoutine, &i);
         if ( _verbose )
-            println("Created pthread number %i with tid %i", i, pthreads[i].id);
+            println("Created pthread number %i with tid %i", i, pthreads[i].m_thread_id);
     }
 
     println("Created %i threads, waiting for 5 seconds until to s_kill all", threadCount);
@@ -124,11 +124,11 @@ int testPosixThread(uint8_t verbose) {
     // show returns values
     if ( _verbose )
         for ( int i = 0; i < threadCount; i++ )
-            if ( pthreads[i].ret_val )
+            if ( pthreads[i].m_exit_value )
                 println("Pthread number %i, with tid %i have the return value %i",
                         i,
-                        pthreads[i].id,
-                        *((int*)pthreads[i].ret_val));
+                        pthreads[i].m_thread_id,
+                        *((int*)pthreads[i].m_exit_value));
 
     println("Bye bye");
 }

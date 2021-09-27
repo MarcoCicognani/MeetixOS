@@ -1,35 +1,21 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                           *
- *  Ghost, a micro-kernel based operating system for the x86 architecture    *
- *  Copyright (C) 2015, Max Schlüssel <lokoxe@gmail.com>                     *
- *                                                                           *
- *  This program is free software: you can redistribute it and/or modify     *
- *  it under the terms of the GNU General Public License as published by     *
- *  the Free Software Foundation, either version 3 of the License, or        *
- *  (at your option) any later version.                                      *
- *                                                                           *
- *  This program is distributed in the hope that it will be useful,          *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *  GNU General Public License for more details.                             *
- *                                                                           *
- *  You should have received a copy of the GNU General Public License        *
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                           *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-#include "errno.h"
-#include "Api/Kernel.h"
-#include "unistd.h"
-
 /**
- * POSIX wrapper for <s_close>
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
-int close(int filedes) {
-    // performs syscall
-    FsCloseStatus status = s_close(filedes);
 
-    // check status
+#include <Api.h>
+#include <errno.h>
+#include <unistd.h>
+
+int close(int fd) {
+    FsCloseStatus status = s_close(fd);
     if ( status == FS_CLOSE_SUCCESSFUL )
         return 0;
     else if ( status == FS_CLOSE_INVALID_FD )

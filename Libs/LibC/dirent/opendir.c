@@ -1,49 +1,32 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                           *
- *  Ghost, a micro-kernel based operating system for the x86 architecture    *
- *  Copyright (C) 2015, Max Schlüssel <lokoxe@gmail.com>                     *
- *                                                                           *
- *  This program is free software: you can redistribute it and/or modify     *
- *  it under the terms of the GNU General Public License as published by     *
- *  the Free Software Foundation, either version 3 of the License, or        *
- *  (at your option) any later version.                                      *
- *                                                                           *
- *  This program is distributed in the hope that it will be useful,          *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *  GNU General Public License for more details.                             *
- *                                                                           *
- *  You should have received a copy of the GNU General Public License        *
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                           *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-#include "Api.h"
-#include "dirent.h"
-#include "errno.h"
-#include "malloc.h"
-
 /**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
  *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
+
+#include <Api.h>
+#include <dirent.h>
+#include <errno.h>
+#include <malloc.h>
+
 DIR* opendir(const char* path) {
     FsOpenDirectoryStatus stat;
     FsDirectoryIterator*  iter = s_open_directory_s(path, &stat);
 
     if ( stat == FS_OPEN_DIRECTORY_SUCCESSFUL ) {
-        DIR* dir    = (DIR*)malloc(sizeof(DIR));
-        dir->entbuf = (dirent*)malloc(sizeof(dirent));
-        dir->iter   = iter;
+        DIR* dir                  = (DIR*)malloc(sizeof(DIR));
+        dir->m_entry_buffer       = (dirent*)malloc(sizeof(dirent));
+        dir->m_directory_iterator = iter;
         return dir;
-
-    }
-
-    else if ( stat == FS_OPEN_DIRECTORY_NOT_FOUND ) {
+    } else if ( stat == FS_OPEN_DIRECTORY_NOT_FOUND ) {
         errno = ENOTDIR;
-
-    }
-
-    else if ( stat == FS_OPEN_DIRECTORY_ERROR ) {
+    } else if ( stat == FS_OPEN_DIRECTORY_ERROR ) {
         errno = EIO;
     }
 

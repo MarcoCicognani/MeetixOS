@@ -169,7 +169,7 @@ Thread* InterruptExceptionHandler::handleGeneralProtectionFault(Thread* currentT
     logInfo("%! #%i process %i killed due to general protection fault",
             "exception",
             System::currentProcessorId(),
-            currentThread->process->main->id);
+            currentThread->process->main->m_thread_id);
     return Tasking::schedule();
 }
 
@@ -298,7 +298,7 @@ Thread* InterruptExceptionHandler::handleInvalidOperationCode(Thread* currentThr
     logInfo("%! #%i process %i killed due to invalid operation code %h in thread %i",
             "exception",
             System::currentProcessorId(),
-            currentThread->process->main->id,
+            currentThread->process->main->m_thread_id,
             *((uint8_t*)currentThread->cpuState->eip),
             currentThread->id);
 
@@ -326,7 +326,7 @@ void InterruptExceptionHandler::dump(Thread* currentThread) {
             "exception",
             EXCEPTION_NAMES[cpuState->intr],
             currentThread->id,
-            process->main->id);
+            process->main->m_thread_id);
 
     if ( currentThread->getIdentifier() != 0 ) {
         logInfo("%# task identified as '%s'", currentThread->getIdentifier());

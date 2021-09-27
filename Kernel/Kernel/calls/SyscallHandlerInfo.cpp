@@ -22,9 +22,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
+#include <Api/Info.h>
 #include <BuildConfig.hpp>
 #include <calls/SyscallHandler.hpp>
-#include <Api/Info.h>
 #include <memory/physical/PPallocator.hpp>
 #include <system/pci/pci.hpp>
 #include <system/system.hpp>
@@ -144,7 +144,7 @@ SYSCALL_HANDLER(getThreadDescriptor) {
         // set the parent process
         data->found = true;
         if ( thread->process->main )
-            data->m_parent = thread->process->main->id;
+            data->m_parent = thread->process->main->m_thread_id;
         else
             data->m_parent = -1;
 
@@ -205,7 +205,7 @@ SYSCALL_HANDLER(getProcessDescriptor) {
         // set the parent process
         data->m_main_thread.found = true;
         if ( main->process->parent )
-            data->m_main_thread.m_parent = main->process->parent->main->id;
+            data->m_main_thread.m_parent = main->process->parent->main->m_thread_id;
         else
             data->m_main_thread.m_parent = -1;
 

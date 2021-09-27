@@ -10,8 +10,6 @@
  * GNU General Public License version 3
  */
 
-# These parts are appended at the end of the respective sections
-
 .section .init
     pop %ebp
     ret

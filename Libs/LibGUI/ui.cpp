@@ -18,8 +18,8 @@
  **********************************************************************************/
 
 #include <Api.h>
-#include <deque>
 #include <Api/utils/local.hpp>
+#include <deque>
 #include <graphics/metrics/dimension.hpp>
 #include <gui/actioncomponent.hpp>
 #include <gui/actionlistener.hpp>

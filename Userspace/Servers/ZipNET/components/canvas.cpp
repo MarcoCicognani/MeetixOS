@@ -22,8 +22,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <components/canvas.hpp>
 #include <Api/Memory.h>
+#include <components/canvas.hpp>
 
 #define ALIGN_UP(value) (value + value % 20)
 

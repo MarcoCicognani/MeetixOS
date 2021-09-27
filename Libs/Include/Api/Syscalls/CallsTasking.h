@@ -13,7 +13,7 @@
 #pragma once
 
 #include <Api/Kernel.h>
-#include <Api/System.h>
+#include <Api/system.h>
 
 __BEGIN_C
 
@@ -148,7 +148,7 @@ typedef struct {
  */
 typedef struct {
     int                         m_signal;
-    Address                   m_user_handler;
+    Address                     m_user_handler;
     Address                     m_return_callback;
     Address                     m_previous_handler;
     RegisterSignalHandlerStatus m_register_status;

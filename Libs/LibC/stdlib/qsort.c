@@ -1,34 +1,22 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                           *
- *  Ghost, a micro-kernel based operating system for the x86 architecture    *
- *  Copyright (C) 2015, Max Schlüssel <lokoxe@gmail.com>                     *
- *                                                                           *
- *  This program is free software: you can redistribute it and/or modify     *
- *  it under the terms of the GNU General Public License as published by     *
- *  the Free Software Foundation, either version 3 of the License, or        *
- *  (at your option) any later version.                                      *
- *                                                                           *
- *  This program is distributed in the hope that it will be useful,          *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *  GNU General Public License for more details.                             *
- *                                                                           *
- *  You should have received a copy of the GNU General Public License        *
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                           *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-#include "stdint.h"
-#include "stdio.h"
-#include "stdlib.h"
-
 /**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
  *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
-static void swap(uint8_t* x, uint8_t* y, size_t element_size) {
-    char* a = (char*)x;
-    char* b = (char*)y;
-    char  c;
+
+#include <stdint.h>
+#include <stdlib.h>
+
+static void swap(u8* x, u8* y, usize element_size) {
+    u8* a = (u8*)x;
+    u8* b = (u8*)y;
+    u8  c;
     while ( element_size-- ) {
         c    = *a;
         *a++ = *b;
@@ -36,40 +24,34 @@ static void swap(uint8_t* x, uint8_t* y, size_t element_size) {
     }
 }
 
-/**
- *
- */
 static void
-sort(uint8_t* arr, size_t el_sz, int (*comparator)(const void*, const void*), int begin, int end) {
+sort(u8* arr, usize el_sz, int (*comparator)(const void*, const void*), usize begin, usize end) {
     if ( end > begin ) {
-        uint8_t* pivot = arr + begin;
+        u8* pivot = arr + begin;
 
-        int loff = begin + el_sz;
-        int roff = end;
+        usize begin_offset = begin + el_sz;
+        usize end_offset   = end;
 
-        while ( loff < roff ) {
-            if ( comparator(arr + loff, pivot) <= 0 )
-                loff += el_sz;
-            else if ( comparator(arr + roff, pivot) > 0 )
-                roff -= el_sz;
-            else if ( loff < roff )
-                swap(arr + loff, arr + roff, el_sz);
+        while ( begin_offset < end_offset ) {
+            if ( comparator(arr + begin_offset, pivot) <= 0 )
+                begin_offset += el_sz;
+            else if ( comparator(arr + end_offset, pivot) > 0 )
+                end_offset -= el_sz;
+            else if ( begin_offset < end_offset )
+                swap(arr + begin_offset, arr + end_offset, el_sz);
         }
 
-        loff -= el_sz;
+        begin_offset -= el_sz;
 
-        swap(arr + begin, arr + loff, el_sz);
-        sort(arr, el_sz, comparator, begin, loff);
-        sort(arr, el_sz, comparator, roff, end);
+        swap(arr + begin, arr + begin_offset, el_sz);
+        sort(arr, el_sz, comparator, begin, begin_offset);
+        sort(arr, el_sz, comparator, end_offset, end);
     }
 }
 
-/**
- *
- */
-void qsort(void*  array,
-           size_t num_elements,
-           size_t element_size,
+void qsort(void* array,
+           usize num_elements,
+           usize element_size,
            int (*comparator)(const void*, const void*)) {
-    sort((uint8_t*)array, element_size, comparator, 0, num_elements * element_size);
+    sort((u8*)array, element_size, comparator, 0, num_elements * element_size);
 }

@@ -1,47 +1,35 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                           *
- *  Ghost, a micro-kernel based operating system for the x86 architecture    *
- *  Copyright (C) 2015, Max Schlüssel <lokoxe@gmail.com>                     *
- *                                                                           *
- *  This program is free software: you can redistribute it and/or modify     *
- *  it under the terms of the GNU General Public License as published by     *
- *  the Free Software Foundation, either version 3 of the License, or        *
- *  (at your option) any later version.                                      *
- *                                                                           *
- *  This program is distributed in the hope that it will be useful,          *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *  GNU General Public License for more details.                             *
- *                                                                           *
- *  You should have received a copy of the GNU General Public License        *
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                           *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-#include "stdio.h"
-#include "stdio_internal.h"
-#include "string.h"
-
 /**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
  *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
-int fflush(FILE* stream) {
-    // if no stream passed, flush all streams
-    if ( stream == NULL ) {
-        int ret = 0;
 
-        FILE* ns = __open_file_list;
-        while ( ns ) {
-            ret |= fflush(ns);
-            ns = ns->next;
+#include "stdio_internal.h"
+
+#include <stdio.h>
+
+int fflush(FILE* stream) {
+    /* if no stream passed, flush all streams */
+    if ( !stream ) {
+        int   ret         = 0;
+        FILE* open_stream = g_open_stream_list;
+        while ( open_stream ) {
+            ret |= fflush(open_stream);
+            open_stream = open_stream->m_next_stream;
         }
 
         return ret;
     }
 
-    // lock file and perform flush
-    s_atomic_lock(&stream->lock);
-    int res      = __fflush_unlocked(stream);
-    stream->lock = 0;
+    /* lock file and perform flush */
+    s_atomic_lock(&stream->m_lock);
+    int res        = fflush_unlocked(stream);
+    stream->m_lock = false;
     return res;
 }

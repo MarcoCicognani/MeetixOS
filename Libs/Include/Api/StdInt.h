@@ -166,19 +166,19 @@ typedef __UINTMAX_TYPE__ uintmax_t;
 /**
  * @brief MeetiX specific unsigned integer types
  */
-typedef uint8_t       u8;
-typedef uint16_t      u16;
-typedef uint32_t      u32;
-typedef uint64_t      u64;
-typedef unsigned long usize;
+typedef uint8_t      u8;
+typedef uint16_t     u16;
+typedef uint32_t     u32;
+typedef uint64_t     u64;
+typedef unsigned int usize;
 
 /**
  * @brief MeetiX specific signed integer types
  */
-typedef int8_t      i8;
-typedef int16_t     i16;
-typedef int32_t     i32;
-typedef int64_t     i64;
-typedef signed long isize;
+typedef int8_t     i8;
+typedef int16_t    i16;
+typedef int32_t    i32;
+typedef int64_t    i64;
+typedef signed int isize;
 
 __END_C

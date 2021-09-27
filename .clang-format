@@ -47,7 +47,7 @@ Cpp11BracedListStyle: false
 EmptyLineBeforeAccessModifier: Always
 IncludeBlocks: Regroup
 IndentCaseLabels: true
-IndentCaseBlocks: true
+IndentCaseBlocks: false
 IndentPPDirectives: AfterHash
 IndentExternBlock: Indent
 IndentRequires: true

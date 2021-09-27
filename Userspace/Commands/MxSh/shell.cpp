@@ -34,7 +34,7 @@
 #include <string>
 
 // copy of environment object
-Environment* environ;
+Environment* g_environ;
 
 /**
  *
@@ -166,7 +166,7 @@ std::string findProgram(std::string cwd, std::string name) {
         return name;
 
     // check for /applications folder
-    path = environ->getVariable("PATH") + name;
+    path = g_environ->getVariable("PATH") + name;
     if ( fileExists(path) )
         return path;
 
@@ -214,10 +214,10 @@ void MXShell::shellMode(Environment* env) {
     Shell::setCursor(ShellCursorPosition(0, 0));
     char* cwdbuf = new char[PATH_MAX];
 
-    environ = env;
-    environ->setVariable("USER", "user");
-    std::string user = environ->getVariable("USER");
-    std::string host = environ->getVariable("HOSTNAME");
+    g_environ = env;
+    g_environ->setVariable("USER", "user");
+    std::string user = g_environ->getVariable("USER");
+    std::string host = g_environ->getVariable("HOSTNAME");
     std::string dir  = "/Users/" + user;
     s_set_working_directory(dir.c_str());
 

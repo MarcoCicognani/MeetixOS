@@ -82,7 +82,7 @@ The system doesn't have many applications or drivers yet, but something to try t
 - **idle**: is not a command properly, this program is started by the kernel at boot on each cpu core to maintain the
   cpu usage at 0%.
 - **js**: the **DukTape** javascript interpreter.
-- **s_kill**: s_kill a thread or a m_process_creation_identifier.
+- **s_kill**: s_kill a m_pthread or a m_process_creation_identifier.
 - **ls**: list content of a directory.
 - **mx**: a basic shell.
 - **ntf**: send to the desktop a m_message_buffer popup.

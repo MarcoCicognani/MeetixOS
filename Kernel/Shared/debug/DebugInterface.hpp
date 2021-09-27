@@ -25,10 +25,10 @@
 #ifndef __EVA_DEBUG_INTERFACE__
 #define __EVA_DEBUG_INTERFACE__
 
+#include "Api/StdInt.h"
 #include "BuildConfig.hpp"
 #include "debug/DebugInterfaceMode.hpp"
 #include "debug/DebugProtocol.hpp"
-#include "Api/StdInt.h"
 
 /**
  * flag that determines whether the interface is initialized

@@ -10,18 +10,15 @@
  * GNU General Public License version 3
  */
 
-# Symbol must be visible to the outside
+/* Symbol must be visible to the outside */
 .global _start
 
-# <__main> and <Exit> are provided by the library
-.extern __main
+/* <libc_main> and <s_exit> are provided by the library */
+.extern libc_main
 .extern s_exit
 
-# The <_start> function is where the kernel starts the execution.
+/* The <_start> function is where the kernel starts the execution */
 _start:
-    call __main
-
-# Endless loop, for the case that bad things happen
-wait:
-    hlt
-    jmp wait
+    call libc_main
+    push -1
+    call s_exit

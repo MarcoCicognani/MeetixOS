@@ -17,7 +17,7 @@
 /**
  * @brief Library entry-point for user sub-threads
  */
-static void thread_entry_point() {
+static A_NOINLINE void thread_entry_point() {
     SyscallGetThreadEntry data;
     do_syscall(SYSCALL_THREAD_GET_ENTRY, (usize)&data);
 

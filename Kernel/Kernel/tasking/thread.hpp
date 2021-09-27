@@ -26,7 +26,7 @@
 #define EVA_MULTITASKING_THREAD
 
 #include "Api/Kernel.h"
-#include "Api/Signal.h"
+#include "Api/signal.h"
 #include "Api/Syscalls/CallsData.h"
 #include "memory/collections/AddressRangePool.hpp"
 #include "memory/paging.hpp"

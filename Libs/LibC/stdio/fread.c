@@ -1,34 +1,22 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                           *
- *  Ghost, a micro-kernel based operating system for the x86 architecture    *
- *  Copyright (C) 2015, Max Schlüssel <lokoxe@gmail.com>                     *
- *                                                                           *
- *  This program is free software: you can redistribute it and/or modify     *
- *  it under the terms of the GNU General Public License as published by     *
- *  the Free Software Foundation, either version 3 of the License, or        *
- *  (at your option) any later version.                                      *
- *                                                                           *
- *  This program is distributed in the hope that it will be useful,          *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *  GNU General Public License for more details.                             *
- *                                                                           *
- *  You should have received a copy of the GNU General Public License        *
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                           *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-#include "errno.h"
-#include "stdio.h"
-#include "stdio_internal.h"
-#include "string.h"
-
 /**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
  *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
-size_t fread(const void* ptr, size_t size, size_t nmemb, FILE* stream) {
-    s_atomic_lock(&stream->lock);
-    size_t len   = __fread_unlocked(ptr, size, nmemb, stream);
-    stream->lock = 0;
+
+#include "stdio_internal.h"
+
+#include <stdio.h>
+
+usize fread(void* ptr, usize size, usize nmemb, FILE* stream) {
+    s_atomic_lock(&stream->m_lock);
+    size_t len     = fread_unlocked(ptr, size, nmemb, stream);
+    stream->m_lock = false;
     return len;
 }

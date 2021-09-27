@@ -1,73 +1,24 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
-#ifndef __MEETIX_LIBC_INTTYPES__
-#define __MEETIX_LIBC_INTTYPES__
+#pragma once
 
 #include <Api/Common.h>
-#include <stdint.h> // (N1548-7.8-1)
+#include <stdint.h>
 
 __BEGIN_C
 
-// (N1548-7.8-2)
-typedef struct {
-    intmax_t quot; // quotient
-    intmax_t rem;  // remainder
-} imaxdiv_t;
+/* ------------------------------------------ C defines ----------------------------------------- */
 
-/**
- * Computes the absolute value of <j>. (N1548-7.8.2.1)
- *
- * @param j:	source value
- * @return:		absolute value
- */
-intmax_t imaxabs(intmax_t j);
-
-/**
- * Computes <numer> / <denom> and <numer> % <denom> in a single operation. (N1548-7.8.2.2)
- *
- * @param j:	source value
- * @return:		absolute value
- */
-imaxdiv_t imaxdiv(intmax_t numer, intmax_t denom);
-
-/**
- * (N1548-7.8.2.3)
- */
-intmax_t strtoimax(const char* nptr, char** endptr, int base);
-
-/**
- * (N1548-7.8.2.3)
- */
-intmax_t strtoumax(const char* nptr, char** endptr, int base);
-
-/**
- * (N1548-7.8.2.4)
- */
-intmax_t wcstoimax(const wchar_t* nptr, wchar_t** endptr, int base);
-
-/**
- * (N1548-7.8.2.4)
- */
-uintmax_t wcstoumax(const wchar_t* nptr, wchar_t** endptr, int base);
-
-// fprintf macros (N1548-7.8.1)
 #if UINTPTR_MAX == UINT64_MAX
 #    define __PRI64  "l"
 #    define __PRIPTR "l"
@@ -267,6 +218,20 @@ uintmax_t wcstoumax(const wchar_t* nptr, wchar_t** endptr, int base);
 #define SCNuPTR __PRIPTR "u"
 #define SCNxPTR __PRIPTR "x"
 
-__END_C
+/* ------------------------------------------- C types ------------------------------------------ */
 
-#endif
+typedef struct {
+    intmax_t quot; // quotient
+    intmax_t rem;  // remainder
+} imaxdiv_t;
+
+/* ------------------------------------ C function prototypes ----------------------------------- */
+
+intmax_t  imaxabs(intmax_t);
+imaxdiv_t imaxdiv(intmax_t, intmax_t);
+intmax_t  strtoimax(const char*, char**, int);
+intmax_t  strtoumax(const char*, char**, int);
+intmax_t  wcstoimax(const wchar_t*, wchar_t**, int);
+uintmax_t wcstoumax(const wchar_t*, wchar_t**, int);
+
+__END_C

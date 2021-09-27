@@ -1,64 +1,47 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                           *
- *  Ghost, a micro-kernel based operating system for the x86 architecture    *
- *  Copyright (C) 2015, Max Schlüssel <lokoxe@gmail.com>                     *
- *                                                                           *
- *  This program is free software: you can redistribute it and/or modify     *
- *  it under the terms of the GNU General Public License as published by     *
- *  the Free Software Foundation, either version 3 of the License, or        *
- *  (at your option) any later version.                                      *
- *                                                                           *
- *  This program is distributed in the hope that it will be useful,          *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *  GNU General Public License for more details.                             *
- *                                                                           *
- *  You should have received a copy of the GNU General Public License        *
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                           *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-#include "errno.h"
-#include "inttypes.h"
-#include "stdio.h"
-#include "stdio_internal.h"
-#include "stdlib.h"
-
-uint8_t  tmpnam_lock   = 0;
-char*    tmpnam_static = NULL;
-uint64_t tmpnam_next   = 0;
-
 /**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
  *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
-char* tmpnam(char* buf) {
-    // lock tmpnam
-    s_atomic_lock(&tmpnam_lock);
 
-    // set buffers
-    if ( buf == NULL ) {
-        // allocate the internal buffer if necessary
-        if ( tmpnam_static == NULL ) {
-            tmpnam_static = (char*)malloc(L_tmpnam);
+#include <Api.h>
+#include <errno.h>
+#include <inttypes.h>
+#include <malloc.h>
+#include <stdio.h>
 
-            if ( tmpnam_static == NULL ) {
-                errno       = ENOMEM;
-                tmpnam_lock = 0;
+bool  g_lock    = false;
+char* g_buffer  = NULL;
+u64   g_next_id = 0;
+
+char* tmpnam(char* buffer) {
+    s_atomic_lock((u8*)&g_lock);
+
+    if ( !buffer ) {
+        /* allocate the internal buffer if necessary */
+        if ( !g_buffer ) {
+            g_buffer = (char*)malloc(L_tmpnam);
+
+            if ( !g_buffer ) {
+                errno  = ENOMEM;
+                g_lock = false;
                 return NULL;
             }
         }
 
-        // use internal buffer
-        buf = tmpnam_static;
+        /* use internal buffer */
+        buffer = g_buffer;
     }
 
-    // create temporary name
-    ++tmpnam_next;
-    pid_t pid;
-    snprintf(buf, L_tmpnam, "/sys/temp/%" PRIu64 "-%" PRIu64, tmpnam_next, pid);
+    /* create temporary name */
+    snprintf(buffer, L_tmpnam, "/Tmp/%" PRIu64 "-%" PRIu32, ++g_next_id, s_get_pid());
+    g_lock = false;
 
-    // unlock tmpnam
-    tmpnam_lock = 0;
-
-    return buf;
+    return buffer;
 }

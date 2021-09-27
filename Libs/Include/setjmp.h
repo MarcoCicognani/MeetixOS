@@ -1,69 +1,47 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
-#ifndef __MEETIX_LIBC_SETJMP__
-#define __MEETIX_LIBC_SETJMP__
+#pragma once
 
 #include <Api/Common.h>
 
 __BEGIN_C
 
-// declare for each architecture
-#if defined(__x86_64__)
+/* ------------------------------------------ C defines ----------------------------------------- */
+
+#ifdef __x86_64__
 #    define __JMP_BUF_LENGTH 8
 #    define __JMP_BUF_TYPE   unsigned long long
-
 #elif defined(__i386__)
 #    define __JMP_BUF_LENGTH 9
 #    define __JMP_BUF_TYPE   unsigned long
-
 #else
 #    error "architecture not supported"
-
 #endif
 
-// check definitions
-#if !defined(__JMP_BUF_LENGTH)
+#ifndef __JMP_BUF_LENGTH
 #    error "no architecture-specific 'jmp_buf' length defined"
 #endif
-#if !defined(__JMP_BUF_TYPE)
+#ifndef __JMP_BUF_TYPE
 #    error "no architecture-specific 'jmp_buf' type defined"
 #endif
 
-// (N1548-7.13-2)
+/* ------------------------------------------- C types ------------------------------------------ */
+
 typedef __JMP_BUF_TYPE jmp_buf[__JMP_BUF_LENGTH];
 
-/**
- * Saves the calling environment in the given <env> buffer. (N1548-7.13.1.1)
- *
- * @param env:      buffer to save the environment in
- * @return zero if from a direct call; non-zero if from a call to <longjmp>
- */
-int setjmp(jmp_buf env);
+/* ------------------------------------ C function prototypes ----------------------------------- */
 
-/**
- * Restores the calling environment from the given <env> buffer. (N1548-7.13.2.1)
- *
- * @param env:      buffer to restore the environment from
- */
-void longjmp(jmp_buf env, int val) __attribute__((noreturn));
+int  setjmp(jmp_buf);
+void longjmp(jmp_buf, int) A_NORETURN;
 
 __END_C
-
-#endif

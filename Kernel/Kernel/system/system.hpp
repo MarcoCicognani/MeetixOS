@@ -38,8 +38,8 @@ public:
      * Used on the BSP to initialize AP processors and interrupt controllers
      *
      * @param initialPageDirectoryPhysical:		physical address of the initial page
-     *							 				directory, used
-     *for AP startup
+     *							 				directory,
+     *used for AP startup
      */
     static void initializeBasicSystemPackage(PhysAddr initialPageDirectoryPhysical);
 

@@ -12,8 +12,11 @@
 
 #include <Api/User.h>
 
-FsCreateNodeStatus
-s_fs_create_node(usize parent, const char* name, FsNodeType type, usize fs_id, usize* out_created_id) {
+FsCreateNodeStatus s_fs_create_node(usize       parent,
+                                    const char* name,
+                                    FsNodeType  type,
+                                    usize       fs_id,
+                                    usize*      out_created_id) {
     SyscallFsCreateNode data{ parent, name, type, fs_id };
     do_syscall(SYSCALL_FS_CREATE_NODE, (usize)&data);
 

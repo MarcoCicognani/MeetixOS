@@ -311,7 +311,7 @@ SYSCALL_HANDLER(sbrk) {
     if ( brkNew >= CONST_USER_MAXIMUM_HEAP_BREAK ) {
         logInfo("%! process %i went out of memory when setting heap break",
                 "do_syscall",
-                process->main->id);
+                process->main->m_thread_id);
         data->m_out_address = -1;
         data->m_success     = false;
     }

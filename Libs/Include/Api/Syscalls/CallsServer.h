@@ -13,7 +13,7 @@
 #pragma once
 
 #include <Api/Kernel.h>
-#include <Api/System.h>
+#include <Api/system.h>
 
 __BEGIN_C
 

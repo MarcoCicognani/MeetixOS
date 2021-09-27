@@ -50,8 +50,8 @@ public:
      * filled constructor
      *
      * @param handler:			the handler to call when the transaction is finished.
-     *							This handler will be deleted after the finish-transaction
-     *function was called
+     *							This handler will be deleted after the
+     *finish-transaction function was called
      * @param transactionID:	the id of the transaction that we handle to
      * @param delegate:			the filesystem delegate
      */

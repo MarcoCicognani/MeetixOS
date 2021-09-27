@@ -22,9 +22,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "debug/DebugInterfaceKernel.hpp"
 #include "Api/Kernel.h"
 #include "Api/utils/local.hpp"
+#include "debug/DebugInterfaceKernel.hpp"
 
 #include <calls/SyscallHandler.hpp>
 #include <EvangelionNG.hpp>

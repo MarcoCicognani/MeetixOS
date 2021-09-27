@@ -1,7 +1,7 @@
 add_library(LibC
         STATIC
         stdio/rewind.c
-        stdio/__parse_mode_flags.c
+        stdio/parse_mode_flags.c
         stdio/ftell.c
         stdio/perror.c
         stdio/popen.c
@@ -12,51 +12,51 @@ add_library(LibC
         stdio/fgetpos.c
         stdio/printf.c
         stdio/sprintf.c
-        stdio/__ftello_unlocked.c
+        stdio/ftello_unlocked.c
         stdio/setbuf.c
         stdio/vfprintf.c
         stdio/fread.c
-        stdio/__stdio_impl_fileno.c
+        stdio/stdio_impl_fileno.c
         stdio/stdio.c
         stdio/vprintf.c
         stdio/fopen.c
         stdio/fprintf.c
-        stdio/__fflush_write_unlocked.c
+        stdio/fflush_write_unlocked.c
         stdio/fgets.c
-        stdio/__stdio_impl_seek.c
+        stdio/stdio_impl_seek.c
         stdio/rename.c
         stdio/freopen.c
-        stdio/__stdio_impl_close.c
+        stdio/stdio_impl_close.c
         stdio/fclose.c
         stdio/vsprintf.c
-        stdio/__fdopen_static.c
-        stdio/__fopen_static.c
+        stdio/fdopen_static.c
+        stdio/fopen_static.c
         stdio/getchar.c
-        stdio/__fputc_unlocked.c
-        stdio/__fgetc_unlocked.c
+        stdio/fputc_unlocked.c
+        stdio/fgetc_unlocked.c
         stdio/putchar.c
         stdio/puts.c
-        stdio/__setvbuf_unlocked.c
+        stdio/setvbuf_unlocked.c
         stdio/remove.c
-        stdio/__fflush_write.c
+        stdio/fflush_write.c
         stdio/vsnprintf.c
-        stdio/__setdefbuf_unlocked.c
+        stdio/setdefbuf_unlocked.c
         stdio/fgetc.c
-        stdio/__fclose_static.c
+        stdio/fclose_static.c
         stdio/ungetc.c
-        stdio/__stdio_impl_read.c
-        stdio/__stdio_impl_eof.c
+        stdio/stdio_impl_read.c
+        stdio/stdio_impl_eof.c
         stdio/pclose.c
-        stdio/__stdio_impl_clearerr.c
-        stdio/__fflush_unlocked.c
-        stdio/__fclose_static_unlocked.c
+        stdio/stdio_impl_clearerr.c
+        stdio/fflush_unlocked.c
+        stdio/fclose_static_unlocked.c
         stdio/putc.c
-        stdio/__stdio_impl_seterr.c
+        stdio/stdio_impl_seterr.c
         stdio/klog.c
-        stdio/__fflush_read.c
+        stdio/fflush_read.c
         stdio/fileno.c
-        stdio/__fread_unlocked.c
-        stdio/__stdio_impl_tell.c
+        stdio/fread_unlocked.c
+        stdio/stdio_impl_tell.c
         stdio/setvbuf.c
         stdio/tmpnam.c
         stdio/snprintf.c
@@ -65,34 +65,32 @@ add_library(LibC
         stdio/fungetc.c
         stdio/readline.c
         stdio/feof.c
-        stdio/__stdio_impl_error.c
+        stdio/stdio_impl_error.c
         stdio/fputc.c
-        stdio/__fflush_read_unlocked.c
-        stdio/__open_file_list.c
+        stdio/fflush_read_unlocked.c
+        stdio/open_file_list.c
         stdio/vcbprintf.c
-        stdio/__vfprintf_unlocked.c
+        stdio/vfprintf_unlocked.c
         stdio/fscanf.c
-        stdio/__stdio_impl_write.c
+        stdio/stdio_impl_write.c
         stdio/sscanf.c
-        stdio/__stdio_impl_reopen.c
+        stdio/stdio_impl_reopen.c
         stdio/clearerr.c
         stdio/getc.c
         stdio/kvlog.c
         stdio/cbprintf.c
-        stdio/__clearerr_unlocked.c
+        stdio/clearerr_unlocked.c
         stdio/println.c
         stdio/fwrite.c
-        stdio/__fungetc_unlocked.c
+        stdio/fungetc_unlocked.c
         stdio/fseek.c
-        stdio/__fseeko_unlocked.c
+        stdio/fseeko_unlocked.c
         stdio/fsetpos.c
-        stdio/__fwrite_unlocked.c
+        stdio/fwrite_unlocked.c
         main.c
         signal/raise.c
         signal/sig_handlers.c
-        signal/Signal.c
-        pthread.c
-        _conformity.c
+        signal/signal.c
         musl/math/lroundl.c
         musl/math/jn.c
         musl/math/floor.c
@@ -377,7 +375,7 @@ add_library(LibC
         strings/strcasecmp.c
         stdlib/abort.c
         stdlib/strtod.c
-        stdlib/parseargs.c
+        stdlib/parse_cli_args.c
         stdlib/atoi.c
         stdlib/setenv.c
         stdlib/mbstowcs.c
@@ -392,7 +390,7 @@ add_library(LibC
         stdlib/ldiv.c
         stdlib/qsort.c
         stdlib/exit.c
-        stdlib/System.c
+        stdlib/system.c
         stdlib/getenv.c
         stdlib/atol.c
         stdlib/atof.c
@@ -418,7 +416,7 @@ add_library(LibC
         string/strcat.c
         string/strstr.c
         string/strspn.c
-        dlfcn/dlfcn.c
+        dlfcn/dlerror.c
         unistd/write.c
         unistd/tell.c
         unistd/lseek.c
@@ -466,7 +464,7 @@ add_library(LibC
         time/localtime.c
         time/strftime.c
         time/time.c
-        assert/mxassert.c
+        assert/assert_failed.c
         test.c
         errno/errno.c
         locale/localeconv.c
@@ -563,7 +561,7 @@ add_library(LibC
         musl/math/i386/ceilf.s
         musl/math/i386/atan2l.s
         musl/math/i386/lrintl.s
-        musl/math/i386/atanl.s)
+        musl/math/i386/atanl.s dlfcn/dlopen.c dlfcn/dlsym.c dlfcn/dlclose.c pthread/pthread_create.c pthread/pthread_attr_init.c pthread/pthread_attr_destroy.c pthread/pthread_set_detachstate.c pthread/pthread_join.c pthread/pthread_self.c pthread/pthread_kill.c pthread/pthread_exit.c)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-narrowing")
 

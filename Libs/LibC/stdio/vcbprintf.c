@@ -1,27 +1,20 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                           *
- *  Ghost, a micro-kernel based operating system for the x86 architecture    *
- *  Copyright (C) 2015, Max Schlüssel <lokoxe@gmail.com>                     *
- *                                                                           *
- *  This program is free software: you can redistribute it and/or modify     *
- *  it under the terms of the GNU General Public License as published by     *
- *  the Free Software Foundation, either version 3 of the License, or        *
- *  (at your option) any later version.                                      *
- *                                                                           *
- *  This program is distributed in the hope that it will be useful,          *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *  GNU General Public License for more details.                             *
- *                                                                           *
- *  You should have received a copy of the GNU General Public License        *
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                           *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
-#include "errno.h"
-#include "stdio.h"
-#include "string.h"
-#include "wchar.h"
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <wchar.h>
 
 #define LENGTH_DEFAULT 0
 #define LENGTH_hh      1
@@ -33,88 +26,70 @@
 #define LENGTH_t       7
 #define LENGTH_L       8
 
-#define STEP                                                                                       \
+#define CHOMP_CHAR()                                                                               \
     if ( !*++s )                                                                                   \
         return written;
 
-/**
- * Tries to get a simple integer number from the current string location;
- * returns 0 if there was no number.
- */
-static int _get_number(const char** s) {
-    int         res = 0;
-    const char* p   = *s;
-
-    while ( *p >= '0' && *p <= '9' ) {
-        res = (res * 10) + (*p - '0');
-        ++p;
-    }
-
-    *s = p;
+static int string_to_number(const char** s) {
+    char* end_ptr = NULL;
+    int   res     = (int)strtol(*s, &end_ptr, 10);
+    *s            = end_ptr;
     return res;
 }
 
-/**
- * Converts the given number to it's string representation
- */
-static size_t _integer_to_string(char* out, uintmax_t value, uintmax_t base, const char* digits) {
-    size_t count = 1;
+static usize integer_to_string(char* out, uintmax_t value, uintmax_t base, const char* digits) {
+    usize count = 1;
 
-    // check how many characters are required
+    /* check how many characters are required */
     uintmax_t temp = value;
     while ( temp >= base ) {
         temp /= base;
-        count++;
+        ++count;
     }
 
-    // convert to digits
-    for ( size_t i = count; i != 0; i-- ) {
+    /* convert to digits */
+    for ( usize i = count; i != 0; --i ) {
         out[i - 1] = digits[value % base];
         value /= base;
     }
-
     return count;
 }
 
-/**
- *
- */
 int vcbprintf(void* param,
-              ssize_t (*callback)(void* param, const char* buf, size_t maximum),
+              isize (*callback)(void*, const char*, usize),
               const char* format,
-              va_list     arglist) {
+              va_list     arg_list) {
     const char* s       = format;
-    int         written = 0;
+    usize       written = 0;
 
     char number_buffer[24];
     char precision_buffer[24];
 
-    // iterate through format characters
+    /* iterate through format characters */
     while ( *s ) {
-        // enter format
+        /* enter format */
         if ( *s == '%' ) {
-            STEP;
+            CHOMP_CHAR();
 
-            // early exit on '%'
+            /* early exit on '%' */
             if ( *s == '%' ) {
                 if ( callback(param, s, 1) != 1 )
                     return -1;
                 ++written;
-                STEP;
+                CHOMP_CHAR();
                 continue;
             }
 
-            // flags
-            uint8_t flag_left_justify                  = false;
-            uint8_t flag_always_prepend_sign           = false;
-            uint8_t flag_always_prepend_space_plussign = false;
-            uint8_t flag_force_0x_or_dec               = false;
-            uint8_t flag_left_pad_zeroes               = false;
+            /* flags */
+            bool flag_left_justify                   = false;
+            bool flag_always_prepend_sign            = false;
+            bool flag_always_prepend_space_plus_sign = false;
+            bool flag_force_0x_or_dec                = false;
+            bool flag_left_pad_zeroes                = false;
 
-            uint8_t flag_found;
+            bool flag_found;
             do {
                 flag_found = false;
-
                 switch ( *s ) {
                     case '-':
                         flag_left_justify = true;
@@ -125,8 +100,8 @@ int vcbprintf(void* param,
                         flag_found               = true;
                         break;
                     case ' ':
-                        flag_always_prepend_space_plussign = true;
-                        flag_found                         = true;
+                        flag_always_prepend_space_plus_sign = true;
+                        flag_found                          = true;
                         break;
                     case '#':
                         flag_force_0x_or_dec = true;
@@ -138,84 +113,77 @@ int vcbprintf(void* param,
                         break;
                 }
 
-                if ( flag_found ) {
-                    STEP;
-                }
+                /* eat the character */
+                if ( flag_found )
+                    CHOMP_CHAR();
             } while ( flag_found );
 
-            // width
-            int width = 0;
-
-            if ( *s == '*' ) { // take from argument list
-                width = va_arg(arglist, int);
-                STEP;
-
-            } else if ( *s >= '0' && *s <= '9' ) { // take from format
-                width = _get_number(&s);
-                // -> already stepped by _get_number
+            /* width */
+            usize width = 0;
+            if ( *s == '*' ) {
+                /* take from argument list */
+                width = va_arg(arg_list, int);
+                CHOMP_CHAR();
+            } else if ( *s >= '0' && *s <= '9' ) {
+                /* take from format,
+                 * NOTE: string_to_number already chomp the characters */
+                width = string_to_number(&s);
             }
 
-            // precision
-            int     precision         = 6;
-            uint8_t explicitPrecision = false;
-
+            /* precision */
+            int  precision          = 6;
+            bool explicit_precision = false;
             if ( *s == '.' ) {
-                STEP;
-                explicitPrecision = true;
+                CHOMP_CHAR();
+                explicit_precision = true;
+                if ( *s == '*' ) {
+                    /* take from argument list */
+                    precision = va_arg(arg_list, int);
+                    CHOMP_CHAR();
 
-                if ( *s == '*' ) { // take from argument list
-                    precision = va_arg(arglist, int);
-                    STEP;
-
-                } else if ( *s >= '0' && *s <= '9' ) { // take from format
-                    precision = _get_number(&s);
-                    // -> already stepped by _get_number
+                } else if ( *s >= '0' && *s <= '9' ) {
+                    /* take from format,
+                     * NOTE: string_to_number already chomp the characters */
+                    precision = string_to_number(&s);
                 }
             }
 
-            // length
+            /* length of the format */
             int length = LENGTH_DEFAULT;
-
             if ( *s == 'h' ) {
-                STEP;
+                CHOMP_CHAR();
 
                 if ( *s == 'h' ) {
                     length = LENGTH_hh;
-                    STEP;
+                    CHOMP_CHAR();
                 } else {
                     length = LENGTH_h;
                 }
-
             } else if ( *s == 'l' ) {
-                STEP;
+                CHOMP_CHAR();
 
                 if ( *s == 'l' ) {
                     length = LENGTH_ll;
-                    STEP;
+                    CHOMP_CHAR();
                 } else {
                     length = LENGTH_l;
                 }
-
             } else if ( *s == 'j' ) {
-                STEP;
+                CHOMP_CHAR();
                 length = LENGTH_j;
-
             } else if ( *s == 'z' ) {
-                STEP;
+                CHOMP_CHAR();
                 length = LENGTH_z;
-
             } else if ( *s == 't' ) {
-                STEP;
+                CHOMP_CHAR();
                 length = LENGTH_t;
-
             } else if ( *s == 'L' ) {
-                STEP;
+                CHOMP_CHAR();
                 length = LENGTH_L;
             }
 
-            // use specifier and length to get value of argument
+            /* use specifier and length to get value of argument */
             char specifier = *s;
-
             switch ( *s ) {
                 case 'u':
                 case 'o':
@@ -223,202 +191,192 @@ int vcbprintf(void* param,
                 case 'X':
                 case 'd':
                 case 'i':
-                case 'p':
-                    {
-                        uintmax_t value;
-                        uint8_t   issigned;
-
-                        if ( specifier == 'd' || specifier == 'i' ) {
-                            issigned = true;
-
-                            switch ( length ) {
-                                case LENGTH_DEFAULT:
-                                    value = va_arg(arglist, int);
-                                    break;
-                                case LENGTH_hh:
-                                    value = (signed char)va_arg(arglist, int);
-                                    break;
-                                case LENGTH_h:
-                                    value = (short int)va_arg(arglist, int);
-                                    break;
-                                case LENGTH_l:
-                                    value = va_arg(arglist, long int);
-                                    break;
-                                case LENGTH_ll:
-                                    value = va_arg(arglist, long long int);
-                                    break;
-                                case LENGTH_j:
-                                    value = va_arg(arglist, intmax_t);
-                                    break;
-                                case LENGTH_z:
-                                    value = va_arg(arglist, size_t);
-                                    break;
-                                case LENGTH_t:
-                                    value = va_arg(arglist, ptrdiff_t);
-                                    break;
-                                default:
-                                    errno = EINVAL;
-                                    return -1;
-                            }
-
-                        } else {
-                            issigned = false;
-
-                            switch ( length ) {
-                                case LENGTH_DEFAULT:
-                                    value = va_arg(arglist, unsigned int);
-                                    break;
-                                case LENGTH_hh:
-                                    value = (unsigned char)va_arg(arglist, int);
-                                    break;
-                                case LENGTH_h:
-                                    value = (unsigned short int)va_arg(arglist, int);
-                                    break;
-                                case LENGTH_l:
-                                    value = va_arg(arglist, unsigned long int);
-                                    break;
-                                case LENGTH_ll:
-                                    value = va_arg(arglist, unsigned long long int);
-                                    break;
-                                case LENGTH_j:
-                                    value = va_arg(arglist, uintmax_t);
-                                    break;
-                                case LENGTH_z:
-                                    value = va_arg(arglist, size_t);
-                                    break;
-                                case LENGTH_t:
-                                    value = va_arg(arglist, ptrdiff_t);
-                                    break;
-                                default:
-                                    errno = EINVAL;
-                                    return -1;
-                            }
-                        }
-
-                        // write number in temporary buffer
-                        const char* digits;
-                        int         base;
-                        uint8_t     isnegative = (issigned && ((intmax_t)value) < 0);
-
-                        // pointers are printed as numbers
-                        if ( specifier == 'p' ) {
-                            specifier            = 'x';
-                            flag_force_0x_or_dec = true;
-                        }
-
-                        // decide for base and digits
-                        if ( specifier == 'x' ) {
-                            base   = 16;
-                            digits = "0123456789abcdef";
-                        } else if ( specifier == 'X' ) {
-                            base   = 16;
-                            digits = "0123456789ABCDEF";
-                        } else if ( specifier == 'o' ) {
-                            base   = 8;
-                            digits = "012345678";
-                        } else {
-                            base   = 10;
-                            digits = "0123456789";
-                        }
-
-                        ssize_t len = _integer_to_string(number_buffer,
-                                                         (isnegative ? -((intmax_t)value) : value),
-                                                         base,
-                                                         digits);
-
-                        // check for additionals
-                        int additionalslen = 0;
-
-                        if ( flag_always_prepend_sign || flag_always_prepend_space_plussign
-                             || isnegative ) {
-                            ++additionalslen; // +/-/space
-                        }
-
-                        if ( flag_force_0x_or_dec && (specifier == 'x' || specifier == 'X') ) {
-                            additionalslen += 2; // 0x/0X
-                        }
-
-                        if ( flag_force_0x_or_dec && specifier == 'o' ) {
-                            ++additionalslen; // 0
-                        }
-
-                        // adjust width to pad correctly
-                        if ( width < len + additionalslen ) {
-                            width = len + additionalslen;
-                        }
-
-                        // left padding with spaces
-                        if ( !flag_left_justify && !flag_left_pad_zeroes ) {
-                            for ( int i = 0; i < width - len - additionalslen; i++ ) {
-                                if ( callback(param, " ", 1) != 1 )
-                                    return -1;
-                                ++written;
-                            }
-                        }
-
-                        // sign
-                        if ( isnegative ) {
-                            if ( callback(param, "-", 1) != 1 )
+                case 'p': {
+                    uintmax_t value;
+                    bool      is_signed;
+                    if ( specifier == 'd' || specifier == 'i' ) {
+                        is_signed = true;
+                        switch ( length ) {
+                            case LENGTH_DEFAULT:
+                                value = va_arg(arg_list, int);
+                                break;
+                            case LENGTH_hh:
+                                value = (uintmax_t)((signed char)va_arg(arg_list, int));
+                                break;
+                            case LENGTH_h:
+                                value = (short int)va_arg(arg_list, int);
+                                break;
+                            case LENGTH_l:
+                                value = va_arg(arg_list, long int);
+                                break;
+                            case LENGTH_ll:
+                                value = va_arg(arg_list, long long int);
+                                break;
+                            case LENGTH_j:
+                                value = va_arg(arg_list, intmax_t);
+                                break;
+                            case LENGTH_z:
+                                value = va_arg(arg_list, size_t);
+                                break;
+                            case LENGTH_t:
+                                value = va_arg(arg_list, ptrdiff_t);
+                                break;
+                            default:
+                                errno = EINVAL;
                                 return -1;
-                            ++written;
+                        }
+                    } else {
+                        is_signed = false;
 
-                        } else if ( flag_always_prepend_sign ) {
-                            if ( callback(param, "+", 1) != 1 )
+                        switch ( length ) {
+                            case LENGTH_DEFAULT:
+                                value = va_arg(arg_list, unsigned int);
+                                break;
+                            case LENGTH_hh:
+                                value = (unsigned char)va_arg(arg_list, int);
+                                break;
+                            case LENGTH_h:
+                                value = (unsigned short int)va_arg(arg_list, int);
+                                break;
+                            case LENGTH_l:
+                                value = va_arg(arg_list, unsigned long int);
+                                break;
+                            case LENGTH_ll:
+                                value = va_arg(arg_list, unsigned long long int);
+                                break;
+                            case LENGTH_j:
+                                value = va_arg(arg_list, uintmax_t);
+                                break;
+                            case LENGTH_z:
+                                value = va_arg(arg_list, size_t);
+                                break;
+                            case LENGTH_t:
+                                value = va_arg(arg_list, ptrdiff_t);
+                                break;
+                            default:
+                                errno = EINVAL;
                                 return -1;
-                            ++written;
+                        }
+                    }
 
-                        } else if ( flag_always_prepend_space_plussign ) {
+                    /* write number in temporary buffer */
+                    const char* digits;
+                    int         base;
+                    bool        is_negative = (is_signed && ((intmax_t)value) < 0);
+
+                    /* pointers are printed as numbers */
+                    if ( specifier == 'p' ) {
+                        specifier            = 'x';
+                        flag_force_0x_or_dec = true;
+                    }
+
+                    /* prepare base characters */
+                    if ( specifier == 'x' ) {
+                        base   = 16;
+                        digits = "0123456789abcdef";
+                    } else if ( specifier == 'X' ) {
+                        base   = 16;
+                        digits = "0123456789ABCDEF";
+                    } else if ( specifier == 'o' ) {
+                        base   = 8;
+                        digits = "012345678";
+                    } else {
+                        base   = 10;
+                        digits = "0123456789";
+                    }
+
+                    usize len = integer_to_string(number_buffer,
+                                                  (is_negative ? -((intmax_t)value) : value),
+                                                  base,
+                                                  digits);
+
+                    /* check for additional */
+                    int additional_len = 0;
+                    if ( flag_always_prepend_sign || flag_always_prepend_space_plus_sign
+                         || is_negative ) {
+                        ++additional_len; /* +/-/space */
+                    }
+                    if ( flag_force_0x_or_dec && (specifier == 'x' || specifier == 'X') ) {
+                        additional_len += 2; /* 0x/0X */
+                    }
+                    if ( flag_force_0x_or_dec && specifier == 'o' ) {
+                        ++additional_len; /* 0 */
+                    }
+
+                    /* adjust width to pad correctly */
+                    if ( width < len + additional_len ) {
+                        width = len + additional_len;
+                    }
+
+                    /* left padding with spaces */
+                    if ( !flag_left_justify && !flag_left_pad_zeroes ) {
+                        for ( int i = 0; i < width - len - additional_len; ++i ) {
                             if ( callback(param, " ", 1) != 1 )
                                 return -1;
                             ++written;
                         }
-
-                        // left padding with zeroes
-                        if ( !flag_left_justify && flag_left_pad_zeroes ) {
-                            for ( int i = 0; i < width - len - additionalslen; i++ ) {
-                                if ( callback(param, "0", 1) != 1 )
-                                    return -1;
-                                ++written;
-                            }
-                        }
-
-                        // additionals
-                        if ( flag_force_0x_or_dec && (specifier == 'x' || specifier == 'X') ) {
-                            if ( callback(param, "0", 1) != 1 )
-                                return -1;
-                            ++written;
-
-                            if ( specifier == 'x' ) {
-                                if ( callback(param, "x", 1) != 1 )
-                                    return -1;
-                            } else {
-                                if ( callback(param, "X", 1) != 1 )
-                                    return -1;
-                            }
-                            ++written;
-                        } else if ( flag_force_0x_or_dec && specifier == 'o' ) {
-                            if ( callback(param, "0", 1) != 1 )
-                                return -1;
-                            ++written;
-                        }
-
-                        // write number
-                        if ( callback(param, number_buffer, len) != len )
-                            return -1;
-                        written += len;
-
-                        // right padding
-                        if ( flag_left_justify ) {
-                            for ( int i = 0; i < width - len - additionalslen; i++ ) {
-                                if ( callback(param, " ", 1) != 1 )
-                                    return -1;
-                                ++written;
-                            }
-                        }
-
-                        break;
                     }
 
+                    /* sign */
+                    if ( is_negative ) {
+                        if ( callback(param, "-", 1) != 1 )
+                            return -1;
+                        ++written;
+                    } else if ( flag_always_prepend_sign ) {
+                        if ( callback(param, "+", 1) != 1 )
+                            return -1;
+                        ++written;
+                    } else if ( flag_always_prepend_space_plus_sign ) {
+                        if ( callback(param, " ", 1) != 1 )
+                            return -1;
+                        ++written;
+                    }
+
+                    /* left padding with zeroes */
+                    if ( !flag_left_justify && flag_left_pad_zeroes ) {
+                        for ( int i = 0; i < width - len - additional_len; ++i ) {
+                            if ( callback(param, "0", 1) != 1 )
+                                return -1;
+                            ++written;
+                        }
+                    }
+
+                    /* additional */
+                    if ( flag_force_0x_or_dec && (specifier == 'x' || specifier == 'X') ) {
+                        if ( callback(param, "0", 1) != 1 )
+                            return -1;
+                        ++written;
+
+                        if ( specifier == 'x' ) {
+                            if ( callback(param, "x", 1) != 1 )
+                                return -1;
+                        } else {
+                            if ( callback(param, "X", 1) != 1 )
+                                return -1;
+                        }
+                        ++written;
+                    } else if ( flag_force_0x_or_dec && specifier == 'o' ) {
+                        if ( callback(param, "0", 1) != 1 )
+                            return -1;
+                        ++written;
+                    }
+
+                    /* write number */
+                    if ( callback(param, number_buffer, len) != len )
+                        return -1;
+                    written += len;
+
+                    /* right padding */
+                    if ( flag_left_justify ) {
+                        for ( int i = 0; i < width - len - additional_len; ++i ) {
+                            if ( callback(param, " ", 1) != 1 )
+                                return -1;
+                            ++written;
+                        }
+                    }
+
+                    break;
+                }
                 case 'f':
                 case 'F':
                 case 'e':
@@ -426,280 +384,254 @@ int vcbprintf(void* param,
                 case 'g':
                 case 'G':
                 case 'a':
-                case 'A':
-                    {
-                        long double value;
-                        switch ( length ) {
-                            case LENGTH_DEFAULT:
-                                value = va_arg(arglist, double);
+                case 'A': {
+                    long double value;
+                    switch ( length ) {
+                        case LENGTH_DEFAULT:
+                            value = va_arg(arg_list, double);
+                            break;
+                        case LENGTH_L:
+                            value = va_arg(arg_list, long double);
+                            break;
+                        default:
+                            errno = EINVAL;
+                            return -1;
+                    }
+
+                    /* TODO this implementation only does simple printing, printing */
+                    /* floating point numbers is much more complex, but okay for now */
+
+                    /* TODO scientific and hexadecimal numbers are converted as normal */
+                    /* decimals here. long doubles won't work properly as well. */
+
+                    /* store negativity and make value positive */
+                    bool is_negative = value < 0;
+                    if ( is_negative )
+                        value = -value;
+
+                    /* get before comma stuff */
+                    uintmax_t value_integer = (uintmax_t)value;
+
+                    /* get after comma stuff */
+                    double value_fractional_d = value - ((intmax_t)value);
+                    while ( value_fractional_d - ((intmax_t)value_fractional_d) != 0 )
+                        value_fractional_d *= 10;
+
+                    uintmax_t value_fractional = (uintmax_t)value_fractional_d;
+
+                    /* write number in temporary buffer */
+                    usize len_int
+                        = integer_to_string(number_buffer, value_integer, 10, "0123456789");
+                    size_t len_fract
+                        = integer_to_string(precision_buffer, value_fractional, 10, "0123456789");
+                    if ( len_fract > precision )
+                        len_fract = precision;
+
+                    /* check for additional */
+                    int additional_len = 0;
+                    if ( flag_always_prepend_sign || flag_always_prepend_space_plus_sign
+                         || is_negative ) {
+                        ++additional_len; /* +/-/space */
+                    }
+
+                    if ( flag_force_0x_or_dec ) {
+                        ++additional_len; /* decimal dot */
+                    } else {
+                        /* check if the characters that will be printed after the decimal dot
+                         * will be other than zero, otherwise it is neglected */
+                        for ( int i = 0; i < len_fract; ++i ) {
+                            if ( precision_buffer[i] != '0' ) {
+                                ++additional_len; /* we'll need a decimal dot */
                                 break;
-                            case LENGTH_L:
-                                value = va_arg(arglist, long double);
-                                break;
-                            default:
-                                errno = EINVAL;
-                                return -1;
-                        }
-
-                        // TODO this implementation only does simple printing, printing
-                        // floating point numbers is much more complex, but okay for now
-
-                        // TODO scientific and hexadecimal numbers are converted as normal
-                        // decimals here. long doubles won't work properly as well.
-
-                        // store negativity and make value positive
-                        uint8_t isnegative = value < 0;
-                        if ( isnegative ) {
-                            value = -value;
-                        }
-
-                        // get before comma stuff
-                        uintmax_t value_integer = (uintmax_t)value;
-
-                        // get after comma stuff
-                        double value_fractional_d = value - ((intmax_t)value);
-                        while ( value_fractional_d - ((intmax_t)value_fractional_d) != 0 ) {
-                            value_fractional_d *= 10;
-                        }
-                        uintmax_t value_fractional = (uintmax_t)value_fractional_d;
-
-                        // write number in temporary buffer
-                        size_t len_int
-                            = _integer_to_string(number_buffer, value_integer, 10, "0123456789");
-                        size_t len_fract = _integer_to_string(precision_buffer,
-                                                              value_fractional,
-                                                              10,
-                                                              "0123456789");
-                        if ( len_fract > precision ) {
-                            len_fract = precision;
-                        }
-
-                        // check for additionals
-                        int additionalslen = 0;
-
-                        if ( flag_always_prepend_sign || flag_always_prepend_space_plussign
-                             || isnegative ) {
-                            ++additionalslen; // +/-/space
-                        }
-
-                        if ( flag_force_0x_or_dec ) {
-                            ++additionalslen; // decimal dot
-                        } else {
-                            // check if the characters that will be printed
-                            // after the decimal dot will be other than zero,
-                            // otherwise it is neglected
-                            for ( int i = 0; i < len_fract; i++ ) {
-                                if ( precision_buffer[i] != '0' ) {
-                                    ++additionalslen; // we'll need a decimal dot
-                                    break;
-                                }
                             }
                         }
+                    }
 
-                        // adjust width to pad correctly
-                        if ( width < len_int + additionalslen + precision ) {
-                            width = len_int + additionalslen + precision;
-                        }
+                    /* adjust width to pad correctly */
+                    if ( width < len_int + additional_len + precision ) {
+                        width = len_int + additional_len + precision;
+                    }
 
-                        // left padding with spaces
-                        if ( !flag_left_justify && !flag_left_pad_zeroes ) {
-                            for ( int i = 0; i < width - len_int - additionalslen - precision;
-                                  i++ ) {
-                                if ( callback(param, " ", 1) != 1 )
-                                    return -1;
-                                ++written;
-                            }
-                        }
-
-                        // sign
-                        if ( isnegative ) {
-                            if ( callback(param, "-", 1) != 1 )
-                                return -1;
-                            ++written;
-
-                        } else if ( flag_always_prepend_sign ) {
-                            if ( callback(param, "+", 1) != 1 )
-                                return -1;
-                            ++written;
-
-                        } else if ( flag_always_prepend_space_plussign ) {
+                    /* left padding with spaces */
+                    if ( !flag_left_justify && !flag_left_pad_zeroes ) {
+                        for ( int i = 0; i < width - len_int - additional_len - precision; ++i ) {
                             if ( callback(param, " ", 1) != 1 )
                                 return -1;
                             ++written;
                         }
-
-                        // left padding with zeroes
-                        if ( !flag_left_justify && !flag_left_pad_zeroes ) {
-                            for ( int i = 0; i < width - len_int - additionalslen - precision;
-                                  i++ ) {
-                                if ( callback(param, "0", 1) != 1 )
-                                    return -1;
-                                ++written;
-                            }
-                        }
-
-                        // write integer part
-                        if ( callback(param, number_buffer, len_int) != len_int )
-                            return -1;
-                        written += len_int;
-
-                        if ( flag_force_0x_or_dec || value_fractional != 0 ) {
-                            if ( callback(param, ".", 1) != 1 )
-                                return -1;
-                            ++written;
-
-                            // write fractional part
-                            if ( callback(param, precision_buffer, len_fract) != len_fract )
-                                return -1;
-                            written += len_fract;
-
-                            // write precision filling zeroes
-                            for ( size_t i = 0; i < (len_fract == 0 ? 1 : precision - len_fract);
-                                  i++ ) {
-                                if ( callback(param, "0", 1) != 1 )
-                                    return -1;
-                                ++written;
-                            }
-                        }
-
-                        // right padding
-                        if ( flag_left_justify ) {
-                            for ( int i = 0; i < width - len_int - additionalslen - precision;
-                                  i++ ) {
-                                if ( callback(param, " ", 1) != 1 )
-                                    return -1;
-                                ++written;
-                            }
-                        }
-
-                        break;
                     }
 
-                case 'c':
-                    {
-                        char value;
-                        switch ( length ) {
-                            case LENGTH_DEFAULT:
-                                value = va_arg(arglist, int);
-                                break;
-                            case LENGTH_l:
-                                value = va_arg(arglist, wint_t);
-                                break;
-                            default:
-                                errno = EINVAL;
+                    /* sign */
+                    if ( is_negative ) {
+                        if ( callback(param, "-", 1) != 1 )
+                            return -1;
+                        ++written;
+                    } else if ( flag_always_prepend_sign ) {
+                        if ( callback(param, "+", 1) != 1 )
+                            return -1;
+                        ++written;
+                    } else if ( flag_always_prepend_space_plus_sign ) {
+                        if ( callback(param, " ", 1) != 1 )
+                            return -1;
+                        ++written;
+                    }
+
+                    /* left padding with zeroes */
+                    if ( !flag_left_justify && !flag_left_pad_zeroes ) {
+                        for ( int i = 0; i < width - len_int - additional_len - precision; ++i ) {
+                            if ( callback(param, "0", 1) != 1 )
                                 return -1;
+                            ++written;
                         }
+                    }
 
-                        // left padding
-                        if ( !flag_left_justify ) {
-                            for ( int i = 0; i < width - 1; i++ ) {
-                                if ( callback(param, " ", 1) != 1 )
-                                    return -1;
-                                ++written;
-                            }
-                        }
+                    /* write integer part */
+                    if ( callback(param, number_buffer, len_int) != len_int )
+                        return -1;
+                    written += len_int;
 
-                        // print character TODO wchar_t?
-                        if ( callback(param, &value, 1) != 1 )
+                    if ( flag_force_0x_or_dec || value_fractional != 0 ) {
+                        if ( callback(param, ".", 1) != 1 )
                             return -1;
                         ++written;
 
-                        // right padding
-                        if ( flag_left_justify ) {
-                            for ( int i = 0; i < width - 1; i++ ) {
-                                if ( callback(param, " ", 1) != 1 )
-                                    return -1;
-                                ++written;
-                            }
-                        }
-
-                        break;
-                    }
-
-                case 's':
-                    {
-                        char* value;
-                        switch ( length ) {
-                            case LENGTH_DEFAULT:
-                                value = (char*)va_arg(arglist, char*);
-                                break;
-                            case LENGTH_l:
-                                value = (char*)va_arg(arglist, wchar_t*);
-                                break;
-                            default:
-                                errno = EINVAL;
-                                return -1;
-                        }
-
-                        // get length
-                        size_t len = strlen(value);
-
-                        if ( width < len ) {
-                            width = len;
-                        }
-
-                        // left padding
-                        if ( !flag_left_justify ) {
-                            for ( int i = 0; i < width - len; i++ ) {
-                                if ( callback(param, " ", 1) != 1 )
-                                    return -1;
-                                ++written;
-                            }
-                        }
-
-                        // limit the output if a precision was explicitly set
-                        if ( explicitPrecision && len > precision ) {
-                            len = precision;
-                        }
-
-                        // write string TODO wchar_t?
-                        if ( callback(param, value, len) != len )
+                        /* write fractional part */
+                        if ( callback(param, precision_buffer, len_fract) != len_fract )
                             return -1;
-                        written += len;
+                        written += len_fract;
 
-                        // expand output if a precision was explicitly set
-                        if ( explicitPrecision && len < precision ) {
-                            for ( int i = 0; i < precision - len; i++ ) {
-                                if ( callback(param, " ", 1) != 1 )
-                                    return -1;
-                                ++written;
-                            }
+                        /* write precision filling zeroes */
+                        for ( size_t i = 0; i < (len_fract == 0 ? 1 : precision - len_fract);
+                              ++i ) {
+                            if ( callback(param, "0", 1) != 1 )
+                                return -1;
+                            ++written;
                         }
-
-                        // right padding
-                        if ( flag_left_justify ) {
-                            for ( int i = 0; i < width - len; i++ ) {
-                                if ( callback(param, " ", 1) != 1 )
-                                    return -1;
-                                ++written;
-                            }
-                        }
-
-                        break;
                     }
 
-                case 'n':
-                    {
-                        signed int* value = (signed int*)va_arg(arglist, void*);
-                        *value            = written;
-                        break;
+                    /* right padding */
+                    if ( flag_left_justify ) {
+                        for ( int i = 0; i < width - len_int - additional_len - precision; ++i ) {
+                            if ( callback(param, " ", 1) != 1 )
+                                return -1;
+                            ++written;
+                        }
                     }
 
-                default:
-                    {
-                        errno = EINVAL;
+                    break;
+                }
+                case 'c': {
+                    char value;
+                    switch ( length ) {
+                        case LENGTH_DEFAULT:
+                            value = va_arg(arg_list, int);
+                            break;
+                        case LENGTH_l:
+                            value = va_arg(arg_list, wint_t);
+                            break;
+                        default:
+                            errno = EINVAL;
+                            return -1;
+                    }
+
+                    /* left padding */
+                    if ( !flag_left_justify ) {
+                        for ( int i = 0; i < width - 1; ++i ) {
+                            if ( callback(param, " ", 1) != 1 )
+                                return -1;
+                            ++written;
+                        }
+                    }
+
+                    /* print character TODO wchar_t? */
+                    if ( callback(param, &value, 1) != 1 )
                         return -1;
-                    }
-            }
+                    ++written;
 
+                    /* right padding */
+                    if ( flag_left_justify ) {
+                        for ( int i = 0; i < width - 1; ++i ) {
+                            if ( callback(param, " ", 1) != 1 )
+                                return -1;
+                            ++written;
+                        }
+                    }
+                    break;
+                }
+                case 's': {
+                    char* value;
+                    switch ( length ) {
+                        case LENGTH_DEFAULT:
+                            value = (char*)va_arg(arg_list, char*);
+                            break;
+                        case LENGTH_l:
+                            value = (char*)va_arg(arg_list, wchar_t*);
+                            break;
+                        default:
+                            errno = EINVAL;
+                            return -1;
+                    }
+
+                    /* get length */
+                    usize len = strlen(value);
+                    if ( width < len )
+                        width = len;
+
+                    /* left padding */
+                    if ( !flag_left_justify ) {
+                        for ( int i = 0; i < width - len; ++i ) {
+                            if ( callback(param, " ", 1) != 1 )
+                                return -1;
+                            ++written;
+                        }
+                    }
+
+                    /* limit the output if a precision was explicitly set */
+                    if ( explicit_precision && len > precision )
+                        len = precision;
+
+                    /* write string TODO wchar_t? */
+                    if ( callback(param, value, len) != len )
+                        return -1;
+                    written += len;
+
+                    /* expand output if a precision was explicitly set */
+                    if ( explicit_precision && len < precision ) {
+                        for ( int i = 0; i < precision - len; ++i ) {
+                            if ( callback(param, " ", 1) != 1 )
+                                return -1;
+                            ++written;
+                        }
+                    }
+
+                    /* right padding */
+                    if ( flag_left_justify ) {
+                        for ( int i = 0; i < width - len; ++i ) {
+                            if ( callback(param, " ", 1) != 1 )
+                                return -1;
+                            ++written;
+                        }
+                    }
+                    break;
+                }
+                case 'n': {
+                    signed int* value = (signed int*)va_arg(arg_list, void*);
+                    *value            = written;
+                    break;
+                }
+                default: {
+                    errno = EINVAL;
+                    return -1;
+                }
+            }
         } else {
             if ( callback(param, s, 1) != 1 )
                 return -1;
             ++written;
         }
 
-        STEP;
+        CHOMP_CHAR();
     }
 
-    return written;
+    return (int)written;
 }
