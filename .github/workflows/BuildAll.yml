@@ -1,0 +1,43 @@
+name: MeetiX CI Build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Packages
+        run: |
+          sudo apt update
+          sudo apt install -y gcc g++ nasm build-essential libgmp-dev libmpfr-dev libmpc-dev cmake make ninja xorriso grub patch wget tar
+
+      - name: Toolchains
+        run: |
+          pushd Toolchain
+          bash Build.sh --rebuild
+          popd
+
+      - name: CMake Config
+        run: |
+          mkdir -p Build/{Debug,Release}
+          pushd Build/Debug
+          cmake -DCMAKE_BUILD_TYPE=Debug -GNinja ../..
+          popd
+          pushd Build/Release
+          cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../..
+          popd
+
+      - name: Build MeetiX Debug
+        run: |
+          pushd Build/Debug
+          ninja repack
+          popd
+
+      - name: Build MeetiX Release
+        run: |
+          pushd Build/Release
+          ninja repack
+          popd
