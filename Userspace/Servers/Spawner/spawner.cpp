@@ -33,9 +33,9 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <utils/arguments.hpp>
-#include <utils/environment.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Arguments.hh>
+#include <Utils/Environment.hh>
+#include <Utils/Utils.hh>
 #include <vector>
 
 /**
@@ -315,7 +315,7 @@ bool findFile(const char* path, FileHandle* file) {
         return true;
 
     // try adding the path
-    auto paths = Arguments::split(Environment::get("PATH"), ':');
+    auto paths = Utils::Arguments::split(Utils::Environment::get("PATH"), ':');
     for ( auto& dir : paths ) {
         // app directory is composited
         if ( dir == "Apps" )

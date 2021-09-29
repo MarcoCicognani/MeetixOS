@@ -31,9 +31,9 @@
  *
  */
 
-#include <assert.h> /* assert() */
-#include <string.h> /* memcpy()/memset() or bcopy()/bzero() */
-#include <utils/sha2.hpp>
+#include <cassert> /* assert() */
+#include <cstring> /* memcpy()/memset() or bcopy()/bzero() */
+#include <Utils/SHA2.hh>
 
 /*
  * ASSERT NOTE:

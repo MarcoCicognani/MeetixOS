@@ -25,8 +25,8 @@
 #include <map>
 #include <stdio.h>
 #include <string>
-#include <utils/fparser.hpp>
-#include <utils/utils.hpp>
+#include <Utils/PropertyFileParser.hh>
+#include <Utils/Utils.hh>
 
 Keyboard& Keyboard::instance() {
     static Keyboard* s_instance = nullptr;
@@ -52,7 +52,7 @@ bool Keyboard::loadScancodeLayout(const std::string& iso) {
     std::map<std::string, std::string> properties;
     {
         m_scancode_layout.clear();
-        PropertyFileParser props(in);
+        Utils::PropertyFileParser props(in);
         properties = props.getProperties();
     }
 
@@ -110,7 +110,7 @@ bool Keyboard::loadConversionLayout(const std::string& iso) {
     std::map<std::string, std::string> properties;
     {
         m_conversion_layout.clear();
-        PropertyFileParser props(in);
+        Utils::PropertyFileParser props(in);
         properties = props.getProperties();
     }
 

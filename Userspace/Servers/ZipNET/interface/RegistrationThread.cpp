@@ -27,7 +27,7 @@
 #include <gui/uispech.hpp>
 #include <interface/ApplicationExitCleanupThread.hpp>
 #include <interface/CommandMessageReceiverThread.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 
 /**
  *

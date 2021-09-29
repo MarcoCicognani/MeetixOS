@@ -20,7 +20,7 @@
 #include "SecondaryThread.hpp"
 
 #include <gui/btnlist.hpp>
-#include <utils/environment.hpp>
+#include <Utils/Environment.hh>
 
 using namespace std;
 

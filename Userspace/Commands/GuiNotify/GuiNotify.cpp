@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
-#include <utils/arguments.hpp>
+#include <Utils/Arguments.hh>
 
 /**
  * show the usage of the command

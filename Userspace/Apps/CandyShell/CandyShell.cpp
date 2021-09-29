@@ -38,9 +38,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <utils/environment.hpp>
-#include <utils/time.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Environment.hh>
+#include <Utils/Time.hh>
+#include <Utils/Utils.hh>
 #include <vector>
 
 using namespace std;
@@ -116,7 +116,7 @@ void CandyShell::prepare() {
     if ( headless ) {
         s_task_register_id("CandyText");
         Utils::log("initializing headless CandyShell");
-        Environment::set("SYSTEM_LEVEL", "textual");
+        Utils::Environment::set("SYSTEM_LEVEL", "textual");
 
         // disable video logging
         s_set_video_log(false);
@@ -262,8 +262,8 @@ void CandyShell::readWorkingDirectory() {
  *
  */
 void CandyShell::run(CreateShellInfo* inf) {
-    hostname       = Environment::getHostname();
-    currentUser    = Environment::getLoggedUser();
+    hostname       = Utils::Environment::getHostname();
+    currentUser    = Utils::Environment::getLoggedUser();
     currentUser[0] = static_cast<char>(toupper(currentUser[0]));
     homeDirectory  = "/Users/" + currentUser;
 
@@ -610,14 +610,14 @@ bool CandyShell::handleBuiltin(string command) {
     }
 
     else if ( command == BUILTIN_COMMAND_GETHOUR ) {
-        TimeDriverCall time;
-        MXtime::getTime(time);
+        Utils::Time::Current time;
+        Utils::Time::current(time);
 
         stringstream Time;
-        Time << time.hour << ":" << time.minute << ":" << time.second << "\n";
+        Time << time.m_hour << ":" << time.m_minute << ":" << time.m_second << "\n";
 
         stringstream Date;
-        Date << time.day << "/" << time.month << "/" << time.year << "\n";
+        Date << time.m_day << "/" << time.m_month << "/" << time.m_year << "\n";
 
         screen->write(Time.str(), RGB(255, 255, 255));
         screen->write(Date.str(), RGB(255, 255, 255));
@@ -808,11 +808,11 @@ bool CandyShell::handleBuiltin(string command) {
     }
 
     else if ( command == BUILTIN_COMMAND_GET_UPTIME ) {
-        TimeDriverUptime uptime;
-        MXtime::getUptime(uptime);
+        Utils::Time::UpTime up_time;
+        Utils::Time::up_time(up_time);
 
         stringstream up;
-        up << uptime.second << " seconds " << endl;
+        up << up_time.m_second << " seconds " << endl;
 
         screen->write(up.str(), RGB(255, 255, 255));
 

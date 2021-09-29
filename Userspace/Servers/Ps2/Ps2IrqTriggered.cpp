@@ -25,7 +25,7 @@
 #include "Ps2.hpp"
 
 #include <Api.h>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 
 #if DRIVER_OPERATION_MODE == DRIVER_OPERATION_MODE_IRQ_TRIGGERED
 
@@ -43,8 +43,8 @@ void registerOperationMode() {
  */
 void irqHandler(uint8_t irq) {
     uint8_t status;
-    while ( ((status = Utils::Cpu::inportByte(0x64)) & 1) != 0 ) {
-        uint8_t value = Utils::Cpu::inportByte(0x60);
+    while ( ((status = Utils::PortIO::read_u8(0x64)) & 1) != 0 ) {
+        uint8_t value = Utils::PortIO::read_u8(0x60);
 
         bool fromKeyboard = ((status & (1 << 5)) == 0);
         if ( fromKeyboard )

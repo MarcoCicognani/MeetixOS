@@ -19,6 +19,7 @@
 
 #include <Api.h>
 #include <Api/utils/local.hpp>
+#include <cstring>
 #include <deque>
 #include <graphics/metrics/dimension.hpp>
 #include <gui/actioncomponent.hpp>
@@ -30,8 +31,7 @@
 #include <map>
 #include <sstream>
 #include <stdio.h>
-#include <utils/utils.hpp>
-#include <utils/valplacer.hpp>
+#include <Utils/Utils.hh>
 
 /**
  * Global ready indicator

@@ -20,7 +20,7 @@
 
 #include <gui/componentregistry.hpp>
 #include <gui/notification.hpp>
-#include <utils/environment.hpp>
+#include <Utils/Environment.hh>
 
 using namespace std;
 

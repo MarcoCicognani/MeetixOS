@@ -26,16 +26,16 @@ TIME var;
  * ask to bios if there are updates
  */
 int Cmos_t::getUpdateInProgressFlag() {
-    Utils::Cpu::outportByte(cmosAddress, 0x0A);
-    return (Utils::Cpu::inportByte(cmosData) & 0x80);
+    Utils::PortIO::write_u8(cmosAddress, 0x0A);
+    return (Utils::PortIO::read_u8(cmosData) & 0x80);
 }
 
 /**
  * return index of rtc registers
  */
 uint8_t Cmos_t::getRTCregister(int reg) {
-    Utils::Cpu::outportByte(cmosAddress, reg);
-    return Utils::Cpu::inportByte(cmosData);
+    Utils::PortIO::write_u8(cmosAddress, reg);
+    return Utils::PortIO::read_u8(cmosData);
 }
 
 /**
@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
     s_create_thread_dn((void*)&Cmos_t::timer, (void*)EvaTime, "timer");
 
     // set length for buffer
-    const size_t buflen = sizeof(MessageHeader) + sizeof(TimeDriverHeader);
+    const size_t buflen = sizeof(MessageHeader) + sizeof(Utils::Time::TimeDriverHeader);
 
     // read another time, (the thread read first)
     EvaTime->readRTC();
@@ -196,40 +196,40 @@ int main(int argc, char* argv[]) {
             continue;
 
         // read messages
-        MessageHeader*    header     = (MessageHeader*)buf;
-        TimeDriverHeader* timeheader = (TimeDriverHeader*)MESSAGE_CONTENT(buf);
+        MessageHeader* header     = (MessageHeader*)buf;
+        auto           timeheader = (Utils::Time::TimeDriverHeader*)MESSAGE_CONTENT(buf);
 
         // send response
-        if ( timeheader->command == GET_TIME ) {
-            TimeDriverCall response;
-            response.second = var.second;
-            response.minute = var.minute;
-            response.hour   = var.hour;
-            response.day    = var.day;
-            response.month  = var.month;
-            response.year   = var.year;
+        if ( timeheader->m_command == Utils::Time::CURRENT_TIME ) {
+            Utils::Time::Current response;
+            response.m_second = var.second;
+            response.m_minute = var.minute;
+            response.m_hour   = var.hour;
+            response.m_day    = var.day;
+            response.m_month  = var.month;
+            response.m_year   = var.year;
 
             s_send_message_t(header->m_sender_tid,
                              &response,
-                             sizeof(TimeDriverCall),
+                             sizeof(Utils::Time::Current),
                              header->m_transaction);
         }
 
         // send response
-        else if ( timeheader->command == GET_UPTIME ) {
-            TimeDriverUptime response;
-            response.second = var.upSecond;
+        else if ( timeheader->m_command == Utils::Time::CURRENT_UPTIME ) {
+            Utils::Time::UpTime response;
+            response.m_second = var.upSecond;
 
             s_send_message_t(header->m_sender_tid,
                              &response,
-                             sizeof(TimeDriverUptime),
+                             sizeof(Utils::Time::UpTime),
                              header->m_transaction);
         }
 
         // unknown command, probably deprecated or bad
         else
             Utils::log("uknown command: %i from task: %i",
-                       timeheader->command,
+                       timeheader->m_command,
                        header->m_sender_tid);
     }
 

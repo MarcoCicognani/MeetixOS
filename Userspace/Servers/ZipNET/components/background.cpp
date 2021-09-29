@@ -24,7 +24,7 @@
 
 #include <components/background.hpp>
 #include <libgen.h>
-#include <utils/environment.hpp>
+#include <Utils/Environment.hh>
 
 /**
  *
@@ -34,7 +34,7 @@ Background_t::Background_t(Rectangle bounds) {
     setZIndex(0);
 
     surface = cairo_image_surface_create_from_png(
-        ("/MeetiX/Configs/WM/Backgrounds/" + Environment::getTheme() + ".png").c_str());
+        ("/MeetiX/Configs/WM/Backgrounds/" + Utils::Environment::getTheme() + ".png").c_str());
 }
 
 /**
@@ -61,7 +61,7 @@ bool Background_t::setBackground(const std::string& path) {
         // set new theme
         std::string newTheme{ basename((char*)path.c_str()) };
         newTheme = newTheme.substr(0, newTheme.find('.'));
-        Environment::set("THEME", newTheme);
+        Utils::Environment::set("THEME", newTheme);
 
         // paint the new background
         paint();

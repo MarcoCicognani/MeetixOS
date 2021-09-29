@@ -23,7 +23,7 @@
 #include <gui/window.hpp>
 #include <stdlib.h>
 #include <tasking/timer.hpp>
-#include <utils/timespan.hpp>
+#include <Utils/TimeSpan.hh>
 #include <vector>
 
 // timer object
@@ -138,7 +138,7 @@ void prepare() {
         spawned.push_back(rand() % 4);
 
     // initialize timer
-    timer = new Timer(TimeSpan(0, 0, 0, 1, 0), timerHandler, false);
+    timer = new Timer(Utils::TimeSpan(0, 0, 0, 1, 0), timerHandler, false);
     it    = spawned.begin();
 }
 

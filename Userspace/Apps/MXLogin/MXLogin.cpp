@@ -18,6 +18,7 @@
 
 #include "MXLogin.hpp"
 
+#include <cstring>
 #include <fstream>
 #include <gui/actionlistener.hpp>
 #include <gui/button.hpp>
@@ -26,10 +27,10 @@
 #include <gui/textfield.hpp>
 #include <gui/ui.hpp>
 #include <gui/window.hpp>
-#include <utils/environment.hpp>
-#include <utils/fparser.hpp>
-#include <utils/time.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Environment.hh>
+#include <Utils/PropertyFileParser.hh>
+#include <Utils/Time.hh>
+#include <Utils/Utils.hh>
 
 using namespace std;
 
@@ -127,7 +128,7 @@ static bool researchAccess(string username, string password, LoginMode_t mode) {
     ifstream users_tab("/MeetiX/Configs/Credentials/Users");
 
     // get file properties
-    PropertyFileParser  parser(users_tab);
+    Utils::PropertyFileParser  parser(users_tab);
     map<string, string> properties = parser.getProperties();
 
     // always close file
@@ -138,7 +139,7 @@ static bool researchAccess(string username, string password, LoginMode_t mode) {
         // compare
         if ( username == current.first && password == current.second ) {
             if ( mode != LoginMode_t::LOCK )
-                Environment::set("USER", username);
+                Utils::Environment::set("USER", username);
             return true;
         }
     }
@@ -154,17 +155,15 @@ static bool researchAccess(string username, string password, LoginMode_t mode) {
     // registering name of task
     s_task_register_id("timer");
 
-    // creating varible to time struct
-    TimeDriverCall time;
-
     // infinite iteration, end when login terminate
     while ( true ) {
         // call timedriver to fill time struct
-        MXtime::getTime(time);
+        Utils::Time::Current time;
+        Utils::Time::current(time);
 
         // pack data
         stringstream hours;
-        hours << time.hour << ":" << time.minute << ":" << time.second;
+        hours << time.m_hour << ":" << time.m_minute << ":" << time.m_second;
 
         // and write in hour label
         hourInfo->setTitle(hours.str());
@@ -216,7 +215,7 @@ void configureLabels() {
     info->setBounds(Rectangle(10, resolution.height - 30, 200, 30));
     info->setFont("consolas");
     info->setColor(0, RGB(0, 0, 0));
-    info->setTitle("Version " + Environment::get("VERSION"));
+    info->setTitle("Version " + Utils::Environment::get("VERSION"));
     loginWindow->addChild(info);
 
     // setting hour label
@@ -230,7 +229,7 @@ void configureLabels() {
     info2->setBounds(Rectangle(resolution.width - 90, resolution.height - 30, 200, 30));
     info2->setFont("consolas");
     info2->setColor(0, RGB(0, 0, 0));
-    info2->setTitle(Environment::getHostname() + "//");
+    info2->setTitle(Utils::Environment::getHostname() + "//");
     loginWindow->addChild(info2);
 }
 
@@ -249,7 +248,7 @@ void configureActionComponents() {
         usernameLabel->setColor(0, RGB(255, 255, 255));
         usernameLabel->setFontSize(20);
         usernameLabel->setTitleAlignment(TextAlignment::CENTER);
-        usernameLabel->setTitle(Environment::get("USER"));
+        usernameLabel->setTitle(Utils::Environment::get("USER"));
     }
 
     // setting textfield for password

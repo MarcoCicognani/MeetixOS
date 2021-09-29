@@ -26,7 +26,7 @@
 #include <interface/CommandMessageReceiverThread.hpp>
 #include <stdio.h>
 #include <string.h>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 #include <zipNET.hpp>
 
 /**

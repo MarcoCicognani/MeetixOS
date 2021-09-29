@@ -23,7 +23,7 @@
 #include <gui/label.hpp>
 #include <gui/ui.hpp>
 #include <gui/window.hpp>
-#include <utils/environment.hpp>
+#include <Utils/Environment.hh>
 
 // interface object for about
 static Window*   about;
@@ -70,7 +70,7 @@ void aboutMeetiXOS() {
     line1->setTitleAlignment(TextAlignment::CENTER);
     line1->setFontSize(25);
     line1->setColor(0, RGB(0, 200, 0));
-    line1->setTitle("MeetiX OS " + Environment::get("VERSION"));
+    line1->setTitle("MeetiX OS " + Utils::Environment::get({ "VERSION" }));
 
     // create and configure second line of about text
     line2 = Label::create();

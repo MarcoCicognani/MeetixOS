@@ -24,7 +24,6 @@
 #include <cstdint>
 #include <gui/boundslistener.hpp>
 #include <gui/uispech.hpp>
-#include <utils/valplacer.hpp>
 
 /**
  * Component that is capable of receiving bounds events

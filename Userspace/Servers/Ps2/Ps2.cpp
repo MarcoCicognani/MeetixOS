@@ -32,7 +32,7 @@
 #include <string.h>
 #include <string>
 #include <tasking/lock.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 
 /**
  *
@@ -119,30 +119,30 @@ void initializeMouse() {
     uint8_t status;
 
     // empty input buffer
-    while ( Utils::Cpu::inportByte(0x64) & 0x01 )
-        Utils::Cpu::inportByte(0x60);
+    while ( Utils::PortIO::read_u8(0x64) & 0x01 )
+        Utils::PortIO::read_u8(0x60);
 
     // activate mouse device
     waitForBuffer(PS2_OUT);
-    Utils::Cpu::outportByte(0x64, 0xA8);
+    Utils::PortIO::write_u8(0x64, 0xA8);
 
     // get commando-byte, set bit 1 (enables IRQ12), send back
     waitForBuffer(PS2_OUT);
-    Utils::Cpu::outportByte(0x64, 0x20);
+    Utils::PortIO::write_u8(0x64, 0x20);
 
     waitForBuffer(PS2_IN);
-    status = Utils::Cpu::inportByte(0x60) | (1 << 1);
+    status = Utils::PortIO::read_u8(0x60) | (1 << 1);
 
     waitForBuffer(PS2_OUT);
-    Utils::Cpu::outportByte(0x64, 0x60);
+    Utils::PortIO::write_u8(0x64, 0x60);
     waitForBuffer(PS2_OUT);
-    Utils::Cpu::outportByte(0x60, status);
+    Utils::PortIO::write_u8(0x60, status);
 
     // send set-default-settings command to mouse
     writeToMouse(0xF6);
 
     waitForBuffer(PS2_IN);
-    status = Utils::Cpu::inportByte(0x60);
+    status = Utils::PortIO::read_u8(0x60);
     if ( status != 0xFA ) {
         Utils::log("mouse did not ack set-default-settings command");
         return;
@@ -152,7 +152,7 @@ void initializeMouse() {
     writeToMouse(0xF4);
 
     waitForBuffer(PS2_IN);
-    status = Utils::Cpu::inportByte(0x60);
+    status = Utils::PortIO::read_u8(0x60);
     if ( status != 0xFA ) {
         Utils::log("mouse did not ack enable-mouse command");
         return;
@@ -236,13 +236,13 @@ void waitForBuffer(Ps2Buffer_t buffer) {
 
     if ( buffer == PS2_OUT ) {
         while ( timeout-- )
-            if ( (Utils::Cpu::inportByte(0x64) & 2) == 0 )
+            if ( (Utils::PortIO::read_u8(0x64) & 2) == 0 )
                 return;
     }
 
     else if ( buffer == PS2_IN ) {
         while ( timeout-- )
-            if ( (Utils::Cpu::inportByte(0x64) & 1) == 1 )
+            if ( (Utils::PortIO::read_u8(0x64) & 1) == 1 )
                 return;
     }
 }
@@ -253,9 +253,9 @@ void waitForBuffer(Ps2Buffer_t buffer) {
 void writeToMouse(uint8_t value) {
     // tell the controller that we want to write to the mouse
     waitForBuffer(PS2_OUT);
-    Utils::Cpu::outportByte(0x64, 0xD4);
+    Utils::PortIO::write_u8(0x64, 0xD4);
 
     // send the value to the mouse
     waitForBuffer(PS2_OUT);
-    Utils::Cpu::outportByte(0x60, value);
+    Utils::PortIO::write_u8(0x60, value);
 }

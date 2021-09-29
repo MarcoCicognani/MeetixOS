@@ -45,8 +45,8 @@
 #include <iostream>
 #include <map>
 #include <tasking/lock.hpp>
-#include <utils/environment.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Environment.hh>
+#include <Utils/Utils.hh>
 
 // global instance of ZipNET class
 static ZipNET* server;
@@ -134,7 +134,7 @@ void ZipNET::launch() {
  */
 [[noreturn]] void ZipNET::mainLoop(Rectangle screenBounds) {
     global.resize(screenBounds.width, screenBounds.height);
-    Environment::set("SYSTEM_LEVEL", "interactive");
+    Utils::Environment::set("SYSTEM_LEVEL", "interactive");
 
     s_create_thread_n((void*)lockCheck, "lockCheck");
 

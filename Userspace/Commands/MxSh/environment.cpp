@@ -16,11 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "environment.hpp"
+#include "Environment.hpp"
 
 #include <fstream>
 #include <libgen.h>
-#include <utils/fparser.hpp>
+#include <Utils/PropertyFileParser.hh>
 
 using namespace std;
 
@@ -32,7 +32,7 @@ void Environment::load() {
     ifstream file(envPath);
 
     // parse it and get map with variables
-    PropertyFileParser  parser(file);
+    Utils::PropertyFileParser  parser(file);
     map<string, string> variables = parser.getProperties();
 
     // copy into local map variables from file

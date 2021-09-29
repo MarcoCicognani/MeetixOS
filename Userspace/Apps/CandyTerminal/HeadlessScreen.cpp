@@ -26,7 +26,7 @@
 
 #include <Api.h>
 #include <string.h>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 
 static uint32_t screenIdCounter = 0;
 
@@ -66,10 +66,10 @@ void HeadlessScreen::updateVisualCursor() {
     s_atomic_lock(&lock);
     uint16_t position = (y * SCREEN_WIDTH) + x;
 
-    Utils::Cpu::outportByte(0x3D4, 0x0F);
-    Utils::Cpu::outportByte(0x3D5, (uint8_t)(position & 0xFF));
-    Utils::Cpu::outportByte(0x3D4, 0x0E);
-    Utils::Cpu::outportByte(0x3D5, (uint8_t)((position >> 8) & 0xFF));
+    Utils::PortIO::write_u8(0x3D4, 0x0F);
+    Utils::PortIO::write_u8(0x3D5, (uint8_t)(position & 0xFF));
+    Utils::PortIO::write_u8(0x3D4, 0x0E);
+    Utils::PortIO::write_u8(0x3D5, (uint8_t)((position >> 8) & 0xFF));
     lock = false;
 }
 
@@ -165,10 +165,10 @@ void HeadlessScreen::setCursorVisible(bool visible) {
     else {
         s_atomic_lock(&lock);
         // effectively hides the cursor
-        Utils::Cpu::outportByte(0x3D4, 0x0F);
-        Utils::Cpu::outportByte(0x3D5, (uint8_t)(-1 & 0xFF));
-        Utils::Cpu::outportByte(0x3D4, 0x0E);
-        Utils::Cpu::outportByte(0x3D5, (uint8_t)((-1 >> 8) & 0xFF));
+        Utils::PortIO::write_u8(0x3D4, 0x0F);
+        Utils::PortIO::write_u8(0x3D5, (uint8_t)(-1 & 0xFF));
+        Utils::PortIO::write_u8(0x3D4, 0x0E);
+        Utils::PortIO::write_u8(0x3D5, (uint8_t)((-1 >> 8) & 0xFF));
         lock = false;
     }
 }

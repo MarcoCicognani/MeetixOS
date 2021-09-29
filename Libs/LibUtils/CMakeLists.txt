@@ -1,9 +1,8 @@
 add_library(LibUtils
         STATIC
-        arguments.cpp
-        fparser.cpp
-        ipcstream.cpp
-        time.cpp
-        sha2.cpp
-        environment.cpp
-        utils.cpp)
+        Arguments.cc
+        PropertyFileParser.cc
+        Time.cc
+        SHA2.cc
+        Environment.cc
+        Utils.cc)

@@ -18,7 +18,7 @@
 
 #include "SecondaryThread.hpp"
 
-#include <utils/time.hpp>
+#include <Utils/Time.hh>
 
 using namespace std;
 
@@ -26,17 +26,15 @@ using namespace std;
  *	Display hour to hour label
  */
 void SecondaryThread::HourManagerThread(Label* hourLabel) {
-    // creating object to time struct
-    TimeDriverCall time;
-
     // infinite iteration
     while ( true ) {
         // fill time struct
-        MXtime::getTime(time);
+        Utils::Time::Current time;
+        Utils::Time::current(time);
 
         // write data to stringstream
         stringstream hourStr;
-        hourStr << time.hour << ':' << time.minute << ':' << time.second;
+        hourStr << time.m_hour << ':' << time.m_minute << ':' << time.m_second;
 
         // and display on screen label
         hourLabel->setTitle(hourStr.str());

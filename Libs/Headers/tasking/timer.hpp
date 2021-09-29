@@ -23,7 +23,7 @@
 #include <functional>
 #include <string>
 #include <tasking/thread.hpp>
-#include <utils/timespan.hpp>
+#include <Utils/TimeSpan.hh>
 
 /**
  * typedefs the functor
@@ -43,7 +43,7 @@ public:
      * @param function:		the body of the timed thread
      * @param-opt begin:	start execution at instantiation
      */
-    Timer(const TimeSpan& tm, Functor_t func, bool begin = false);
+    Timer(const Utils::TimeSpan& tm, Functor_t func, bool begin = false);
 
     /**
      * destructor

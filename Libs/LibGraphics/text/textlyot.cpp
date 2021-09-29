@@ -18,7 +18,7 @@
  **********************************************************************************/
 
 #include <graphics/text/textlyot.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 
 /**
  * @return the instance of the font manager singleton

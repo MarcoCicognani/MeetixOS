@@ -23,7 +23,7 @@
 #include <gui/label.hpp>
 #include <gui/ui.hpp>
 #include <gui/window.hpp>
-#include <utils/environment.hpp>
+#include <Utils/Environment.hh>
 
 // ui style, i change the presentation in base the style
 enum class UiStyle_t : uint8_t
@@ -72,7 +72,7 @@ static std::string rg5[5];
 void fillPresentation() {
     // fill the first lines
     rg1[0]
-        = "Hi " + Environment::get("USER") + " welcome to MeetiX OS " + Environment::get("VERSION");
+        = "Hi " + Utils::Environment::get("USER") + " welcome to MeetiX OS " + Utils::Environment::get("VERSION");
     rg1[1] = "Okay, we can begin";
     rg1[2] = "";
     rg1[3] = "The graphic terminal CandyShell allows you to interact more deeply with the system";
@@ -214,7 +214,7 @@ int main(int argc, char* argv[]) {
             = Rectangle(resolution.width / 2 - 375, resolution.height / 2 - 225, 750, 450);
 
         // get the style from environment
-        style = Environment::get("UISTYLE") == "KDE" ? UiStyle_t::KDE : UiStyle_t::GNOME;
+        style = Utils::Environment::get("UISTYLE") == "KDE" ? UiStyle_t::KDE : UiStyle_t::GNOME;
 
         // fill lines
         fillPresentation();

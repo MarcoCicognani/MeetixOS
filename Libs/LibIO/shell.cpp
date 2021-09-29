@@ -23,7 +23,7 @@
 #include <string.h>
 #include <tasking/lock.hpp>
 #include <unistd.h>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 
 /**
  * Use to buffer stray input when responses to shell requests are read.

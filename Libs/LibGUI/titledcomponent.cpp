@@ -22,8 +22,7 @@
 #include <gui/titledcomponent.hpp>
 #include <gui/ui.hpp>
 #include <gui/uispech.hpp>
-#include <stdio.h>
-#include <utils/valplacer.hpp>
+#include <cstring>
 
 /**
  *

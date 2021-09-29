@@ -29,8 +29,8 @@
  * @param function:		the body of the timed thread
  * @param-opt begin:	start execution at instantiation
  */
-Timer::Timer(const TimeSpan& tm, Functor_t func, bool begin)
-    : timedThreadID(-1), timing(tm.getTotTime()), function(std::move(func)), lock(false) {
+Timer::Timer(const Utils::TimeSpan& tm, Functor_t func, bool begin)
+    : timedThreadID(-1), timing(tm.as_millis()), function(std::move(func)), lock(false) {
     if ( begin )
         start();
 }

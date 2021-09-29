@@ -19,7 +19,7 @@
 #ifndef _MX_INTERPRETER_
 #define _MX_INTERPRETER_
 
-#include "environment.hpp"
+#include "Environment.hpp"
 #include "mxscript.hpp"
 
 #include <Api.h>
@@ -28,7 +28,7 @@
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <utils/fparser.hpp>
+#include <Utils/PropertyFileParser.hh>
 
 /*
  * class that provide basic interpretation commands

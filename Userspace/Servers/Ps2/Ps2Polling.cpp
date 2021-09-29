@@ -26,7 +26,7 @@
 
 #include <Api.h>
 #include <tasking/lock.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 
 #if DRIVER_OPERATION_MODE == DRIVER_OPERATION_MODE_POLLING
 
@@ -55,8 +55,8 @@ void poll() {
     pollLock.lock();
 
     uint8_t status;
-    while ( ((status = Utils::Cpu::inportByte(0x64)) & 1) != 0 ) {
-        uint8_t value = Utils::Cpu::inportByte(0x60);
+    while ( ((status = Utils::PortIO::inportByte(0x64)) & 1) != 0 ) {
+        uint8_t value = Utils::PortIO::inportByte(0x60);
 
         bool fromKeyboard = ((status & (1 << 5)) == 0);
 

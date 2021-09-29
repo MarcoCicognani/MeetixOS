@@ -19,6 +19,7 @@
 #include "OsmosUI.hpp"
 #include "SecondaryThread.hpp"
 
+#include <cstring>
 #include <fcntl.h>
 #include <fstream>
 #include <gui/about.hpp>
@@ -27,9 +28,9 @@
 #include <list>
 #include <map>
 #include <sstream>
-#include <utils/environment.hpp>
-#include <utils/fparser.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Environment.hh>
+#include <Utils/PropertyFileParser.hh>
+#include <Utils/Utils.hh>
 #include <vector>
 
 using namespace std;
@@ -116,7 +117,7 @@ void OsmosUI::configureUi(std::string pathToConfiguration, Dimension resolution)
     if ( !conf.good() )
         klog("file non trovato in %s", pathToConfiguration.c_str());
     // parse it
-    PropertyFileParser parser(conf);
+    Utils::PropertyFileParser parser(conf);
     configuration = parser.getProperties();
 
     // closing file
@@ -133,7 +134,7 @@ void OsmosUI::configureUi(std::string pathToConfiguration, Dimension resolution)
 
         // set mode
         mode = GNOME;
-        Environment::set("UISTYLE", "GNOME");
+        Utils::Environment::set("UISTYLE", "GNOME");
     }
 
     else if ( configuration["UiStyle"] == "KDE" ) {
@@ -146,7 +147,7 @@ void OsmosUI::configureUi(std::string pathToConfiguration, Dimension resolution)
 
         // set mode
         mode = KDE;
-        Environment::set("UISTYLE", "KDE");
+        Utils::Environment::set("UISTYLE", "KDE");
     }
 }
 
@@ -207,10 +208,10 @@ void OsmosUI::setMenuTab() {
         menuTab->setColor(ARGB(150, 0, 0, 0), ARGB(255, 0, 255, 0));
 
     // get username
-    loggedUser = Environment::getLoggedUser();
+    loggedUser = Utils::Environment::getLoggedUser();
 
     // set title of start menu
-    menuTab->setTitle("MeetiX OS " + Environment::get("VERSION") + " [" + loggedUser + "]");
+    menuTab->setTitle("MeetiX OS " + Utils::Environment::get("VERSION") + " [" + loggedUser + "]");
 
     if ( mode == GNOME )
         menuTab->setBounds(Rectangle(0, 30, 350, 350));

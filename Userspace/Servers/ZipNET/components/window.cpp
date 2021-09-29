@@ -33,7 +33,7 @@
 #include <gui/properties.hpp>
 #include <io/files/futils.hpp>
 #include <math.h>
-#include <utils/environment.hpp>
+#include <Utils/Environment.hh>
 #include <zipNET.hpp>
 
 /**
@@ -57,7 +57,7 @@ Window_t::Window_t() : borderWidth(DEFAULT_BORDER_WIDTH), cornerSize(DEFAULT_COR
     pathToLoad = false;
     shapeColor = RGB(230, 230, 230);
 
-    style = Environment::get("UISTYLE");
+    style = Utils::Environment::get("UISTYLE");
 
     Component_t::addChild(&label);
     Component_t::addChild(&panel);

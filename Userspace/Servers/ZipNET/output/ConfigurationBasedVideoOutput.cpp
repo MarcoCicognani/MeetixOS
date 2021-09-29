@@ -28,7 +28,7 @@
 #include <iostream>
 #include <map>
 #include <sstream>
-#include <utils/fparser.hpp>
+#include <Utils/PropertyFileParser.hh>
 
 using namespace std;
 
@@ -45,7 +45,7 @@ bool ConfigurationBasedVideoOutput_t::initialize() {
     }
 
     // parse it
-    PropertyFileParser  parser(in);
+    Utils::PropertyFileParser  parser(in);
     map<string, string> properties = parser.getProperties();
 
     uint32_t width  = 0;

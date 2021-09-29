@@ -25,8 +25,8 @@
 #include <Api.h>
 #include <components/cursor.hpp>
 #include <events/MouseEvent.hpp>
-#include <utils/fparser.hpp>
-#include <utils/utils.hpp>
+#include <Utils/PropertyFileParser.hh>
+#include <Utils/Utils.hh>
 #include <zipNET.hpp>
 
 Cursor& Cursor::instance() {
@@ -67,7 +67,7 @@ bool Cursor::load(const std::string& cursor_path) {
     if ( !in.good() )
         return false;
 
-    PropertyFileParser properties(in);
+    Utils::PropertyFileParser properties(in);
     auto               content = properties.getProperties();
 
     // Read required params

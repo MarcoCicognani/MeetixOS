@@ -40,7 +40,7 @@
 #include <gui/ui.hpp>
 #include <gui/window.hpp>
 #include <tasking/lock.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 
 using namespace std;
 

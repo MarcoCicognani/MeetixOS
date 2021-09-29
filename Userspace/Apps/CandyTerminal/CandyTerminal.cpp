@@ -30,7 +30,7 @@
 #include <io/shell.hpp>
 #include <signal.h>
 #include <unistd.h>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 
 /**
  * Main routine that initializes the terminal. The terminal can run in headless

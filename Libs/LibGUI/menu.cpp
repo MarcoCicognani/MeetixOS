@@ -20,7 +20,7 @@
 #include <fstream>
 #include <functional>
 #include <gui/menu.hpp>
-#include <utils/fparser.hpp>
+#include <Utils/PropertyFileParser.hh>
 
 using namespace std;
 
@@ -59,7 +59,7 @@ void ButtonMenu::getMapFromPath(const string& path) {
     ifstream file(path);
 
     // parse it and copy to local configuration
-    PropertyFileParser parser(file);
+    Utils::PropertyFileParser parser(file);
     cfg = parser.getProperties();
 
     // closing file

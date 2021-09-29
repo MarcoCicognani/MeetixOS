@@ -38,7 +38,7 @@
 #include <interface/TaskManagerThread.hpp>
 #include <layout/GridLayoutManager.hpp>
 #include <tasking/lock.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 #include <zipNET.hpp>
 
 /**

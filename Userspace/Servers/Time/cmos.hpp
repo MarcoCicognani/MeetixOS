@@ -21,8 +21,8 @@
 
 #include <sstream>
 #include <stdint.h>
-#include <utils/time.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Time.hh>
+#include <Utils/Utils.hh>
 
 using namespace std;
 

@@ -18,7 +18,7 @@
  **********************************************************************************/
 
 #include <graphics/text/fontldr.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 
 /**
  * load a font file from an arbitrary path

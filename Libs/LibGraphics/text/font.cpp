@@ -21,7 +21,7 @@
 #include <graphics/text/fontmgr.hpp>
 #include <io/files/futils.hpp>
 #include <string.h>
-#include <utils/utils.hpp>
+#include <Utils/Utils.hh>
 
 /**
  * Creates an empty font with the "name". The "source" data

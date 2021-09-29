@@ -18,8 +18,8 @@
 
 #include "OsmosUI.hpp"
 
-#include <utils/environment.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Environment.hh>
+#include <Utils/Utils.hh>
 
 /**
  *	main of application
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
         // get resolution from windowserver
         Dimension resolution = UI::getResolution();
 
-        auto user_name = Environment::getLoggedUser();
+        auto user_name = Utils::Environment::getLoggedUser();
         user_name[0]   = static_cast<char>(toupper(user_name[0]));
 
         // configure ui with script

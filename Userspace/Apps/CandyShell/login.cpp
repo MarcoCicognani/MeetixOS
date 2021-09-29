@@ -31,9 +31,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <utils/environment.hpp>
-#include <utils/fparser.hpp>
-#include <utils/utils.hpp>
+#include <Utils/Environment.hh>
+#include <Utils/PropertyFileParser.hh>
+#include <Utils/Utils.hh>
 
 /**
  *	constructor
@@ -68,7 +68,7 @@ void Login::lockLogin() {
         createAmbient();
         ShellInputStatus st;
 
-        user = Environment::getLoggedUser();
+        user = Utils::Environment::getLoggedUser();
 
         out->write(' ' + user, RGB(255, 255, 255));
         out->updateCursor();
@@ -161,7 +161,7 @@ bool Login::researchCredential(const string& username, const string& password) {
     ifstream cred("/usr/crd");
 
     // parse it
-    PropertyFileParser  parser(cred);
+    Utils::PropertyFileParser  parser(cred);
     map<string, string> properties = parser.getProperties();
 
     // find
@@ -208,5 +208,5 @@ bool Login::researchCredential(const string& username, const string& password) {
  *	write environment variable
  */
 void Login::logged(const string& loggedUser) {
-    Environment::set("USER", loggedUser);
+    Utils::Environment::set("USER", loggedUser);
 }
