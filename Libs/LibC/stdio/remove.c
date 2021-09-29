@@ -14,7 +14,7 @@
 
 int remove(A_UNUSED const char* filename) {
     __NOT_IMPLEMENTED(remove);
-    return 0;
+    return -1;
 }
 
 int unlink(const char* filename) {

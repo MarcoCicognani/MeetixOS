@@ -16,5 +16,5 @@
 
 int symlink(A_UNUSED const char* path1, A_UNUSED const char* path2) {
     __NOT_IMPLEMENTED(symlink);
-    return 0;
+    return -1;
 }

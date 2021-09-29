@@ -55,9 +55,9 @@ private:
     /**
      * internal data
      */
-    char        current;  // current readed character
-    uint32_t    position; // position into the file
-    std::string content;
+    char        m_current_c;  // current readed character
+    usize       m_buf_position; // position into the file
+    std::string m_content;
 
     /**
      * initializes the parser from a file content

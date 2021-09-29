@@ -14,5 +14,5 @@
 
 usize mbstowcs(A_UNUSED wchar_t* out, A_UNUSED const char* s, A_UNUSED usize n) {
     __NOT_IMPLEMENTED(mbstowcs);
-    return 0;
+    return -1;
 }

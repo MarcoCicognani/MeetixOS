@@ -14,5 +14,5 @@
 
 int system(A_UNUSED const char* command) {
     __NOT_IMPLEMENTED(system);
-    return 0;
+    return -1;
 }

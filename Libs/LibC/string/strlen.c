@@ -12,9 +12,9 @@
 
 #include <string.h>
 
-usize strlen(const char* s) {
+usize strlen(const char* str) {
     usize len = 0;
-    while ( s[len++] )
-        ;
+    while ( *str++ )
+        ++len;
     return len;
 }

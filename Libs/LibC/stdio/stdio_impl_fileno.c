@@ -12,8 +12,6 @@
 
 #include "stdio_internal.h"
 
-#include <stdio.h>
-
 int stdio_impl_fileno(FILE* stream) {
-    return fileno(stream);
+    return stream->m_fd;
 }

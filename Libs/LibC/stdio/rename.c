@@ -14,4 +14,5 @@
 
 int rename(A_UNUSED const char* old_name, A_UNUSED const char* new_name) {
     __NOT_IMPLEMENTED(rename);
+    return -1;
 }

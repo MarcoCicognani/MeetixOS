@@ -14,5 +14,6 @@
 #include <time.h>
 
 clock_t clock() {
-    __NOT_IMPLEMENTED(clock)
+    __NOT_IMPLEMENTED(clock);
+    return 0;
 }

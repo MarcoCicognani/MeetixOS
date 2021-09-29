@@ -256,10 +256,12 @@ void EvaKernel::runBasicSystemPackage(PhysAddr initialPdPhysical) {
         PRETTY_BOOT_STATUS("Loading basic binaries", 95, GREEN);
         {
             PRETTY_BOOT_STATUS("Load Idle process", 97, GREEN);
-            loadSystemProcess("/Bins/Idle", THREAD_PRIORITY_IDLE);
+            loadSystemProcess("/Bins/Idle", THREAD_PRIORITY_IDLE, SECURITY_LEVEL_KERNEL);
 
             PRETTY_BOOT_STATUS("Load Init process", 99, GREEN);
-            loadSystemProcess("/MeetiX/Kernel/Servers/Spawner.sv", THREAD_PRIORITY_NORMAL);
+            loadSystemProcess("/MeetiX/Kernel/Servers/Spawner.sv",
+                              THREAD_PRIORITY_NORMAL,
+                              SECURITY_LEVEL_KERNEL);
         }
         PRETTY_BOOT_STATUS("Starting Userspace", 100, GREEN);
     }
@@ -303,7 +305,7 @@ void EvaKernel::runAdvancedSystemPackage() {
         Tasking::enableForThisCore();
 
         // spawn the idle process
-        loadSystemProcess("/Bins/Idle", THREAD_PRIORITY_IDLE);
+        loadSystemProcess("/Bins/Idle", THREAD_PRIORITY_IDLE, SECURITY_LEVEL_KERNEL);
 
         // decrease the core count to initialize
         --coreNumber;
@@ -329,17 +331,16 @@ void EvaKernel::runAdvancedSystemPackage() {
  * @param path:			the ramdisk path to the binary
  * @param priority:		the thread priority to assign
  */
-void EvaKernel::loadSystemProcess(const char* binaryPath, ThreadPriority priority) {
+void EvaKernel::loadSystemProcess(const char*    binaryPath,
+                                  ThreadPriority priority,
+                                  SecurityLevel  security_level) {
     // lock, only once can spawn processes
     systemProcessSpawnLock.lock();
 
     // spawn the new process
     Thread*          systemProcess;
-    Elf32SpawnStatus status = Elf32Loader::spawnFromRamdisk(binaryPath,
-                                                            SECURITY_LEVEL_KERNEL,
-                                                            &systemProcess,
-                                                            true,
-                                                            priority);
+    Elf32SpawnStatus status
+        = Elf32Loader::spawnFromRamdisk(binaryPath, security_level, &systemProcess, true, priority);
     switch ( status ) {
         case Elf32SpawnStatus::SUCCESSFUL:
             logInfo("%! successful spawned \"%s\"", "sysproc", binaryPath);

@@ -15,5 +15,5 @@
 
 int rmdir(A_UNUSED const char* path) {
     __NOT_IMPLEMENTED(rmdir);
-    return 0;
+    return -1;
 }

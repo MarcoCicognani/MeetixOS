@@ -15,5 +15,5 @@
 
 int gettimeofday(A_UNUSED struct timeval* tp, A_UNUSED struct timezone* tzp) {
     __NOT_IMPLEMENTED(gettimeofday);
-    return 0;
+    return -1;
 }

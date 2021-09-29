@@ -16,10 +16,14 @@
 #include <stdio.h>
 
 int fileno(FILE* stream) {
+    int fd = -1;
+
+    s_atomic_lock(&stream->m_lock);
     if ( stream->m_impl_fileno )
-        stream->m_impl_fileno(stream);
-    else {
+        fd = stream->m_impl_fileno(stream);
+    else
         errno = ENOTSUP;
-        return -1;
-    }
+    stream->m_lock = false;
+
+    return fd;
 }

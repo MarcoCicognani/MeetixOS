@@ -15,4 +15,5 @@
 
 struct lconv* localeconv() {
     __NOT_IMPLEMENTED(localeconv);
+    return NULL;
 }

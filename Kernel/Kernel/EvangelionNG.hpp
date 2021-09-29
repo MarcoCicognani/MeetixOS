@@ -100,7 +100,7 @@ public:
      * @param path:			the ramdisk path to the binary
      * @param priority:		the thread priority to assign
      */
-    static void loadSystemProcess(const char* path, ThreadPriority priority);
+    static void loadSystemProcess(const char* path, ThreadPriority priority, SecurityLevel);
 
     /**
      * Triggers a kernel panic, means halting the entire system and displaying the given

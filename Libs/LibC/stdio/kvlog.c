@@ -17,9 +17,9 @@
 void kvlog(const char* message, va_list l) {
     usize message_len = strlen(message);
     usize buffer_len  = message_len * 4;
-    char* buf         = (char*)malloc(buffer_len);
+    char* buffer      = (char*)malloc(buffer_len);
 
-    vsnprintf(buf, buffer_len, message, l);
-    s_log(buf);
-    free(buf);
+    vsnprintf(buffer, buffer_len, message, l);
+    s_log(buffer);
+    free(buffer);
 }

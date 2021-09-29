@@ -15,5 +15,5 @@
 
 int lstat(A_UNUSED const char* pathname, A_UNUSED struct stat* buf) {
     __NOT_IMPLEMENTED(lstat);
-    return 0;
+    return -1;
 }

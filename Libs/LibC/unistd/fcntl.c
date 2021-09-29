@@ -15,5 +15,5 @@
 
 int fcntl(A_UNUSED int fd, A_UNUSED int cmd, ...) {
     __NOT_IMPLEMENTED(fcntl);
-    return 0;
+    return -1;
 }

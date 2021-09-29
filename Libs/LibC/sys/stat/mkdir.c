@@ -15,5 +15,5 @@
 
 int mkdir(A_UNUSED const char* path, A_UNUSED mode_t mode) {
     __NOT_IMPLEMENTED(mkdir);
-    return 0;
+    return -1;
 }

@@ -15,5 +15,5 @@
 
 int isatty(A_UNUSED int fd) {
     __NOT_IMPLEMENTED(isatty);
-    return 0;
+    return -1;
 }

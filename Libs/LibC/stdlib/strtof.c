@@ -13,5 +13,6 @@
 #include <stdlib.h>
 
 float strtof(A_UNUSED const char* str, A_UNUSED char** endptr) {
-    __NOT_IMPLEMENTED("strtof");
+    __NOT_IMPLEMENTED(strtof);
+    return 0;
 }

@@ -16,5 +16,5 @@
 
 int fscanf(A_UNUSED FILE* stream, A_UNUSED const char* format, ...) {
     __NOT_IMPLEMENTED(fscanf);
-    return 0;
+    return -1;
 }

@@ -14,4 +14,5 @@
 
 double strtod(A_UNUSED const char* str, A_UNUSED char** endptr) {
     __NOT_IMPLEMENTED(strtod);
+    return 0;
 }

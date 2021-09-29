@@ -13,7 +13,7 @@
 #include <Api.h>
 #include <locale.h>
 
-char* setlocale(int category, const char* locale) {
+char* setlocale(A_UNUSED int category, A_UNUSED const char* locale) {
     __NOT_IMPLEMENTED(localeconv);
     return NULL;
 }

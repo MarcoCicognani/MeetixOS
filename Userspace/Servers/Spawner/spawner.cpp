@@ -67,7 +67,7 @@ void createOsEnvironmentFile(const char* dir, const char* fileName) {
     // define first variables
     const char base_env[]
         = { "HOSTNAME=MeetiX_OS\nVERSION=0.7.1\nSYSTEM_LEVEL=basic\nPATH=/Bins/:/Apps/"
-            ":/MeetiX/Kernel/Servers/\nTHEME=Green\n" };
+            ":/MeetiX/Kernel/Servers/\nTHEME=Green" };
     auto base_env_len = strlen(base_env);
 
     // create the environment file
@@ -100,27 +100,25 @@ void createOsLogFile(const char* dir, const char* fileName) {
     // Close(logfile);
 }
 
-/**
- *
- */
 void init() {
     // let the spawner load shell
-    Pid         mxPid;
+    Pid         sh_pid;
+    FileHandle  out_stdio;
     SpawnStatus stat = spawn("/Bins/MxSh",
                              "-s Start.sh",
                              "/MeetiX/Configs/Startup/Minimal",
                              SECURITY_LEVEL_KERNEL,
                              0,
-                             &mxPid,
-                             nullptr,
-                             nullptr,
-                             nullptr,
-                             0,
-                             0,
-                             0);
+                             &sh_pid,
+                             &out_stdio,
+                             &out_stdio,
+                             &out_stdio,
+                             FD_NONE,
+                             FD_NONE,
+                             FD_NONE);
 
     if ( stat == SPAWN_STATUS_SUCCESSFUL ) {
-        klog("mx shell executed in process %d", mxPid);
+        klog("MxSh executed in process %d", sh_pid);
         klog("Creating environment variables file");
         createOsEnvironmentFile("/MeetiX/Configs/Env/", "Global");
 
@@ -145,7 +143,6 @@ void init() {
 
         // receive incoming request
         auto stat = s_receive_message(requestBuffer, requestLenMax);
-
         if ( stat != MESSAGE_RECEIVE_STATUS_SUCCESSFUL )
             protocolError("receiving command failed with code %i", stat);
 

@@ -45,7 +45,7 @@ public:
      * @param str:		the string to trim
      * @return the trimmed string
      */
-    static std::string trim(std::string str);
+    static std::string trim(const std::string& str);
 
     /**
      * prints a s_log on current log interface of the system

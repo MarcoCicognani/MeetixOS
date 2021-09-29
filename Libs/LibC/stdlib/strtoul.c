@@ -14,4 +14,5 @@
 
 unsigned long strtoul(A_UNUSED const char* str, A_UNUSED char** endptr, A_UNUSED int base) {
     __NOT_IMPLEMENTED(strtoul);
+    return 0;
 }

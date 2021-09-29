@@ -14,9 +14,9 @@
 
 #include <stdio.h>
 
-usize fread(void* ptr, usize size, usize nmemb, FILE* stream) {
+usize fread(void* ptr, usize size, usize count, FILE* stream) {
     s_atomic_lock(&stream->m_lock);
-    size_t len     = fread_unlocked(ptr, size, nmemb, stream);
+    size_t len     = fread_unlocked(ptr, size, count, stream);
     stream->m_lock = false;
     return len;
 }

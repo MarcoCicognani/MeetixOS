@@ -58,8 +58,7 @@ std::map<std::string, std::string> PropertyFileParser::getProperties() {
 
     // parse each properties
     while ( true ) {
-        std::string a;
-        std::string b;
+        std::string a, b;
         if ( propertyEntry(a, b) )
             properties.insert(std::make_pair(a, b));
         else
@@ -75,9 +74,9 @@ std::map<std::string, std::string> PropertyFileParser::getProperties() {
  * @param content:		the content of the file
  */
 void PropertyFileParser::initialize(const std::string& _content) {
-    current  = -1;
-    position = 0;
-    content  = _content;
+    m_current_c    = -1;
+    m_buf_position = 0;
+    m_content      = _content;
 
     next();
 }
@@ -112,14 +111,34 @@ bool PropertyFileParser::propertyEntry(std::string& k, std::string& v) {
  * @return whether the operation success
  */
 bool PropertyFileParser::key(std::string& out) {
-    out = "";
-    while ( current != -1 && current != '=' && current != ':' ) {
-        out = out + current;
+    auto len_1           = out.length();
+    auto is_empty_1      = out.empty();
+    auto is_empty_size_1 = out.size() == 0;
+    auto is_not_empty_1  = !out.empty();
+    out.clear();
+    auto len_2           = out.length();
+    auto is_empty_2      = out.empty();
+    auto is_empty_size_2 = out.size() == 0;
+    auto is_not_empty_2  = !out.empty();
+
+    while ( m_current_c != -1 && m_current_c != '=' && m_current_c != ':' ) {
+        out += m_current_c;
         next();
     }
 
+    auto len_3           = out.length();
+    auto is_empty_3      = out.empty();
+    auto is_empty_size_3 = out.size() == 0;
+    auto is_not_empty_3  = !out.empty();
+
     out = Utils::trim(out);
-    return !out.empty();
+
+    auto len_4           = out.length();
+    auto is_empty_4      = out.empty();
+    auto is_empty_size_4 = out.size() == 0;
+    auto is_not_empty_4  = !out.empty();
+
+    return is_not_empty_4;
 }
 
 /**
@@ -130,9 +149,9 @@ bool PropertyFileParser::key(std::string& out) {
  * @return whether the operation success
  */
 bool PropertyFileParser::value(std::string& out) {
-    out = "";
-    while ( current != -1 && current != '\n' ) {
-        out = out + current;
+    out.clear();
+    while ( m_current_c != -1 && m_current_c != '\n' ) {
+        out += m_current_c;
         next();
     }
 
@@ -148,10 +167,10 @@ bool PropertyFileParser::value(std::string& out) {
  * read the next character and assigns it to <current>
  */
 void PropertyFileParser::next() {
-    if ( position >= content.length() ) {
-        current = -1;
+    if ( m_buf_position >= m_content.length() ) {
+        m_current_c = -1;
         return;
     }
 
-    current = content[position++];
+    m_current_c = m_content[m_buf_position++];
 }

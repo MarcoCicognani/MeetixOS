@@ -48,7 +48,7 @@ dir_pop() {
 for CMD_ARG in "$@"; do
     if [[ "$CMD_ARG" == "--rebuild" ]]; then
         echo "${RED}Cleaning previous installation${RESET}"
-        rm -rf "$TOOLCHAIN_PREFIX" "$BUILD_DIR"
+        rm -rf "$TOOLCHAIN_PREFIX" "$BUILD_DIR" ../Build
     else
         echo "${RED}Unknown parameter: $CMD_ARG${RESET}"
         exit 1
@@ -209,8 +209,8 @@ dir_push ../Ports
 dir_pop
 
 # Clean build stuffs
-echo "Last Cleaning"
-rm -rf $BUILD_DIR || exit 1
+#echo "Last Cleaning"
+#rm -rf $BUILD_DIR || exit 1
 
 # Finished
 echo "${GREEN}Toolchain successfully built${RESET}"

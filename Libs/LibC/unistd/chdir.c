@@ -15,5 +15,5 @@
 
 int chdir(A_UNUSED const char* path) {
     __NOT_IMPLEMENTED(chdir);
-    return 0;
+    return -1;
 }

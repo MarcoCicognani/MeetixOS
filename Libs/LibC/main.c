@@ -29,11 +29,13 @@ extern void (*__fini_array_start[])();
 extern void (*__fini_array_end[])();
 
 void libc_main() {
-    int ret = EXIT_FAILURE;
+    /* initialize the C runtime environment */
+    libc_init();
 
     /* parse arguments and call application main */
     int    argc;
     char** args;
+    int    ret = EXIT_FAILURE;
     if ( !parse_cli_args(&argc, &args) ) {
         ret = main(argc, args);
     } else {

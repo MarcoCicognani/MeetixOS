@@ -15,5 +15,5 @@
 
 int chmod(A_UNUSED const char* pathname, A_UNUSED mode_t mode) {
     __NOT_IMPLEMENTED(chmod);
-    return 0;
+    return -1;
 }

@@ -16,4 +16,5 @@
 
 int strcoll(A_UNUSED const char* str_a, A_UNUSED const char* str_b) {
     __NOT_IMPLEMENTED(strcoll);
+    return -1;
 }

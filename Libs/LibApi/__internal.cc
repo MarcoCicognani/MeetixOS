@@ -24,7 +24,7 @@ void* memory_copy(void* dest, const void* src, usize len) {
 
 usize string_len(const char* str) {
     auto len = 0;
-    while ( str[len++] )
-        ;
+    while ( *str++ )
+        ++len;
     return len;
 }

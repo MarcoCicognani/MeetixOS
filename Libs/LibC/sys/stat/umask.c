@@ -15,5 +15,5 @@
 
 mode_t umask(A_UNUSED mode_t mask) {
     __NOT_IMPLEMENTED(umask);
-    return 0;
+    return -1;
 }

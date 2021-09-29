@@ -15,5 +15,5 @@
 
 int fstat(A_UNUSED int fd, A_UNUSED struct stat* buf) {
     __NOT_IMPLEMENTED(fstat);
-    return 0;
+    return -1;
 }

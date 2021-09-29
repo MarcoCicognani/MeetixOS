@@ -31,7 +31,7 @@
  * @param str:		the string to trim
  * @return the trimmed string
  */
-std::string Utils::trim(std::string str) {
+std::string Utils::trim(const std::string& str) {
     int left = 0;
     while ( isspace(str[left]) )
         ++left;
@@ -42,7 +42,7 @@ std::string Utils::trim(std::string str) {
 
     // string is all whitespaces
     if ( right <= left )
-        return "";
+        return {};
 
     // return the valid part
     return str.substr(left, right - left);

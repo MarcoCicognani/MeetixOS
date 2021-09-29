@@ -31,9 +31,7 @@
 /**
  * @brief Shows the message on the s_log for a non implemented function
  */
-#define __NOT_IMPLEMENTED(name)                                                                    \
-    s_log("Warning: Function '" #name "' is not implemented");                                     \
-    s_exit(0);
+#define __NOT_IMPLEMENTED(name) s_log("Warning: Function '" #name "' is not implemented")
 
 /**
  * @brief Debug tracing

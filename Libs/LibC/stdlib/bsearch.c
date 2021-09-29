@@ -18,5 +18,5 @@ void* bsearch(A_UNUSED const void* value,
               A_UNUSED usize       size,
               A_UNUSED int (*comparator)(const void*, const void*)) {
     __NOT_IMPLEMENTED(bsearch);
-    return 0;
+    return NULL;
 }

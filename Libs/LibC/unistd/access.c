@@ -15,5 +15,5 @@
 
 int access(A_UNUSED const char* pathname, A_UNUSED int mode) {
     __NOT_IMPLEMENTED(access);
-    return 0;
+    return -1;
 }

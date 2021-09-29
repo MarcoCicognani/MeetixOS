@@ -14,5 +14,5 @@
 
 int pclose(A_UNUSED FILE* stream) {
     __NOT_IMPLEMENTED(popen);
-    return 0;
+    return -1;
 }
