@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <ctime>
+#include <time.h>
 
 extern "C" char* ctime(const time_t*) {
     __NOT_IMPLEMENTED(ctime);

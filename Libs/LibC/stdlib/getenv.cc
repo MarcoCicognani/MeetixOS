@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <cstdlib>
-#include <cstring>
 #include <fstream>
+#include <stdlib.h>
+#include <string.h>
 #include <string>
 
 char* getenv(const char* key) {

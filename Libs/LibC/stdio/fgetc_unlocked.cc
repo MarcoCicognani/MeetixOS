@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 int fgetc_unlocked(FILE* stream) {
     /* if necessary, initialize stream buffer */

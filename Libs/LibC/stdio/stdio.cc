@@ -12,8 +12,8 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
-#include <cstring>
+#include <stdio.h>
+#include <string.h>
 
 #define STDIO_BUFFER_LEN 1024
 

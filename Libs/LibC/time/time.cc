@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <ctime>
+#include <time.h>
 
 extern "C" time_t time(time_t* out) {
     auto millis = static_cast<time_t>(s_millis());

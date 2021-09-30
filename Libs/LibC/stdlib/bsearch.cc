@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdlib>
+#include <stdlib.h>
 
 void* bsearch(const void*, const void*, usize, usize, int (*)(const void*, const void*)) {
     __NOT_IMPLEMENTED(bsearch);

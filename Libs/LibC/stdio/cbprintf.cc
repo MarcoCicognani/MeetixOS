@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int
 cbprintf(void* param, isize (*callback)(void*, const char*, usize), const char* format, ...) {

@@ -12,8 +12,8 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
-#include <cstring>
+#include <stdio.h>
+#include <string.h>
 
 int fclose_static_unlocked(FILE* stream) {
     fflush_unlocked(stream);

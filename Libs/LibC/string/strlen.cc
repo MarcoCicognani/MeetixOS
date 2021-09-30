@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 extern "C" usize strlen(const char* str) {
     auto len = 0;

@@ -12,8 +12,8 @@
 
 #include "stdio_internal.hh"
 
-#include <cerrno>
-#include <cstdio>
+#include <errno.h>
+#include <stdio.h>
 
 extern "C" FILE* freopen(const char* filename, const char* mode, FILE* stream) {
     s_atomic_lock(&stream->m_lock);

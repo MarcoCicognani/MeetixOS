@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 void* memcpy(void* dest, const void* src, usize num) {
     auto dst_byte = reinterpret_cast<u8*>(dest);

@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <cerrno>
+#include <errno.h>
 #include <unistd.h>
 
 extern "C" isize write(int fd, const void* buf, usize count) {

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int pclose(FILE*) {
     __NOT_IMPLEMENTED(popen);

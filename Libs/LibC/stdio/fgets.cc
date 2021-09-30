@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" char* fgets(char* s, int n, FILE* stream) {
     auto p = s;

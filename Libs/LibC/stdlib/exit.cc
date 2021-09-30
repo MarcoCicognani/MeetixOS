@@ -13,7 +13,7 @@
 #include "../libc_main_internal.hh"
 
 #include <Api.h>
-#include <cstdlib>
+#include <stdlib.h>
 
 void exit(int code) {
     libc_fini();

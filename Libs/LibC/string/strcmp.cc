@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 int strcmp(const char* str_a, const char* str_b) {
     for ( ;; ++str_a, ++str_b ) {

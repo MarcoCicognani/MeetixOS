@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 long int ftell(FILE* stream) {
     return static_cast<long int>(ftello(stream));

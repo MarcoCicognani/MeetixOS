@@ -12,9 +12,9 @@
 
 #include "stdio_internal.hh"
 
-#include <cerrno>
-#include <cstdio>
-#include <cstring>
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
 
 int fungetc_unlocked(int c, FILE* stream) {
     /* if necessary, initialize stream buffer */

@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int fseek(FILE* stream, long int offset, int whence) {
     return fseeko(stream, static_cast<off_t>(offset), whence);

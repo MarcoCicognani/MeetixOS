@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <clocale>
+#include <locale>
 
 extern "C" char* setlocale(int, const char*) {
     __NOT_IMPLEMENTED(localeconv);

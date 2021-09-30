@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int fclose(FILE* stream) {
     auto res = fclose_static(stream);

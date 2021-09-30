@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cctype>
+#include <ctype.h>
 
 extern "C" int isascii(int c) {
     return (!(c & ~0x7F));

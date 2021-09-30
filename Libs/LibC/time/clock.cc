@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <ctime>
+#include <time.h>
 
 extern "C" clock_t clock() {
     __NOT_IMPLEMENTED(clock);

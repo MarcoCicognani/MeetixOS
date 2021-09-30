@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 extern "C" char* strncat(char* dest, const char* src, usize n) {
     auto d = dest + strlen(dest);

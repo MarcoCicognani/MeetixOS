@@ -12,8 +12,8 @@
 
 #include "stdio_internal.hh"
 
-#include <cerrno>
-#include <cstdio>
+#include <errno.h>
+#include <stdio.h>
 
 extern "C" int fileno(FILE* stream) {
     auto fd = -1;

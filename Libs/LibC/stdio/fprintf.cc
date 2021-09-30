@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int fprintf(FILE* stream, const char* format, ...) {
     va_list va;

@@ -11,8 +11,8 @@
  */
 
 #include <Api.h>
-#include <cerrno>
-#include <csignal>
+#include <errno.h>
+#include <signal.h>
 
 extern "C" int raise(int sig) {
     auto raise_status = s_raise_signal(s_get_tid(), sig);

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cctype>
+#include <ctype.h>
 
 extern "C" int isspace(int c) {
     return c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' || c == '\v';

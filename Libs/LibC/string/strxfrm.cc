@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 extern "C" usize strxfrm(char* dest, const char* src, usize num) {
     strncpy(dest, src, num);

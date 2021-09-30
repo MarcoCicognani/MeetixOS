@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 int fputc_unlocked(int c, FILE* stream) {
     auto byte = static_cast<u8>(c);

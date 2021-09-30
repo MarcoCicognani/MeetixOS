@@ -11,9 +11,9 @@
  */
 
 #include <Api.h>
-#include <cerrno>
-#include <cstdarg>
+#include <errno.h>
 #include <fcntl.h>
+#include <stdarg.h>
 
 extern "C" int open(const char* path, int flags, ...) {
     /* read the creat-mode from the third parameter */

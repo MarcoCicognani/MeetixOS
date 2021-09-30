@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <ctime>
+#include <time.h>
 
 extern "C" double difftime(time_t, time_t) {
     __NOT_IMPLEMENTED(difftime);

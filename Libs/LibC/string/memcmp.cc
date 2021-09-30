@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 extern "C" int memcmp(const void* mem_a, const void* mem_b, usize len) {
     auto byte_a = reinterpret_cast<const u8*>(mem_a);

@@ -12,8 +12,8 @@
 
 #include "stdio_internal.hh"
 
-#include <cerrno>
-#include <cstdio>
+#include <errno.h>
+#include <stdio.h>
 
 static isize vcbprintf_vfprintf_callback(void* param, const char* str, usize str_len) {
     return static_cast<isize>(fwrite_unlocked(str, 1, str_len, reinterpret_cast<FILE*>(param)));

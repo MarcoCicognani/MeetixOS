@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <ctime>
+#include <time.h>
 
 extern "C" time_t mktime(struct tm*) {
     __NOT_IMPLEMENTED(mktime);

@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <cerrno>
-#include <cstdlib>
-#include <cstring>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 
 char* mktemp(char* templ) {
     if ( !templ )

@@ -13,7 +13,7 @@
 #include "pthread_internal.hh"
 
 #include <Api.h>
-#include <cerrno>
+#include <errno.h>
 #include <pthread.h>
 
 extern "C" int pthread_kill(pthread_t* pthread, int) {

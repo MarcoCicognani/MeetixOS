@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 extern "C" void* memchr(const void* mem, int value, usize num) {
     auto byte = reinterpret_cast<const u8*>(mem);

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int putchar(int c) {
     return putc(c, stdout);

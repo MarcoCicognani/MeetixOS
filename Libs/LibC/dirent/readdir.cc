@@ -11,9 +11,9 @@
  */
 
 #include <Api.h>
-#include <cerrno>
-#include <cstring>
 #include <dirent.h>
+#include <errno.h>
+#include <string.h>
 
 extern "C" struct dirent* readdir(DIR* dir) {
     FsReadDirectoryStatus stat;

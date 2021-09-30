@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 char* strdup(const char* src) {
     auto src_len = strlen(src);

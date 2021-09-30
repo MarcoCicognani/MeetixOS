@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdlib>
+#include <stdlib.h>
 
 extern "C" double strtod(const char*, char**) {
     __NOT_IMPLEMENTED(strtod);

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cctype>
+#include <ctype.h>
 
 extern "C" int toupper(int c) {
     if ( c >= 'a' && c <= 'z' )

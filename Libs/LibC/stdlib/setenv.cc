@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <cstdlib>
 #include <sstream>
+#include <stdlib.h>
 
 /* TODO find a better way to do this */
 

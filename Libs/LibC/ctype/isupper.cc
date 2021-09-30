@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cctype>
+#include <ctype.h>
 
 extern "C" int isupper(int c) {
     return c >= 'A' && c <= 'Z';

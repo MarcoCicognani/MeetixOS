@@ -12,8 +12,8 @@
 
 #include "stdio_internal.hh"
 
-#include <cerrno>
-#include <cstdio>
+#include <errno.h>
+#include <stdio.h>
 
 int parse_mode_flags(const char* mode) {
     int flags = 0;

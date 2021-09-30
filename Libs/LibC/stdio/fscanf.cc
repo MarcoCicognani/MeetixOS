@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int fscanf(FILE*, const char*, ...) {
     __NOT_IMPLEMENTED(fscanf);

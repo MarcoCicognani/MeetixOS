@@ -12,11 +12,11 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int fungetc(int c, FILE* stream) {
     s_atomic_lock(&stream->m_lock);
-    auto res        = fungetc_unlocked(c, stream);
+    auto res       = fungetc_unlocked(c, stream);
     stream->m_lock = false;
     return res;
 }

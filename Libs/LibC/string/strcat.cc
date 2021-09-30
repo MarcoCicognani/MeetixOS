@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 char* strcat(char* dest, const char* src) {
     strcpy(dest + strlen(dest), src);

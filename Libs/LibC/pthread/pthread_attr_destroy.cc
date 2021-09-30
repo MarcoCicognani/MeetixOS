@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cerrno>
+#include <errno.h>
 #include <pthread.h>
 
 extern "C" int pthread_attr_destroy(pthread_attr_t* pthread_attr) {

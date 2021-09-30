@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int fputc(int c, FILE* stream) {
     s_atomic_lock(&stream->m_lock);

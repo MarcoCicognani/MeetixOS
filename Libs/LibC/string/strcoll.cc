@@ -12,7 +12,7 @@
 
 #include <Api.h>
 #include <Api/Common.h>
-#include <cstring>
+#include <string.h>
 
 int strcoll(const char*, const char*) {
     __NOT_IMPLEMENTED(strcoll);

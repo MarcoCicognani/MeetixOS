@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 extern "C" char* strstr(const char* str_a, const char* str_b) {
     if ( *str_b )

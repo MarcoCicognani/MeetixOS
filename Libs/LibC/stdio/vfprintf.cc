@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int vfprintf(FILE* stream, const char* format, va_list arg_list) {
     s_atomic_lock(&stream->m_lock);

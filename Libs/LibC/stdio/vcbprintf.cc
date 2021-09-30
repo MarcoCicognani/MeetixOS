@@ -10,11 +10,11 @@
  * GNU General Public License version 3
  */
 
-#include <cerrno>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <cwchar>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <wchar.h>
 
 #define LENGTH_DEFAULT 0
 #define LENGTH_hh      1

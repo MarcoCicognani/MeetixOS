@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdlib>
+#include <stdlib.h>
 
 div_t div(int numer, int denom) {
     div_t result;

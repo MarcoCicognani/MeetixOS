@@ -13,6 +13,6 @@
 #include <Api/Common.h>
 
 extern "C" {
-    void __cxa_atexit(A_UNUSED void (*func)(void*), A_UNUSED void* arg, A_UNUSED void* dso_handle) {
-    }
+void __cxa_atexit(A_UNUSED void (*func)(void*), A_UNUSED void* arg, A_UNUSED void* dso_handle) {
+}
 }

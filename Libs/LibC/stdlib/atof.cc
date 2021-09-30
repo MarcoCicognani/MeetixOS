@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdlib>
+#include <stdlib.h>
 
 double atof(const char* str) {
     return strtof(str, nullptr);

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdlib>
+#include <stdlib.h>
 
 ldiv_t ldiv(long int numer, long int denom) {
     ldiv_t result;

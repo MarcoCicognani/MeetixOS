@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" void klog(const char* message, ...) {
     va_list l;

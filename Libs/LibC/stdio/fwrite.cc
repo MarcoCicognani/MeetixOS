@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" usize fwrite(const void* ptr, usize size, usize count, FILE* stream) {
     s_atomic_lock(&stream->m_lock);

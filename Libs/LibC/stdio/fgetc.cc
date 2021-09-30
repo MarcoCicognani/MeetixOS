@@ -12,11 +12,11 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int fgetc(FILE* stream) {
     s_atomic_lock(&stream->m_lock);
-    auto res        = fgetc_unlocked(stream);
+    auto res       = fgetc_unlocked(stream);
     stream->m_lock = false;
     return res;
 }

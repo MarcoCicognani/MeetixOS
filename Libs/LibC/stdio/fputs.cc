@@ -12,8 +12,8 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
-#include <cstring>
+#include <stdio.h>
+#include <string.h>
 
 extern "C" int fputs(const char* s, FILE* stream) {
     usize len           = strlen(s);

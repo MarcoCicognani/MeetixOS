@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int fsetpos(FILE* stream, const fpos_t* pos) {
     if ( fseeko(stream, *pos, SEEK_SET) < 0 )

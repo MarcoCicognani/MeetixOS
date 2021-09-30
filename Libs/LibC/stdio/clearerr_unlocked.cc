@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cerrno>
+#include <errno.h>
 
 void clearerr_unlocked(FILE* stream) {
     if ( stream->m_impl_clear_err ) {

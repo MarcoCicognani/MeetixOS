@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cctype>
+#include <ctype.h>
 
 extern "C" int isutf8(int c) {
     return (c == 0x09 || c == 0x0A || c == 0x0D || (0x20 <= c && c <= 0x7E));

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 void* memset(void* mem, int value, usize len) {
     auto byte = reinterpret_cast<u8*>(mem);

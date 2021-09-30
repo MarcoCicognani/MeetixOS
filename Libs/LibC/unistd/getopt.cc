@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <cctype>
-#include <cstring>
+#include <ctype.h>
+#include <string.h>
 #include <unistd.h>
 
 extern "C" {

@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <cstring>
+#include <string.h>
 
 extern "C" char* strerror(int) {
     __NOT_IMPLEMENTED(strerror);

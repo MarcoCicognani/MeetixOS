@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 int fflush_unlocked(FILE* stream) {
     /* flush read part of the buffer */

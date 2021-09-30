@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 int setdefbuf_unlocked(FILE* stream) {
     /* try to set the buffer */

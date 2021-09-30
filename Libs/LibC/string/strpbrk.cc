@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 extern "C" char* strpbrk(const char* str_a, const char* str_b) {
     while ( *str_a ) {

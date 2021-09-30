@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 int fflush(FILE* stream) {
     /* if no stream passed, flush all streams */

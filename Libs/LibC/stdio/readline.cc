@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <cerrno>
-#include <cstdio>
+#include <errno.h>
+#include <stdio.h>
 
 extern "C" bool readline(FILE* stream, char* buffer, usize len) {
     if ( !stream || !buffer || !len ) {

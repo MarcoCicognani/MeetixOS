@@ -12,9 +12,9 @@
 
 #include "stdio_internal.hh"
 
-#include <cerrno>
-#include <cstdio>
-#include <cstring>
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
 
 usize fwrite_unlocked(const void* ptr, usize size, usize count, FILE* stream) {
     if ( !size || !count )

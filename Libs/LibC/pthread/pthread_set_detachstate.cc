@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cerrno>
+#include <errno.h>
 #include <pthread.h>
 
 int pthread_set_detachstate(pthread_attr_t* pthread_attr, int detach_state) {

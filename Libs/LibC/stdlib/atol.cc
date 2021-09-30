@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdlib>
+#include <stdlib.h>
 
 long atol(const char* str) {
     return strtol(str, nullptr, 10);

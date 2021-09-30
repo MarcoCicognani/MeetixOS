@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int setvbuf(FILE* stream, char* buffer, int mode, usize size) {
     s_atomic_lock(&stream->m_lock);

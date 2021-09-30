@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <cassert>
-#include <cstdio>
+#include <assert.h>
+#include <stdio.h>
 
 void assert_failed(const char* file, int line, const char* function, const char* expr) {
     fprintf(stderr, "Assertion failed: %s:%d: %s: %s\n", file, line, function, expr);

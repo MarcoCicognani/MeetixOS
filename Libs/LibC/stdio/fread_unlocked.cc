@@ -12,8 +12,8 @@
 
 #include "stdio_internal.hh"
 
-#include <cerrno>
-#include <cstdio>
+#include <errno.h>
+#include <stdio.h>
 
 usize fread_unlocked(void* ptr, usize size, usize count, FILE* stream) {
     if ( !size || !count )

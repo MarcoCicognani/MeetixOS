@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 usize strcspn(const char* str, const char* chars) {
     auto ret = 0;

@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 int fdopen_static(int fd, const char* mode, FILE* stream) {
     int flags = parse_mode_flags(mode);

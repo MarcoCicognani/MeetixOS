@@ -14,7 +14,7 @@
 
 int fflush_read(FILE* stream) {
     s_atomic_lock(&stream->m_lock);
-    auto res        = fflush_read_unlocked(stream);
+    auto res       = fflush_read_unlocked(stream);
     stream->m_lock = false;
     return res;
 }

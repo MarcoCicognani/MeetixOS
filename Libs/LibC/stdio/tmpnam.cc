@@ -11,9 +11,9 @@
  */
 
 #include <Api.h>
-#include <cerrno>
-#include <cinttypes>
-#include <cstdio>
+#include <errno.h>
+#include <inttypes.h>
+#include <stdio.h>
 
 bool  g_lock    = false;
 char* g_buffer  = nullptr;

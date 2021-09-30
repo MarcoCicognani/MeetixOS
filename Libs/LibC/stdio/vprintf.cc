@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int vprintf(const char* format, va_list arg) {
     return vfprintf(stdout, format, arg);

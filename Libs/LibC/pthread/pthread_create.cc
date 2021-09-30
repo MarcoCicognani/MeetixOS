@@ -13,9 +13,9 @@
 #include "pthread_internal.hh"
 
 #include <Api.h>
-#include <cerrno>
-#include <cstdlib>
+#include <errno.h>
 #include <pthread.h>
+#include <stdlib.h>
 
 using PThreadFn = void* (*)(void*);
 

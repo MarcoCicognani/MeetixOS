@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <cstdio>
-#include <cstring>
+#include <stdio.h>
+#include <string.h>
 
 typedef struct {
     char* m_out_buffer;

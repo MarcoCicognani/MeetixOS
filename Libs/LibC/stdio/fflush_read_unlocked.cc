@@ -12,8 +12,8 @@
 
 #include "stdio_internal.hh"
 
-#include <cerrno>
-#include <cstdio>
+#include <errno.h>
+#include <stdio.h>
 
 int fflush_read_unlocked(FILE* stream) {
     if ( !(stream->m_flags & FILE_FLAG_BUFFER_DIRECTION_READ) ) {

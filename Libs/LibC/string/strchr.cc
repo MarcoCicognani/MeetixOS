@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 char* strchr(const char* str, int c) {
     while ( *str ) {

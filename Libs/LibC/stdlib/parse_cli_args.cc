@@ -11,11 +11,11 @@
  */
 
 #include <Api.h>
-#include <cctype>
-#include <cstdlib>
-#include <cstring>
+#include <ctype.h>
 #include <libgen.h>
 #include <malloc.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define SKIP_WHITESPACE(pos)                                                                       \
     while ( *pos && isspace(*pos) ) {                                                              \

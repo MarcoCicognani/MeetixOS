@@ -12,8 +12,8 @@
 
 #include "stdio_internal.hh"
 
-#include <cerrno>
-#include <cstdio>
+#include <errno.h>
+#include <stdio.h>
 
 int fseeko_unlocked(FILE* stream, off_t offset, int whence) {
     int res;

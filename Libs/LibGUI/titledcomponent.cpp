@@ -19,10 +19,10 @@
 
 #include <Api.h>
 #include <Api/utils/local.hpp>
+#include <cstring>
 #include <gui/titledcomponent.hpp>
 #include <gui/ui.hpp>
 #include <gui/uispech.hpp>
-#include <cstring>
 
 /**
  *

@@ -11,8 +11,8 @@
  */
 
 #include <Api.h>
-#include <cerrno>
 #include <dirent.h>
+#include <errno.h>
 
 extern "C" DIR* opendir(const char* path) {
     FsOpenDirectoryStatus stat;

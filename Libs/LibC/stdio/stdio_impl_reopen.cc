@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 FILE* stdio_impl_reopen(const char* filename, const char* mode, FILE* stream) {
     /* if no filename specified, attempt to change file mode */

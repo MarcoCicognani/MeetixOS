@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int vsprintf(char* s, const char* format, va_list arg) {
     return vsnprintf(s, SIZE_MAX, format, arg);

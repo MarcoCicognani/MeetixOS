@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cctype>
+#include <ctype.h>
 #include <strings.h>
 
 extern "C" int strcasecmp(const char* str_a, const char* str_b) {

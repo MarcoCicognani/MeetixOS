@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" void setbuf(FILE* stream, char* buffer) {
     setvbuf(stream, buffer, buffer ? _IONBF : _IOFBF, BUFSIZ);

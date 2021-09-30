@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 void* memmove(void* dest, const void* src, usize num) {
     if ( dest > src ) {

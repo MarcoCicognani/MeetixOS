@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
 #include <libgen.h>
+#include <string.h>
 
 static char* simple_buffer(char c) {
     static char basename_buffer[2];

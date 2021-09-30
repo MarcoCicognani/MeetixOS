@@ -13,7 +13,7 @@
 #include "signal_internal.hh"
 
 #include <Api/User.h>
-#include <csignal>
+#include <signal.h>
 
 extern "C" sig_handler_t signal(int sig, sig_handler_t sig_handler) {
     if ( sig_handler == SIG_DFL ) {

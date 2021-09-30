@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <cstdlib>
+#include <stdlib.h>
 
 void abort() {
     s_exit(EXIT_FAILURE);

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 extern "C" int strncmp(const char* str_a, const char* str_b, usize max) {
     for ( ; max--; ++str_a, ++str_b ) {

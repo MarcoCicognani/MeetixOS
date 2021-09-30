@@ -14,9 +14,9 @@
 #include "stdio/stdio_internal.hh"
 
 #include <Api.h>
-#include <clocale>
-#include <csignal>
-#include <cstdlib>
+#include <locale>
+#include <signal.h>
+#include <stdlib.h>
 
 extern "C" void _init();
 extern "C" void _fini();

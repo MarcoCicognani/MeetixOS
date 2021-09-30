@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" FILE* fopen(const char* filename, const char* mode) {
     auto stream = new FILE{};

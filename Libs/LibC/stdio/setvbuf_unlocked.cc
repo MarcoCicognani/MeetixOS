@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 int setvbuf_unlocked(FILE* stream, char* buffer, int mode, usize size) {
     /* free old buffer if library is owner */

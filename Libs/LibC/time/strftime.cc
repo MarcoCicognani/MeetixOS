@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <ctime>
+#include <time.h>
 
 extern "C" usize strftime(char*, usize, const char*, const struct tm*) {
     __NOT_IMPLEMENTED(strftime);

@@ -12,7 +12,7 @@
 
 #include "stdio_internal.hh"
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int fgetpos(FILE* stream, fpos_t* pos) {
     if ( (*pos = ftello(stream)) < 0 )

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstdio>
+#include <stdio.h>
 
 extern "C" int sscanf(const char*, const char*, ...) {
     __NOT_IMPLEMENTED(sscanf);

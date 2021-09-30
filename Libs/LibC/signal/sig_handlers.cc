@@ -12,7 +12,7 @@
 
 #include "signal_internal.hh"
 
-#include <cstdlib>
+#include <stdlib.h>
 
 void sig_handler_SIG_INT(int) {
     exit(0);

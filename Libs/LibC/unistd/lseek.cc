@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <cerrno>
+#include <errno.h>
 #include <unistd.h>
 
 extern "C" off_t lseek(int fd, off_t offset, int whence) {

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <cstring>
+#include <string.h>
 
 extern "C" char* strrchr(const char* str, int c) {
     auto rev_str = str + strlen(str);
