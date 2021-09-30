@@ -14,7 +14,7 @@
 #include "stdio/stdio_internal.hh"
 
 #include <Api.h>
-#include <locale>
+#include <locale.h>
 #include <signal.h>
 #include <stdlib.h>
 

@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <locale>
+#include <locale.h>
 
 extern "C" struct lconv* localeconv() {
     __NOT_IMPLEMENTED(localeconv);
