@@ -52,7 +52,7 @@ int main(int argc, const char* argv[]) {
 
     // parse args
     char opt;
-    while ( (opt = getoptlong(argc, argv, "vh?", longopts, NULL)) != EOF ) {
+    while ( (opt = getopt_long(argc, argv, "vh?", longopts, NULL)) != EOF ) {
         switch ( opt ) {
             case 'd':
                 return testHeap(verbose);

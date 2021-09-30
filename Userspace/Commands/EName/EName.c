@@ -70,7 +70,7 @@ enum ENameMode_t parseArgs(int argc, const char* argv[]) {
 
     // parsing provided args
     char opt;
-    while ( (opt = getoptlong(argc, argv, "h", long_opts, NULL)) != EOF ) {
+    while ( (opt = getopt_long(argc, argv, "h", long_opts, NULL)) != EOF ) {
         switch ( opt ) {
             case 'a':
                 return ALL;

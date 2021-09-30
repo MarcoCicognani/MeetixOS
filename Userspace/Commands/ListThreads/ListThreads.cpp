@@ -76,7 +76,7 @@ int main(int argc, const char* argv[]) {
 
     // parse args
     int opt;
-    while ( (opt = getoptlong(argc, argv, "h", long_cmdline_opts, NULL)) != EOF ) {
+    while ( (opt = getopt_long(argc, argv, "h", long_cmdline_opts, NULL)) != EOF ) {
         switch ( opt ) {
             case 'i':
                 compare_fn = &compare_by_tid;

@@ -1,4 +1,4 @@
-#include "dlmalloc-config.h"
+#include "config.hh"
 
 /*
   This is a version (aka dlmalloc) of malloc/free/realloc written by

@@ -49,7 +49,7 @@ IncludeBlocks: Regroup
 IndentCaseLabels: true
 IndentCaseBlocks: false
 IndentPPDirectives: AfterHash
-IndentExternBlock: Indent
+IndentExternBlock: NoIndent
 IndentRequires: true
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: false

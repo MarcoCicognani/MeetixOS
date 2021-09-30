@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
     bool showHelp = false;
 
     // check for help
-    if ( getoptishelp(argc, argv) )
+    if ( getopt_is_help(argc, argv) )
         showHelp = true;
 
     // if we haven't to show the help

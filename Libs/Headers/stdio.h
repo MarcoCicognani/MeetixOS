@@ -40,10 +40,12 @@ __BEGIN_C
 #define SEEK_SET 3
 
 extern FILE* g_stderr_ptr;
-extern FILE* g_stdin_ptr;
-extern FILE* g_stdout_ptr;
 #define stderr g_stderr_ptr
-#define stdin  g_stdin_ptr
+
+extern FILE* g_stdin_ptr;
+#define stdin g_stdin_ptr
+
+extern FILE* g_stdout_ptr;
 #define stdout g_stdout_ptr
 
 #define STDIN_FILENO  0
@@ -140,8 +142,8 @@ int getchar();
 
 int sprintf(char*, const char*, ...);
 int vsprintf(char*, const char*, va_list);
-int snprintf(char*, unsigned int, const char*, ...);
-int vsnprintf(char*, unsigned int, const char*, va_list);
+int snprintf(char*, usize, const char*, ...);
+int vsnprintf(char*, usize, const char*, va_list);
 
 /* Standard I/O buffer read functions */
 
