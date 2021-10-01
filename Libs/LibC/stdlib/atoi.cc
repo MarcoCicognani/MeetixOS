@@ -14,7 +14,7 @@
 #include <limits.h>
 #include <stdlib.h>
 
-int atoi(const char* str) {
+extern "C" int atoi(const char* str) {
     auto long_int = strtol(str, nullptr, 10);
 
     if ( long_int > INT_MAX ) {

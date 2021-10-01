@@ -12,7 +12,7 @@
 
 #include <stdlib.h>
 
-usize mbstowcs(wchar_t*, const char*, usize) {
+extern "C" usize mbstowcs(wchar_t*, const char*, usize) {
     __NOT_IMPLEMENTED(mbstowcs);
     return 0;
 }

@@ -10,12 +10,12 @@
  * GNU General Public License version 3
  */
 
-#include <fstream>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
+#ifndef LIBC_BUILDING_LIBSTDCXX
+#    include <fstream>
+#    include <string.h>
+#    include <string>
 
-char* getenv(const char* key) {
+extern "C" char* getenv(const char* key) {
     std::ifstream env_stream{ "/MeetiX/Configs/Env/Global" };
     if ( !env_stream.is_open() )
         return nullptr;
@@ -37,3 +37,8 @@ char* getenv(const char* key) {
     }
     return nullptr;
 }
+#else
+extern "C" char* getenv(const char*) {
+    return nullptr;
+}
+#endif

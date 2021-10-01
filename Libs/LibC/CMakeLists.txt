@@ -575,6 +575,10 @@ add_library(LibC
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-narrowing")
 
+if (NOT EXISTS ${TOOLCHAIN_ROOT}/${TOOLCHAIN_TRIPLET}/lib/libstdc++.a)
+    target_compile_definitions(LibC PRIVATE LIBC_BUILDING_LIBSTDCXX=1)
+endif()
+
 target_include_directories(LibC PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/musl)
 add_custom_command(
         TARGET LibC

@@ -10,8 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <sstream>
-#include <stdlib.h>
+#ifndef LIBC_BUILDING_LIBSTDCXX
+#    include <sstream>
+#    include <stdlib.h>
 
 /* TODO find a better way to do this */
 
@@ -21,3 +22,8 @@ extern "C" int setenv(const char* key, const char* value, int) {
 
     return system(ss.str().c_str());
 }
+#else
+extern "C" int setenv(const char*, const char*, int) {
+    return -1;
+}
+#endif

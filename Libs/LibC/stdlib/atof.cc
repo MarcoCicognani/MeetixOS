@@ -12,6 +12,6 @@
 
 #include <stdlib.h>
 
-double atof(const char* str) {
+extern "C" double atof(const char* str) {
     return strtof(str, nullptr);
 }

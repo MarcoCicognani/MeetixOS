@@ -15,7 +15,7 @@
 #include <Api.h>
 #include <stdlib.h>
 
-void exit(int code) {
+extern "C" void exit(int code) {
     libc_fini();
     s_exit(code);
     __builtin_unreachable();

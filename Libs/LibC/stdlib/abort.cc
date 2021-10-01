@@ -13,7 +13,7 @@
 #include <Api.h>
 #include <stdlib.h>
 
-void abort() {
+extern "C" void abort() {
     s_exit(EXIT_FAILURE);
     __builtin_unreachable();
 }

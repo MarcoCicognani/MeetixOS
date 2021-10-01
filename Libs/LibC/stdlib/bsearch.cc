@@ -12,7 +12,8 @@
 
 #include <stdlib.h>
 
-void* bsearch(const void*, const void*, usize, usize, int (*)(const void*, const void*)) {
+extern "C" void*
+bsearch(const void*, const void*, usize, usize, int (*)(const void*, const void*)) {
     __NOT_IMPLEMENTED(bsearch);
     return nullptr;
 }

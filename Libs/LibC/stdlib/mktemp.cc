@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-char* mktemp(char* templ) {
+extern "C" char* mktemp(char* templ) {
     if ( !templ )
         return templ;
 
