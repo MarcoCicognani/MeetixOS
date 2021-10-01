@@ -10,34 +10,35 @@
  * GNU General Public License version 3
  */
 
-#include <Api.h>
-#include <ctype.h>
-#include <libgen.h>
-#include <malloc.h>
-#include <stdlib.h>
-#include <string.h>
+#ifndef LIBC_BUILDING_LIBSTDCXX
+#    include <Api.h>
+#    include <ctype.h>
+#    include <libgen.h>
+#    include <malloc.h>
+#    include <stdlib.h>
+#    include <string.h>
 
-#define SKIP_WHITESPACE(pos)                                                                       \
-    while ( *pos && isspace(*pos) ) {                                                              \
-        ++pos;                                                                                     \
-    }
+#    define SKIP_WHITESPACE(pos)                                                                   \
+        while ( *pos && isspace(*pos) ) {                                                          \
+            ++pos;                                                                                 \
+        }
 
-#define SKIP_ARGUMENT(pos)                                                                         \
-    auto instr = false;                                                                            \
-    auto esc   = false;                                                                            \
-    while ( *pos ) {                                                                               \
-        if ( *pos == '"' && !esc ) {                                                               \
-            instr = !instr;                                                                        \
-            esc   = false;                                                                         \
-        } else if ( *pos == '\\' && !esc ) {                                                       \
-            esc = true;                                                                            \
-        } else if ( isspace(*pos) && !instr && !esc ) {                                            \
-            break;                                                                                 \
-        } else {                                                                                   \
-            esc = false;                                                                           \
-        }                                                                                          \
-        ++pos;                                                                                     \
-    }
+#    define SKIP_ARGUMENT(pos)                                                                     \
+        auto instr = false;                                                                        \
+        auto esc   = false;                                                                        \
+        while ( *pos ) {                                                                           \
+            if ( *pos == '"' && !esc ) {                                                           \
+                instr = !instr;                                                                    \
+                esc   = false;                                                                     \
+            } else if ( *pos == '\\' && !esc ) {                                                   \
+                esc = true;                                                                        \
+            } else if ( isspace(*pos) && !instr && !esc ) {                                        \
+                break;                                                                             \
+            } else {                                                                               \
+                esc = false;                                                                       \
+            }                                                                                      \
+            ++pos;                                                                                 \
+        }
 
 static char* get_executable_name() {
     /* obtain the executable path of this process */
@@ -126,3 +127,8 @@ extern "C" bool parse_cli_args(int* out_argc, char*** out_args) {
     *out_args = argv;
     return true;
 }
+#else
+extern "C" bool parse_cli_args(int*, char***) {
+    return false;
+}
+#endif

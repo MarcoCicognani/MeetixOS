@@ -10,9 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include "stdio_internal.hh"
+#ifndef LIBC_BUILDING_LIBSTDCXX
+#    include "stdio_internal.hh"
 
-#include <stdio.h>
+#    include <stdio.h>
 
 int setvbuf_unlocked(FILE* stream, char* buffer, int mode, usize size) {
     /* free old buffer if library is owner */
@@ -50,3 +51,10 @@ int setvbuf_unlocked(FILE* stream, char* buffer, int mode, usize size) {
     stream->m_flags |= FILE_FLAG_BUFFER_SET;
     return 0;
 }
+#else
+#    include <stdio.h>
+
+int setvbuf_unlocked(FILE*, char*, int, usize) {
+    return -1;
+}
+#endif

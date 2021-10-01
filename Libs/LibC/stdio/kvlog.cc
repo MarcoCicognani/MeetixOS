@@ -10,8 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <stdio.h>
-#include <string.h>
+#ifndef LIBC_BUILDING_LIBSTDCXX
+#    include <stdio.h>
+#    include <string.h>
 
 extern "C" void kvlog(const char* message, va_list l) {
     usize message_len = strlen(message);
@@ -22,3 +23,9 @@ extern "C" void kvlog(const char* message, va_list l) {
     s_log(buffer);
     delete[] buffer;
 }
+#else
+#    include <stdarg.h>
+
+extern "C" void kvlog(const char*, va_list) {
+}
+#endif
