@@ -52,6 +52,8 @@ int setvbuf_unlocked(FILE* stream, char* buffer, int mode, usize size) {
     return 0;
 }
 #else
+#    include "stdio_internal.hh"
+
 #    include <stdio.h>
 
 int setvbuf_unlocked(FILE*, char*, int, usize) {

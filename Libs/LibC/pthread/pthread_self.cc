@@ -10,11 +10,19 @@
  * GNU General Public License version 3
  */
 
-#include "pthread_internal.hh"
+#ifndef LIBC_BUILDING_LIBSTDCXX
+#    include "pthread_internal.hh"
 
-#include <Api.h>
-#include <pthread.h>
+#    include <Api.h>
+#    include <pthread.h>
 
 pthread_t* pthread_self(void) {
     return new pthread_t{ s_get_tid() };
 }
+#else
+#    include <pthread.h>
+
+pthread_t* pthread_self(void) {
+    return nullptr;
+}
+#endif

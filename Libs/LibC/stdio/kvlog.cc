@@ -25,6 +25,7 @@ extern "C" void kvlog(const char* message, va_list l) {
 }
 #else
 #    include <stdarg.h>
+#    include <stdio.h>
 
 extern "C" void kvlog(const char*, va_list) {
 }

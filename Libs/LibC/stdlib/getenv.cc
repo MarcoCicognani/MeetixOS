@@ -12,6 +12,7 @@
 
 #ifndef LIBC_BUILDING_LIBSTDCXX
 #    include <fstream>
+#    include <stdlib.h>
 #    include <string.h>
 #    include <string>
 
@@ -38,6 +39,8 @@ extern "C" char* getenv(const char* key) {
     return nullptr;
 }
 #else
+#    include <stdlib.h>
+
 extern "C" char* getenv(const char*) {
     return nullptr;
 }

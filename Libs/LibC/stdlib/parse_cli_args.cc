@@ -128,6 +128,8 @@ extern "C" bool parse_cli_args(int* out_argc, char*** out_args) {
     return true;
 }
 #else
+#    include <stdlib.h>
+
 extern "C" bool parse_cli_args(int*, char***) {
     return false;
 }

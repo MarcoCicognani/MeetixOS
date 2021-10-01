@@ -10,9 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include "stdio_internal.hh"
+#ifndef LIBC_BUILDING_LIBSTDCXX
+#    include "stdio_internal.hh"
 
-#include <stdio.h>
+#    include <stdio.h>
 
 extern "C" int fclose(FILE* stream) {
     auto res = fclose_static(stream);
@@ -23,3 +24,10 @@ extern "C" int fclose(FILE* stream) {
     delete stream;
     return 0;
 }
+#else
+#    include <stdio.h>
+
+extern "C" int fclose(FILE*) {
+    return -1;
+}
+#endif

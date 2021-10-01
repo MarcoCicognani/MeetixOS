@@ -10,12 +10,12 @@
  * GNU General Public License version 3
  */
 
-#include "pthread_internal.hh"
+#ifndef LIBC_BUILDING_LIBSTDCXX
+#    include "pthread_internal.hh"
 
-#include <Api.h>
-#include <errno.h>
-#include <pthread.h>
-#include <stdlib.h>
+#    include <Api.h>
+#    include <errno.h>
+#    include <pthread.h>
 
 using PThreadFn = void* (*)(void*);
 
@@ -63,3 +63,10 @@ extern "C" int pthread_create(pthread_t*            pthread,
         return -1;
     }
 }
+#else
+#    include <pthread.h>
+
+extern "C" int pthread_create(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*) {
+    return -1;
+}
+#endif

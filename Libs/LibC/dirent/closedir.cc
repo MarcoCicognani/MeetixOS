@@ -10,8 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <Api.h>
-#include <dirent.h>
+#ifndef LIBC_BUILDING_LIBSTDCXX
+#    include <Api.h>
+#    include <dirent.h>
 
 extern "C" int closedir(DIR* dir) {
     s_close_directory(dir->m_directory_iterator);
@@ -19,3 +20,10 @@ extern "C" int closedir(DIR* dir) {
     delete dir;
     return 0;
 }
+#else
+#    include <dirent.h>
+
+extern "C" int closedir(DIR*) {
+    return -1;
+}
+#endif

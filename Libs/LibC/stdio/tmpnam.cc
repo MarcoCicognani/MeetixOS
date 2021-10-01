@@ -10,10 +10,11 @@
  * GNU General Public License version 3
  */
 
-#include <Api.h>
-#include <errno.h>
-#include <inttypes.h>
-#include <stdio.h>
+#ifndef LIBC_BUILDING_LIBSTDCXX
+#    include <Api.h>
+#    include <errno.h>
+#    include <inttypes.h>
+#    include <stdio.h>
 
 bool  g_lock    = false;
 char* g_buffer  = nullptr;
@@ -43,3 +44,10 @@ extern "C" char* tmpnam(char* buffer) {
 
     return buffer;
 }
+#else
+#    include <stdio.h>
+
+extern "C" char* tmpnam(char*) {
+    return nullptr;
+}
+#endif

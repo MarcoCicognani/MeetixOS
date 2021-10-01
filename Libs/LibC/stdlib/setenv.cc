@@ -23,6 +23,8 @@ extern "C" int setenv(const char* key, const char* value, int) {
     return system(ss.str().c_str());
 }
 #else
+#    include <stdlib.h>
+
 extern "C" int setenv(const char*, const char*, int) {
     return -1;
 }

@@ -33,6 +33,8 @@ int fclose_static_unlocked(FILE* stream) {
     return 0;
 }
 #else
+#    include "stdio_internal.hh"
+
 #    include <stdio.h>
 
 int fclose_static_unlocked(FILE*) {

@@ -10,9 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include "stdio_internal.hh"
+#ifndef LIBC_BUILDING_LIBSTDCXX
+#    include "stdio_internal.hh"
 
-#include <stdio.h>
+#    include <stdio.h>
 
 extern "C" FILE* fopen(const char* filename, const char* mode) {
     auto stream = new FILE{};
@@ -23,3 +24,10 @@ extern "C" FILE* fopen(const char* filename, const char* mode) {
     }
     return stream;
 }
+#else
+#    include <stdio.h>
+
+extern "C" FILE* fopen(const char*, const char*) {
+    return nullptr;
+}
+#endif
