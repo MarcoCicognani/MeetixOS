@@ -21,17 +21,17 @@
 #include <io/shell.hpp>
 #include <iostream>
 #include <string.h>
-#include <tasking/lock.hpp>
+#include <Tasking/Lock.hh>
 #include <unistd.h>
 #include <Utils/Utils.hh>
 
 /**
  * Use to buffer stray input when responses to shell requests are read.
  */
-static int* buffer        = nullptr;
-static int  bufferedChars = 0;
-static int  bufferSize    = 64;
-static Lock bufferLock;
+static int*          buffer        = nullptr;
+static int           bufferedChars = 0;
+static int           bufferSize    = 64;
+static Tasking::Lock bufferLock;
 
 /**
  * read unbuffered the characters from stdin

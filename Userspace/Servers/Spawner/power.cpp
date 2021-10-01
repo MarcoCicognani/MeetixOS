@@ -21,7 +21,7 @@
 #include <Api/utils/local.hpp>
 #include <signal.h>
 #include <stdio.h>
-#include <tasking/tasking.hpp>
+#include <Tasking/Tasking.hh>
 
 /**
  *
@@ -35,7 +35,7 @@ static inline bool compare(const Pid& first, const Pid& second) {
  */
 void processHaltMachine(int command) {
     // get process tids and sort it
-    auto process = Tasking::getProcessIDs();
+    auto process = Tasking::list_process_ids();
     std::sort(process.begin(), process.end(), compare);
 
     // send SIGINT signal to all process

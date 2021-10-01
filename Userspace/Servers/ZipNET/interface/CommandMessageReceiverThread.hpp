@@ -25,12 +25,12 @@
 #ifndef __INTERFACE_COMMAND_MESSAGE_RECEIVER_THREAD__
 #define __INTERFACE_COMMAND_MESSAGE_RECEIVER_THREAD__
 
-#include <tasking/thread.hpp>
+#include <Tasking/Thread.hh>
 
 /**
  *
  */
-class CommandMessageReceiverThread : public Thread {
+class CommandMessageReceiverThread : public Tasking::Thread {
 public:
     bool stop = false;
 

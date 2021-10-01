@@ -22,7 +22,7 @@
 
 #include <gui/uispech.hpp>
 #include <map>
-#include <tasking/lock.hpp>
+#include <Tasking/Lock.hh>
 
 // forward declaration
 class Component;
@@ -42,7 +42,7 @@ public:
 private:
     ComponentRegistry() = default;
 
-    Lock                                m_lock{};
+    Tasking::Lock                       m_lock{};
     std::map<UiComponentID, Component*> m_registry{};
 };
 

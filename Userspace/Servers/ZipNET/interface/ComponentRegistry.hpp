@@ -29,7 +29,7 @@
 #include <components/window.hpp>
 #include <gui/uispech.hpp>
 #include <list>
-#include <tasking/thread.hpp>
+#include <Tasking/Thread.hh>
 
 using namespace std;
 

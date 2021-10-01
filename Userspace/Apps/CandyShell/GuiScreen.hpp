@@ -39,7 +39,7 @@
 #include <gui/textfield.hpp>
 #include <gui/ui.hpp>
 #include <gui/window.hpp>
-#include <tasking/lock.hpp>
+#include <Tasking/Lock.hh>
 #include <Utils/Utils.hh>
 
 using namespace std;

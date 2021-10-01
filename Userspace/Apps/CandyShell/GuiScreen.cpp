@@ -30,7 +30,7 @@
 #include <io/keyboard.hpp>
 #include <list>
 #include <string.h>
-#include <tasking/lock.hpp>
+#include <Tasking/Lock.hh>
 
 bool     paintIsFresh = false;
 bool     cursorBlink  = false;
@@ -39,7 +39,7 @@ uint64_t lastInput    = 0;
 
 list<Keyboard::Info> waitingInput;
 bool                 noInputAvailable = true;
-Lock                 waitingInputLock;
+Tasking::Lock        waitingInputLock;
 
 GuiScreen* instance;
 

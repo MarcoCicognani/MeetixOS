@@ -44,7 +44,7 @@
 #include <cairo/cairo.h>
 #include <iostream>
 #include <map>
-#include <tasking/lock.hpp>
+#include <Tasking/Lock.hh>
 #include <Utils/Environment.hh>
 #include <Utils/Utils.hh>
 
@@ -52,7 +52,7 @@
 static ZipNET* server;
 
 // thread locker
-static Lock dispatchLock;
+static Tasking::Lock dispatchLock;
 
 // flag with last render time
 static uint64_t renderStart;

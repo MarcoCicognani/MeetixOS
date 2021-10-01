@@ -25,12 +25,12 @@
 #ifndef __INTERFACE_REGISTRATION_THREAD__
 #define __INTERFACE_REGISTRATION_THREAD__
 
-#include <tasking/thread.hpp>
+#include <Tasking/Thread.hh>
 
 /**
  *
  */
-class RegistrationThread : public Thread {
+class RegistrationThread : public Tasking::Thread {
 public:
     /**
      *

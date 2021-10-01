@@ -25,7 +25,7 @@
 #include "Ps2.hpp"
 
 #include <Api.h>
-#include <tasking/lock.hpp>
+#include <Tasking/Lock.hh>
 #include <Utils/Utils.hh>
 
 #if DRIVER_OPERATION_MODE == DRIVER_OPERATION_MODE_POLLING

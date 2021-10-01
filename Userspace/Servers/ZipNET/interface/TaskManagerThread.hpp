@@ -20,12 +20,12 @@
 #define _TASK_MANAGER_THREAD_
 
 #include <components/label.hpp>
-#include <tasking/thread.hpp>
+#include <Tasking/Thread.hh>
 
 /*
  *
  */
-class TaskManagerThread_t : public Thread {
+class TaskManagerThread_t : public Tasking::Thread {
 private:
     Label_t*  internal;
     Rectangle bounds;

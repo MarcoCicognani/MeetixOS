@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <tasking/tasking.hpp>
+#include <Tasking/Tasking.hh>
 #include <unistd.h>
 
 /**
@@ -81,7 +81,7 @@ void show_processes(CompareFn compare, bool useMegabytes) {
     showTotalMemoryUsage();
 
     // get task list from kernel
-    auto procs_list = Tasking::getProcess();
+    auto procs_list = Tasking::list_processes();
     std::sort(procs_list.begin(), procs_list.end(), compare);
 
     // print on screen

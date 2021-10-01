@@ -22,16 +22,16 @@
 #include <gui/ui.hpp>
 #include <gui/window.hpp>
 #include <stdlib.h>
-#include <tasking/timer.hpp>
+#include <Tasking/Timer.hh>
 #include <Utils/TimeSpan.hh>
 #include <vector>
 
 // timer object
-Timer*      timer;
-Label*      level;
-Window*     window;
-Geoshape*   display;
-ButtonList* buttons;
+Tasking::Timer* timer;
+Label*          level;
+Window*         window;
+Geoshape*       display;
+ButtonList*     buttons;
 
 // vector to fill random index of colors
 std::vector<int>           spawned;
@@ -138,8 +138,11 @@ void prepare() {
         spawned.push_back(rand() % 4);
 
     // initialize timer
-    timer = new Timer(Utils::TimeSpan(0, 0, 0, 1, 0), timerHandler, false);
-    it    = spawned.begin();
+    timer = new Tasking::Timer(
+        Utils::TimeSpan(0, 0, 0, 1, 0),
+        []() { timerHandler(); },
+        false);
+    it = spawned.begin();
 }
 
 /*

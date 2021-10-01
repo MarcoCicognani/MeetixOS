@@ -19,7 +19,7 @@
 #include "GFrontEnd.hpp"
 
 #include <io/keyboard.hpp>
-#include <tasking/lock.hpp>
+#include <Tasking/Lock.hh>
 
 Window*    window;
 Textfield* textBox;

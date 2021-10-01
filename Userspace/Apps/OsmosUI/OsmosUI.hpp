@@ -33,7 +33,7 @@
 #include <gui/window.hpp>
 #include <map>
 #include <math.h>
-#include <tasking/lock.hpp>
+#include <Tasking/Lock.hh>
 
 /*
  *

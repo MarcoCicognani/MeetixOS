@@ -30,7 +30,7 @@
 
 #include <Api.h>
 #include <io/shell.hpp>
-#include <tasking/lock.hpp>
+#include <Tasking/Lock.hh>
 
 class CandyTerminal;
 
@@ -61,8 +61,8 @@ private:
     /**
      * Screen that is the visual interface to the user.
      */
-    Screen* screen;
-    Lock    screenLock;
+    Screen*       screen;
+    Tasking::Lock screenLock;
 
     /**
      * Mode flags

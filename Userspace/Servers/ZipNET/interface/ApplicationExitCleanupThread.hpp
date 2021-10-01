@@ -26,12 +26,12 @@
 #define __INTERFACE_COMMAND_APPLICATION_EXIT_CLEANUP_THREAD__
 
 #include <interface/CommandMessageReceiverThread.hpp>
-#include <tasking/thread.hpp>
+#include <Tasking/Thread.hh>
 
 /**
  *
  */
-class ApplicationExitCleanupThread : public Thread {
+class ApplicationExitCleanupThread : public Tasking::Thread {
 private:
     Tid                           pid;
     CommandMessageReceiverThread* commandReceiver;

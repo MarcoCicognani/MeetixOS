@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
-#include <tasking/lock.hpp>
+#include <Tasking/Lock.hh>
 #include <Utils/Utils.hh>
 
 /**

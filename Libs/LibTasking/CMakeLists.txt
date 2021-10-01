@@ -1,1 +1,1 @@
-add_library(LibTasking STATIC tasking.cpp thread.cpp timer.cpp)
+add_library(LibTasking STATIC Tasking.cc Thread.cc Timer.cc Lock.cc)

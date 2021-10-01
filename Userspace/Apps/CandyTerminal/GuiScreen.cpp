@@ -28,7 +28,7 @@
 #include <io/keyboard.hpp>
 #include <list>
 #include <string.h>
-#include <tasking/lock.hpp>
+#include <Tasking/Lock.hh>
 
 GuiScreen* instance;
 

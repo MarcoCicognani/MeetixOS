@@ -19,7 +19,7 @@
 #include <Api.h>
 #include <stdio.h>
 #include <string.h>
-#include <tasking/tasking.hpp>
+#include <Tasking/Tasking.hh>
 #include <unistd.h>
 
 /**
@@ -98,7 +98,7 @@ int main(int argc, const char* argv[]) {
     // check if is not requested the help
     if ( !show_help ) {
         // get thread list from kernel
-        auto threads = Tasking::getThreads();
+        auto threads = Tasking::list_threads();
         std::sort(threads.begin(), threads.end(), compare_fn);
 
         // print on screen

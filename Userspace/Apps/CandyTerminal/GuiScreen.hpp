@@ -39,7 +39,7 @@
 #include <gui/window.hpp>
 #include <list>
 #include <map>
-#include <tasking/lock.hpp>
+#include <Tasking/Lock.hh>
 #include <Utils/Utils.hh>
 
 /**
@@ -75,7 +75,7 @@ private:
 
     std::list<Keyboard::Info> inputBuffer;
     bool                      inputBufferEmpty = true;
-    Lock                      inputBufferLock;
+    Tasking::Lock             inputBufferLock;
 
     bool     focused       = false;
     uint64_t lastInputTime = 0;
@@ -83,11 +83,11 @@ private:
     /**
      * Screen buffer
      */
-    uint8_t*  rasterBuffer = 0;
-    Dimension rasterSize;
-    Lock      rasterLock;
-    int       cursorX = 0;
-    int       cursorY = 0;
+    uint8_t*      rasterBuffer = 0;
+    Dimension     rasterSize;
+    Tasking::Lock rasterLock;
+    int           cursorX = 0;
+    int           cursorY = 0;
 
     int charWidth  = 8;
     int charHeight = 12;

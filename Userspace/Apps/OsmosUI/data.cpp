@@ -69,8 +69,8 @@ static Label* memLabel;
 
 // input container
 static list<Keyboard::Info> inputBuffer;
-static bool              inputBufferEmpty = true;
-static Lock                 locker;
+static bool                 inputBufferEmpty = true;
+static Tasking::Lock        locker;
 
 /**
  *	key listener for events
