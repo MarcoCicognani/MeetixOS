@@ -44,11 +44,17 @@ dir_pop() {
     popd >/dev/null || exit 1
 }
 
+# Prints the build-step before the command
+build_step() {
+    local STEP_NAME=$1
+    shift
+    "$@" 2>&1 | sed $'s|^|\x1b[34m['"${STEP_NAME}"$']\x1b[39m |'
+}
+
 # Parse parameters
 for CMD_ARG in "$@"; do
     if [[ "$CMD_ARG" == "--rebuild" ]]; then
-        echo "${RED}Cleaning previous installation${RESET}"
-        rm -rf "$TOOLCHAIN_PREFIX" "$BUILD_DIR" ../Build
+        build_step "Previous install cleaning..." rm -rf "$TOOLCHAIN_PREFIX" "$BUILD_DIR" ../Build
     else
         echo "${RED}Unknown parameter: $CMD_ARG${RESET}"
         exit 1
@@ -78,13 +84,12 @@ require_tool xorriso
 
 # Safe creation of build dir
 echo "Building toolchain into ${GREEN}$(realpath $BUILD_DIR)${RESET}"
-mkdir -p $BUILD_DIR || exit 1
-mkdir -p $TARBALLS_DIR || exit 1
+mkdir -p $BUILD_DIR $TARBALLS_DIR || exit 1
 
 # Download the tarballs
 dir_push $TARBALLS_DIR
-    wget -N $BINUTILS_REMOTE || exit 1
-    wget -N $GCC_REMOTE || exit 1
+    build_step "Download/$GCC_UNPACKED"      wget -N $BINUTILS_REMOTE || exit 1
+    build_step "Download/$BINUTILS_UNPACKED" wget -N $GCC_REMOTE      || exit 1
 dir_pop
 
 # Print some information and create devel directory
@@ -92,120 +97,82 @@ echo "Toolchain will be installed into: ${GREEN}$TOOLCHAIN_PREFIX${RESET}"
 mkdir -p "$TOOLCHAIN_PREFIX/bin" || exit 1
 
 # Unpack archives
-echo "Unpacking ${GREEN}$TARBALLS_DIR/$GCC_UNPACKED${RESET}"
-tar -xf $TARBALLS_DIR/$GCC_UNPACKED.tar.gz -C $BUILD_DIR || exit 1
+build_step "Unpack/$GCC_UNPACKED"      tar -xf $TARBALLS_DIR/$GCC_UNPACKED.tar.gz -C $BUILD_DIR      || exit 1
+build_step "Unpack/$BINUTILS_UNPACKED" tar -xf $TARBALLS_DIR/$BINUTILS_UNPACKED.tar.gz -C $BUILD_DIR || exit 1
 
-echo "Unpacking ${GREEN}$TARBALLS_DIR/$BINUTILS_UNPACKED${RESET}"
-tar -xf $TARBALLS_DIR/$BINUTILS_UNPACKED.tar.gz -C $BUILD_DIR || exit 1
-
-# Apply patches to the Binutils
-echo "Patching ${GREEN}$BINUTILS_UNPACKED${RESET}"
-patch -d $BUILD_DIR/$BINUTILS_UNPACKED -p 1 <$BINUTILS_PATCH || exit 1
-
-# Apply patches to the GCC
-echo "Patching ${GREEN}$GCC_UNPACKED${RESET}"
-patch -d $BUILD_DIR/$GCC_UNPACKED -p 1 <$GCC_PATCH || exit 1
+# Apply patches to the sources
+build_step "Patch/$BINUTILS_UNPACKED" patch -d $BUILD_DIR/$BINUTILS_UNPACKED -p 1 <$BINUTILS_PATCH || exit 1
+build_step "Patch/$GCC_UNPACKED"      patch -d $BUILD_DIR/$GCC_UNPACKED -p 1 <$GCC_PATCH           || exit 1
 
 # Build tools
-echo "Building ${GREEN}PackageConfig tool${RESET}"
 dir_push ../Meta/Tools/PackageConfig
-    bash Build.sh || exit 1
+    build_step "Tool/PackageConfig" bash Build.sh || exit 1
 dir_pop
 
 echo "Building ${GREEN}RamdiskWriter tool${RESET}"
 dir_push ..
     mkdir -p Build/Release/Meta/Tools/RamdiskWriter || exit 1
     dir_push Build/Release/Meta/Tools/RamdiskWriter
-        cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../../../../../Meta/Tools/RamdiskWriter || exit 1
-
-        ninja || exit 1
+        build_step "Tool/RamdiskWriter" \
+            cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../../../../../Meta/Tools/RamdiskWriter || exit 1
+        build_step "Tool/RamdiskWriter" ninja || exit 1
     dir_pop
 dir_pop
+
+export CFLAGS="-g0 -O2 -mtune=native"
+export CXXFLAGS="-g0 -O2 -mtune=native"
 
 # Build binutils
 BUILD_BINUTILS=$BUILD_DIR/Binutils
 mkdir -p $BUILD_BINUTILS || exit 1
 dir_push $BUILD_BINUTILS
-    echo "Configuring ${GREEN}$BINUTILS_UNPACKED${RESET}"
-    CFLAGS="-g0 -O2 -mtune=native"                                   \
-    CXXFLAGS="-g0 -O2 -mtune=native"                                 \
+    build_step "Binutils/Configure"                                  \
         ../$BINUTILS_UNPACKED/configure --target=$TARGET             \
                                         --prefix="$TOOLCHAIN_PREFIX" \
                                         --disable-nls                \
                                         --disable-werror             \
                                         --with-sysroot="$TOOLCHAIN_PREFIX" || exit 1
-
-    echo "Building ${GREEN}$BINUTILS_UNPACKED${RESET}"
-    make $MAKE_JOBS all || exit 1
-
-    echo "Installing ${GREEN}$BINUTILS_UNPACKED${RESET}"
-    make $MAKE_JOBS install || exit 1
+    build_step "Binutils/Build"   make $MAKE_JOBS all     || exit 1
+    build_step "Binutils/Install" make $MAKE_JOBS install || exit 1
 dir_pop
 
 # Build GCC
 BUILD_GCC=$BUILD_DIR/Gcc
 mkdir -p $BUILD_GCC || exit 1
 dir_push $BUILD_GCC
-    echo "Configuring ${GREEN}$GCC_UNPACKED${RESET}"
-    CFLAGS="-g0 -O2 -mtune=native"                              \
-    CXXFLAGS="-g0 -O2 -mtune=native"                            \
+    build_step "GCC/Configure"                                  \
         ../$GCC_UNPACKED/configure --target=$TARGET             \
                                    --prefix="$TOOLCHAIN_PREFIX" \
                                    --enable-languages=c,c++     \
                                    --with-sysroot="$TOOLCHAIN_PREFIX" || exit 1
+    build_step "GCC/Build"   make $MAKE_JOBS all-gcc     || exit 1
+    build_step "GCC/Install" make $MAKE_JOBS install-gcc || exit 1
 
-    echo "Building ${GREEN}$GCC_UNPACKED${RESET}"
-    make $MAKE_JOBS all-gcc || exit 1
-
-    echo "Installing ${GREEN}$GCC_UNPACKED${RESET}"
-    make $MAKE_JOBS install-gcc || exit 1
-
-    echo "Building ${GREEN}libgcc${RESET}"
-    make $MAKE_JOBS all-target-libgcc || exit 1
-
-    echo "Installing ${GREEN}libgcc${RESET}"
-    make $MAKE_JOBS install-target-libgcc || exit 1
+    build_step "GCC/LibGCC Build"   make $MAKE_JOBS all-target-libgcc     || exit 1
+    build_step "GCC/LibGCC Install" make $MAKE_JOBS install-target-libgcc || exit 1
 dir_pop
 
 # Configure CMake then build C and API library
 dir_push ../Build/Release
-    cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../.. || exit 1
-
-    echo "Building ${GREEN}CRTs${RESET}"
-    ninja crt0 crti crtn || exit 1
-
-    echo "Building ${GREEN}libApi${RESET}"
-    ninja LibApi || exit 1
-
-    echo "Building ${GREEN}libC${RESET}"
-    ninja LibC || exit 1
+    build_step "Libs/Configure" cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../.. || exit 1
+    build_step "Libs/CRTs"      ninja crt0 crti crtn || exit 1
+    build_step "Libs/LibApi"    ninja LibApi         || exit 1
+    build_step "Libs/LibC"      ninja LibC           || exit 1
 dir_pop
 
 # Build GCC libstdc++-v3
 dir_push $BUILD_GCC
-    echo "Building ${GREEN}libstdc++ v3${RESET}"
-    make $MAKE_JOBS all-target-libstdc++-v3 || exit 1
-
-    echo "Installing ${GREEN}libstdc++ v3${RESET}"
-    make $MAKE_JOBS install-target-libstdc++-v3 || exit 1
+    build_step "LibStdC++/Build"   make $MAKE_JOBS all-target-libstdc++-v3     || exit 1
+    build_step "LibStdC++/Install" make $MAKE_JOBS install-target-libstdc++-v3 || exit 1
 dir_pop
 
 # Build cross port libs
 dir_push ../Ports
-    echo "Building ${GREEN}zlib${RESET}"
-    bash BuildPort.sh zlib || exit 1
-
-    echo "Building ${GREEN}libpng${RESET}"
-    bash BuildPort.sh libpng || exit 1
-
-    echo "Building ${GREEN}pixman${RESET}"
-    bash BuildPort.sh pixman || exit 1
-
-    echo "Building ${GREEN}freetype${RESET}"
-    bash BuildPort.sh freetype || exit 1
-
-    echo "Building ${GREEN}cairo${RESET}"
-    bash BuildPort.sh cairo || exit 1
+    build_step "Ports/zlib"     bash BuildPort.sh zlib     || exit 1
+    build_step "Ports/libpng"   bash BuildPort.sh libpng   || exit 1
+    build_step "Ports/pixman"   bash BuildPort.sh pixman   || exit 1
+    build_step "Ports/freetype" bash BuildPort.sh freetype || exit 1
+    build_step "Ports/cairo"    bash BuildPort.sh cairo    || exit 1
 dir_pop
 
 # Clean build stuffs
