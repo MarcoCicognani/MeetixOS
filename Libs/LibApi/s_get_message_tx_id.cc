@@ -12,11 +12,11 @@
 
 #include <Api/User.h>
 
-static u8                 g_next_transaction_lock = false;
+static bool                 g_next_transaction_lock = false;
 static MessageTransaction g_next_transaction      = MESSAGE_TRANSACTION_FIRST;
 
 MessageTransaction s_get_message_tx_id() {
-    s_atomic_lock((u8*)&g_next_transaction_lock);
+    s_atomic_lock(&g_next_transaction_lock);
 
     /* safe obtain the next transaction identifier */
     MessageTransaction next_topic = g_next_transaction++;

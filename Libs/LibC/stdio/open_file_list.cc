@@ -12,8 +12,8 @@
 
 #include "stdio_internal.hh"
 
-FILE* g_open_stream_list      = nullptr;
-bool  open_file_list_lockatom = false;
+FILE* g_open_stream_list = nullptr;
+bool  g_lock_atom        = false;
 
 void open_file_list_add(FILE* stream) {
     open_file_list_lock();
@@ -39,9 +39,9 @@ void open_file_list_remove(FILE* stream) {
 }
 
 void open_file_list_lock() {
-    s_atomic_lock((u8*)&open_file_list_lockatom);
+    s_atomic_lock(&g_lock_atom);
 }
 
 void open_file_list_unlock() {
-    open_file_list_lockatom = false;
+    g_lock_atom = false;
 }

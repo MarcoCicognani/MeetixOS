@@ -42,7 +42,7 @@ private:
     uint32_t offset;
 
     uint32_t activeProcessId;
-    uint8_t  lock = 0;
+    bool  lock = false;
     void     normalize();
 
     bool cursorVisible = true;

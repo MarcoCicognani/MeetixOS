@@ -88,11 +88,11 @@ typedef struct {
  * @brief s_atomic_lock system call data
  */
 typedef struct {
-    u8* m_atom_1;
-    u8* m_atom_2;
-    u8  m_set_on_finish : 1;
-    u8  m_is_try        : 1;
-    u8  m_was_set       : 1;
+    bool* m_atom_1;
+    bool* m_atom_2;
+    u8    m_set_on_finish : 1;
+    u8    m_is_try        : 1;
+    u8    m_was_set       : 1;
 } A_PACKED SyscallAtomicLock;
 
 /**

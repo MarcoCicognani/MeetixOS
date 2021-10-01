@@ -36,9 +36,9 @@ private:
     /**
      * internal data
      */
-    uint8_t* atom1;       // the first atom
-    uint8_t* atom2;       // the second atom (non always provided)
-    bool     setOnFinish; // flag used for the {AtomicLock} syscall
+    bool* atom1;       // the first atom
+    bool* atom2;       // the second atom (non always provided)
+    bool  setOnFinish; // flag used for the {AtomicLock} syscall
 
 public:
     /**
@@ -48,7 +48,7 @@ public:
      * @param atom2:			the pointer to the second atom to use
      * @param setOnFinish:		tell to waiter if atoms are to change on finisching
      */
-    WaiterAtomicWait(uint8_t* atom1, uint8_t* atom2, bool setOnFinish)
+    WaiterAtomicWait(bool* atom1, bool* atom2, bool setOnFinish)
         : atom1(atom1), atom2(atom2), setOnFinish(setOnFinish) {
     }
 

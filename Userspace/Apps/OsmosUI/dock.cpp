@@ -93,7 +93,7 @@ void SecondaryThread::OsmosUIDockThread(const Dimension& resolution) {
     dockButtons->show(dock);
 
     // lock thread
-    uint8_t blocker = true;
+    bool blocker = true;
     s_atomic_block(&blocker);
 
     // remove screen objects

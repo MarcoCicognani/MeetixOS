@@ -60,7 +60,7 @@ private:
     FrontEnd* screen;
 
     state_of_editor state;
-    uint8_t         waiting;
+    bool            waiting;
     fstream         workingFile;
 
     string       line;

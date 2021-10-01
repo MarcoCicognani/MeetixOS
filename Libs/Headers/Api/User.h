@@ -38,8 +38,8 @@ __BEGIN_C
  *
  * @security-level APPLICATION
  */
-void s_atomic_lock(u8* atom);
-void s_atomic_lock_dual(u8* atom1, u8* atom2);
+void s_atomic_lock(bool* atom);
+void s_atomic_lock_dual(bool* atom1, bool* atom2);
 
 /**
  * Trys to perform atomic wait. If the lock is already locked, the function
@@ -51,8 +51,8 @@ void s_atomic_lock_dual(u8* atom1, u8* atom2);
  *
  * @security-level APPLICATION
  */
-bool s_atomic_try_lock(u8* atom);
-bool s_atomic_try_lock_dual(u8* atom1, u8* atom2);
+bool s_atomic_try_lock(bool* atom);
+bool s_atomic_try_lock_dual(bool* atom1, bool* atom2);
 
 /**
  * Performs an atomic block. If the atom is true, the executing task must
@@ -64,8 +64,8 @@ bool s_atomic_try_lock_dual(u8* atom1, u8* atom2);
  *
  * @security-level APPLICATION
  */
-void s_atomic_block(u8* atom);
-void s_atomic_block_dual(u8* atom1, u8* atom2);
+void s_atomic_block(bool* atom);
+void s_atomic_block_dual(bool* atom1, bool* atom2);
 
 /**
  * Spawns a program binary.

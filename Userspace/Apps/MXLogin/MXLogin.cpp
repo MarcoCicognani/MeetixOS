@@ -54,7 +54,7 @@ static Label* animation;
 static Dimension resolution;
 
 // locker for event mode
-static uint8_t lock = true;
+static bool lock = true;
 
 // login application mode
 LoginMode_t mode = LOGIN;

@@ -37,7 +37,7 @@ private:
     uint32_t offset;
 
     uint32_t activeProcessId;
-    uint8_t  lock;
+    bool     lock;
     void     normalize();
     void     moveCursor(uint16_t x, uint16_t y);
 

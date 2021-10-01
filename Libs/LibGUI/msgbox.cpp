@@ -35,7 +35,7 @@ ButtonList* btnControls;
 
 // response for show with response
 PressedButton response = BUTTON_NONE;
-uint8_t       waiter   = true;
+bool          waiter   = true;
 
 /*
  * convert string length in window width

@@ -41,7 +41,7 @@ static std::vector<std::string>::reverse_iterator rit;
 static bool                                       finisced = false;
 
 // lock for event mode
-static uint8_t lock = true;
+static bool lock = true;
 
 /*
  * scan the background directory and store the path on backgrounds list

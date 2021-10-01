@@ -37,7 +37,7 @@ void __restore_interrupted_state_callback();
  *
  * @security-level APPLICATION
  */
-bool __atomic_lock(u8* atom1, u8* atom2, bool set_on_finish, bool try_only);
+bool __atomic_lock(bool* atom1, bool* atom2, bool set_on_finish, bool try_only);
 
 /**
  * copy source to destination to at least length bytes

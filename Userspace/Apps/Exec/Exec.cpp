@@ -39,7 +39,7 @@ static Textfield* exec;
 static Button* launch;
 
 // locker
-static uint8_t lock = true;
+static bool lock = true;
 
 /*
  * action handler for exec button

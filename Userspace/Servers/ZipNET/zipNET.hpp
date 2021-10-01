@@ -44,7 +44,7 @@ public:
     Screen_t*                      screen;
     Background_t*                  background;
     CommandMessageResponderThread* m_responder_thread;
-    uint8_t                        renderAtom;
+    bool                           renderAtom;
     Graphics                       global;
 
     /**

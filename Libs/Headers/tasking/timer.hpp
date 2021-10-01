@@ -76,7 +76,7 @@ private:
      */
     Tid       timedThreadID; // the id of the created thread
     uint64_t  timing;        // timing for th thread
-    uint8_t   lock;          // lock for thread locking
+    bool      lock;          // lock for thread locking
     Functor_t function;      // the body of the thread
 };
 

@@ -57,7 +57,7 @@ static Rectangle windowDimension;
 int page;
 
 // waiter block
-uint8_t blocker = true;
+bool blocker = true;
 
 // labels contentainer
 static std::string rg1[5];

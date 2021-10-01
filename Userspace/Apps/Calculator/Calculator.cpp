@@ -40,7 +40,7 @@
 static Window*    window;
 static Textfield* display;
 static ButtonList keyBoard;
-static uint8_t    blocker = true;
+static bool       blocker = true;
 
 int totalValue      = 0;
 int currentValue    = 0;

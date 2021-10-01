@@ -34,7 +34,7 @@ __BEGIN_C
 
 typedef struct FILE {
     FileHandle m_fd;
-    u8         m_lock;
+    bool       m_lock;
     u8*        m_io_buffer;
     usize      m_io_buffer_len;
     u8         m_buffer_mode;

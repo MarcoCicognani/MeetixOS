@@ -34,7 +34,7 @@ bool ps2IsRegistered = false;
 /**
  * registration sincronizer flag
  */
-static uint8_t ps2RegistrationLock = false;
+static bool ps2RegistrationLock = false;
 
 /**
  * register the server client as requester of ps2 capabilities

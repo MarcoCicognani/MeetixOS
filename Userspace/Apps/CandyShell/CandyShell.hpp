@@ -146,7 +146,7 @@ private:
     string  homeDirectory;
     string  workingDirectory;
     Screen* screen;
-    uint8_t inactive;
+    bool inactive;
 
     string hostname;
     string currentUser;

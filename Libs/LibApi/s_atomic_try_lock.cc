@@ -14,10 +14,10 @@
 
 #include <Api/User.h>
 
-bool s_atomic_try_lock(u8* atom) {
-    return __atomic_lock(atom, NULL, true, true);
+bool s_atomic_try_lock(bool* atom) {
+    return __atomic_lock(atom, nullptr, true, true);
 }
 
-bool s_atomic_try_lock_dual(u8* atom1, u8* atom2) {
+bool s_atomic_try_lock_dual(bool* atom1, bool* atom2) {
     return __atomic_lock(atom1, atom2, true, true);
 }

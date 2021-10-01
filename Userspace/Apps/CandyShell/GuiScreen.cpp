@@ -32,13 +32,13 @@
 #include <string.h>
 #include <tasking/lock.hpp>
 
-uint8_t  paintIsFresh = false;
+bool     paintIsFresh = false;
 bool     cursorBlink  = false;
 bool     focus        = false;
 uint64_t lastInput    = 0;
 
 list<Keyboard::Info> waitingInput;
-uint8_t              noInputAvailable = true;
+bool                 noInputAvailable = true;
 Lock                 waitingInputLock;
 
 GuiScreen* instance;
@@ -402,7 +402,7 @@ void GuiScreen::write(string message, Color_t color, bool visible) {
 Keyboard::Info GuiScreen::readInput(bool* cancelCondition) {
     if ( waitingInput.size() == 0 ) {
         if ( cancelCondition )
-            s_atomic_block_dual(&noInputAvailable, (uint8_t*)&cancelCondition);
+            s_atomic_block_dual(&noInputAvailable, cancelCondition);
         else
             s_atomic_block(&noInputAvailable);
     }

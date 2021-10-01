@@ -21,7 +21,7 @@ char* g_buffer  = nullptr;
 u64   g_next_id = 0;
 
 extern "C" char* tmpnam(char* buffer) {
-    s_atomic_lock((u8*)&g_lock);
+    s_atomic_lock(&g_lock);
 
     if ( !buffer ) {
         /* allocate the internal buffer if necessary */

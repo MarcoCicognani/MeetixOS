@@ -69,7 +69,7 @@ static Label* memLabel;
 
 // input container
 static list<Keyboard::Info> inputBuffer;
-static uint8_t              inputBufferEmpty = true;
+static bool              inputBufferEmpty = true;
 static Lock                 locker;
 
 /**

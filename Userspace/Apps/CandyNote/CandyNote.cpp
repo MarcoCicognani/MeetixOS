@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     editor->processArgument(argc, argv);
     editor->mainLoop();
 
-    uint8_t s = true;
+    bool s = true;
     s_atomic_block(&s);
     delete editor;
 }

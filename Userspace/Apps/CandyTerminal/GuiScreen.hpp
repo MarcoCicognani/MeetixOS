@@ -70,11 +70,11 @@ private:
     Dimension        bufferSize;
     cairo_t*         existingContext = 0;
 
-    uint8_t paintUpToDate = false;
-    bool    cursorBlink   = false;
+    bool paintUpToDate = false;
+    bool cursorBlink   = false;
 
     std::list<Keyboard::Info> inputBuffer;
-    uint8_t                   inputBufferEmpty = true;
+    bool                      inputBufferEmpty = true;
     Lock                      inputBufferLock;
 
     bool     focused       = false;

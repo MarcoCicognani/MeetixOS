@@ -44,7 +44,7 @@ typedef struct {
 class CommandMessageResponderThread : public Thread {
 public:
     std::deque<CommandMessageResponse_t> buffer;
-    uint8_t                              bufferEmpty = true;
+    bool                              bufferEmpty = true;
 
     /**
      *

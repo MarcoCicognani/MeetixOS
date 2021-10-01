@@ -190,7 +190,7 @@ Keyboard::Info Keyboard::read(bool* breakCondition) {
             return Info();
 
     // wait until incoming data is here (and the driver unsets the atom)
-    s_atomic_block_dual(&ps2Area->keyboard.atomNothingQueued, (uint8_t*)breakCondition);
+    s_atomic_block_dual(&ps2Area->keyboard.atomNothingQueued, breakCondition);
 
     // take info from the shared memory
     uint8_t scancode = ps2Area->keyboard.scancode;

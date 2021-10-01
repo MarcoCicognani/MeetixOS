@@ -32,14 +32,14 @@ typedef struct {
          * The driver delegate must wait until the atom is unset, and then
          * set it again.
          */
-        uint8_t atomNothingQueued;
+        bool atomNothingQueued;
 
         /**
          * This atom is set by the driver, once it has written data that
          * the delegate is yet to read. Once the data is read, the delegate
          * must unset the atom.
          */
-        uint8_t atomUnhandled;
+        bool atomUnhandled;
 
         int16_t  moveX;
         int16_t  moveY;
@@ -47,8 +47,8 @@ typedef struct {
     } mouse;
 
     struct {
-        uint8_t atomNothingQueued;
-        uint8_t atomUnhandled;
+        bool atomNothingQueued;
+        bool atomUnhandled;
 
         uint8_t scancode;
     } keyboard;

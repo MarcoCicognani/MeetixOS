@@ -74,7 +74,7 @@ class Screen {
 public:
     ScreenColor colorForeground = SC_WHITE;
     ScreenColor colorBackground = SC_BLACK;
-    uint8_t     _lock           = 0;
+    bool        _lock           = false;
 
     virtual ~Screen() {
     }
