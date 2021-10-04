@@ -31,7 +31,6 @@
 #include <graphics/cairoutils.hpp>
 #include <graphics/text/fontmgr.hpp>
 #include <gui/properties.hpp>
-#include <io/files/futils.hpp>
 #include <math.h>
 #include <Utils/Environment.hh>
 #include <zipNET.hpp>

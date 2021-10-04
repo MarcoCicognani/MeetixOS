@@ -30,7 +30,7 @@ std::string get(const std::string& key) {
 
     /* read the internal properties and return the value for the key */
     PropertyFileParser parser{ env_stream };
-    return parser.getProperties().at(key);
+    return parser.properties().at(key);
 }
 
 std::string get(const char* key) {

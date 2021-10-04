@@ -24,7 +24,7 @@
 
 #include <Api.h>
 #include <fstream>
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -162,7 +162,7 @@ bool Login::researchCredential(const string& username, const string& password) {
 
     // parse it
     Utils::PropertyFileParser  parser(cred);
-    map<string, string> properties = parser.getProperties();
+    map<string, string> properties = parser.properties();
 
     // find
     for ( pair<string, string> entry : properties ) {

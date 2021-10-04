@@ -82,7 +82,7 @@ private:
     void createMenu();
 
     // read from keyboard
-    Keyboard::Info readInput();
+    IO::Keyboard::Info readInput();
 
     // resolution of screen
     Dimension resolution;

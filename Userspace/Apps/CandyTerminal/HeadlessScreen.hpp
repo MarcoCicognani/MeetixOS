@@ -55,7 +55,7 @@ private:
 public:
     HeadlessScreen();
 
-    Keyboard::Info readInput();
+    IO::Keyboard::Info readInput();
     void           clean();
     void           backspace();
     void           writeChar(char c);

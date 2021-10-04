@@ -18,7 +18,7 @@
 
 #include "GFrontEnd.hpp"
 
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <Tasking/Lock.hh>
 
 Window*    window;
@@ -62,6 +62,6 @@ void GraphicFrontEnd_t::end() {
 void GraphicFrontEnd_t::write(string message, string title) {
 }
 
-Keyboard::Info GraphicFrontEnd_t::readInput() {
+IO::Keyboard::Info GraphicFrontEnd_t::readInput() {
     return {};
 }

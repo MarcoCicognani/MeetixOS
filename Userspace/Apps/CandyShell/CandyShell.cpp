@@ -31,7 +31,7 @@
 #include <dirent.h>
 #include <fstream>
 #include <gui/ui.hpp>
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <iostream>
 #include <signal.h>
 #include <stdint.h>
@@ -127,7 +127,7 @@ void CandyShell::prepare() {
 
     // load keyboard layout
     string initialLayout = "it-EU";
-    if ( Keyboard::instance().loadLayout(initialLayout) )
+    if ( IO::Keyboard::instance().load_layout(initialLayout) )
         Utils::log("keyboard layout '" + initialLayout + "' loaded");
 
     else {
@@ -570,7 +570,7 @@ bool CandyShell::handleBuiltin(string command) {
     else if ( command.substr(0, string(BUILTIN_COMMAND_KBD_SET).length())
               == BUILTIN_COMMAND_KBD_SET ) {
         command           = command.substr(string(BUILTIN_COMMAND_KBD_SET).length());
-        bool layoutLoaded = Keyboard::instance().loadLayout(command);
+        bool layoutLoaded = IO::Keyboard::instance().load_layout(command);
 
         if ( layoutLoaded )
             screen->write("keyboard layout to '" + command + "' set \n", RGB(255, 255, 255));
@@ -584,14 +584,14 @@ bool CandyShell::handleBuiltin(string command) {
     else if ( command == BUILTIN_COMMAND_SCANCODE ) {
         if ( headless ) {
             while ( true ) {
-                Keyboard::Info key = Keyboard::instance().read();
-                if ( key.pressed && key.ctrl && key.key == "KEY_C" )
+                IO::Keyboard::Info key = IO::Keyboard::instance().read();
+                if ( key.m_is_pressed && key.m_ctrl && key.key == "KEY_C" )
                     break;
 
                 stringstream msg;
-                msg << "scancode: " << (key.pressed ? "d " : "u ") << (uint32_t)key.scancode
-                    << ", ctrl: " << key.ctrl << ", alt: " << key.alt << ", shift: " << key.shift
-                    << endl;
+                msg << "scancode: " << (key.m_is_pressed ? "d " : "u ") << (uint32_t)key.m_scancode
+                    << ", ctrl: " << key.m_ctrl << ", alt: " << key.m_alt
+                    << ", shift: " << key.m_shift << endl;
                 screen->write(msg.str(), RGB(255, 255, 255));
             }
         }
@@ -603,7 +603,7 @@ bool CandyShell::handleBuiltin(string command) {
     }
 
     else if ( command == BUILTIN_COMMAND_KBD_INFO ) {
-        screen->write("keyboard layout is '" + Keyboard::instance().getCurrentLayout() + "'\n",
+        screen->write("keyboard layout is '" + IO::Keyboard::instance().current_layout() + "'\n",
                       RGB(255, 255, 255));
         return true;
 
@@ -974,25 +974,25 @@ string CandyShell::readInput(string            there,
                              bool              visible) {
     string line = there;
     while ( continueInput == 0 || *continueInput ) {
-        Keyboard::Info key = screen->readInput(continueInput);
+        IO::Keyboard::Info key = screen->readInput(continueInput);
 
-        if ( key.pressed ) {
-            if ( (key.ctrl && key.key == "KEY_C") || (key.key == "KEY_ESC") ) {
+        if ( key.m_is_pressed ) {
+            if ( (key.m_ctrl && key.key == "KEY_C") || (key.key == "KEY_ESC") ) {
                 *outStatus = SHELL_INPUT_STATUS_EXIT;
                 break;
             }
 
-            else if ( key.ctrl && key.key == "KEY_L" ) {
+            else if ( key.m_ctrl && key.key == "KEY_L" ) {
                 *outStatus = SHELL_INPUT_STATUS_CLEAR;
                 break;
             }
 
-            else if ( key.ctrl && key.key == "KEY_SPACE" ) {
+            else if ( key.m_ctrl && key.key == "KEY_SPACE" ) {
                 *outStatus = SHELL_INPUT_STATUS_SCREEN_CREATE;
                 break;
             }
 
-            else if ( key.ctrl && key.key == "KEY_TAB" ) {
+            else if ( key.m_ctrl && key.key == "KEY_TAB" ) {
                 *outStatus = SHELL_INPUT_STATUS_SCREEN_SWITCH;
                 break;
             }
@@ -1051,7 +1051,7 @@ string CandyShell::readInput(string            there,
             }
 
             else {
-                char chr = Keyboard::instance().charForKey(key);
+                char chr = IO::Keyboard::instance().char_for_key(key);
                 if ( chr != -1 ) {
                     line = line + chr;
 

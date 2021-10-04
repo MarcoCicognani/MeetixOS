@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <stdint.h>
 #include <string>
 
@@ -79,13 +79,13 @@ public:
     virtual ~Screen() {
     }
 
-    virtual Keyboard::Info readInput()              = 0;
-    virtual void           clean()                  = 0;
-    virtual void           backspace()              = 0;
-    virtual void           writeChar(char c)        = 0;
-    virtual void           moveCursor(int x, int y) = 0;
-    virtual int            getCursorX()             = 0;
-    virtual int            getCursorY()             = 0;
+    virtual IO::Keyboard::Info readInput()              = 0;
+    virtual void               clean()                  = 0;
+    virtual void               backspace()              = 0;
+    virtual void               writeChar(char c)        = 0;
+    virtual void               moveCursor(int x, int y) = 0;
+    virtual int                getCursorX()             = 0;
+    virtual int                getCursorY()             = 0;
 
     virtual void setColorForeground(int c) {
         colorForeground = c;

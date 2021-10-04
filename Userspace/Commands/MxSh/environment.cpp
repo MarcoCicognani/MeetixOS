@@ -33,7 +33,7 @@ void Environment::load() {
 
     // parse it and get map with variables
     Utils::PropertyFileParser  parser(file);
-    map<string, string> variables = parser.getProperties();
+    map<string, string> variables = parser.properties();
 
     // copy into local map variables from file
     for ( pair<string, string> cop : variables )

@@ -73,7 +73,7 @@ private:
     bool paintUpToDate = false;
     bool cursorBlink   = false;
 
-    std::list<Keyboard::Info> inputBuffer;
+    std::list<IO::Keyboard::Info> inputBuffer;
     bool                      inputBufferEmpty = true;
     Tasking::Lock             inputBufferLock;
 
@@ -133,7 +133,7 @@ public:
      */
     bool initialize();
 
-    Keyboard::Info readInput();
+    IO::Keyboard::Info readInput();
     void           clean();
     void           writeChar(char c);
     void           moveCursor(int x, int y);
@@ -141,7 +141,7 @@ public:
     int            getCursorY();
     void           backspace();
 
-    void bufferInput(const Keyboard::Info& info);
+    void bufferInput(const IO::Keyboard::Info& info);
     void repaint();
     void setFocused(bool focused);
 

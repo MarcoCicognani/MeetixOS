@@ -27,7 +27,7 @@
 #include "GuiScreen.hpp"
 #include "HeadlessScreen.hpp"
 
-#include <io/shell.hpp>
+#include <IO/Shell.hh>
 #include <signal.h>
 #include <unistd.h>
 #include <Utils/Utils.hh>
@@ -67,7 +67,7 @@ void CandyTerminal::execute() {
 
     // load keyboard layout
     std::string initialLayout = "it-EU";
-    if ( !Keyboard::instance().loadLayout(initialLayout) ) {
+    if ( !IO::Keyboard::instance().load_layout(initialLayout) ) {
         Utils::log("CandyTerminal: Failed to load keyboard layout: " + initialLayout);
         return;
     }
@@ -211,11 +211,11 @@ void CandyTerminal::writeShellkeyToShell(int shellkey) {
 void CandyTerminal::inputRoutine() {
     std::string buffer = "";
     while ( true ) {
-        Keyboard::Info readInput = screen->readInput();
+        IO::Keyboard::Info readInput = screen->readInput();
 
         // Default line-buffered input
-        if ( inputMode == SHELL_MODE_DEFAULT ) {
-            if ( readInput.key == "KEY_ENTER" && readInput.pressed ) {
+        if ( inputMode == IO::Shell::MODE_DEFAULT ) {
+            if ( readInput.key == "KEY_ENTER" && readInput.m_is_pressed ) {
                 if ( echo ) {
                     screenLock.lock();
                     screen->writeChar('\n');
@@ -228,19 +228,19 @@ void CandyTerminal::inputRoutine() {
                 buffer = "";
             }
 
-            else if ( (readInput.ctrl && readInput.key == "KEY_C")
+            else if ( (readInput.m_ctrl && readInput.key == "KEY_C")
                       || (readInput.key == "KEY_ESC") ) {
                 if ( currentProcess )
                     s_raise_signal(currentProcess, SIGINT);
             }
 
-            else if ( readInput.key == "KEY_BACKSPACE" && readInput.pressed ) {
+            else if ( readInput.key == "KEY_BACKSPACE" && readInput.m_is_pressed ) {
                 buffer = buffer.size() > 0 ? buffer.substr(0, buffer.size() - 1) : buffer;
                 screen->backspace();
             }
 
             else {
-                char chr = Keyboard::instance().charForKey(readInput);
+                char chr = IO::Keyboard::instance().char_for_key(readInput);
                 if ( chr != -1 ) {
                     buffer = buffer + chr;
 
@@ -254,8 +254,8 @@ void CandyTerminal::inputRoutine() {
 
         }
 
-        else if ( inputMode == SHELL_MODE_RAW ) {
-            if ( readInput.key == "KEY_ENTER" && readInput.pressed ) {
+        else if ( inputMode == IO::Shell::MODE_RAW ) {
+            if ( readInput.key == "KEY_ENTER" && readInput.m_is_pressed ) {
                 writeShellkeyToShell(SHELLKEY_ENTER);
 
                 if ( echo ) {
@@ -265,7 +265,7 @@ void CandyTerminal::inputRoutine() {
                 }
             }
 
-            else if ( readInput.key == "KEY_BACKSPACE" && readInput.pressed ) {
+            else if ( readInput.key == "KEY_BACKSPACE" && readInput.m_is_pressed ) {
                 writeShellkeyToShell(SHELLKEY_BACKSPACE);
 
                 if ( echo ) {
@@ -275,17 +275,17 @@ void CandyTerminal::inputRoutine() {
                 }
             }
 
-            else if ( readInput.key == "KEY_ARROW_LEFT" && readInput.pressed )
+            else if ( readInput.key == "KEY_ARROW_LEFT" && readInput.m_is_pressed )
                 writeShellkeyToShell(SHELLKEY_LEFT);
-            else if ( readInput.key == "KEY_ARROW_RIGHT" && readInput.pressed )
+            else if ( readInput.key == "KEY_ARROW_RIGHT" && readInput.m_is_pressed )
                 writeShellkeyToShell(SHELLKEY_RIGHT);
-            else if ( readInput.key == "KEY_ARROW_UP" && readInput.pressed )
+            else if ( readInput.key == "KEY_ARROW_UP" && readInput.m_is_pressed )
                 writeShellkeyToShell(SHELLKEY_UP);
-            else if ( readInput.key == "KEY_ARROW_DOWN" && readInput.pressed )
+            else if ( readInput.key == "KEY_ARROW_DOWN" && readInput.m_is_pressed )
                 writeShellkeyToShell(SHELLKEY_DOWN);
 
             else {
-                char chr = Keyboard::instance().charForKey(readInput);
+                char chr = IO::Keyboard::instance().char_for_key(readInput);
                 if ( chr != -1 ) {
                     write(shellIN, &chr, 1);
 
@@ -523,7 +523,7 @@ void CandyTerminal::processTermSequence(StreamControlStatus* status) {
     switch ( status->controlCharacter ) {
         // Change mode
         case 'm':
-            this->inputMode = (ShellMode)status->parameters[0];
+            this->inputMode = (IO::Shell::Mode)status->parameters[0];
             break;
 
             // Change echo

@@ -26,7 +26,7 @@
 #define __KEY_EVENT__
 
 #include <events/event.hpp>
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <stdint.h>
 
 /**
@@ -34,7 +34,7 @@
  */
 class KeyEvent_t : public Event_t {
 public:
-    Keyboard::Info info;
+    IO::Keyboard::Info info;
 };
 
 #endif

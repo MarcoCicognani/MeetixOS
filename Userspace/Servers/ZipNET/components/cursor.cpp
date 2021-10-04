@@ -68,7 +68,7 @@ bool Cursor::load(const std::string& cursor_path) {
         return false;
 
     Utils::PropertyFileParser properties(in);
-    auto               content = properties.getProperties();
+    auto               content = properties.properties();
 
     // Read required params
     auto name      = content["name"];

@@ -27,7 +27,7 @@
 #include "CandyShell.hpp"
 
 #include <Api.h>
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <list>
 #include <string.h>
 #include <Tasking/Lock.hh>
@@ -37,7 +37,7 @@ bool     cursorBlink  = false;
 bool     focus        = false;
 uint64_t lastInput    = 0;
 
-list<Keyboard::Info> waitingInput;
+list<IO::Keyboard::Info> waitingInput;
 bool                 noInputAvailable = true;
 Tasking::Lock        waitingInputLock;
 
@@ -52,7 +52,7 @@ string          output;
 class InputKeyListener : public KeyListener {
     virtual void handleKeyEvent(KeyEvent& e) {
         waitingInputLock.lock();
-        waitingInput.push_back(Keyboard::instance().fullKeyInfo(e.info));
+        waitingInput.push_back(IO::Keyboard::instance().full_key_info(e.info));
         lastInput        = s_millis();
         noInputAvailable = false;
         waitingInputLock.unlock();
@@ -399,7 +399,7 @@ void GuiScreen::write(string message, Color_t color, bool visible) {
 /**
  *
  */
-Keyboard::Info GuiScreen::readInput(bool* cancelCondition) {
+IO::Keyboard::Info GuiScreen::readInput(bool* cancelCondition) {
     if ( waitingInput.size() == 0 ) {
         if ( cancelCondition )
             s_atomic_block_dual(&noInputAvailable, cancelCondition);
@@ -409,7 +409,7 @@ Keyboard::Info GuiScreen::readInput(bool* cancelCondition) {
 
     waitingInputLock.lock();
 
-    Keyboard::Info result = waitingInput.front();
+    IO::Keyboard::Info result = waitingInput.front();
     waitingInput.pop_front();
 
     if ( waitingInput.size() == 0 )

@@ -26,7 +26,7 @@
 #define __CARET_MOVE_STRATEGY__
 
 #include <components/text/CaretDirection.hpp>
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 
 class TextComponent_t;
 
@@ -42,7 +42,7 @@ public:
      *
      */
     virtual void
-    moveCaret(TextComponent_t* component, CaretDirection_t direction, Keyboard::Info& keyInfo)
+    moveCaret(TextComponent_t* component, CaretDirection_t direction, IO::Keyboard::Info& keyInfo)
         = 0;
 
     /**

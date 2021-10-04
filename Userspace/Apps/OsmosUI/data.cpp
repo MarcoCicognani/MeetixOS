@@ -19,18 +19,18 @@
 #include "OsmosUI.hpp"
 #include "SecondaryThread.hpp"
 
+#include <new>
 #include <cstring>
 #include <fcntl.h>
 #include <fstream>
 #include <gui/about.hpp>
 #include <gui/menu.hpp>
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <list>
 #include <map>
 #include <sstream>
 #include <Utils/Environment.hh>
 #include <Utils/PropertyFileParser.hh>
-#include <Utils/Utils.hh>
 #include <vector>
 
 using namespace std;
@@ -68,7 +68,7 @@ static Label* hourLabel;
 static Label* memLabel;
 
 // input container
-static list<Keyboard::Info> inputBuffer;
+static list<IO::Keyboard::Info> inputBuffer;
 static bool                 inputBufferEmpty = true;
 static Tasking::Lock        locker;
 
@@ -79,7 +79,7 @@ class InputKeyListener : public KeyListener {
 public:
     virtual void handleKeyEvent(KeyEvent& e) {
         locker.lock();
-        inputBuffer.push_back(Keyboard::instance().fullKeyInfo(e.info));
+        inputBuffer.push_back(IO::Keyboard::instance().full_key_info(e.info));
         inputBufferEmpty = false;
         locker.unlock();
     }
@@ -110,7 +110,7 @@ void OsmosUI::configureUi(std::string pathToConfiguration, Dimension resolution)
     this->resolution = resolution;
 
     // load keyboard layout
-    Keyboard::instance().loadLayout("it-EU");
+    IO::Keyboard::instance().load_layout("it-EU");
 
     // keep configuration file
     std::ifstream conf(pathToConfiguration);
@@ -118,7 +118,7 @@ void OsmosUI::configureUi(std::string pathToConfiguration, Dimension resolution)
         klog("file non trovato in %s", pathToConfiguration.c_str());
     // parse it
     Utils::PropertyFileParser parser(conf);
-    configuration = parser.getProperties();
+    configuration = parser.properties();
 
     // closing file
     conf.close();
@@ -375,7 +375,7 @@ void OsmosUI::createComponents() {
 /*
  *	read from KeyEvent
  */
-Keyboard::Info OsmosUI::readInput() {
+IO::Keyboard::Info OsmosUI::readInput() {
     // wait for input
     if ( inputBuffer.size() == 0 )
         s_atomic_block(&inputBufferEmpty);
@@ -383,7 +383,7 @@ Keyboard::Info OsmosUI::readInput() {
     // lock thread
     locker.lock();
 
-    Keyboard::Info result = inputBuffer.front(); // safety copy
+    IO::Keyboard::Info result = inputBuffer.front(); // safety copy
     inputBuffer.pop_front();                     // clear list
 
     // unlock
@@ -422,13 +422,13 @@ void OsmosUI::mainLoop() {
     // main loop of gui
     while ( _continue ) {
         // read pressed keys
-        Keyboard::Info key = readInput();
+        IO::Keyboard::Info key = readInput();
 
-        if ( key.pressed ) {
+        if ( key.m_is_pressed ) {
             // reading combination
-            if ( key.alt && key.key == "KEY_T" )
+            if ( key.m_alt && key.key == "KEY_T" )
                 s_spawn("/Apps/CandyShell/Bin/CandyShell", "", "/", SECURITY_LEVEL_APPLICATION);
-            else if ( key.alt && key.key == "KEY_S" )
+            else if ( key.m_alt && key.key == "KEY_S" )
                 s_spawn("/Apps/CandyNote/Bin/CandyNote", "-new", "/", SECURITY_LEVEL_APPLICATION);
         }
     }

@@ -26,7 +26,7 @@
 #include "parser.hpp"
 
 #include <Api/utils/local.hpp>
-#include <io/shell.hpp>
+#include <IO/Shell.hh>
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
@@ -40,13 +40,13 @@ Environment* g_shell_env;
  *
  */
 bool readInputLine(std::string& line) {
-    Shell::setMode(SHELL_MODE_RAW);
-    Shell::setEcho(false);
+    IO::Shell::instance().set_mode(IO::Shell::MODE_RAW);
+    IO::Shell::instance().set_echo(false);
 
     int caret = 0;
 
     while ( true ) {
-        int c = Shell::getChar();
+        int c = IO::Shell::instance().read_char();
         if ( c == -1 )
             return false;
 
@@ -54,42 +54,42 @@ bool readInputLine(std::string& line) {
             if ( line.size() > 0 && caret > 0 ) {
                 char deleted = line.at(caret - 1);
 
-                auto pos        = Shell::getCursor();
+                auto pos        = IO::Shell::instance().cursor();
                 auto afterCaret = line.substr(caret);
                 line            = line.substr(0, caret - 1) + afterCaret;
                 caret--;
 
                 if ( deleted == '\t' ) {
-                    pos.x -= 4;
+                    pos.m_x -= 4;
                     afterCaret += "    ";
                 }
 
                 else {
-                    pos.x--;
+                    pos.m_x--;
                     afterCaret += ' ';
                 }
-                Shell::setCursor(pos);
+                IO::Shell::instance().set_cursor(pos);
                 for ( char c : afterCaret )
                     std::cout << c;
-                Shell::setCursor(pos);
+                IO::Shell::instance().set_cursor(pos);
             }
 
         }
 
         else if ( c == '\t' || c == SHELLKEY_STAB /* TODO implement completion */ ) {
-            auto pos = Shell::getCursor();
+            auto pos = IO::Shell::instance().cursor();
             std::cout << "    ";
 
             auto afterCaret = line.substr(caret);
             line            = line.substr(0, caret) + '\t' + afterCaret;
             caret++;
 
-            pos.x += 4;
-            Shell::setCursor(pos);
+            pos.m_x += 4;
+            IO::Shell::instance().set_cursor(pos);
             for ( char c : afterCaret ) {
                 std::cout << c;
             }
-            Shell::setCursor(pos);
+            IO::Shell::instance().set_cursor(pos);
 
         }
 
@@ -104,9 +104,9 @@ bool readInputLine(std::string& line) {
 
                 caret--;
                 if ( beforeCaret == '\t' )
-                    Shell::moveCursorBack(4);
+                    IO::Shell::instance().move_cursor_back(4);
                 else
-                    Shell::moveCursorBack(1);
+                    IO::Shell::instance().move_cursor_back(1);
             }
         }
 
@@ -115,25 +115,25 @@ bool readInputLine(std::string& line) {
                 char atCaret = line.at(caret);
                 caret++;
                 if ( atCaret == '\t' )
-                    Shell::moveCursorForward(4);
+                    IO::Shell::instance().move_cursor_forward(4);
                 else
-                    Shell::moveCursorForward(1);
+                    IO::Shell::instance().move_cursor_forward(1);
             }
         }
 
         else if ( c < 0x100 ) {
-            auto pos = Shell::getCursor();
+            auto pos = IO::Shell::instance().cursor();
             std::cout << (char)c;
 
             auto afterCaret = line.substr(caret);
             line            = line.substr(0, caret) + (char)c + afterCaret;
             caret++;
 
-            pos.x++;
-            Shell::setCursor(pos);
+            pos.m_x++;
+            IO::Shell::instance().set_cursor(pos);
             for ( char c : afterCaret )
                 std::cout << c;
-            Shell::setCursor(pos);
+            IO::Shell::instance().set_cursor(pos);
         }
     }
 
@@ -188,11 +188,9 @@ bool handleBuiltin(std::string cwd, ProgramCall* call) {
     }
 
     if ( call->program == "clear" ) {
-        Shell::clear();
-        ShellCursorPosition pos;
-        pos.x = 0;
-        pos.y = 0;
-        Shell::setCursor(pos);
+        IO::Shell::instance().clear();
+        IO::Shell::CursorPosition pos;
+        IO::Shell::instance().set_cursor(pos);
         return true;
     }
 
@@ -211,7 +209,7 @@ bool handleBuiltin(std::string cwd, ProgramCall* call) {
  *
  */
 void MXShell::shellMode(Environment* env) {
-    Shell::setCursor(ShellCursorPosition(0, 0));
+    IO::Shell::instance().set_cursor(IO::Shell::CursorPosition(0, 0));
     char* cwdbuf = new char[PATH_MAX];
 
     g_shell_env = env;
@@ -235,15 +233,15 @@ void MXShell::shellMode(Environment* env) {
         std::cout << (char)27 << "[0m";
         std::flush(std::cout);
 
-        Shell::setCursor(Shell::getCursor());
+        IO::Shell::instance().set_cursor(IO::Shell::instance().cursor());
 
         std::string line;
         if ( !readInputLine(line) )
             break;
 
         // switch to normal input mode
-        Shell::setMode(SHELL_MODE_DEFAULT);
-        Shell::setEcho(true);
+        IO::Shell::instance().set_mode(IO::Shell::MODE_DEFAULT);
+        IO::Shell::instance().set_echo(true);
 
         Parser          cmdparser(line);
         PipeExpression* pipeexpr;
@@ -358,9 +356,9 @@ void MXShell::shellMode(Environment* env) {
 
         if ( success ) {
             // join into the last process
-            Shell::setControlProcess(lastProcessID);
+            IO::Shell::instance().set_control_process(lastProcessID);
             s_join(lastProcessID);
-            Shell::setControlProcess(0);
+            IO::Shell::instance().set_control_process(0);
         }
     }
 

@@ -36,6 +36,6 @@ void TextFrontEnd_t::write(string message, string title) {
     cout << message;
 }
 
-Keyboard::Info TextFrontEnd_t::readInput() {
-    return Keyboard::instance().read();
+IO::Keyboard::Info TextFrontEnd_t::readInput() {
+    return IO::Keyboard::instance().read();
 }

@@ -25,7 +25,7 @@
 
 #include <Api.h>
 #include <fstream>
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <iostream>
 #include <sstream>
 #include <string>

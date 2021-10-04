@@ -22,13 +22,13 @@
 
 #include <cstdint>
 #include <gui/listener.hpp>
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 
 /**
  *
  */
 struct KeyEvent {
-    Keyboard::InfoBasic info;
+    IO::Keyboard::InfoBasic info;
 };
 
 /**

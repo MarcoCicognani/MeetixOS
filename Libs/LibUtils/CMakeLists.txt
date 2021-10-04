@@ -5,4 +5,4 @@ add_library(LibUtils
         Time.cc
         SHA2.cc
         Environment.cc
-        Utils.cc)
+        Utils.cc File.cc)

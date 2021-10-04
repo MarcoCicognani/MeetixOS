@@ -34,7 +34,7 @@ public:
     /**
      * @brief Returns the map of the parsed properties
      */
-    std::map<std::string, std::string> getProperties();
+    std::map<std::string, std::string> properties();
 
 private:
     void init(const std::string& content);

@@ -41,31 +41,31 @@ DefaultCaretMoveStrategy_t* DefaultCaretMoveStrategy_t::getInstance() {
  */
 void DefaultCaretMoveStrategy_t::moveCaret(TextComponent_t* component,
                                            CaretDirection_t direction,
-                                           Keyboard::Info&  info) {
+                                           IO::Keyboard::Info&  info) {
     int cursor            = component->getCursor();
     int newCursorPosition = cursor;
     int selectedLength    = component->getSelectedRange().getLength();
 
     if ( direction == CaretDirection_t::RIGHT ) {
-        if ( info.ctrl )
+        if ( info.m_ctrl )
             newCursorPosition = component->getText().length();
         else
             newCursorPosition
-                = info.alt ? calculateSkip(component->getText(), cursor, CaretDirection_t::RIGHT)
+                = info.m_alt ? calculateSkip(component->getText(), cursor, CaretDirection_t::RIGHT)
                            : (cursor + 1);
     }
 
     else if ( direction == CaretDirection_t::LEFT ) {
-        if ( info.ctrl )
+        if ( info.m_ctrl )
             newCursorPosition = 0;
         else
             newCursorPosition
-                = info.alt ? calculateSkip(component->getText(), cursor, CaretDirection_t::LEFT)
+                = info.m_alt ? calculateSkip(component->getText(), cursor, CaretDirection_t::LEFT)
                            : (cursor - 1);
     }
 
     component->setCursor(newCursorPosition);
-    if ( !info.shift )
+    if ( !info.m_shift )
         component->setMarker(newCursorPosition);
 }
 

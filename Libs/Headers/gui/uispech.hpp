@@ -25,7 +25,7 @@
 #include <graphics/metrics/dimension.hpp>
 #include <graphics/metrics/rectangle.hpp>
 #include <graphics/text/textalign.hpp>
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <string>
 #include <vector>
 
@@ -427,7 +427,7 @@ typedef struct {
 
 typedef struct {
     UiComponentEventHeader header;
-    Keyboard::InfoBasic    keyInfo;
+    IO::Keyboard::InfoBasic    keyInfo;
 } A_PACKED UiComponentKeyEvent;
 
 typedef struct {

@@ -28,8 +28,8 @@
 #include <deque>
 #include <gui/uispech.hpp>
 #include <interface/CommandMessageResponderThread.hpp>
-#include <io/keyboard.hpp>
-#include <io/mouse.hpp>
+#include <IO/Keyboard.hh>
+#include <IO/Mouse.hh>
 
 using namespace std;
 
@@ -45,8 +45,8 @@ public:
 
     EventProcessor();
 
-    deque<Keyboard::Info> keyInfoBuffer;
-    void                  bufferKeyEvent(Keyboard::Info keyInfo);
+    deque<IO::Keyboard::Info> keyInfoBuffer;
+    void                  bufferKeyEvent(IO::Keyboard::Info keyInfo);
 
     deque<void*> commandMessageBuffer;
     void         bufferCommandMessage(void* commandMessage);
@@ -56,7 +56,7 @@ public:
                         UiMessageHeader*          requestHeader,
                         CommandMessageResponse_t& responseOut);
 
-    void translateKeyEvent(Keyboard::Info& info);
+    void translateKeyEvent(IO::Keyboard::Info& info);
     void processMouseState();
 };
 

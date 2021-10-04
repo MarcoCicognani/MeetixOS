@@ -25,7 +25,7 @@
 #include "Ps2.hpp"
 
 #include <Api.h>
-#include <io/ps2.hpp>
+#include <IO/Ps2.hh>
 #include <math.h>
 #include <sstream>
 #include <stdio.h>
@@ -52,8 +52,8 @@ uint32_t keyboardReceiverTransaction;
 /**
  *
  */
-uint64_t       packetsCount = 0;
-Ps2SharedArea* sharedArea;
+uint64_t             packetsCount = 0;
+IO::Ps2::SharedArea* sharedArea;
 
 /**
  *
@@ -66,17 +66,17 @@ int main() {
     }
 
     // set up shared memory
-    sharedArea = (Ps2SharedArea*)s_alloc_mem(sizeof(Ps2SharedArea));
+    sharedArea = (IO::Ps2::SharedArea*)s_alloc_mem(sizeof(IO::Ps2::SharedArea));
     if ( !sharedArea ) {
         Utils::log("failed to allocate transfer memory area");
         return 1;
     }
 
     // initialize memory area
-    sharedArea->keyboard.atomNothingQueued = true;
-    sharedArea->keyboard.atomUnhandled     = false;
-    sharedArea->mouse.atomNothingQueued    = true;
-    sharedArea->mouse.atomUnhandled        = false;
+    sharedArea->m_keyboard.m_atom_nothing_queued = true;
+    sharedArea->m_keyboard.m_atom_unhandled      = false;
+    sharedArea->m_mouse.m_atom_nothing_queued    = true;
+    sharedArea->m_mouse.m_atom_unhandled         = false;
 
     // initialize mouse
     initializeMouse();
@@ -85,28 +85,29 @@ int main() {
     registerOperationMode();
 
     // wait for control requests
-    size_t   buflen = sizeof(MessageHeader) + sizeof(Ps2RegisterRequest);
+    size_t   buflen = sizeof(MessageHeader) + sizeof(IO::Ps2::RegisterRequest);
     uint8_t* buf    = new uint8_t[buflen];
     Tid      tid    = s_get_tid();
     while ( true ) {
         MessageReceiveStatus stat = s_receive_message(buf, buflen);
 
         if ( stat == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-            MessageHeader*      mes = (MessageHeader*)buf;
-            Ps2RegisterRequest* req = (Ps2RegisterRequest*)MESSAGE_CONTENT(buf);
+            auto mes = (MessageHeader*)buf;
+            auto req = (IO::Ps2::RegisterRequest*)MESSAGE_CONTENT(buf);
 
             // share area with requester
-            Pid            requesterPid   = s_get_pid_for_tid(mes->m_sender_tid);
-            Ps2SharedArea* sharedInTarget = (Ps2SharedArea*)s_share_mem((void*)sharedArea,
-                                                                        sizeof(Ps2SharedArea),
-                                                                        requesterPid);
+            Pid                  requesterPid = s_get_pid_for_tid(mes->m_sender_tid);
+            IO::Ps2::SharedArea* sharedInTarget
+                = (IO::Ps2::SharedArea*)s_share_mem((void*)sharedArea,
+                                                    sizeof(IO::Ps2::SharedArea),
+                                                    requesterPid);
 
             // send response
-            Ps2RegisterResponse response;
-            response.area = sharedInTarget;
+            IO::Ps2::RegisterResponse response;
+            response.m_shared_area = sharedInTarget;
             s_send_message_t(mes->m_sender_tid,
                              &response,
-                             sizeof(Ps2RegisterResponse),
+                             sizeof(IO::Ps2::RegisterResponse),
                              mes->m_transaction);
         }
     }
@@ -196,16 +197,16 @@ void handleMouseData(uint8_t b) {
                 int16_t offY = valY - ((flags << 3) & 0x100);
 
                 // wait for handling and set
-                s_atomic_block(&sharedArea->mouse.atomUnhandled);
+                s_atomic_block(&sharedArea->m_mouse.m_atom_unhandled);
 
                 // write data
-                sharedArea->mouse.moveX = offX;
-                sharedArea->mouse.moveY = offY;
-                sharedArea->mouse.flags = flags;
+                sharedArea->m_mouse.m_move_x = offX;
+                sharedArea->m_mouse.m_move_y = offY;
+                sharedArea->m_mouse.m_flags  = flags;
 
                 // show waiter that data is queue
-                sharedArea->mouse.atomNothingQueued = false;
-                sharedArea->mouse.atomUnhandled     = true;
+                sharedArea->m_mouse.m_atom_nothing_queued = false;
+                sharedArea->m_mouse.m_atom_unhandled      = true;
             }
 
             mousePacketNumber = 0;
@@ -218,14 +219,14 @@ void handleMouseData(uint8_t b) {
  */
 void handleKeyboardData(uint8_t b) {
     // wait for handling and set
-    s_atomic_block(&sharedArea->keyboard.atomUnhandled);
+    s_atomic_block(&sharedArea->m_keyboard.m_atom_unhandled);
 
     // write data
-    sharedArea->keyboard.scancode = b;
+    sharedArea->m_keyboard.m_scancode = b;
 
     // show waiter that data is queue
-    sharedArea->keyboard.atomNothingQueued = false;
-    sharedArea->keyboard.atomUnhandled     = true;
+    sharedArea->m_keyboard.m_atom_nothing_queued = false;
+    sharedArea->m_keyboard.m_atom_unhandled      = true;
 }
 
 /**

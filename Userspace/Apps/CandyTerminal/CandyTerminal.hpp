@@ -29,7 +29,7 @@
 #include "StreamStatus.hpp"
 
 #include <Api.h>
-#include <io/shell.hpp>
+#include <IO/Shell.hh>
 #include <Tasking/Lock.hh>
 
 class CandyTerminal;
@@ -67,8 +67,8 @@ private:
     /**
      * Mode flags
      */
-    bool      echo;
-    ShellMode inputMode;
+    bool            echo;
+    IO::Shell::Mode inputMode;
 
     /**
      * ID of the currently controlled process
@@ -80,8 +80,8 @@ public:
      *
      */
     CandyTerminal(bool headless)
-        : headless(headless), screen(0), shellIN(FD_NONE), shellOUT(FD_NONE), shellERR(FD_NONE),
-          echo(true), inputMode(SHELL_MODE_DEFAULT), currentProcess(-1) {
+        : headless(headless), screen(nullptr), shellIN(FD_NONE), shellOUT(FD_NONE), shellERR(FD_NONE),
+          echo(true), inputMode(IO::Shell::MODE_DEFAULT), currentProcess(-1) {
     }
 
     /**

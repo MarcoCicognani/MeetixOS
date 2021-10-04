@@ -89,7 +89,7 @@ public:
     void writeChar(char c, Color_t color = RGB(255, 255, 255));
     void updateCursor();
 
-    Keyboard::Info readInput(bool* cancelCondition);
+    IO::Keyboard::Info readInput(bool* cancelCondition);
 
     void workingDirectoryChanged(string str);
 };

@@ -24,9 +24,9 @@
 
 #include "Elf32Loader.hpp"
 
-#include <io/files/futils.hpp>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
+#include <Utils/File.hh>
 
 /**
  *
@@ -49,7 +49,7 @@ LoaderStatus Elf32Loader::load(uintptr_t* outEntryAddr) {
  */
 LoaderStatus Elf32Loader::readAndValidateElfHeader(FileHandle file, Elf32Ehdr* hdrBuf) {
     // read header
-    if ( !FileUtils::readBytes(file, 0, (uint8_t*)hdrBuf, sizeof(Elf32Ehdr)) ) {
+    if ( !Utils::File::read_bytes(file, 0, (uint8_t*)hdrBuf, sizeof(Elf32Ehdr)) ) {
         klog("unable to read ELF header from file %i", file);
         return LS_IO_ERROR;
     }
@@ -89,7 +89,7 @@ LoaderStatus Elf32Loader::loadImage(Elf32Ehdr* hdr) {
         uint32_t phdrLength = sizeof(Elf32Phdr);
         uint8_t  phdrBuffer[phdrLength];
 
-        if ( !FileUtils::readBytes(file, phdrOffset, phdrBuffer, phdrLength) ) {
+        if ( !Utils::File::read_bytes(file, phdrOffset, phdrBuffer, phdrLength) ) {
             klog("unable to read segment header from file");
             return LS_IO_ERROR;
         }
@@ -131,7 +131,7 @@ LoaderStatus Elf32Loader::loadTlsSegment(Elf32Phdr* phdr) {
     // read contents
     uint8_t* tlsContent = new uint8_t[numBytesCopy];
 
-    if ( !FileUtils::readBytes(file, phdr->p_offset, (uint8_t*)tlsContent, numBytesCopy) ) {
+    if ( !Utils::File::read_bytes(file, phdr->p_offset, (uint8_t*)tlsContent, numBytesCopy) ) {
         result = LS_IO_ERROR;
         klog("unable to read TLS segment");
 
@@ -197,10 +197,10 @@ LoaderStatus Elf32Loader::loadLoadSegment(Elf32Phdr* phdr) {
         }
 
         // Read file to memory
-        if ( !FileUtils::readBytes(file,
-                                   phdr->p_offset + offsetInFile,
-                                   &area[copyOffsetInArea],
-                                   copyAmount) ) {
+        if ( !Utils::File::read_bytes(file,
+                                      phdr->p_offset + offsetInFile,
+                                      &area[copyOffsetInArea],
+                                      copyAmount) ) {
             klog("unable to read LOAD segment");
             return LS_IO_ERROR;
         }

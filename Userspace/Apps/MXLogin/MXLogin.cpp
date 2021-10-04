@@ -129,7 +129,7 @@ static bool researchAccess(string username, string password, LoginMode_t mode) {
 
     // get file properties
     Utils::PropertyFileParser  parser(users_tab);
-    map<string, string> properties = parser.getProperties();
+    map<string, string> properties = parser.properties();
 
     // always close file
     users_tab.close();

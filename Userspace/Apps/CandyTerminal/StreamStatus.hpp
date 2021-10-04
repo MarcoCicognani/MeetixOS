@@ -25,7 +25,7 @@
 #ifndef _TERMINAL_SCREEN_STREAM_STATUS_
 #define _TERMINAL_SCREEN_STREAM_STATUS_
 
-#include <io/shell.hpp>
+#include <IO/Shell.hh>
 
 /**
  * Determines the state of a stream to the terminal.

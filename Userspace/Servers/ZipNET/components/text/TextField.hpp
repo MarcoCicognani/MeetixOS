@@ -30,7 +30,7 @@
 #include <components/TitledComponent.hpp>
 #include <graphics/metrics/insets.hpp>
 #include <graphics/text/textlyot.hpp>
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <list>
 #include <string>
 
@@ -131,7 +131,7 @@ public:
     /**
      * textfield
      */
-    void      backspace(Keyboard::Info& info);
+    void      backspace(IO::Keyboard::Info& info);
     void      insert(std::string text);
     int       viewToPosition(Point p);
     Rectangle glyphToView(PositionedGlyph& g);

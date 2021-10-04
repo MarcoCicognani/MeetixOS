@@ -25,7 +25,7 @@
 #include "GuiScreen.hpp"
 
 #include <Api.h>
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <list>
 #include <string.h>
 #include <Tasking/Lock.hh>
@@ -65,7 +65,7 @@ public:
      *
      */
     virtual void handleKeyEvent(KeyEvent& e) {
-        screen->bufferInput(Keyboard::instance().fullKeyInfo(e.info));
+        screen->bufferInput(IO::Keyboard::instance().full_key_info(e.info));
     }
 };
 
@@ -407,13 +407,13 @@ void GuiScreen::writeChar(char c) {
 /**
  *
  */
-Keyboard::Info GuiScreen::readInput() {
+IO::Keyboard::Info GuiScreen::readInput() {
     if ( !inputBuffer.size() )
         s_atomic_block(&inputBufferEmpty);
 
     inputBufferLock.lock();
 
-    Keyboard::Info result = inputBuffer.front();
+    IO::Keyboard::Info result = inputBuffer.front();
     inputBuffer.pop_front();
     if ( !inputBuffer.size() )
         inputBufferEmpty = true;
@@ -476,7 +476,7 @@ int GuiScreen::getCursorY() {
 /**
  *
  */
-void GuiScreen::bufferInput(const Keyboard::Info& info) {
+void GuiScreen::bufferInput(const IO::Keyboard::Info& info) {
     inputBufferLock.lock();
     inputBuffer.push_back(info);
     lastInputTime    = s_millis();

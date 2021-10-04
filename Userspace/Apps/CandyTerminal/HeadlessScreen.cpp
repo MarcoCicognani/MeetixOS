@@ -220,8 +220,8 @@ void HeadlessScreen::scroll(int value) {
 /**
  *
  */
-Keyboard::Info HeadlessScreen::readInput() {
-    return Keyboard::instance().read();
+IO::Keyboard::Info HeadlessScreen::readInput() {
+    return IO::Keyboard::instance().read();
 }
 
 /**

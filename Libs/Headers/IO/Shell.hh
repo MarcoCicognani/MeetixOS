@@ -1,26 +1,19 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
-#ifndef MEETIX_LIBRARY_IO_SHELL
-#define MEETIX_LIBRARY_IO_SHELL
+#pragma once
 
 #include <Api.h>
+#include <Tasking/Lock.hh>
 
 #define SHELL_STREAM_CONTROL_MAX_PARAMETERS 4
 
@@ -28,7 +21,7 @@
  * ASCII codes, used for escaping
  */
 #define SHELLKEY_SUB 26
-#define SHELLKEY_ESC 27
+#define SHELLKEY_ESC static_cast<char>(27)
 
 /**
  * Extended key codes, derived from ncurses
@@ -140,212 +133,153 @@
 #define SHELLKEY_RESIZE    0x200 /* Resize event has occurred */
 #define SHELLKEY_MAX       0x240 /* maximum extended key value */
 
-/**
- * Different terminal modes
- */
-typedef int ShellMode;
-#define SHELL_MODE_DEFAULT ((ShellMode)0)
-#define SHELL_MODE_RAW     ((ShellMode)1)
-#define SHELL_MODE_CBREAK  ((ShellMode)2)
+namespace IO {
+
+/* ------------------------------------------ C++ types ----------------------------------------- */
 
 /**
- * Cursor position descriptor
- */
-typedef struct _ShellCursorPosition {
-public:
-    /**
-     * filled constructor
-     *
-     * @param x:	the x position requested
-     * @param y:	the y position requested
-     */
-    _ShellCursorPosition(int x, int y) : x(x), y(y) {
-    }
-
-    /**
-     * empty constructor
-     */
-    _ShellCursorPosition() : x(0), y(0) {
-    }
-
-    /**
-     * internal data
-     */
-    int y;
-    int x;
-} ShellCursorPosition;
-
-/**
- * Shell dimension descriptor
- */
-typedef struct _ShellDimension {
-    /**
-     * filled constructor
-     *
-     * @param w:	the width size requested
-     * @param h:	the height size requested
-     */
-    _ShellDimension(int w, int h) : w(w), h(h) {
-    }
-
-    /**
-     * empty constructor
-     */
-    _ShellDimension() : w(0), h(0) {
-    }
-
-    /**
-     * internal data
-     */
-    int w;
-    int h;
-} ShellDimension;
-
-/**
- * Terminal client access class.
+ * @brief Shell singleton interface
  */
 class Shell {
-private:
+public:
     /**
-     * read unbuffered the characters from stdin
-     *
-     * @return the readed character value
+     * @brief Terminal modes
      */
-    static int readUnbuffered();
+    enum Mode
+    {
+        MODE_DEFAULT,
+        MODE_RAW,
+        MODE_CBREAK
+    };
 
     /**
-     * store to buffer the provided character
-     *
-     * @param c:	the character to store to
+     * @brief Cursor position
      */
-    static void bufferChar(int c);
+    struct CursorPosition {
+    public:
+        int m_y{ 0 };
+        int m_x{ 0 };
+
+        CursorPosition() = default;
+        CursorPosition(int x, int y) : m_x{ x }, m_y{ y } {
+        }
+    };
 
     /**
-     * reads each character from stdin until the escaping character
-     * and buffer each character to the global buffer
+     * @brief Shell dimension
      */
-    static void readAndBufferUntilESC();
+    struct Dimension {
+    public:
+        int m_width{ 0 };
+        int m_height{ 0 };
 
-    /**
-     * read the escaped parameter value from the provided array
-     *
-     * @param parameters:	the provided escaped parameters
-     * @return the last escaped parameter value
-     */
-    static int readEscapedParameters(int* parameters);
+        Dimension() = default;
+        Dimension(int width, int height) : m_width{ width }, m_height{ height } {
+        }
+    };
 
 public:
     /**
-     * set the echo of the Shell
-     *
-     * @param echo:		the activation flag
+     * @brief Returns the global singleton instance
      */
-    static void setEcho(bool echo);
+    static Shell& instance();
 
     /**
-     * set the mode of the shell
-     *
-     * @param mode:		the mode to set
+     * @brief Reads a character from the <stdin>
      */
-    static void setMode(ShellMode mode);
+    int read_char();
 
     /**
-     * get a char from stdin
-     *
-     * @return the readed value
+     * @brief Writes the given character into <stdout>
      */
-    static int getChar();
+    void write_char(int c);
 
     /**
-     * put the provided char on the stdout
-     *
-     * @param c:	the character to write
+     * @brief Moves up the cursor of <n> positions
      */
-    static void putChar(int c);
+    void move_cursor_up(int n);
 
     /**
-     * set the cursor position from provided position Object
-     *
-     * @param position:		the position to set
+     * @brief Moves down the cursor of <n> positions
      */
-    static void setCursor(const ShellCursorPosition& position);
+    void move_cursor_down(int n);
 
     /**
-     * @return the position of the cursor
+     * @brief Moves forward the cursor of <n> positions
      */
-    static ShellCursorPosition getCursor();
+    void move_cursor_forward(int n);
 
     /**
-     * move up the cursor of n positions
-     *
-     * @param n:	the number of positions to move
+     * @brief Moves back the cursor of <n> positions
      */
-    static void moveCursorUp(int n);
+    void move_cursor_back(int n);
 
     /**
-     * move down the cursor of n positions
-     *
-     * @param n:	the number of positions to move
+     * @brief Clears the shell screen
      */
-    static void moveCursorDown(int n);
+    void clear();
 
     /**
-     * move forward the cursor of n positions
-     *
-     * @param n:	the number of positions to move
+     * @brief Scrolls for the given <amount> of lines
      */
-    static void moveCursorForward(int n);
+    void scroll(int amount);
 
     /**
-     * move back the cursor of n positions
-     *
-     * @param n:	the number of positions to move
+     * @brief Toggles the shell echo of the input
      */
-    static void moveCursorBack(int n);
+    void set_echo(bool do_echo);
 
     /**
-     * @return the size of the shell screen
+     * @brief Sets the shell mode
      */
-    static ShellDimension getSize();
+    void set_mode(Mode mode);
 
     /**
-     * set the provided process as the constroller of the shell
-     *
-     * @param pid:		the pid of the process
+     * @brief Sets the cursor position on the shell buffer
      */
-    static void setControlProcess(Pid pid);
+    void set_cursor(const CursorPosition& position);
 
     /**
-     * clear the shell screen
+     * @brief Sets the control process of the shell
      */
-    static void clear();
+    void set_control_process(Pid pid);
 
     /**
-     * set the scroll area to screen
+     * @brief Sets the scroll area to the screen
      */
-    static void setScrollAreaToScreen();
+    void set_scroll_area_to_screen();
 
     /**
-     * set the scroll area to screen from parameters
-     *
-     * @param start:	the start of the scroll area
-     * @param end:		the end of the scroll area
+     * @brief Sets the scroll area to the given range
      */
-    static void setScrollArea(int start, int end);
+    void set_scroll_area(int start, int end);
 
     /**
-     * scroll for provided amount lines
-     *
-     * @param amount:	the number of line to be scrolled
+     * @brief Sets the cursor visibility
      */
-    static void scroll(int amount);
+    void set_cursor_visible(bool visible);
 
     /**
-     * set the visibility of the cursor
-     *
-     * @param visible:		the flag for visibility
+     * @brief Returns the current CursorPosition
      */
-    static void setCursorVisible(bool visible);
+    CursorPosition cursor();
+
+    /**
+     * @brief Returns the shell screen size
+     */
+    Dimension size();
+
+private:
+    int  read_unbuffered();
+    void buffer_char(int c);
+    void read_buffered_until_esc();
+    int  read_escaped_parameters(int* parameters);
+
+private:
+    int*          m_buffer{ nullptr };
+    int           m_buffer_len{ 64 };
+    int           m_buffered_chars{ 0 };
+    Tasking::Lock m_buffer_lock{};
 };
 
-#endif
+} /* namespace IO */

@@ -196,6 +196,6 @@ void HeadlessScreen::normalize() {
 /**
  *
  */
-Keyboard::Info HeadlessScreen::readInput(bool* cancelCondition) {
-    return Keyboard::instance().read(cancelCondition);
+IO::Keyboard::Info HeadlessScreen::readInput(bool* cancelCondition) {
+    return IO::Keyboard::instance().read(cancelCondition);
 }

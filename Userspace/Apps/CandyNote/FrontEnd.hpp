@@ -19,7 +19,7 @@
 #ifndef _BackEnd_H_
 #define _BackEnd_H_
 
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <string>
 
 using namespace std;
@@ -36,7 +36,7 @@ public:
 
     virtual void write(string message, string title) = 0;
 
-    virtual Keyboard::Info readInput() = 0;
+    virtual IO::Keyboard::Info readInput() = 0;
 };
 
 #endif

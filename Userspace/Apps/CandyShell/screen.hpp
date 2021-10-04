@@ -23,7 +23,7 @@
  * * * * */
 
 #include <graphics/color.hpp>
-#include <io/keyboard.hpp>
+#include <IO/Keyboard.hh>
 #include <stdint.h>
 #include <string>
 
@@ -62,7 +62,7 @@ public:
 
     virtual bool setColor(std::string color) = 0;
 
-    virtual Keyboard::Info readInput(bool* cancelCondition) = 0;
+    virtual IO::Keyboard::Info readInput(bool* cancelCondition) = 0;
 
     virtual void workingDirectoryChanged(std::string str) {
     }

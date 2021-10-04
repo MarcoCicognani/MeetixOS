@@ -60,7 +60,7 @@ void ButtonMenu::getMapFromPath(const string& path) {
 
     // parse it and copy to local configuration
     Utils::PropertyFileParser parser(file);
-    cfg = parser.getProperties();
+    cfg = parser.properties();
 
     // closing file
     file.close();

@@ -43,7 +43,7 @@ public:
      *
      */
     virtual void
-    moveCaret(TextComponent_t* component, CaretDirection_t direction, Keyboard::Info& keyInfo);
+    moveCaret(TextComponent_t* component, CaretDirection_t direction, IO::Keyboard::Info& keyInfo);
 
     /**
      *

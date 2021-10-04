@@ -262,15 +262,15 @@ void TextField_t::setMarker(int pos) {
 /**
  *
  */
-void TextField_t::backspace(Keyboard::Info& info) {
+void TextField_t::backspace(IO::Keyboard::Info& info) {
     if ( text.length() > 0 ) {
         Range selected = getSelectedRange();
 
         int leftcut = selected.getFirst();
-        if ( info.alt )
+        if ( info.m_alt )
             leftcut = caretMoveStrategy->calculateSkip(text, leftcut, CaretDirection_t::LEFT);
 
-        else if ( info.ctrl )
+        else if ( info.m_ctrl )
             leftcut = 0;
 
         int rightcut = selected.getLast();
@@ -323,9 +323,9 @@ bool TextField_t::handle(Event_t& event) {
     KeyEvent_t* keyEvent = dynamic_cast<KeyEvent_t*>(&event);
     if ( keyEvent ) {
         if ( keyEvent->info.key == "KEY_SHIFT_L" )
-            shiftDown = keyEvent->info.pressed;
+            shiftDown = keyEvent->info.m_is_pressed;
 
-        if ( keyEvent->info.pressed ) {
+        if ( keyEvent->info.m_is_pressed ) {
             if ( keyEvent->info.key == "KEY_BACKSPACE" )
                 backspace(keyEvent->info);
 
@@ -335,14 +335,14 @@ bool TextField_t::handle(Event_t& event) {
             else if ( keyEvent->info.key == "KEY_ARROW_RIGHT" )
                 caretMoveStrategy->moveCaret(this, CaretDirection_t::RIGHT, keyEvent->info);
 
-            else if ( keyEvent->info.key == "KEY_A" && keyEvent->info.ctrl ) {
+            else if ( keyEvent->info.key == "KEY_A" && keyEvent->info.m_ctrl ) {
                 marker = 0;
                 cursor = text.length();
                 markFor(COMPONENT_REQUIREMENT_PAINT);
             }
 
             else {
-                char c = Keyboard::instance().charForKey(keyEvent->info);
+                char c = IO::Keyboard::instance().char_for_key(keyEvent->info);
 
                 if ( c != -1 ) {
                     std::stringstream s;

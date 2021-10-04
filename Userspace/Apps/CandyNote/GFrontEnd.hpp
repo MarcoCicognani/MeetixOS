@@ -53,7 +53,7 @@ public:
 
     virtual void write(string message, string title);
 
-    virtual Keyboard::Info readInput();
+    virtual IO::Keyboard::Info readInput();
 
 private:
     void initialize();

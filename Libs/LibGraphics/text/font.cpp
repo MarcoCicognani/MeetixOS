@@ -19,8 +19,8 @@
 
 #include <graphics/text/font.hpp>
 #include <graphics/text/fontmgr.hpp>
-#include <io/files/futils.hpp>
-#include <string.h>
+#include <cstring>
+#include <Utils/File.hh>
 #include <Utils/Utils.hh>
 
 /**
@@ -105,7 +105,7 @@ Font_t* Font_t::fromFile(FILE* in, const std::string& name) {
 
     // read the file
     auto fileContent = new uint8_t[length];
-    if ( !FileUtils::tryReadBytes(in, 0, fileContent, length) ) {
+    if ( !Utils::File::try_read_bytes(in, 0, fileContent, length) ) {
         delete[] fileContent;
         return nullptr;
     }

@@ -87,7 +87,7 @@ void ZipNET::launch() {
 
     std::string keyLayout = "it-EU";
     Utils::log("loading keyboard layout '%s'", keyLayout.c_str());
-    if ( !Keyboard::instance().loadLayout(keyLayout) )
+    if ( !IO::Keyboard::instance().load_layout(keyLayout) )
         Utils::log("failed to load keyboard layout '%s', no keyboard input available",
                    keyLayout.c_str());
 

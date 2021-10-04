@@ -51,7 +51,7 @@ EventProcessor::EventProcessor() {
 /**
  *
  */
-void EventProcessor::bufferKeyEvent(Keyboard::Info keyInfo) {
+void EventProcessor::bufferKeyEvent(IO::Keyboard::Info keyInfo) {
     keyInfoBuffer.push_back(keyInfo);
 }
 
@@ -669,7 +669,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
 /**
  *
  */
-void EventProcessor::translateKeyEvent(Keyboard::Info& info) {
+void EventProcessor::translateKeyEvent(IO::Keyboard::Info& info) {
     if ( Cursor::instance().focusedComponent ) {
         // process
         KeyEvent_t k;

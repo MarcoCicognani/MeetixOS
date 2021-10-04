@@ -26,8 +26,8 @@
 
 #include <Api.h>
 #include <components/cursor.hpp>
-#include <io/keyboard.hpp>
-#include <io/mouse.hpp>
+#include <IO/Keyboard.hh>
+#include <IO/Mouse.hh>
 
 /**
  *
@@ -43,9 +43,9 @@ void InputReceiver::initialize() {
 void InputReceiver::startReceiveKeyEvents() {
     EventProcessor* eventQueue = ZipNET::instance()->eventProcessor;
 
-    Keyboard::Info info;
+    IO::Keyboard::Info info;
     while ( true ) {
-        info = Keyboard::instance().read();
+        info = IO::Keyboard::instance().read();
         eventQueue->bufferKeyEvent(info);
 
         ZipNET::instance()->triggerRender();
@@ -60,12 +60,12 @@ void InputReceiver::startReceiveMouseEvents() {
     EventProcessor* eventQueue = instance->eventProcessor;
     Dimension       resolution = instance->videoOutput->getResolution();
 
-    Mouse::Info info;
+    IO::Mouse::Info info;
     while ( true ) {
-        info = Mouse::read();
+        info = IO::Mouse::instance().read();
 
-        Cursor::instance().nextPosition.x += info.x;
-        Cursor::instance().nextPosition.y -= info.y;
+        Cursor::instance().nextPosition.x += info.m_x;
+        Cursor::instance().nextPosition.y -= info.m_y;
 
         if ( Cursor::instance().nextPosition.x < 0 )
             Cursor::instance().nextPosition.x = 0;
@@ -77,11 +77,11 @@ void InputReceiver::startReceiveMouseEvents() {
             Cursor::instance().nextPosition.y = resolution.height - 2;
 
         Cursor::instance().nextPressedButtons = MOUSE_BUTTON_NONE;
-        if ( info.button1 )
+        if ( info.m_button1 )
             Cursor::instance().nextPressedButtons |= MOUSE_BUTTON_1;
-        if ( info.button2 )
+        if ( info.m_button2 )
             Cursor::instance().nextPressedButtons |= MOUSE_BUTTON_2;
-        if ( info.button3 )
+        if ( info.m_button3 )
             Cursor::instance().nextPressedButtons |= MOUSE_BUTTON_3;
 
         ZipNET::instance()->triggerRender();

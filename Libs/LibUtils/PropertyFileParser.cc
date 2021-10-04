@@ -31,7 +31,7 @@ PropertyFileParser::PropertyFileParser(const std::string& content) {
     init(content);
 }
 
-std::map<std::string, std::string> PropertyFileParser::getProperties() {
+std::map<std::string, std::string> PropertyFileParser::properties() {
     std::map<std::string, std::string> properties;
 
     /* parse the file */

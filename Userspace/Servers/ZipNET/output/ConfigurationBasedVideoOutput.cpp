@@ -46,7 +46,7 @@ bool ConfigurationBasedVideoOutput_t::initialize() {
 
     // parse it
     Utils::PropertyFileParser  parser(in);
-    map<string, string> properties = parser.getProperties();
+    map<string, string> properties = parser.properties();
 
     uint32_t width  = 0;
     uint32_t height = 0;
