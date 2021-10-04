@@ -53,10 +53,10 @@ void stdio_fini() {
     auto stream = g_open_stream_list;
     while ( stream ) {
         auto next_stream = stream->m_next_stream;
-        if ( s_atomic_try_lock(&next_stream->m_lock) ) {
+        if ( s_atomic_try_lock(&stream->m_lock) ) {
             fflush_unlocked(stream);
             fclose_static_unlocked(stream);
-            next_stream->m_lock = false;
+            stream->m_lock = false;
         }
         stream = next_stream;
     }
