@@ -14,6 +14,8 @@
 
 #include <Api/Common.h>
 #include <dir.h>
+#include <stdint.h>
+#include <sys/types.h>
 
 __BEGIN_C
 

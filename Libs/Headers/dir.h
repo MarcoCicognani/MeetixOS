@@ -15,8 +15,6 @@
 #include <Api/Common.h>
 #include <Api/FileSystem.h>
 #include <dirent.h>
-#include <stdint.h>
-#include <sys/types.h>
 
 __BEGIN_C
 
