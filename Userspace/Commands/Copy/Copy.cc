@@ -17,7 +17,7 @@
 
 #define VERSION "0.0.1"
 
-int show_usages(int, char** argv) {
+int show_usages(int, const char** argv) {
     std::cout << "Copy Utility v" << VERSION << '\n';
     std::cout << "Usage:\n";
     std::cout << "\t" << argv[0] << " Source Destination\n";
@@ -28,7 +28,7 @@ int show_usages(int, char** argv) {
     return EXIT_SUCCESS;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, const char* argv[]) {
     /* show help/usages if request by the command-line */
     if ( getopt_is_help(argc, argv) || argc != 3 )
         return show_usages(argc, argv);

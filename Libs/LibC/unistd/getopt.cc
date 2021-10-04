@@ -40,7 +40,7 @@ static int has_long_arg(const char** arg, const struct option* long_opts, int* v
     return -1;
 }
 
-bool getopt_is_help(int argc, char** argv) {
+bool getopt_is_help(int argc, const char** argv) {
     if ( argc <= 1 )
         return false;
 

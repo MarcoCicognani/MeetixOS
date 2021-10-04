@@ -82,6 +82,6 @@ int   symlink(const char*, const char*);
 int   getopt(int, const char**, const char*);
 int   getopt_long(int, const char**, const char*, struct option*, int*);
 usize getopt_to_size(const char*);
-bool  getopt_is_help(int, char**);
+bool  getopt_is_help(int, const char**);
 
 __END_C
