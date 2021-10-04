@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void usage(const char* cmdname) {
+void show_usages(const char* cmdname) {
     println("");
     println("%s command utility", cmdname);
     println("usage: %s [option]", cmdname);
@@ -35,13 +35,13 @@ void usage(const char* cmdname) {
  */
 int main(int argc, char* argv[]) {
     if ( argc < 2 ) {
-        usage(argv[0]);
+        show_usages(argv[0]);
     } else if ( !strcmp(argv[1], "-s") || !strcmp(argv[1], "--shutdown") ) {
         s_shutdown_system();
     } else if ( !strcmp(argv[1], "-r") || !strcmp(argv[1], "--reboot") ) {
         s_reboot_system();
     } else {
-        usage(argv[0]);
+        show_usages(argv[0]);
     }
     return 0;
 }

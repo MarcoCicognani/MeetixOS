@@ -24,7 +24,7 @@
 /**
  * show the usage of the command
  */
-int usage(const char* cmdname) {
+int show_usages(const char* cmdname) {
     println("%s command:", cmdname);
     println("usage: %s [-v][test]", cmdname);
     println("Avaible tests:");
@@ -67,9 +67,9 @@ int main(int argc, const char* argv[]) {
             case 'v':
                 verbose = true;
             case 'h':
-                return usage(argv[0]);
+                return show_usages(argv[0]);
             case '?':
-                return usage(argv[0]);
+                return show_usages(argv[0]);
         }
     }
 

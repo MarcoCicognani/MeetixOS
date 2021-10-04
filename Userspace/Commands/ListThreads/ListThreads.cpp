@@ -30,7 +30,7 @@ using CompareFn = bool (*)(const ThreadDescriptor& task1, const ThreadDescriptor
 /*
  * show the usage of command
  */
-void usage(const char* cmd_name) {
+void show_usages(const char* cmd_name) {
     println("");
     println("Thread List utility");
     println("Usage: %s [filter]", cmd_name);
@@ -118,7 +118,7 @@ int main(int argc, const char* argv[]) {
     }
 
     else
-        usage(argv[0]);
+        show_usages(argv[0]);
 
     return 0;
 }

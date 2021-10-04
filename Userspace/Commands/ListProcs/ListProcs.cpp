@@ -103,7 +103,7 @@ void show_processes(CompareFn compare, bool useMegabytes) {
 /*
  * print on screen the help
  */
-void usage(const char* cmd_name) {
+void show_usages(const char* cmd_name) {
     println("");
     println("Process List utility");
     println("Usage: %s [filter]", cmd_name);
@@ -161,7 +161,7 @@ int main(int argc, const char* argv[]) {
     if ( !show_help ) {
         show_processes(compare_fn, useMegabytes);
     } else {
-        usage(argv[0]);
+        show_usages(argv[0]);
     }
 
     return 0;

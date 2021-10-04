@@ -36,8 +36,6 @@ int main(int argc, const char** argv) {
         case 'n':
             print_newline = false;
             break;
-        default:
-            return show_usages(argc, argv);
     }
 
     if ( argc == 1 ) {
@@ -45,7 +43,7 @@ int main(int argc, const char** argv) {
         while ( std::cin.read(&c, 1) )
             std::cout << c;
     } else {
-        for ( auto i = optind; i < argc; ++i )
+        for ( auto i = 1; i < argc; ++i )
             std::cout << argv[i] << " ";
 
         if ( print_newline )

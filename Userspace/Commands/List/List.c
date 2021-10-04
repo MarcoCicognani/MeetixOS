@@ -103,7 +103,7 @@ void printNode(FsDirectoryEntry* node, bool all, bool list) {
 /*
  * print the help
  */
-void usage(const char* cmdname) {
+void show_usages(const char* cmdname) {
     println("");
     println("Filesystem explorer command utility");
     println("usage: %s [filter] [path]", cmdname);
@@ -200,7 +200,7 @@ int main(int argc, const char* argv[]) {
     }
 
     else
-        usage(argv[0]);
+        show_usages(argv[0]);
 
     return 0;
 }

@@ -26,7 +26,7 @@
 /*
  * show the help
  */
-void usage(const char* cmdname) {
+void show_usages(const char* cmdname) {
     println("");
     println("File Reader command utility");
     println("usage: %s -opt <file>", cmdname);
@@ -107,5 +107,5 @@ int main(int argc, const char* argv[]) {
     }
 
     else
-        usage(argv[0]);
+        show_usages(argv[0]);
 }

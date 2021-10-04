@@ -26,7 +26,7 @@
 /*
  * show help
  */
-void usage(const char* cmdname) {
+void show_usages(const char* cmdname) {
     println("");
     println("%s command utility", cmdname);
     println("usage: %s <file.gz> [estract the gz file]", cmdname);
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
     }
 
     else
-        usage(argv[0]);
+        show_usages(argv[0]);
 
     return 0;
 }

@@ -26,7 +26,7 @@
 /*
  * show the help
  */
-void usage(const char* cmdname) {
+void show_usages(const char* cmdname) {
     println("");
     println("s_kill command utility");
     println("");
@@ -113,7 +113,7 @@ int main(int argc, const char* argv[]) {
     }
 
     else
-        usage(argv[0]);
+        show_usages(argv[0]);
 
     return 0;
 }
