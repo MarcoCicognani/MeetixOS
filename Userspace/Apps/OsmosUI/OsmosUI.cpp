@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
         // get resolution from windowserver
         Dimension resolution = UI::getResolution();
 
-        auto user_name = Utils::Environment::getLoggedUser();
+        auto user_name = Utils::Environment::logged_user();
         user_name[0]   = static_cast<char>(toupper(user_name[0]));
 
         // configure ui with script

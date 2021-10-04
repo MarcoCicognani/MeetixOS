@@ -229,7 +229,7 @@ void configureLabels() {
     info2->setBounds(Rectangle(resolution.width - 90, resolution.height - 30, 200, 30));
     info2->setFont("consolas");
     info2->setColor(0, RGB(0, 0, 0));
-    info2->setTitle(Utils::Environment::getHostname() + "//");
+    info2->setTitle(Utils::Environment::hostname() + "//");
     loginWindow->addChild(info2);
 }
 

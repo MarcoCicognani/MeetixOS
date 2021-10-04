@@ -52,16 +52,20 @@ void set(const std::string& key, const std::string& value) {
         log("setEnvVar: failed to s_spawn mx process");
 }
 
-std::string getLoggedUser() {
+std::string logged_user() {
     return get("USER");
 }
 
-std::string getHostname() {
+std::string hostname() {
     return get("HOSTNAME");
 }
 
-std::string getTheme() {
+std::string theme() {
     return get("THEME");
+}
+
+std::string version() {
+    return get("VERSION");
 }
 
 } /* namespace Utils::Environment */

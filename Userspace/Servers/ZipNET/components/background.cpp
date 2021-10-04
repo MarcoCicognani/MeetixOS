@@ -34,7 +34,7 @@ Background_t::Background_t(Rectangle bounds) {
     setZIndex(0);
 
     surface = cairo_image_surface_create_from_png(
-        ("/MeetiX/Configs/WM/Backgrounds/" + Utils::Environment::getTheme() + ".png").c_str());
+        ("/MeetiX/Configs/WM/Backgrounds/" + Utils::Environment::theme() + ".png").c_str());
 }
 
 /**

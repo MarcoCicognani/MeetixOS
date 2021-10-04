@@ -262,8 +262,8 @@ void CandyShell::readWorkingDirectory() {
  *
  */
 void CandyShell::run(CreateShellInfo* inf) {
-    hostname       = Utils::Environment::getHostname();
-    currentUser    = Utils::Environment::getLoggedUser();
+    hostname       = Utils::Environment::hostname();
+    currentUser    = Utils::Environment::logged_user();
     currentUser[0] = static_cast<char>(toupper(currentUser[0]));
     homeDirectory  = "/Users/" + currentUser;
 

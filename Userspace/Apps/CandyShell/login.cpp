@@ -68,7 +68,7 @@ void Login::lockLogin() {
         createAmbient();
         ShellInputStatus st;
 
-        user = Utils::Environment::getLoggedUser();
+        user = Utils::Environment::logged_user();
 
         out->write(' ' + user, RGB(255, 255, 255));
         out->updateCursor();

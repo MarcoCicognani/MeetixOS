@@ -208,7 +208,7 @@ void OsmosUI::setMenuTab() {
         menuTab->setColor(ARGB(150, 0, 0, 0), ARGB(255, 0, 255, 0));
 
     // get username
-    loggedUser = Utils::Environment::getLoggedUser();
+    loggedUser = Utils::Environment::logged_user();
 
     // set title of start menu
     menuTab->setTitle("MeetiX OS " + Utils::Environment::get("VERSION") + " [" + loggedUser + "]");

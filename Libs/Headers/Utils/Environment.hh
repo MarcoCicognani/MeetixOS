@@ -32,16 +32,21 @@ void set(const std::string& key, const std::string& value);
 /**
  * @brief Returns the currently logged username
  */
-std::string getLoggedUser();
+std::string logged_user();
 
 /**
  * @brief Returns the hostname
  */
-std::string getHostname();
+std::string hostname();
 
 /**
  * @brief Returns the current GUI theme
  */
-std::string getTheme();
+std::string theme();
+
+/**
+ * @brief Returns the current OS version
+ */
+std::string version();
 
 } /* namespace Utils::Environment */
