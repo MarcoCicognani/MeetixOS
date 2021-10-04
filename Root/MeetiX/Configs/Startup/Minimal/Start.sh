@@ -8,7 +8,7 @@ printf:"Starting video driver"
 driver:"/MeetiX/Kernel/Servers/VBE.sv"
 wait:"vbe"
 
-printf:"Starting zipNET windowserver"
+printf:"Starting zipNET WindowServer"
 exec:"/MeetiX/Kernel/Servers/ZipNET.sv"
 wait:"ZipNET::registration"
 
