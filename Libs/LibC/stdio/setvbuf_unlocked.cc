@@ -20,10 +20,11 @@ int setvbuf_unlocked(FILE* stream, char* buffer, int mode, usize size) {
     if ( (stream->m_buffer_mode != _IONBF) && stream->m_io_buffer
          && (stream->m_flags & FILE_FLAG_BUFFER_OWNER_LIBRARY) ) {
         delete[] stream->m_io_buffer;
+        stream->m_io_buffer = nullptr;
     }
 
     /* create buffer if necessary */
-    if ( !buffer ) {
+    if ( !buffer && mode != _IONBF ) {
         /* normalize buffer size */
         if ( !size ) {
             size = BUFSIZ;

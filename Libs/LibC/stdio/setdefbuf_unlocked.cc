@@ -16,11 +16,11 @@
 
 int setdefbuf_unlocked(FILE* stream) {
     /* try to set the buffer */
-    if ( setvbuf_unlocked(stream, 0, _IOFBF, BUFSIZ) == 0 )
+    if ( setvbuf_unlocked(stream, nullptr, _IOFBF, BUFSIZ) == 0 )
         return 0;
 
     /* failed, try to make unbuffered */
-    if ( setvbuf_unlocked(stream, 0, _IONBF, BUFSIZ) == 0 )
+    if ( setvbuf_unlocked(stream, nullptr, _IONBF, BUFSIZ) == 0 )
         return 0;
 
     return EOF;
