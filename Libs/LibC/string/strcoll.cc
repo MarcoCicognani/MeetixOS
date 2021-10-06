@@ -14,7 +14,7 @@
 #include <Api/Common.h>
 #include <string.h>
 
-int strcoll(const char*, const char*) {
+extern "C" int strcoll(const char*, const char*) {
     __NOT_IMPLEMENTED(strcoll);
     return -1;
 }

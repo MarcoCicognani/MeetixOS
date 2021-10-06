@@ -12,7 +12,7 @@
 
 #include <string.h>
 
-usize strcspn(const char* str, const char* chars) {
+extern "C" usize strcspn(const char* str, const char* chars) {
     auto ret = 0;
     while ( *str ) {
         if ( strchr(chars, *str) )

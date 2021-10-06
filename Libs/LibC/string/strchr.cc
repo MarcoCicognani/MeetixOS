@@ -12,7 +12,7 @@
 
 #include <string.h>
 
-char* strchr(const char* str, int c) {
+extern "C" char* strchr(const char* str, int c) {
     while ( *str ) {
         if ( *str == c )
             return const_cast<char*>(str);

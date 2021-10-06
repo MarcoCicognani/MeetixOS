@@ -12,17 +12,13 @@
 
 #include <string.h>
 
-void* memmove(void* dest, const void* src, usize num) {
-    if ( dest > src ) {
-        auto src_byte = reinterpret_cast<const u8*>(src) + num - 1;
-        auto dst_byte = reinterpret_cast<u8*>(dest) + num - 1;
-        while ( num-- )
-            *dst_byte-- = *src_byte--;
-    } else {
-        auto src_byte = reinterpret_cast<const u8*>(src);
-        auto dst_byte = reinterpret_cast<u8*>(dest);
-        while ( num-- )
-            *dst_byte++ = *src_byte++;
-    }
+extern "C" void* memmove(void* dest, const void* src, usize num) {
+    if ( (reinterpret_cast<usize>(dest) - reinterpret_cast<usize>(src)) >= num )
+        return memcpy(dest, src, num);
+
+    auto dst_byte = reinterpret_cast<u8*>(dest);
+    auto src_byte = reinterpret_cast<const u8*>(src);
+    for ( dst_byte += num, src_byte += num; --num; )
+        *--dst_byte = *--src_byte;
     return dest;
 }

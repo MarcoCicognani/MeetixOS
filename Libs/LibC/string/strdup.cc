@@ -13,7 +13,7 @@
 #ifndef LIBC_BUILDING_LIBSTDCXX
 #    include <string.h>
 
-char* strdup(const char* src) {
+extern "C" char* strdup(const char* src) {
     auto src_len = strlen(src);
     auto dest    = new char[src_len + 1];
 
@@ -23,7 +23,7 @@ char* strdup(const char* src) {
 #else
 #    include <string.h>
 
-char* strdup(const char*) {
+extern "C" char* strdup(const char*) {
     return nullptr;
 }
 #endif

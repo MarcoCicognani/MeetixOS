@@ -12,11 +12,8 @@
 
 #include <string.h>
 
-void* memcpy(void* dest, const void* src, usize num) {
-    auto dst_byte = reinterpret_cast<u8*>(dest);
-    auto src_byte = reinterpret_cast<const u8*>(src);
-
-    while ( num-- )
-        *dst_byte++ = *src_byte++;
-    return dest;
+extern "C" void* memcpy(void* dest, const void* src, usize num) {
+    auto dest_ptr = dest;
+    asm volatile("rep movsb" : "+D"(dest), "+S"(src), "+c"(num)::"memory");
+    return dest_ptr;
 }
