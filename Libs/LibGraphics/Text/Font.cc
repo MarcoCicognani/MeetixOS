@@ -24,8 +24,7 @@ Font::Font(const std::string& name, u8* source, usize len, Style font_style)
     : m_name{ name }, m_data{ nullptr }, m_freetype_face{ nullptr }, m_is_loaded{ false },
       m_font_style{ font_style }, m_active_size{ 0 } {
     /* copy the font source-data into the local data */
-    m_data = new u8[len];
-    std::memcpy(m_data, source, len);
+    m_data = source;
 
     /* load the freetype2 font-face */
     auto ft_status = FT_New_Memory_Face(FontManager::instance().freetype_library(),
@@ -61,7 +60,7 @@ Font* Font::from_file(std::ifstream& in, const std::string& name) {
         return font;
 
     /* read all the file-content and store it in ss */
-    std::basic_stringstream<u8> ss;
+    std::stringstream ss;
     ss << in.rdbuf();
 
     /* copy to the raw-content buffer */
