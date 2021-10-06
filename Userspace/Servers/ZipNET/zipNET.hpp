@@ -32,7 +32,7 @@
 #include "interface/CommandMessageResponderThread.hpp"
 #include "output/VideoOutput.hpp"
 
-#include <graphics/graphics.hpp>
+#include <Graphics/Context.hh>
 
 /**
  *
@@ -45,7 +45,7 @@ public:
     Background_t*                  background;
     CommandMessageResponderThread* m_responder_thread;
     bool                           renderAtom;
-    Graphics                       global;
+    Graphics::Context              global;
 
     /**
      * Sets up the windowing system by configuring a video output, setting up the
@@ -57,12 +57,12 @@ public:
     /**
      *
      */
-    [[noreturn]] void mainLoop(Rectangle screenBounds);
+    [[noreturn]] void mainLoop(Graphics::Metrics::Rectangle screenBounds);
 
     /**
      * Blits the component state.
      */
-    void blit(Graphics* graphics);
+    void blit(Graphics::Context* graphics);
 
     /**
      * Dispatches the given event to the component.

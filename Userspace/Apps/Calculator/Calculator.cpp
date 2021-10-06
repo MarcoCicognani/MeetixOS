@@ -102,8 +102,8 @@ int main(int argc, char* argv[]) {
 
         // configure window
         window = Window::create();
-        window->setBounds(Rectangle(70, 70, 195, 300));
-        window->setColor(RGB(0, 180, 0), ARGB(255, 255, 255, 255));
+        window->setBounds(Graphics::Metrics::Rectangle(70, 70, 195, 300));
+        window->setColor(Graphics::Color::as_rgb(0, 180, 0), Graphics::Color::as_argb(255, 255, 255, 255));
         window->setTitle("Calculator");
         window->setResizable(false);
         window->onClose([] { blocker = false; });
@@ -111,8 +111,8 @@ int main(int argc, char* argv[]) {
         // configure display
         display = Textfield::create();
         display->setTitle("0");
-        display->setBounds(Rectangle(10, 10, 150, 30));
-        display->setColor(ARGB(120, 0, 0, 0), RGB(255, 255, 255));
+        display->setBounds(Graphics::Metrics::Rectangle(10, 10, 150, 30));
+        display->setColor(Graphics::Color::as_argb(120, 0, 0, 0), Graphics::Color::as_rgb(255, 255, 255));
         window->addChild(display);
 
         // add to list buttons
@@ -136,87 +136,87 @@ int main(int argc, char* argv[]) {
 
         // configure number buttons
         keyBoard.configure("0",
-                           Rectangle(grid2, grid5 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid2, grid5 + dispOff, 30, 30),
                            "0",
-                           RGB(0, 200, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(0, 200, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("1",
-                           Rectangle(grid1, grid2 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid1, grid2 + dispOff, 30, 30),
                            "1",
-                           RGB(0, 200, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(0, 200, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("2",
-                           Rectangle(grid2, grid2 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid2, grid2 + dispOff, 30, 30),
                            "2",
-                           RGB(0, 200, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(0, 200, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("3",
-                           Rectangle(grid3, grid2 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid3, grid2 + dispOff, 30, 30),
                            "3",
-                           RGB(0, 200, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(0, 200, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("4",
-                           Rectangle(grid1, grid3 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid1, grid3 + dispOff, 30, 30),
                            "4",
-                           RGB(0, 200, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(0, 200, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("5",
-                           Rectangle(grid2, grid3 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid2, grid3 + dispOff, 30, 30),
                            "5",
-                           RGB(0, 200, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(0, 200, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("6",
-                           Rectangle(grid3, grid3 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid3, grid3 + dispOff, 30, 30),
                            "6",
-                           RGB(0, 200, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(0, 200, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("7",
-                           Rectangle(grid1, grid4 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid1, grid4 + dispOff, 30, 30),
                            "7",
-                           RGB(0, 200, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(0, 200, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("8",
-                           Rectangle(grid2, grid4 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid2, grid4 + dispOff, 30, 30),
                            "8",
-                           RGB(0, 200, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(0, 200, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("9",
-                           Rectangle(grid3, grid4 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid3, grid4 + dispOff, 30, 30),
                            "9",
-                           RGB(0, 200, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(0, 200, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
 
         // configure control buttons
         keyBoard.configure("C",
-                           Rectangle(grid1, grid1 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid1, grid1 + dispOff, 30, 30),
                            "C",
-                           RGB(200, 0, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(200, 0, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("+",
-                           Rectangle(grid4, grid1 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid4, grid1 + dispOff, 30, 30),
                            "+",
-                           RGB(200, 0, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(200, 0, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("-",
-                           Rectangle(grid4, grid2 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid4, grid2 + dispOff, 30, 30),
                            "-",
-                           RGB(200, 0, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(200, 0, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("*",
-                           Rectangle(grid4, grid3 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid4, grid3 + dispOff, 30, 30),
                            "*",
-                           RGB(200, 0, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(200, 0, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("/",
-                           Rectangle(grid4, grid4 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid4, grid4 + dispOff, 30, 30),
                            "/",
-                           RGB(200, 0, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(200, 0, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
         keyBoard.configure("=",
-                           Rectangle(grid4, grid5 + dispOff, 30, 30),
+                           Graphics::Metrics::Rectangle(grid4, grid5 + dispOff, 30, 30),
                            "=",
-                           RGB(200, 0, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(200, 0, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
 
         // show the window application
         window->setVisible(true);

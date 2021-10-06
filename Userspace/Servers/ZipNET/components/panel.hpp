@@ -38,7 +38,7 @@ private:
 
 public:
     Panel_t() {
-        shapeColor = ARGB(0, 0, 0, 0);
+        shapeColor = Graphics::Color::as_argb(0, 0, 0, 0);
     }
     virtual ~Panel_t() {
     }
@@ -54,15 +54,15 @@ public:
     /*
      * colored component
      */
-    virtual void setColor(Color_t color, Color_t tltColor) {
+    virtual void setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor) {
         shapeColor = color;
     }
 
     /*
      * panel methods
      */
-    void    setBackground(Color_t color);
-    Color_t getBackground() {
+    void    setBackground(Graphics::Color::ArgbGradient color);
+    Graphics::Color::ArgbGradient getBackground() {
         return getColor();
     }
 };

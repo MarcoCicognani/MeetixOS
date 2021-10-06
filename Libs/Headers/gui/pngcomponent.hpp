@@ -22,7 +22,7 @@
 
 #include <Api.h>
 #include <cstdint>
-#include <graphics/color.hpp>
+#include <Graphics/Color.hh>
 #include <gui/component.hpp>
 #include <gui/ui.hpp>
 #include <gui/uispech.hpp>
@@ -48,7 +48,7 @@ public:
     /**
      *
      */
-    virtual bool setPNG(std::string path, Point pngPosition);
+    virtual bool setPNG(std::string path, Graphics::Metrics::Point pngPosition);
 };
 
 #endif

@@ -60,7 +60,7 @@ CanvasBufferInfo Canvas::getBuffer() {
 
     else {
         // return buffer
-        info.buffer = (Color_t*)(currentBuffer + sizeof(UiCanvasSharedMemoryHeader));
+        info.buffer = (Graphics::Color::ArgbGradient*)(currentBuffer + sizeof(UiCanvasSharedMemoryHeader));
         UiCanvasSharedMemoryHeader* header = (UiCanvasSharedMemoryHeader*)currentBuffer;
         info.width                         = header->paintableWidth;
         info.height                        = header->paintableHeight;
@@ -95,16 +95,16 @@ void Canvas::acknowledgeNewBuffer(Address address) {
 /**
  *
  */
-void Canvas::blit(Rectangle rect) {
+void Canvas::blit(Graphics::Metrics::Rectangle rect) {
     if ( currentBuffer == 0 )
         return;
 
     // write blit parameters
     UiCanvasSharedMemoryHeader* header = (UiCanvasSharedMemoryHeader*)currentBuffer;
-    header->blitX                      = rect.x;
-    header->blitY                      = rect.y;
-    header->blitWidth                  = rect.width;
-    header->blitHeight                 = rect.height;
+    header->blitX                      = rect.x();
+    header->blitY                      = rect.y();
+    header->blitWidth                  = rect.width();
+    header->blitHeight                 = rect.height();
 
     // send blit message
     MessageTransaction tx = s_get_message_tx_id();

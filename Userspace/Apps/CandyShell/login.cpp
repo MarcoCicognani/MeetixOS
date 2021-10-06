@@ -70,12 +70,12 @@ void Login::lockLogin() {
 
         user = Utils::Environment::logged_user();
 
-        out->write(' ' + user, RGB(255, 255, 255));
+        out->write(' ' + user, Graphics::Color::as_rgb(255, 255, 255));
         out->updateCursor();
 
         passwd.clear();
 
-        out->write("\n PassWord: ", RGB(255, 255, 255));
+        out->write("\n PassWord: ", Graphics::Color::as_rgb(255, 255, 255));
         out->updateCursor();
         passwd = lockLogin->readInput(passwd, out, &st, 0, false);
 
@@ -83,7 +83,7 @@ void Login::lockLogin() {
             break;
 
         else {
-            out->write("\n Wrong PassWord", RGB(255, 255, 255));
+            out->write("\n Wrong PassWord", Graphics::Color::as_rgb(255, 255, 255));
             out->updateCursor();
             s_sleep(750);
         }
@@ -104,13 +104,13 @@ void Login::loginLoop() {
 
         user.clear();
 
-        out->write(" UserName: ", RGB(255, 255, 255));
+        out->write(" UserName: ", Graphics::Color::as_rgb(255, 255, 255));
         out->updateCursor();
         user = loginShell->readInput(user, out, &status, 0);
 
         passwd.clear();
 
-        out->write("\n PassWord: ", RGB(255, 255, 255));
+        out->write("\n PassWord: ", Graphics::Color::as_rgb(255, 255, 255));
         out->updateCursor();
         passwd = loginShell->readInput(passwd, out, &status, 0, false);
 
@@ -118,7 +118,7 @@ void Login::loginLoop() {
             break;
 
         else {
-            out->write("\n Wrong UserName or PassWord", RGB(255, 0, 0));
+            out->write("\n Wrong UserName or PassWord", Graphics::Color::as_rgb(255, 0, 0));
             out->updateCursor();
             s_sleep(750);
         }
@@ -146,9 +146,9 @@ void Login::loadLogo(const char* path) {
     ifstream logoptfile(path);
     if ( logoptfile.good() ) {
         string loginlogo((istreambuf_iterator<char>(logoptfile)), istreambuf_iterator<char>());
-        out->write(loginlogo, RGB(0, 200, 0));
+        out->write(loginlogo, Graphics::Color::as_rgb(0, 200, 0));
 
-        out->write("\n", RGB(255, 255, 255));
+        out->write("\n", Graphics::Color::as_rgb(255, 255, 255));
         logoptfile.close();
     }
 }

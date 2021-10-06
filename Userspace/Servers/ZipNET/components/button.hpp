@@ -32,8 +32,8 @@
 #include <components/label.hpp>
 #include <components/PngComponent.hpp>
 #include <components/TitledComponent.hpp>
-#include <graphics/metrics/insets.hpp>
-#include <graphics/text/font.hpp>
+#include <Graphics/Metrics/Insets.hh>
+#include <Graphics/Text/Font.hh>
 #include <string>
 
 /**
@@ -45,16 +45,16 @@ class Button_t : public Component_t,
                  public PngComponent_t,
                  public ColoredComponent_t {
 private:
-    ButtonState_t state;
-    Label_t       label;
-    Insets        insets;
-    bool          enabled;
+    ButtonState_t             state;
+    Label_t                   label;
+    Graphics::Metrics::Insets insets;
+    bool                      enabled;
 
-    cairo_t*  cr;
-    Rectangle bounds;
+    cairo_t*                     cr;
+    Graphics::Metrics::Rectangle bounds;
 
-    Color_t border;
-    Color_t previous;
+    Graphics::Color::ArgbGradient border;
+    Graphics::Color::ArgbGradient previous;
 
 public:
     /**
@@ -74,7 +74,7 @@ public:
         return label;
     }
     virtual void setFocus(bool focus);
-    virtual void handleBoundChange(Rectangle oldBounds);
+    virtual void handleBoundChange(Graphics::Metrics::Rectangle oldBounds);
     virtual bool getNumericProperty(int property, uint32_t* out);
     virtual bool setNumericProperty(int property, uint32_t value);
 
@@ -85,19 +85,22 @@ public:
     virtual std::string getTitle();
     virtual void        setTitleFont(std::string fontName);
     virtual void        setFontSize(int size);
-    virtual void        setTitleAlignment(TextAlignment alignment);
+    virtual void        setTitleAlignment(Graphics::Text::Alignment alignment);
 
     /*
      * png component
      */
-    virtual void setPNG(std::string path, Point position);
-    virtual void
-    PngAnimation(std::string path, Point PNGstartAnimation, Point PNGendAnimation, size_t sleep);
+    virtual void setPNG(std::string path, Graphics::Metrics::Point position);
+    virtual void PngAnimation(std::string              path,
+                              Graphics::Metrics::Point PNGstartAnimation,
+                              Graphics::Metrics::Point PNGendAnimation,
+                              size_t                   sleep);
 
     /*
      * colored component
      */
-    virtual void setColor(Color_t color, Color_t tltColor);
+    virtual void setColor(Graphics::Color::ArgbGradient color,
+                          Graphics::Color::ArgbGradient tltColor);
 };
 
 #endif

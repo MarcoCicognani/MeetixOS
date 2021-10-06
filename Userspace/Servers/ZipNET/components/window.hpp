@@ -69,8 +69,8 @@ private:
     int  cornerSize;
     bool resizable;
 
-    cairo_t*  cr;
-    Rectangle bounds;
+    cairo_t*                     cr;
+    Graphics::Metrics::Rectangle bounds;
 
     Label_t label;
     Panel_t panel;
@@ -82,11 +82,11 @@ private:
     bool isFullScreen;
     bool focused;
 
-    int       shadowSize;
-    Rectangle initialBounds;
-    Rectangle crossBounds;
-    Rectangle maximizeBounds;
-    string    style;
+    int                          shadowSize;
+    Graphics::Metrics::Rectangle initialBounds;
+    Graphics::Metrics::Rectangle crossBounds;
+    Graphics::Metrics::Rectangle maximizeBounds;
+    string                       style;
 
 public:
     Window_t();
@@ -112,19 +112,22 @@ public:
     /**
      *	png component
      */
-    virtual void setPNG(std::string path, Point position);
-    virtual void
-    PngAnimation(std::string path, Point PNGstartAnimation, Point PNGendAnimation, size_t sleep);
+    virtual void setPNG(std::string path, Graphics::Metrics::Point position);
+    virtual void PngAnimation(std::string              path,
+                              Graphics::Metrics::Point PNGstartAnimation,
+                              Graphics::Metrics::Point PNGendAnimation,
+                              size_t                   sleep);
 
     /**
      * color component
      */
-    virtual void setColor(Color_t color, Color_t tltColor);
+    virtual void setColor(Graphics::Color::ArgbGradient color,
+                          Graphics::Color::ArgbGradient tltColor);
 
     /**
      *
      */
-    virtual void handleBoundChange(Rectangle oldBounds);
+    virtual void handleBoundChange(Graphics::Metrics::Rectangle oldBounds);
     virtual bool handle(Event_t& e);
     virtual bool getNumericProperty(int property, uint32_t* out);
     virtual bool setNumericProperty(int property, uint32_t value);
@@ -137,7 +140,7 @@ public:
     virtual void        setTitleFont(std::string fontName);
     virtual void        setFontSize(int size) {
     }
-    virtual void setTitleAlignment(TextAlignment alignment);
+    virtual void setTitleAlignment(Graphics::Text::Alignment alignment);
 
     /**
      *

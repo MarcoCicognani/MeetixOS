@@ -26,32 +26,32 @@
 #include <components/window.hpp>
 #include <events/FocusEvent.hpp>
 #include <events/MouseEvent.hpp>
-#include <graphics/text/textalign.hpp>
+#include <Graphics/Text/Alignment.hh>
 #include <gui/properties.hpp>
 #include <math.h>
 
 /**
  *
  */
-Button_t::Button_t() : insets(Insets(0, 0, 0, 0)), ActionComponent_t(this) {
+Button_t::Button_t() : insets(Graphics::Metrics::Insets(0, 0, 0, 0)), ActionComponent_t(this) {
     enabled    = true;
     pathToLoad = false;
 
-    shapeColor = ARGB(255, 230, 230, 230);
-    border     = RGB(160, 160, 160);
+    shapeColor = Graphics::Color::as_argb(255, 230, 230, 230);
+    border     = Graphics::Color::as_rgb(160, 160, 160);
 
     addChild(&label);
-    label.setAlignment(TextAlignment::CENTER);
+    label.setAlignment(Graphics::Text::Alignment::CENTER);
 }
 
 /**
  *
  */
 void Button_t::layout() {
-    Dimension labelPreferred = label.getPreferredSize();
+    auto labelPreferred = label.getPreferredSize();
 
-    labelPreferred.width  = labelPreferred.width + insets.left + insets.right;
-    labelPreferred.height = labelPreferred.height + insets.bottom;
+    labelPreferred.set_width(labelPreferred.width() + insets.left() + insets.right());
+    labelPreferred.set_height(labelPreferred.height() + insets.bottom());
     setPreferredSize(labelPreferred);
 }
 
@@ -59,28 +59,28 @@ void Button_t::layout() {
  *
  */
 void Button_t::paint() {
-    cr = graphics.getContext();
+    cr = graphics.cairo_context();
     clearSurface();
     bounds = getBounds();
 
     if ( enabled ) {
-        if ( shapeColor == ARGB(120, 211, 211, 211) )
+        if ( shapeColor == Graphics::Color::as_argb(120, 211, 211, 211) )
             shapeColor = previous;
 
         if ( state.focused )
-            border = RGB(0, 200, 0);
+            border = Graphics::Color::as_rgb(0, 200, 0);
         else
-            border = RGB(180, 180, 180);
+            border = Graphics::Color::as_rgb(180, 180, 180);
     } else {
         previous   = shapeColor;
-        shapeColor = ARGB(120, 211, 211, 211);
+        shapeColor = Graphics::Color::as_argb(120, 211, 211, 211);
     }
 
     // prepare
     double x       = 0.5;
     double y       = 0.5;
-    double width   = bounds.width - 1;
-    double height  = bounds.height - 1;
+    double width   = bounds.width() - 1;
+    double height  = bounds.height() - 1;
     double radius  = 2.5;
     double degrees = M_PI / 180.0;
 
@@ -98,9 +98,9 @@ void Button_t::paint() {
     cairo_stroke(cr);
 
     if ( pathToLoad ) {
-        pngSurface = graphics.getContext();
+        pngSurface = graphics.cairo_context();
 
-        cairo_set_source_surface(pngSurface, png, pngPosition.x, pngPosition.y);
+        cairo_set_source_surface(pngSurface, png, pngPosition.x(), pngPosition.y());
         cairo_paint(pngSurface);
     }
 }
@@ -108,7 +108,7 @@ void Button_t::paint() {
 /**
  *
  */
-void Button_t::setPNG(std::string path, Point position) {
+void Button_t::setPNG(std::string path, Graphics::Metrics::Point position) {
     pathToLoad  = true;
     pngPosition = position;
 
@@ -120,16 +120,17 @@ void Button_t::setPNG(std::string path, Point position) {
 /**
  *
  */
-void Button_t::PngAnimation(std::string path,
-                            Point       PNGstartAnimation,
-                            Point       PNGendAnimation,
-                            size_t      sleep) {
+void Button_t::PngAnimation(std::string              path,
+                            Graphics::Metrics::Point PNGstartAnimation,
+                            Graphics::Metrics::Point PNGendAnimation,
+                            size_t                   sleep) {
 }
 
 /**
  *
  */
-void Button_t::setColor(Color_t color, Color_t tltColor) {
+void Button_t::setColor(Graphics::Color::ArgbGradient color,
+                        Graphics::Color::ArgbGradient tltColor) {
     shapeColor = color;
 
     label.setFontColor(tltColor);
@@ -143,7 +144,7 @@ bool Button_t::handle(Event_t& event) {
     MouseEvent_t* mouseEvent = dynamic_cast<MouseEvent_t*>(&event);
     if ( mouseEvent ) {
         if ( enabled ) {
-            Rectangle bounds = getBounds();
+            auto bounds = getBounds();
 
             if ( mouseEvent->type == MOUSE_EVENT_ENTER ) {
                 state.hovered = true;
@@ -166,9 +167,9 @@ bool Button_t::handle(Event_t& event) {
                 markFor(COMPONENT_REQUIREMENT_PAINT);
 
                 if ( mouseEvent->type == MOUSE_EVENT_RELEASE ) {
-                    if ( mouseEvent->position.x >= 0 && mouseEvent->position.y >= 0
-                         && mouseEvent->position.x < getBounds().width
-                         && mouseEvent->position.y < getBounds().height )
+                    if ( mouseEvent->position.x() >= 0 && mouseEvent->position.y() >= 0
+                         && mouseEvent->position.x() < getBounds().width()
+                         && mouseEvent->position.y() < getBounds().height() )
                         fireAction();
                 }
             }
@@ -199,10 +200,10 @@ bool Button_t::handle(Event_t& event) {
 /**
  *
  */
-void Button_t::handleBoundChange(Rectangle oldBounds) {
-    Rectangle labelBounds = getBounds();
-    labelBounds.x         = insets.left;
-    labelBounds.y         = insets.right;
+void Button_t::handleBoundChange(Graphics::Metrics::Rectangle oldBounds) {
+    auto labelBounds = getBounds();
+    labelBounds.set_left(insets.left());
+    labelBounds.set_top(insets.right());
 
     label.setBounds(labelBounds);
 }
@@ -231,7 +232,7 @@ void Button_t::setTitleFont(std::string fontName) {
 /*
  *
  */
-void Button_t::setTitleAlignment(TextAlignment alignment) {
+void Button_t::setTitleAlignment(Graphics::Text::Alignment alignment) {
     label.setTitleAlignment(alignment);
 }
 

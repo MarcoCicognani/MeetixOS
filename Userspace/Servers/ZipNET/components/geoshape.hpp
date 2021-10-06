@@ -36,8 +36,8 @@ private:
     Panel_t panel;
     Label_t label;
 
-    Rectangle geoshapeBounds;
-    cairo_t*  geoshapeSurface;
+    Graphics::Metrics::Rectangle geoshapeBounds;
+    cairo_t*                     geoshapeSurface;
 
 public:
     Geoshape_t();
@@ -70,19 +70,22 @@ public:
     virtual void        setTitleFont(std::string fontName);
     virtual void        setFontSize(int size) {
     }
-    virtual void setTitleAlignment(TextAlignment alignment);
+    virtual void setTitleAlignment(Graphics::Text::Alignment alignment);
 
     /**
      *	png component
      */
-    virtual void setPNG(std::string path, Point position);
-    virtual void
-    PngAnimation(std::string path, Point PNGstartAnimation, Point PNGendAnimation, size_t sleep);
+    virtual void setPNG(std::string path, Graphics::Metrics::Point position);
+    virtual void PngAnimation(std::string              path,
+                              Graphics::Metrics::Point PNGstartAnimation,
+                              Graphics::Metrics::Point PNGendAnimation,
+                              size_t                   sleep);
 
     /**
      *	colored component
      */
-    virtual void setColor(Color_t color, Color_t tltColor);
+    virtual void setColor(Graphics::Color::ArgbGradient color,
+                          Graphics::Color::ArgbGradient tltColor);
 };
 
 #endif

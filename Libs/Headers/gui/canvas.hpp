@@ -21,7 +21,7 @@
 #define MEETIX_LIBRARY_UI_CANVAS
 
 #include <cstdint>
-#include <graphics/graphics.hpp>
+#include <Graphics/Context.hh>
 #include <gui/canvasbufferlistener.hpp>
 #include <gui/component.hpp>
 
@@ -29,7 +29,7 @@
  *
  */
 struct CanvasBufferInfo {
-    Color_t* buffer;
+    Graphics::Color::ArgbGradient* buffer;
     uint16_t width;
     uint16_t height;
 };
@@ -39,9 +39,9 @@ struct CanvasBufferInfo {
  */
 class Canvas : public Component {
 protected:
-    Graphics* graphics;
-    Address   currentBuffer;
-    Address   nextBuffer;
+    Graphics::Context* graphics;
+    Address            currentBuffer;
+    Address            nextBuffer;
 
     /**
      * Listener only for user purpose, so a client gets an event once the
@@ -73,7 +73,7 @@ public:
     /*
      *
      */
-    void blit(Rectangle rect);
+    void blit(Graphics::Metrics::Rectangle rect);
 
     /*
      *

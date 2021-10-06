@@ -52,7 +52,7 @@ bool ConfigurationBasedVideoOutput_t::initialize() {
     uint32_t height = 0;
     uint32_t bpp    = 0;
 
-    for ( auto entry : properties ) {
+    for ( const auto& entry : properties ) {
         stringstream s;
         s << entry.second;
 

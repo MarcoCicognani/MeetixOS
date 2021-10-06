@@ -20,7 +20,7 @@
 #ifndef _COLORED_COMPONENT_
 #define _COLORED_COMPONENT_
 
-#include <graphics/color.hpp>
+#include <Graphics/Color.hh>
 #include <string>
 
 /*
@@ -28,7 +28,7 @@
  */
 class ColoredComponent_t {
 protected:
-    Color_t shapeColor;
+    Graphics::Color::ArgbGradient shapeColor;
 
 public:
     /**
@@ -40,12 +40,12 @@ public:
     /**
      *
      */
-    virtual void setColor(Color_t color, Color_t tltColor) = 0;
+    virtual void setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor) = 0;
 
     /*
      *
      */
-    Color_t getColor() {
+    Graphics::Color::ArgbGradient getColor() {
         return shapeColor;
     }
 };

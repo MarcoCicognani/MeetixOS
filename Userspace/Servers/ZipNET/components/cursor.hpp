@@ -31,7 +31,7 @@
 #include <cstdio>
 #include <events/MouseEvent.hpp>
 #include <fstream>
-#include <graphics/metrics/point.hpp>
+#include <Graphics/Metrics/Point.hh>
 #include <gui/uispech.hpp>
 #include <map>
 #include <sstream>
@@ -43,8 +43,8 @@
  */
 struct CursorConfiguration {
     cairo_surface_t* surface;
-    Point            hitpoint;
-    Dimension        size;
+    Graphics::Metrics::Point            hitpoint;
+    Graphics::Metrics::Dimension        size;
 };
 
 /**
@@ -54,8 +54,8 @@ class Cursor {
 public:
     static Cursor& instance();
 
-    Point       position{ 0, 0 };
-    Point       nextPosition{ 0, 0 };
+    Graphics::Metrics::Point       position{ 0, 0 };
+    Graphics::Metrics::Point       nextPosition{ 0, 0 };
     MouseButton pressedButtons{ MOUSE_BUTTON_NONE };
     MouseButton nextPressedButtons{ MOUSE_BUTTON_NONE };
 
@@ -66,12 +66,12 @@ public:
     /**
      *
      */
-    void paint(Graphics* global);
+    void paint(Graphics::Context* global);
 
     /**
      *
      */
-    Rectangle getArea();
+    Graphics::Metrics::Rectangle getArea();
 
     /**
      *

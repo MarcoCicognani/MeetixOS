@@ -29,7 +29,7 @@
 /**
  *
  */
-void BoundsEventComponent_t::fireBoundsChange(Rectangle& bounds) {
+void BoundsEventComponent_t::fireBoundsChange(Graphics::Metrics::Rectangle& bounds) {
     EventListenerInfo_t listenerInfo;
     if ( self->getListener(UI_COMPONENT_EVENT_TYPE_BOUNDS, listenerInfo) ) {
         UiComponentBoundsEvent boundsEvent;

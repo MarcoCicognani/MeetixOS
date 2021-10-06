@@ -52,7 +52,7 @@ Canvas_t::~Canvas_t() {
 /**
  * When the bounds of a canvas are changed, the buffer must be checked.
  */
-void Canvas_t::handleBoundChange(Rectangle oldBounds) {
+void Canvas_t::handleBoundChange(Graphics::Metrics::Rectangle oldBounds) {
     checkBuffer();
 }
 
@@ -67,11 +67,11 @@ void Canvas_t::handleBoundChange(Rectangle oldBounds) {
  */
 void Canvas_t::checkBuffer() {
     // calculate how many pages we need for the shared area
-    Rectangle bounds = getBounds();
+    auto bounds = getBounds();
     uint32_t  requiredSize
         = sizeof(UiCanvasSharedMemoryHeader)
-        + cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, ALIGN_UP(bounds.width))
-              * ALIGN_UP(bounds.height);
+        + cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, ALIGN_UP(bounds.width()))
+              * ALIGN_UP(bounds.height());
     uint16_t requiredPages = PAGE_ALIGN_UP(requiredSize) / PAGE_SIZE;
 
     // if next buffer not yet acknowledged, ask client to acknowledge it
@@ -91,7 +91,7 @@ void Canvas_t::checkBuffer() {
     else if ( currentBuffer.acknowledged ) {
         UiCanvasSharedMemoryHeader* header
             = (UiCanvasSharedMemoryHeader*)currentBuffer.localMapping;
-        if ( header->paintableWidth < bounds.width || header->paintableHeight < bounds.height )
+        if ( header->paintableWidth < bounds.width() || header->paintableHeight < bounds.height() )
             createNewBuffer(requiredPages);
     }
 }
@@ -100,7 +100,7 @@ void Canvas_t::checkBuffer() {
  *
  */
 void Canvas_t::createNewBuffer(uint16_t requiredPages) {
-    Rectangle bounds = getBounds();
+    auto bounds = getBounds();
 
     // TODO this is leaking memory when creating a buffer before the current "nextBuffer" was
     // acknowledged
@@ -127,8 +127,8 @@ void Canvas_t::createNewBuffer(uint16_t requiredPages) {
 
     // initialize the header
     UiCanvasSharedMemoryHeader* header = (UiCanvasSharedMemoryHeader*)nextBuffer.localMapping;
-    header->paintableWidth             = ALIGN_UP(bounds.width);
-    header->paintableHeight            = ALIGN_UP(bounds.height);
+    header->paintableWidth             = ALIGN_UP(bounds.width());
+    header->paintableHeight            = ALIGN_UP(bounds.height());
     header->blitX                      = 0;
     header->blitY                      = 0;
     header->blitWidth                  = 0;
@@ -180,7 +180,7 @@ void Canvas_t::clientHasAcknowledgedCurrentBuffer() {
 void Canvas_t::paint() {
     auto bounds = getBounds();
 
-    auto cr = graphics.getContext();
+    auto cr = graphics.cairo_context();
 
     // there muts be a buffer that is acknowledged
     if ( currentBuffer.localMapping != 0 && currentBuffer.acknowledged ) {
@@ -203,7 +203,7 @@ void Canvas_t::paint() {
         cairo_paint(cr);
 
         // mark painted area as dirty
-        markDirty(Rectangle(header->blitX, header->blitY, header->blitWidth, header->blitHeight));
+        markDirty({ header->blitX, header->blitY, header->blitWidth, header->blitHeight });
     }
 }
 

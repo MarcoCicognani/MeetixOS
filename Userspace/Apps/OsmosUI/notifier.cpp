@@ -43,22 +43,24 @@ static void showPopupAnimation(Geoshape* popup, MessageAnimation_t animation, bo
         // do animation
         for ( int index = start; index < end; index++ )
             if ( !(index % 2) )
-                popup->setColor(ARGB(index, 0, 0, 0), ARGB(255, 255, 255, 255));
+                popup->setColor(Graphics::Color::as_argb(index, 0, 0, 0),
+                                Graphics::Color::as_argb(255, 255, 255, 255));
     }
 
     else if ( animation == MessageAnimation_t::SIDE_SCROLL ) {
         // get bounds from popup
-        Rectangle bounds = popup->getBounds();
-        popup->setColor(ARGB(150, 0, 0, 0), ARGB(255, 255, 255, 255));
+        auto bounds = popup->getBounds();
+        popup->setColor(Graphics::Color::as_argb(150, 0, 0, 0),
+                        Graphics::Color::as_argb(255, 255, 255, 255));
 
         // set limits with bolean flag
-        int start = first ? bounds.x + bounds.width : bounds.x;
-        int end   = first ? bounds.x : bounds.x + bounds.width;
+        int start = first ? bounds.x() + bounds.width() : bounds.x();
+        int end   = first ? bounds.x() : bounds.x() + bounds.width();
 
         // do animation
         for ( int index = start; index < end; index++ )
             if ( !(index % 6) )
-                popup->setBounds(Rectangle(index, bounds.y, bounds.width, bounds.height));
+                popup->setBounds({ index, bounds.y(), bounds.width(), bounds.height() });
     }
 }
 
@@ -69,24 +71,28 @@ static void showOnScreen(Notification_t* msg) {
     // create popup only if message exist and display time is major than 0
     if ( msg->message[0] && msg->displayTime ) {
         // get screen dimension
-        Dimension resolution = UI::getResolution();
+        auto resolution = UI::getResolution();
 
         // create the popup and the components
         Geoshape* popup             = Geoshape::create();
         Label*    messageContenitor = Label::create();
 
         // set bounds
-        uint32_t xPos = resolution.width - boxWidth - 5;
+        uint32_t xPos = resolution.width() - boxWidth - 5;
         uint32_t dist = popupOnScreen == 1 ? 35 : 5 * popupOnScreen;
-        uint32_t yPos = resolution.height - dist - boxheight * popupOnScreen;
-        popup->setBounds(Rectangle(xPos, yPos, boxWidth, boxheight));
-        messageContenitor->setBounds(Rectangle(0, 0, boxWidth, boxheight));
+        uint32_t yPos = resolution.height() - dist - boxheight * popupOnScreen;
+        popup->setBounds({ static_cast<i32>(xPos),
+                           static_cast<i32>(yPos),
+                           static_cast<i32>(boxWidth),
+                           static_cast<i32>(boxheight) });
+        messageContenitor->setBounds(
+            { 0, 0, static_cast<i32>(boxWidth), static_cast<i32>(boxheight) });
 
         // set title
         popup->setTitle(msg->title);
 
         // set text message
-        messageContenitor->setTitleAlignment(TextAlignment::CENTER);
+        messageContenitor->setTitleAlignment(Graphics::Text::Alignment::CENTER);
         messageContenitor->setColor(0, msg->color);
         messageContenitor->setTitle(msg->message);
         popup->addChild(messageContenitor);

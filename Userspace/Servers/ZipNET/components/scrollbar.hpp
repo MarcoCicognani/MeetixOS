@@ -70,8 +70,8 @@ private:
     ScrollHandler_t* scrollHandler;
 
     cairo_t*  cr;
-    Rectangle bounds;
-    Rectangle knob;
+    Graphics::Metrics::Rectangle bounds;
+    Graphics::Metrics::Rectangle knob;
 
 public:
     Scrollbar_t(ScrollbarOrientation_t orientation)
@@ -106,7 +106,7 @@ public:
     int getViewMax();
     int getKnobSize();
 
-    Rectangle calculateKnob();
+    Graphics::Metrics::Rectangle calculateKnob();
 };
 
 #endif

@@ -27,9 +27,9 @@
 
 #include <Api/utils/llist.hpp>
 #include <cairo/cairo.h>
-#include <graphics/text/font.hpp>
-#include <graphics/text/fontldr.hpp>
-#include <graphics/text/textlyot.hpp>
+#include <Graphics/Text/Font.hh>
+#include <Graphics/Text/FontLoader.hh>
+#include <Graphics/Text/Layouter.hh>
 #include <gui/actionlistener.hpp>
 #include <gui/button.hpp>
 #include <gui/canvas.hpp>
@@ -53,15 +53,15 @@ private:
     Canvas* canvas;
 
     cairo_surface_t* existingSurface       = 0;
-    Color_t*         existingSurfaceBuffer = 0;
-    Dimension        bufferSize;
+    Graphics::Color::ArgbGradient*         existingSurfaceBuffer = 0;
+    Graphics::Metrics::Dimension        bufferSize;
     cairo_t*         existingContext;
 
-    LayoutedText* viewModel;
-    Font_t*       font;
+    Graphics::Text::Layouted* viewModel;
+    Graphics::Text::Font*       font;
 
-    Color_t backgroundColor = ARGB(0, 0, 0, 0);
-    Color_t fontColor       = RGB(255, 255, 255);
+    Graphics::Color::ArgbGradient backgroundColor = Graphics::Color::as_argb(0, 0, 0, 0);
+    Graphics::Color::ArgbGradient fontColor       = Graphics::Color::as_rgb(255, 255, 255);
 
     void     initialize();
     cairo_t* getGraphics();
@@ -85,8 +85,8 @@ public:
 
     void backspace();
     void cleanLine(int lineLenght);
-    void write(string message, Color_t color = RGB(255, 255, 255), bool visible = true);
-    void writeChar(char c, Color_t color = RGB(255, 255, 255));
+    void write(string message, Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255), bool visible = true);
+    void writeChar(char c, Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255));
     void updateCursor();
 
     IO::Keyboard::Info readInput(bool* cancelCondition);

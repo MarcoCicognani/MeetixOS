@@ -25,9 +25,9 @@
 #include "screen.hpp"
 
 #include <cairo/cairo.h>
-#include <graphics/text/font.hpp>
-#include <graphics/text/fontldr.hpp>
-#include <graphics/text/textlyot.hpp>
+#include <Graphics/Text/Font.hh>
+#include <Graphics/Text/FontLoader.hh>
+#include <Graphics/Text/Layouter.hh>
 #include <gui/actionlistener.hpp>
 #include <gui/button.hpp>
 #include <gui/canvas.hpp>
@@ -63,11 +63,11 @@ private:
     Window* window;
     Canvas* canvas;
 
-    Font_t* font;
+    Graphics::Text::Font* font;
 
     cairo_surface_t* existingSurface       = 0;
-    Color_t*         existingSurfaceBuffer = 0;
-    Dimension        bufferSize;
+    Graphics::Color::ArgbGradient*         existingSurfaceBuffer = 0;
+    Graphics::Metrics::Dimension        bufferSize;
     cairo_t*         existingContext = 0;
 
     bool paintUpToDate = false;
@@ -84,7 +84,7 @@ private:
      * Screen buffer
      */
     uint8_t*      rasterBuffer = 0;
-    Dimension     rasterSize;
+    Graphics::Metrics::Dimension     rasterSize;
     Tasking::Lock rasterLock;
     int           cursorX = 0;
     int           cursorY = 0;

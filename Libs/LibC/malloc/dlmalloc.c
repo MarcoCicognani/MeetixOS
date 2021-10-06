@@ -4601,7 +4601,7 @@ void* dlmalloc(size_t bytes) {
             r->head               = rsize | PINUSE_BIT;
             set_size_and_pinuse_of_inuse_chunk(gm, p, nb);
             mem = chunk2mem(p);
-            check_top_chunk(gm, gm->top);
+            check_top_chunk(gm, gm->m_top);
             check_malloced_chunk(gm, mem, nb);
             goto postaction;
         }

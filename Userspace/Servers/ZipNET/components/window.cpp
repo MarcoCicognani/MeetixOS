@@ -28,8 +28,8 @@
 #include <events/FocusEvent.hpp>
 #include <events/KeyEvent.hpp>
 #include <events/MouseEvent.hpp>
-#include <graphics/cairoutils.hpp>
-#include <graphics/text/fontmgr.hpp>
+#include <Graphics/Cairo.hh>
+#include <Graphics/Text/FontManager.hh>
 #include <gui/properties.hpp>
 #include <math.h>
 #include <Utils/Environment.hh>
@@ -54,25 +54,26 @@ Window_t::Window_t() : borderWidth(DEFAULT_BORDER_WIDTH), cornerSize(DEFAULT_COR
     focused    = false;
     shadowSize = 10;
     pathToLoad = false;
-    shapeColor = RGB(230, 230, 230);
+    shapeColor = Graphics::Color::as_rgb(230, 230, 230);
 
     style = Utils::Environment::get("UISTYLE");
 
     Component_t::addChild(&label);
     Component_t::addChild(&panel);
 
-    setMinimumSize(Dimension(100, 50));
+    setMinimumSize(Graphics::Metrics::Dimension(100, 50));
 }
 
 /**
  *
  */
 void Window_t::layout() {
-    Rectangle bounds = getBounds();
-    label.setBounds(Rectangle(15, 12, bounds.width - 30, 25));
-    panel.setBounds(Rectangle(12, 40, bounds.width - 24, bounds.height - 52));
-    crossBounds    = Rectangle(bounds.width - 42, 17, 17, 17);
-    maximizeBounds = Rectangle(bounds.width - 70, 21, 9, 9);
+    auto bounds = getBounds();
+    label.setBounds(Graphics::Metrics::Rectangle(15, 12, bounds.width() - 30, 25));
+    panel.setBounds(
+        Graphics::Metrics::Rectangle(12, 40, bounds.width() - 24, bounds.height() - 52));
+    crossBounds    = Graphics::Metrics::Rectangle(bounds.width() - 42, 17, 17, 17);
+    maximizeBounds = Graphics::Metrics::Rectangle(bounds.width() - 70, 21, 9, 9);
 }
 
 /**
@@ -87,7 +88,7 @@ void Window_t::addChild(Component_t* component) {
  */
 void Window_t::paint() {
     bounds = getBounds();
-    cr     = graphics.getContext();
+    cr     = graphics.cairo_context();
     clearSurface();
 
     // draw shadow
@@ -100,7 +101,12 @@ void Window_t::paint() {
         addIncr = 0.001;
 
     for ( int i = 0; i < shadowSize + 4; i++ ) {
-        cairoRoundedRectangle(cr, i, i + 3, bounds.width - 2 * i, bounds.height - 2 * i, 10);
+        Graphics::Cairo::rounded_rectangle(cr,
+                                           i,
+                                           i + 3,
+                                           bounds.width() - 2 * i,
+                                           bounds.height() - 2 * i,
+                                           10);
         cairo_set_source_rgba(cr, 0, 255, 0, shadowAlpha);
         cairo_stroke(cr);
         shadowAlpha    = shadowAlpha + shadowAlphaAdd;
@@ -113,30 +119,30 @@ void Window_t::paint() {
     double radius = 5;
     cairo_arc(cr, shadowSize + radius, shadowSize + radius, radius, 180 * degrees, 270 * degrees);
     cairo_arc(cr,
-              bounds.width - radius - shadowSize,
+              bounds.width() - radius - shadowSize,
               shadowSize + radius,
               radius,
               -90 * degrees,
               0 * degrees);
-    cairo_line_to(cr, bounds.width - shadowSize, bounds.height - shadowSize);
-    cairo_line_to(cr, shadowSize, bounds.height - shadowSize);
+    cairo_line_to(cr, bounds.width() - shadowSize, bounds.height() - shadowSize);
+    cairo_line_to(cr, shadowSize, bounds.height() - shadowSize);
     cairo_close_path(cr);
     cairo_set_source_rgba(cr,
-                          _red(shapeColor),
-                          _green(shapeColor),
-                          _blue(shapeColor),
+                          Graphics::Color::red(shapeColor),
+                          Graphics::Color::green(shapeColor),
+                          Graphics::Color::blue(shapeColor),
                           focused ? 0.8 : 0.5);
     cairo_fill(cr);
 
     // draw cross container only if is visible
     if ( crossHovered || crossPressed ) {
         cairo_set_source_rgba(cr, 200, 0, 0, 255);
-        cairoRoundedRectangle(cr,
-                              crossBounds.x,
-                              crossBounds.y,
-                              crossBounds.width,
-                              crossBounds.height,
-                              radius);
+        Graphics::Cairo::rounded_rectangle(cr,
+                                           crossBounds.x(),
+                                           crossBounds.y(),
+                                           crossBounds.width(),
+                                           crossBounds.height(),
+                                           radius);
         cairo_fill(cr);
     }
 
@@ -147,29 +153,29 @@ void Window_t::paint() {
     else
         cairo_set_source_rgba(cr, 200, 0, 0, 255);
     cairo_set_line_width(cr, 2);
-    cairo_move_to(cr, crossBounds.x + crossPadding, crossBounds.y + crossPadding);
+    cairo_move_to(cr, crossBounds.x() + crossPadding, crossBounds.y() + crossPadding);
     cairo_line_to(cr,
-                  crossBounds.x + crossBounds.width - crossPadding,
-                  crossBounds.y + crossBounds.height - crossPadding);
+                  crossBounds.x() + crossBounds.width() - crossPadding,
+                  crossBounds.y() + crossBounds.height() - crossPadding);
     cairo_stroke(cr);
     cairo_move_to(cr,
-                  crossBounds.x + crossBounds.width - crossPadding,
-                  crossBounds.y + crossPadding);
+                  crossBounds.x() + crossBounds.width() - crossPadding,
+                  crossBounds.y() + crossPadding);
     cairo_line_to(cr,
-                  crossBounds.x + crossPadding,
-                  crossBounds.y + crossBounds.height - crossPadding);
+                  crossBounds.x() + crossPadding,
+                  crossBounds.y() + crossBounds.height() - crossPadding);
     cairo_stroke(cr);
 
     if ( resizable ) {
         // draw maximize container only if is visible
         if ( maximizeHovered || maximizePressed ) {
             cairo_set_source_rgba(cr, 0, 200, 0, 255);
-            cairoRoundedRectangle(cr,
-                                  maximizeBounds.x - 3,
-                                  maximizeBounds.y - 3,
-                                  maximizeBounds.width + 6,
-                                  maximizeBounds.height + 6,
-                                  radius);
+            Graphics::Cairo::rounded_rectangle(cr,
+                                               maximizeBounds.x() - 3,
+                                               maximizeBounds.y ()- 3,
+                                               maximizeBounds.width() + 6,
+                                               maximizeBounds.height() + 6,
+                                               radius);
             cairo_fill(cr);
         }
 
@@ -179,18 +185,18 @@ void Window_t::paint() {
         else
             cairo_set_source_rgba(cr, 0, 200, 0, 255);
         cairo_rectangle(cr,
-                        maximizeBounds.x,
-                        maximizeBounds.y,
-                        maximizeBounds.width,
-                        maximizeBounds.height);
+                        maximizeBounds.x(),
+                        maximizeBounds.y(),
+                        maximizeBounds.width(),
+                        maximizeBounds.height());
         cairo_stroke(cr);
     }
 
     // create png if necessary
     if ( pathToLoad ) {
-        pngSurface = graphics.getContext();
+        pngSurface = graphics.cairo_context();
 
-        cairo_set_source_surface(pngSurface, png, pngPosition.x, pngPosition.y);
+        cairo_set_source_surface(pngSurface, png, pngPosition.x(), pngPosition.y());
         cairo_paint(pngSurface);
     }
 }
@@ -198,7 +204,7 @@ void Window_t::paint() {
 /**
  *
  */
-void Window_t::setPNG(std::string path, Point position) {
+void Window_t::setPNG(std::string path, Graphics::Metrics::Point position) {
     pathToLoad  = true;
     pngPosition = position;
 
@@ -210,16 +216,17 @@ void Window_t::setPNG(std::string path, Point position) {
 /**
  *
  */
-void Window_t::PngAnimation(std::string path,
-                            Point       PNGstartAnimation,
-                            Point       PNGendAnimation,
-                            size_t      sleep) {
+void Window_t::PngAnimation(std::string              path,
+                            Graphics::Metrics::Point PNGstartAnimation,
+                            Graphics::Metrics::Point PNGendAnimation,
+                            size_t                   sleep) {
 }
 
 /**
  *
  */
-void Window_t::setColor(Color_t color, Color_t tltColor) {
+void Window_t::setColor(Graphics::Color::ArgbGradient color,
+                        Graphics::Color::ArgbGradient tltColor) {
     shapeColor = color;
 
     label.setFontColor(tltColor);
@@ -230,7 +237,7 @@ void Window_t::setColor(Color_t color, Color_t tltColor) {
 /**
  *
  */
-void Window_t::handleBoundChange(Rectangle oldBounds) {
+void Window_t::handleBoundChange(Graphics::Metrics::Rectangle oldBounds) {
     markFor(COMPONENT_REQUIREMENT_PAINT);
 }
 
@@ -256,65 +263,65 @@ bool Window_t::handle(Event_t& event) {
         return true;
 
     // Handle mouse events
-    static Point            pressPoint;
-    static Rectangle        pressBounds;
-    static WindowResizeMode resizeMode;
+    static Graphics::Metrics::Point     pressPoint;
+    static Graphics::Metrics::Rectangle pressBounds;
+    static WindowResizeMode             resizeMode;
 
     MouseEvent_t* mouseEvent = dynamic_cast<MouseEvent_t*>(&event);
     if ( mouseEvent ) {
-        Rectangle currentBounds = getBounds();
+        auto currentBounds = getBounds();
 
         if ( mouseEvent->type == MOUSE_EVENT_MOVE ) {
             if ( resizable ) {
-                Point pos = mouseEvent->position;
-                if ( (pos.x < shadowSize + cornerSize / 2) && (pos.x > shadowSize - cornerSize / 2)
-                     && (pos.y < cornerSize)
-                     && (pos.y > shadowSize - cornerSize / 2) ) { // Top left corner
+                auto pos = mouseEvent->position;
+                if ( (pos.x() < shadowSize + cornerSize / 2)
+                     && (pos.x() > shadowSize - cornerSize / 2) && (pos.y() < cornerSize)
+                     && (pos.y() > shadowSize - cornerSize / 2) ) { // Top left corner
                     Cursor::instance().set("resize-nwes");
                 }
 
-                else if ( (pos.x > currentBounds.width - shadowSize - cornerSize / 2)
-                          && (pos.x < currentBounds.width - shadowSize + cornerSize / 2)
-                          && (pos.y < cornerSize)
-                          && (pos.y > shadowSize - cornerSize / 2) ) { // Top right corner
+                else if ( (pos.x() > currentBounds.width() - shadowSize - cornerSize / 2)
+                          && (pos.x() < currentBounds.width() - shadowSize + cornerSize / 2)
+                          && (pos.y() < cornerSize)
+                          && (pos.y() > shadowSize - cornerSize / 2) ) { // Top right corner
                     Cursor::instance().set("resize-nesw");
                 }
 
-                else if ( (pos.x < shadowSize + cornerSize / 2)
-                          && (pos.x > shadowSize - cornerSize / 2)
-                          && (pos.y > currentBounds.height - shadowSize - cornerSize / 2)
-                          && (pos.y < currentBounds.height - shadowSize
-                                          + cornerSize / 2) ) { // Bottom left corner
+                else if ( (pos.x() < shadowSize + cornerSize / 2)
+                          && (pos.x() > shadowSize - cornerSize / 2)
+                          && (pos.y() > currentBounds.height() - shadowSize - cornerSize / 2)
+                          && (pos.y() < currentBounds.height() - shadowSize
+                                            + cornerSize / 2) ) { // Bottom left corner
                     Cursor::instance().set("resize-nesw");
                 }
 
-                else if ( (pos.x > currentBounds.width - shadowSize - cornerSize / 2)
-                          && (pos.x < currentBounds.width - shadowSize + cornerSize / 2)
-                          && (pos.y > currentBounds.height - shadowSize - cornerSize / 2)
-                          && (pos.y < currentBounds.height - shadowSize
-                                          + cornerSize / 2) ) { // Bottom right corner
+                else if ( (pos.x() > currentBounds.width() - shadowSize - cornerSize / 2)
+                          && (pos.x() < currentBounds.width() - shadowSize + cornerSize / 2)
+                          && (pos.y() > currentBounds.height() - shadowSize - cornerSize / 2)
+                          && (pos.y() < currentBounds.height() - shadowSize
+                                            + cornerSize / 2) ) { // Bottom right corner
                     Cursor::instance().set("resize-nwes");
                 }
 
-                else if ( pos.y < shadowSize + borderWidth / 2
-                          && pos.y > shadowSize - borderWidth / 2 ) { // Top edge
+                else if ( pos.y() < shadowSize + borderWidth / 2
+                          && pos.y() > shadowSize - borderWidth / 2 ) { // Top edge
                     Cursor::instance().set("resize-ns");
                 }
 
-                else if ( pos.x < shadowSize + borderWidth / 2
-                          && pos.x > shadowSize - borderWidth / 2 ) { // Left edge
+                else if ( pos.x() < shadowSize + borderWidth / 2
+                          && pos.x() > shadowSize - borderWidth / 2 ) { // Left edge
                     Cursor::instance().set("resize-ew");
                 }
 
-                else if ( (pos.y > currentBounds.height - shadowSize - borderWidth / 2)
-                          && (pos.y < currentBounds.height - shadowSize
-                                          + borderWidth / 2) ) { // Bottom edge
+                else if ( (pos.y() > currentBounds.height() - shadowSize - borderWidth / 2)
+                          && (pos.y() < currentBounds.height() - shadowSize
+                                            + borderWidth / 2) ) { // Bottom edge
                     Cursor::instance().set("resize-ns");
                 }
 
-                else if ( (pos.x > currentBounds.width - shadowSize - borderWidth / 2)
-                          && (pos.x < currentBounds.width - shadowSize
-                                          + borderWidth / 2) ) { // Right edge
+                else if ( (pos.x() > currentBounds.width() - shadowSize - borderWidth / 2)
+                          && (pos.x() < currentBounds.width() - shadowSize
+                                            + borderWidth / 2) ) { // Right edge
                     Cursor::instance().set("resize-ew");
                 }
 
@@ -355,81 +362,87 @@ bool Window_t::handle(Event_t& event) {
 
             else {
                 // Window dragging/resizing
-                Point newLocation = mouseEvent->screenPosition - pressPoint;
+                auto newLocation = mouseEvent->screenPosition - pressPoint;
 
                 // Calculate new bounds
-                Rectangle newBounds = currentBounds;
+                auto newBounds = currentBounds;
 
                 if ( resizeMode == RESIZE_MODE_TOP_LEFT ) {
-                    newBounds.x      = newLocation.x;
-                    newBounds.y      = newLocation.y;
-                    newBounds.width  = pressBounds.width + (pressBounds.x - newLocation.x);
-                    newBounds.height = pressBounds.height + (pressBounds.y - newLocation.y);
+                    newBounds.set_left(newLocation.x());
+                    newBounds.set_top(newLocation.y());
+                    newBounds.set_width(pressBounds.width() + (pressBounds.x() - newLocation.x()));
+                    newBounds.set_height(pressBounds.height()
+                                         + (pressBounds.y() - newLocation.y()));
                 }
 
                 else if ( resizeMode == RESIZE_MODE_TOP_RIGHT ) {
-                    newBounds.x      = pressBounds.x;
-                    newBounds.y      = newLocation.y;
-                    newBounds.width  = pressBounds.width - (pressBounds.x - newLocation.x);
-                    newBounds.height = pressBounds.height + (pressBounds.y - newLocation.y);
+                    newBounds.set_left(pressBounds.x());
+                    newBounds.set_top(newLocation.y());
+                    newBounds.set_width(pressBounds.width() - (pressBounds.x() - newLocation.x()));
+                    newBounds.set_height(pressBounds.height()
+                                         + (pressBounds.y() - newLocation.y()));
                 }
 
                 else if ( resizeMode == RESIZE_MODE_BOTTOM_LEFT ) {
-                    newBounds.x      = newLocation.x;
-                    newBounds.y      = pressBounds.y;
-                    newBounds.width  = pressBounds.width + (pressBounds.x - newLocation.x);
-                    newBounds.height = pressBounds.height - (pressBounds.y - newLocation.y);
+                    newBounds.set_left(newLocation.x());
+                    newBounds.set_top(pressBounds.y());
+                    newBounds.set_width(pressBounds.width() + (pressBounds.x() - newLocation.x()));
+                    newBounds.set_height(pressBounds.height()
+                                         - (pressBounds.y() - newLocation.y()));
                 }
 
                 else if ( resizeMode == RESIZE_MODE_BOTTOM_RIGHT ) {
-                    newBounds.x      = pressBounds.x;
-                    newBounds.y      = pressBounds.y;
-                    newBounds.width  = pressBounds.width - (pressBounds.x - newLocation.x);
-                    newBounds.height = pressBounds.height - (pressBounds.y - newLocation.y);
+                    newBounds.set_left(pressBounds.x());
+                    newBounds.set_top(pressBounds.y());
+                    newBounds.set_width(pressBounds.width() - (pressBounds.x() - newLocation.x()));
+                    newBounds.set_height(pressBounds.height()
+                                         - (pressBounds.y() - newLocation.y()));
                 }
 
                 else if ( resizeMode == RESIZE_MODE_TOP ) {
-                    newBounds.x      = pressBounds.x;
-                    newBounds.y      = newLocation.y;
-                    newBounds.width  = pressBounds.width;
-                    newBounds.height = pressBounds.height + (pressBounds.y - newLocation.y);
+                    newBounds.set_left(pressBounds.x());
+                    newBounds.set_top(newLocation.y());
+                    newBounds.set_width(pressBounds.width());
+                    newBounds.set_height(pressBounds.height()
+                                         + (pressBounds.y() - newLocation.y()));
                 }
 
                 else if ( resizeMode == RESIZE_MODE_LEFT ) {
-                    newBounds.x      = newLocation.x;
-                    newBounds.y      = pressBounds.y;
-                    newBounds.width  = pressBounds.width + (pressBounds.x - newLocation.x);
-                    newBounds.height = pressBounds.height;
+                    newBounds.set_left(newLocation.x());
+                    newBounds.set_top(pressBounds.y());
+                    newBounds.set_width(pressBounds.width() + (pressBounds.x() - newLocation.x()));
+                    newBounds.set_height(pressBounds.height());
                 }
 
                 else if ( resizeMode == RESIZE_MODE_BOTTOM ) {
-                    newBounds.x      = pressBounds.x;
-                    newBounds.y      = pressBounds.y;
-                    newBounds.width  = pressBounds.width;
-                    newBounds.height = pressBounds.height - (pressBounds.y - newLocation.y);
+                    newBounds.set_left(pressBounds.x());
+                    newBounds.set_top(pressBounds.y());
+                    newBounds.set_width(pressBounds.width());
+                    newBounds.set_height(pressBounds.height()
+                                         - (pressBounds.y() - newLocation.y()));
                 }
 
                 else if ( resizeMode == RESIZE_MODE_RIGHT ) {
-                    newBounds.x      = pressBounds.x;
-                    newBounds.y      = pressBounds.y;
-                    newBounds.width  = pressBounds.width - (pressBounds.x - newLocation.x);
-                    newBounds.height = pressBounds.height;
+                    newBounds.set_left(pressBounds.x());
+                    newBounds.set_top(pressBounds.y());
+                    newBounds.set_width(pressBounds.width() - (pressBounds.x() - newLocation.x()));
+                    newBounds.set_height(pressBounds.height());
                 }
 
                 else if ( resizeMode == RESIZE_MODE_MOVE ) {
-                    newBounds.x = newLocation.x;
-                    newBounds.y = newLocation.y;
+                    newBounds.set_left(newLocation.x());
+                    newBounds.set_top(newLocation.y());
                 }
 
                 // Apply bounds
-                Rectangle appliedBounds = getBounds();
-                if ( newBounds.width > 50 ) {
-                    appliedBounds.x     = newBounds.x;
-                    appliedBounds.width = newBounds.width;
+                auto appliedBounds = getBounds();
+                if ( newBounds.width() > 50 ) {
+                    appliedBounds.set_left(newBounds.x());
+                    appliedBounds.set_width(newBounds.width());
                 }
-                if ( newBounds.height > 20 ) {
-                    appliedBounds.y      = newBounds.y;
-                    appliedBounds.height = newBounds.height;
+                if ( newBounds.height() > 20 ) {
+                    appliedBounds.set_top(newBounds.y());
+                    appliedBounds.set_height(newBounds.height());
                 }
                 this->setBounds(appliedBounds);
             }
@@ -457,62 +470,66 @@ bool Window_t::handle(Event_t& event) {
                 resizeMode = RESIZE_MODE_NONE;
 
                 if ( resizable ) {
-                    if ( (pressPoint.x < shadowSize + cornerSize / 2)
-                         && (pressPoint.x > shadowSize - cornerSize / 2)
-                         && (pressPoint.y < cornerSize)
-                         && (pressPoint.y > shadowSize - cornerSize / 2) ) { // Corner resizing
+                    if ( (pressPoint.x() < shadowSize + cornerSize / 2)
+                         && (pressPoint.x() > shadowSize - cornerSize / 2)
+                         && (pressPoint.y() < cornerSize)
+                         && (pressPoint.y() > shadowSize - cornerSize / 2) ) { // Corner resizing
                         resizeMode = RESIZE_MODE_TOP_LEFT;
                     }
 
-                    else if ( (pressPoint.x > currentBounds.width - shadowSize - cornerSize / 2)
-                              && (pressPoint.x < currentBounds.width - shadowSize + cornerSize / 2)
-                              && (pressPoint.y < cornerSize)
-                              && (pressPoint.y > shadowSize - cornerSize / 2) ) {
+                    else if ( (pressPoint.x() > currentBounds.width() - shadowSize - cornerSize / 2)
+                              && (pressPoint.x()
+                                  < currentBounds.width() - shadowSize + cornerSize / 2)
+                              && (pressPoint.y() < cornerSize)
+                              && (pressPoint.y() > shadowSize - cornerSize / 2) ) {
                         resizeMode = RESIZE_MODE_TOP_RIGHT;
                     }
 
-                    else if ( (pressPoint.x < shadowSize + cornerSize / 2)
-                              && (pressPoint.x > shadowSize - cornerSize / 2)
-                              && (pressPoint.y > currentBounds.height - shadowSize - cornerSize / 2)
-                              && (pressPoint.y
-                                  < currentBounds.height - shadowSize + cornerSize / 2) ) {
+                    else if ( (pressPoint.x() < shadowSize + cornerSize / 2)
+                              && (pressPoint.x() > shadowSize - cornerSize / 2)
+                              && (pressPoint.y()
+                                  > currentBounds.height() - shadowSize - cornerSize / 2)
+                              && (pressPoint.y()
+                                  < currentBounds.height() - shadowSize + cornerSize / 2) ) {
                         resizeMode = RESIZE_MODE_BOTTOM_LEFT;
                     }
 
-                    else if ( (pressPoint.x > currentBounds.width - shadowSize - cornerSize / 2)
-                              && (pressPoint.x < currentBounds.width - shadowSize + cornerSize / 2)
-                              && (pressPoint.y > currentBounds.height - shadowSize - cornerSize / 2)
-                              && (pressPoint.y
-                                  < currentBounds.height - shadowSize + cornerSize / 2) ) {
+                    else if ( (pressPoint.x() > currentBounds.width() - shadowSize - cornerSize / 2)
+                              && (pressPoint.x()
+                                  < currentBounds.width() - shadowSize + cornerSize / 2)
+                              && (pressPoint.y()
+                                  > currentBounds.height() - shadowSize - cornerSize / 2)
+                              && (pressPoint.y()
+                                  < currentBounds.height() - shadowSize + cornerSize / 2) ) {
                         resizeMode = RESIZE_MODE_BOTTOM_RIGHT;
 
                     }
 
-                    else if ( pressPoint.y < shadowSize + borderWidth / 2
-                              && pressPoint.y > shadowSize - borderWidth / 2 ) { // Edge resizing
+                    else if ( pressPoint.y() < shadowSize + borderWidth / 2
+                              && pressPoint.y() > shadowSize - borderWidth / 2 ) { // Edge resizing
                         resizeMode = RESIZE_MODE_TOP;
                     }
 
-                    else if ( pressPoint.x < shadowSize + borderWidth / 2
-                              && pressPoint.x > shadowSize - borderWidth / 2 ) {
+                    else if ( pressPoint.x() < shadowSize + borderWidth / 2
+                              && pressPoint.x() > shadowSize - borderWidth / 2 ) {
                         resizeMode = RESIZE_MODE_LEFT;
                     }
 
-                    else if ( (pressPoint.y > currentBounds.height - shadowSize - borderWidth / 2)
-                              && (pressPoint.y
-                                  < currentBounds.height - shadowSize + borderWidth / 2) ) {
+                    else if ( (pressPoint.y() > currentBounds.height() - shadowSize - borderWidth / 2)
+                              && (pressPoint.y()
+                                  < currentBounds.height() - shadowSize + borderWidth / 2) ) {
                         resizeMode = RESIZE_MODE_BOTTOM;
                     }
 
-                    else if ( (pressPoint.x > currentBounds.width - shadowSize - borderWidth / 2)
-                              && (pressPoint.x
-                                  < currentBounds.width - shadowSize + borderWidth / 2) ) {
+                    else if ( (pressPoint.x() > currentBounds.width() - shadowSize - borderWidth / 2)
+                              && (pressPoint.x()
+                                  < currentBounds.width() - shadowSize + borderWidth / 2) ) {
                         resizeMode = RESIZE_MODE_RIGHT;
                     }
                 }
 
                 if ( resizeMode == RESIZE_MODE_NONE ) {
-                    if ( pressPoint.y < 40 ) {
+                    if ( pressPoint.y() < 40 ) {
                         resizeMode = RESIZE_MODE_MOVE;
                     }
                 }
@@ -534,15 +551,15 @@ bool Window_t::handle(Event_t& event) {
                 if ( !isFullScreen ) {
                     isFullScreen         = true;
                     initialBounds        = getBounds();
-                    Dimension resolution = ZipNET::instance()->videoOutput->getResolution();
+                    auto resolution = ZipNET::instance()->videoOutput->getResolution();
 
-                    Rectangle fullScreenBounds;
+                    Graphics::Metrics::Rectangle fullScreenBounds;
                     if ( style == "GNOME" )
                         fullScreenBounds
-                            = Rectangle(0, 30, resolution.width, resolution.height - 94);
+                            = { 0, 30, resolution.width(), resolution.height() - 94 };
                     else if ( style == "KDE" )
                         fullScreenBounds
-                            = Rectangle(0, 0, resolution.width, resolution.height - 30);
+                            = { 0, 0, resolution.width(), resolution.height() - 30 };
 
                     this->setBounds(fullScreenBounds);
                 }
@@ -628,6 +645,6 @@ void Window_t::setTitleFont(std::string fontName) {
 /*
  *
  */
-void Window_t::setTitleAlignment(TextAlignment alignment) {
+void Window_t::setTitleAlignment(Graphics::Text::Alignment alignment) {
     label.setTitleAlignment(alignment);
 }

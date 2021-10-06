@@ -52,7 +52,7 @@ void HeadlessScreen::clean() {
     s_atomic_lock(&lock);
     for ( uint32_t off = 0; off < SCREEN_HEIGHT * SCREEN_WIDTH * 2; off = off + 2 ) {
         outputBuffer[off]     = ' ';
-        outputBuffer[off + 1] = (uint8_t)RGB(0, 0, 0);
+        outputBuffer[off + 1] = (uint8_t)Graphics::Color::as_rgb(0, 0, 0);
     }
     offset = 0;
     lock   = false;
@@ -119,7 +119,7 @@ void HeadlessScreen::updateCursor() {
 /**
  *
  */
-void HeadlessScreen::writeChar(char c, Color_t color) {
+void HeadlessScreen::writeChar(char c, Graphics::Color::ArgbGradient color) {
     if ( c == '\n' ) {
         offset = offset + SCREEN_WIDTH * 2;
         offset = offset - offset % (SCREEN_WIDTH * 2);
@@ -156,7 +156,7 @@ void HeadlessScreen::cleanLine(int lineLength) {
 /**
  *
  */
-void HeadlessScreen::write(std::string message, Color_t color, bool visible) {
+void HeadlessScreen::write(std::string message, Graphics::Color::ArgbGradient color, bool visible) {
     s_atomic_lock(&lock);
     char* p = (char*)message.c_str();
 
@@ -188,7 +188,7 @@ void HeadlessScreen::normalize() {
 
         for ( uint32_t i = 0; i < SCREEN_WIDTH * 2; i += 2 ) {
             outputCurrent[screenSize - lineBytes + i]     = ' ';
-            outputCurrent[screenSize - lineBytes + i + 1] = (uint8_t)RGB(0, 0, 0);
+            outputCurrent[screenSize - lineBytes + i + 1] = (uint8_t)Graphics::Color::as_rgb(0, 0, 0);
         }
     }
 }

@@ -39,7 +39,7 @@ public:
     /*
      *	create a application dock
      */
-    static void OsmosUIDockThread(const Dimension& resolution);
+    static void OsmosUIDockThread(const Graphics::Metrics::Dimension& resolution);
 
     /*
      * receive and show the notification from other user application

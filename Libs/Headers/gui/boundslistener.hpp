@@ -45,7 +45,7 @@ public:
         handleBoundsChanged(boundsEvent->bounds);
     }
 
-    virtual void handleBoundsChanged(Rectangle bounds) = 0;
+    virtual void handleBoundsChanged(Graphics::Metrics::Rectangle bounds) = 0;
 };
 
 #endif

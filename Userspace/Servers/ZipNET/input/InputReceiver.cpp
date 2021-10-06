@@ -58,23 +58,23 @@ void InputReceiver::startReceiveKeyEvents() {
 void InputReceiver::startReceiveMouseEvents() {
     ZipNET*         instance   = ZipNET::instance();
     EventProcessor* eventQueue = instance->eventProcessor;
-    Dimension       resolution = instance->videoOutput->getResolution();
+    auto            resolution = instance->videoOutput->getResolution();
 
     IO::Mouse::Info info;
     while ( true ) {
         info = IO::Mouse::instance().read();
 
-        Cursor::instance().nextPosition.x += info.m_x;
-        Cursor::instance().nextPosition.y -= info.m_y;
+        Cursor::instance().nextPosition.set_x(Cursor::instance().nextPosition.x() + info.m_x);
+        Cursor::instance().nextPosition.set_y(Cursor::instance().nextPosition.y() - info.m_y);
 
-        if ( Cursor::instance().nextPosition.x < 0 )
-            Cursor::instance().nextPosition.x = 0;
-        if ( Cursor::instance().nextPosition.x > resolution.width - 2 )
-            Cursor::instance().nextPosition.x = resolution.width - 2;
-        if ( Cursor::instance().nextPosition.y < 0 )
-            Cursor::instance().nextPosition.y = 0;
-        if ( Cursor::instance().nextPosition.y > resolution.height - 2 )
-            Cursor::instance().nextPosition.y = resolution.height - 2;
+        if ( Cursor::instance().nextPosition.x() < 0 )
+            Cursor::instance().nextPosition.set_x(0);
+        if ( Cursor::instance().nextPosition.x() > resolution.width() - 2 )
+            Cursor::instance().nextPosition.set_x( resolution.width() - 2);
+        if ( Cursor::instance().nextPosition.y() < 0 )
+            Cursor::instance().nextPosition.set_y(0);
+        if ( Cursor::instance().nextPosition.y() > resolution.height() - 2 )
+            Cursor::instance().nextPosition.set_y(resolution.height() - 2);
 
         Cursor::instance().nextPressedButtons = MOUSE_BUTTON_NONE;
         if ( info.m_button1 )

@@ -60,7 +60,7 @@ public:
     virtual bool handle() {
         return false;
     }
-    virtual void handleBoundChange(Rectangle oldBounds);
+    virtual void handleBoundChange(Graphics::Metrics::Rectangle oldBounds);
 
     void createNewBuffer(uint16_t requiredPages);
     void clientHasAcknowledgedCurrentBuffer();

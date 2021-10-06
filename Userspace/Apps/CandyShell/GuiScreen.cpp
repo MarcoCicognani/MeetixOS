@@ -38,13 +38,13 @@ bool     focus        = false;
 uint64_t lastInput    = 0;
 
 list<IO::Keyboard::Info> waitingInput;
-bool                 noInputAvailable = true;
-Tasking::Lock        waitingInputLock;
+bool                     noInputAvailable = true;
+Tasking::Lock            waitingInputLock;
 
 GuiScreen* instance;
 
-vector<Color_t> colors;
-string          output;
+vector<Graphics::Color::ArgbGradient> colors;
+string                                output;
 
 /*
  *
@@ -69,7 +69,7 @@ public:
     CanvasResizeBoundsListener(Canvas* canvas) : localCanvas(canvas) {
     }
 
-    virtual void handleBoundsChanged(Rectangle bounds) {
+    virtual void handleBoundsChanged(Graphics::Metrics::Rectangle bounds) {
         paintIsFresh = false;
     }
 };
@@ -128,20 +128,24 @@ void GuiScreen::initialize() {
 
     window->setBoundsListener(new CanvasResizeBoundsListener(canvas));
 
-    Dimension resolution = UI::getResolution();
-    Rectangle windowBounds
-        = Rectangle(resolution.width / 2 - 275, resolution.height / 2 - 175, 550, 350);
+    auto resolution   = UI::getResolution();
+    auto windowBounds = Graphics::Metrics::Rectangle(resolution.width() / 2 - 275,
+                                                     resolution.height() / 2 - 175,
+                                                     550,
+                                                     350);
     window->setBounds(windowBounds);
-    window->setColor(ARGB(100, 0, 0, 0), ARGB(255, 255, 255, 255));
-    canvas->setBounds(Rectangle(0, 0, windowBounds.width, windowBounds.height));
+    window->setColor(Graphics::Color::as_argb(100, 0, 0, 0),
+                     Graphics::Color::as_argb(255, 255, 255, 255));
+    canvas->setBounds(
+        Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
 
     canvas->setListener(UI_COMPONENT_EVENT_TYPE_KEY, new InputKeyListener());
     canvas->setBufferListener(new CanvasBufferListener_t());
     window->setListener(UI_COMPONENT_EVENT_TYPE_FOCUS, new ShellFocusListener());
     window->setVisible(true);
 
-    font      = FontLoader::get("consolas");
-    viewModel = TextLayouter::getInstance()->initializeBuffer();
+    font      = Graphics::Text::FontLoader::get("consolas");
+    viewModel = Graphics::Text::Layouter::instance().init_buffer();
 
     s_create_thread_n((void*)&paintEntry, "canvas");
     s_create_thread_n((void*)&blinkCursorThread, "blinker");
@@ -166,13 +170,14 @@ void GuiScreen::blinkCursorThread() {
  *
  */
 void GuiScreen::paint() {
-    int       padding = 5;
-    Rectangle windowBounds;
-    cairo_t*  cr;
+    int                          padding = 5;
+    Graphics::Metrics::Rectangle windowBounds;
+    cairo_t*                     cr;
 
     while ( true ) {
         windowBounds = window->getBounds();
-        canvas->setBounds(Rectangle(0, 0, windowBounds.width, windowBounds.height));
+        canvas->setBounds(
+            Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
 
         cr = getGraphics();
         if ( !cr ) {
@@ -189,43 +194,46 @@ void GuiScreen::paint() {
         cairo_restore(cr);
 
         // relayout text
-        TextLayouter::getInstance()->layout(cr,
-                                            output.c_str(),
-                                            font,
-                                            14,
-                                            Rectangle(padding,
-                                                      padding,
-                                                      windowBounds.width - 2 * padding - 20,
-                                                      windowBounds.height - 2 * padding),
-                                            TextAlignment::LEFT,
-                                            viewModel,
-                                            true);
+        Graphics::Text::Layouter::instance().layout(
+            cr,
+            output.c_str(),
+            font,
+            14,
+            Graphics::Metrics::Rectangle(padding,
+                                         padding,
+                                         windowBounds.width() - 2 * padding - 20,
+                                         windowBounds.height() - 2 * padding),
+            Graphics::Text::Alignment::LEFT,
+            viewModel,
+            true);
 
         // check which is the lowest-down-the-screen character
         int highesty = 0;
-        for ( PositionedGlyph& g : viewModel->positions ) {
-            int ypos = g.position.y - g.glyph->y;
+        for ( auto& g : viewModel->m_positioned_glyphs ) {
+            int ypos = g.m_position.y() - g.m_cairo_glyph->y;
             if ( ypos > highesty )
                 highesty = ypos;
         }
 
         // calculate limit
-        int yLimit  = windowBounds.height - 60;
+        int yLimit  = windowBounds.height() - 60;
         int yOffset = 0;
         if ( highesty > yLimit )
             yOffset = yLimit - highesty;
 
         // paint characters
-        Point last;
-        int   i = 0;
+        Graphics::Metrics::Point last;
+        int                      i = 0;
 
-        for ( PositionedGlyph& g : viewModel->positions ) {
-            last = g.position;
+        for ( auto& g : viewModel->m_positioned_glyphs ) {
+            last = g.m_position;
 
             cairo_save(cr);
             cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(colors[i]));
-            cairo_translate(cr, g.position.x - g.glyph->x, yOffset + g.position.y - g.glyph->y);
-            cairo_glyph_path(cr, g.glyph, g.glyphCount);
+            cairo_translate(cr,
+                            g.m_position.x() - g.m_cairo_glyph->x,
+                            yOffset + g.m_position.y() - g.m_cairo_glyph->y);
+            cairo_glyph_path(cr, g.m_cairo_glyph, g.m_cairo_glyph_count);
             cairo_fill(cr);
             cairo_restore(cr);
 
@@ -237,13 +245,13 @@ void GuiScreen::paint() {
             cairo_save(cr);
             // cursor
             cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(fontColor));
-            cairo_rectangle(cr, last.x + 10, yOffset + last.y - 12, 3, 14);
+            cairo_rectangle(cr, last.x() + 10, yOffset + last.y() - 12, 3, 14);
 
             focus ? cairo_fill(cr) : cairo_stroke(cr);
             cairo_restore(cr);
         }
 
-        canvas->blit(Rectangle(0, 0, bufferSize.width, bufferSize.height));
+        canvas->blit(Graphics::Metrics::Rectangle(0, 0, bufferSize.width(), bufferSize.height()));
 
         paintIsFresh = true;
         s_atomic_block(&paintIsFresh);
@@ -259,8 +267,8 @@ cairo_t* GuiScreen::getGraphics() {
     if ( bufferInfo.buffer == 0 )
         return 0;
 
-    bufferSize.width  = bufferInfo.width;
-    bufferSize.height = bufferInfo.height;
+    bufferSize.set_width(bufferInfo.width);
+    bufferSize.set_height(bufferInfo.height);
 
     // get the surface ready and go:
     if ( existingSurface == 0 || existingSurfaceBuffer != bufferInfo.buffer ) {
@@ -314,29 +322,29 @@ void GuiScreen::close() {
  */
 bool GuiScreen::setColor(string color) {
     if ( color == "red" ) {
-        backgroundColor = RGB(255, 0, 0);
-        fontColor       = RGB(0, 0, 0);
+        backgroundColor = Graphics::Color::as_rgb(255, 0, 0);
+        fontColor       = Graphics::Color::as_rgb(0, 0, 0);
 
         return true;
     }
 
     else if ( color == "green" ) {
-        backgroundColor = RGB(0, 255, 0);
-        fontColor       = RGB(0, 0, 0);
+        backgroundColor = Graphics::Color::as_rgb(0, 255, 0);
+        fontColor       = Graphics::Color::as_rgb(0, 0, 0);
 
         return true;
     }
 
     else if ( color == "black" ) {
-        backgroundColor = RGB(0, 0, 0);
-        fontColor       = RGB(255, 255, 255);
+        backgroundColor = Graphics::Color::as_rgb(0, 0, 0);
+        fontColor       = Graphics::Color::as_rgb(255, 255, 255);
 
         return true;
     }
 
     else if ( color == "white" ) {
-        backgroundColor = RGB(255, 255, 255);
-        fontColor       = RGB(0, 0, 0);
+        backgroundColor = Graphics::Color::as_rgb(255, 255, 255);
+        fontColor       = Graphics::Color::as_rgb(0, 0, 0);
 
         return true;
     }
@@ -360,7 +368,7 @@ void GuiScreen::updateCursor() {
 /**
  *
  */
-void GuiScreen::writeChar(char c, Color_t color) {
+void GuiScreen::writeChar(char c, Graphics::Color::ArgbGradient color) {
     if ( charIsUtf8(c) ) {
         output = output + c;
         if ( c != '\n' )
@@ -391,7 +399,7 @@ void GuiScreen::cleanLine(int lineLength) {
 /**
  *
  */
-void GuiScreen::write(string message, Color_t color, bool visible) {
+void GuiScreen::write(string message, Graphics::Color::ArgbGradient color, bool visible) {
     for ( char c : message )
         writeChar(c, color);
 }

@@ -65,7 +65,7 @@ public:
     /**
      *
      */
-    virtual bool setTitleAlignment(TextAlignment alignment);
+    virtual bool setTitleAlignment(Graphics::Text::Alignment alignment);
 
     /**
      *

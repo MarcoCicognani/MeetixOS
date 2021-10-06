@@ -55,7 +55,7 @@ public:
     /**
      *
      */
-    virtual void fireBoundsChange(Rectangle& bounds);
+    virtual void fireBoundsChange(Graphics::Metrics::Rectangle& bounds);
 };
 
 #endif

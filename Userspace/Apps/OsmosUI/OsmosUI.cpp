@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     // initialize graphic comunication
     if ( ui->init() ) {
         // get resolution from windowserver
-        Dimension resolution = UI::getResolution();
+        auto resolution = UI::getResolution();
 
         auto user_name = Utils::Environment::logged_user();
         user_name[0]   = static_cast<char>(toupper(user_name[0]));

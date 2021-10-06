@@ -23,7 +23,7 @@
 /**
  *
  */
-bool PngComponent::setPNG(std::string path, Point postion) {
+bool PngComponent::setPNG(std::string path, Graphics::Metrics::Point postion) {
     if ( !UiInitialized )
         return false;
 

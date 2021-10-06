@@ -27,14 +27,14 @@
  */
 class TaskManagerThread_t : public Tasking::Thread {
 private:
-    Label_t*  internal;
-    Rectangle bounds;
+    Label_t*                     internal;
+    Graphics::Metrics::Rectangle bounds;
 
 public:
     /*
      *
      */
-    TaskManagerThread_t(Label_t* where, const Rectangle& bounds);
+    TaskManagerThread_t(Label_t* where, const Graphics::Metrics::Rectangle& bounds);
 
     /*
      *

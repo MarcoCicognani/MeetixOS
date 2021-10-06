@@ -23,7 +23,7 @@
 #include <Api.h>
 #include <Api/utils/local.hpp>
 #include <cstdint>
-#include <graphics/metrics/rectangle.hpp>
+#include <Graphics/Metrics/Rectangle.hh>
 #include <gui/boundseventcomponent.hpp>
 #include <gui/componentregistry.hpp>
 #include <gui/mouselistener.hpp>
@@ -112,12 +112,12 @@ public:
     /**
      *
      */
-    bool setBounds(Rectangle rect);
+    bool setBounds(Graphics::Metrics::Rectangle rect);
 
     /**
      *
      */
-    Rectangle getBounds();
+    Graphics::Metrics::Rectangle getBounds();
 
     /**
      *

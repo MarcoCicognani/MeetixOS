@@ -44,7 +44,7 @@ void DefaultCaretMoveStrategy_t::moveCaret(TextComponent_t* component,
                                            IO::Keyboard::Info&  info) {
     int cursor            = component->getCursor();
     int newCursorPosition = cursor;
-    int selectedLength    = component->getSelectedRange().getLength();
+    int selectedLength    = component->getSelectedRange().len();
 
     if ( direction == CaretDirection_t::RIGHT ) {
         if ( info.m_ctrl )

@@ -95,8 +95,8 @@ void ZipNET::launch() {
     loadCursor();
 
     // get resolution
-    Dimension resolution = videoOutput->getResolution();
-    Rectangle screenBounds(0, 0, resolution.width, resolution.height);
+    auto                         resolution = videoOutput->getResolution();
+    Graphics::Metrics::Rectangle screenBounds(0, 0, resolution.width(), resolution.height());
 
     // instantiate screen object with bounds
     screen = new Screen_t();
@@ -132,13 +132,14 @@ void ZipNET::launch() {
 /**
  *
  */
-[[noreturn]] void ZipNET::mainLoop(Rectangle screenBounds) {
-    global.resize(screenBounds.width, screenBounds.height);
+[[noreturn]] void ZipNET::mainLoop(Graphics::Metrics::Rectangle screenBounds) {
+    global.resize(screenBounds.width(), screenBounds.height());
     Utils::Environment::set("SYSTEM_LEVEL", "interactive");
 
     s_create_thread_n((void*)lockCheck, "lockCheck");
 
-    Cursor::instance().nextPosition = Point(screenBounds.width / 2, screenBounds.height / 2);
+    Cursor::instance().nextPosition
+        = Graphics::Metrics::Point(screenBounds.width() / 2, screenBounds.height() / 2);
 
     // initially set rendering atom
     renderAtom = true;
@@ -156,7 +157,7 @@ void ZipNET::launch() {
         screen->resolveRequirement(COMPONENT_REQUIREMENT_PAINT);
 
         // blit the root component to the buffer
-        screen->blit(&global, screenBounds, Point(0, 0));
+        screen->blit(&global, screenBounds, Graphics::Metrics::Point(0, 0));
 
         // paint the cursor
         Cursor::instance().paint(&global);
@@ -177,15 +178,17 @@ void ZipNET::launch() {
 /**
  *
  */
-void ZipNET::blit(Graphics* graphics) {
-    auto      resolution = videoOutput->getResolution();
-    Rectangle screenBounds{ 0, 0, resolution.width, resolution.height };
-    auto buffer = reinterpret_cast<Color_t*>(cairo_image_surface_get_data(graphics->getSurface()));
+void ZipNET::blit(Graphics::Context* graphics) {
+    auto resolution = videoOutput->getResolution();
+    auto screenBounds
+        = Graphics::Metrics::Rectangle{ 0, 0, resolution.width(), resolution.height() };
+    auto buffer = reinterpret_cast<Graphics::Color::ArgbGradient*>(
+        cairo_image_surface_get_data(graphics->cairo_surface()));
 
     // get invalid output
-    Rectangle invalid = screen->grabInvalid();
+    auto invalid = screen->grabInvalid();
 
-    if ( !invalid.width && !invalid.height )
+    if ( !invalid.width() && !invalid.height() )
         return;
 
     videoOutput->blit(invalid, screenBounds, buffer);
@@ -223,7 +226,7 @@ void ZipNET::loadCursor() {
  */
 Component_t* ZipNET::dispatchUpwards(Component_t* component, Event_t& event) {
     // store when dispatching to parents
-    Point initialPosition;
+    Graphics::Metrics::Point initialPosition;
     auto  locatable = dynamic_cast<Locatable_t*>(&event);
     if ( locatable )
         initialPosition = locatable->position;
@@ -253,9 +256,9 @@ bool ZipNET::dispatch(Component_t* component, Event_t& event) {
     if ( component->canHandleEvents() ) {
         Locatable_t* locatable = dynamic_cast<Locatable_t*>(&event);
         if ( locatable != 0 ) {
-            Point locationOnScreen = component->getLocationOnScreen();
-            locatable->position.x -= locationOnScreen.x;
-            locatable->position.y -= locationOnScreen.y;
+            auto locationOnScreen = component->getLocationOnScreen();
+            locatable->position.set_x(locatable->position.x()- locationOnScreen.x());
+            locatable->position.set_y(locatable->position.y()- locationOnScreen.y());
         }
 
         handled = component->handle(event);

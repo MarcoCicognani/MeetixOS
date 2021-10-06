@@ -21,10 +21,10 @@
 #define MEETIX_LIBRARY_UI_INTERFACE_SPECIFICATION
 
 #include <Api.h>
-#include <graphics/color.hpp>
-#include <graphics/metrics/dimension.hpp>
-#include <graphics/metrics/rectangle.hpp>
-#include <graphics/text/textalign.hpp>
+#include <Graphics/Color.hh>
+#include <Graphics/Metrics/Dimension.hh>
+#include <Graphics/Metrics/Rectangle.hh>
+#include <Graphics/Text/Alignment.hh>
 #include <IO/Keyboard.hh>
 #include <string>
 #include <vector>
@@ -225,9 +225,9 @@ typedef struct {
  * Request/response for setting bounds
  */
 typedef struct {
-    UiMessageHeader header;
-    UiComponentID   id;
-    Rectangle       bounds;
+    UiMessageHeader              header;
+    UiComponentID                id;
+    Graphics::Metrics::Rectangle bounds;
 } A_PACKED UiComponentSetBoundsRequest;
 
 typedef struct {
@@ -244,9 +244,9 @@ typedef struct {
 } A_PACKED UiComponentGetBoundsRequest;
 
 typedef struct {
-    UiMessageHeader  header;
-    UiProtocolStatus status;
-    Rectangle        bounds;
+    UiMessageHeader              header;
+    UiProtocolStatus             status;
+    Graphics::Metrics::Rectangle bounds;
 } A_PACKED UiComponentGetBoundsResponse;
 
 /*
@@ -416,8 +416,8 @@ typedef struct {
 } A_PACKED UiComponentActionEvent;
 
 typedef struct {
-    UiComponentEventHeader header;
-    Rectangle              bounds;
+    UiComponentEventHeader       header;
+    Graphics::Metrics::Rectangle bounds;
 } A_PACKED UiComponentBoundsEvent;
 
 typedef struct {
@@ -426,8 +426,8 @@ typedef struct {
 } A_PACKED UiComponentCanvasWfaEvent;
 
 typedef struct {
-    UiComponentEventHeader header;
-    IO::Keyboard::InfoBasic    keyInfo;
+    UiComponentEventHeader  header;
+    IO::Keyboard::InfoBasic keyInfo;
 } A_PACKED UiComponentKeyEvent;
 
 typedef struct {
@@ -442,8 +442,8 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
 
-    char  pathToPng[MAX_PATH];
-    Point pngPosition;
+    char                     pathToPng[MAX_PATH];
+    Graphics::Metrics::Point pngPosition;
 } A_PACKED UiComponentSetupPng;
 
 typedef struct {
@@ -458,8 +458,8 @@ typedef struct {
     UiMessageHeader header;
     UiComponentID   id;
 
-    Color_t shapeColor;
-    Color_t titleColor;
+    Graphics::Color::ArgbGradient shapeColor;
+    Graphics::Color::ArgbGradient titleColor;
 } A_PACKED UiComponentColor;
 
 typedef struct {
@@ -491,8 +491,8 @@ typedef struct {
  *	get resolution of screen
  */
 typedef struct {
-    UiProtocolStatus status;
-    Dimension        resolution;
+    UiProtocolStatus             status;
+    Graphics::Metrics::Dimension resolution;
 } A_PACKED UiGetResolutionResponse;
 
 /*
@@ -532,9 +532,9 @@ typedef struct {
  *	request/reponse to set title alignment
  */
 typedef struct {
-    UiMessageHeader header;
-    UiComponentID   id;
-    TextAlignment   alignment;
+    UiMessageHeader           header;
+    UiComponentID             id;
+    Graphics::Text::Alignment alignment;
 } A_PACKED UiSetTitleAlignmentRequest;
 
 typedef struct {
@@ -545,9 +545,9 @@ typedef struct {
  *	request/response to register task manager on component
  */
 typedef struct {
-    UiMessageHeader header;
-    UiComponentID   id;
-    Rectangle       bounds;
+    UiMessageHeader              header;
+    UiComponentID                id;
+    Graphics::Metrics::Rectangle bounds;
 } A_PACKED UiRegisterTaskManagerRequest;
 
 typedef struct {
@@ -589,10 +589,10 @@ typedef uint8_t MouseEventType;
  *	mouse event data struct
  */
 typedef struct {
-    UiComponentEventHeader header;
-    Point                  position;
-    MouseEventType         type;
-    MouseButton            buttons;
+    UiComponentEventHeader   header;
+    Graphics::Metrics::Point position;
+    MouseEventType           type;
+    MouseButton              buttons;
 } A_PACKED UiComponentMouseEvent;
 
 #endif

@@ -28,16 +28,16 @@
  *
  */
 void Panel_t::paint() {
-    cr = graphics.getContext();
+    cr = graphics.cairo_context();
     cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(shapeColor));
-    cairo_rectangle(cr, 0, 0, getBounds().width, getBounds().height);
+    cairo_rectangle(cr, 0, 0, getBounds().width(), getBounds().height());
     cairo_fill(cr);
 }
 
 /**
  *
  */
-void Panel_t::setBackground(Color_t color) {
+void Panel_t::setBackground(Graphics::Color::ArgbGradient color) {
     setColor(color, 0);
     markFor(COMPONENT_REQUIREMENT_PAINT);
 }

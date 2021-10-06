@@ -28,8 +28,8 @@
 #include <components/ColoredComponent.hpp>
 #include <components/text/TextComponent.hpp>
 #include <components/TitledComponent.hpp>
-#include <graphics/metrics/insets.hpp>
-#include <graphics/text/textlyot.hpp>
+#include <Graphics/Metrics/Insets.hh>
+#include <Graphics/Text/Layouter.hh>
 #include <IO/Keyboard.hh>
 #include <list>
 #include <string>
@@ -50,29 +50,29 @@ class TextField_t : public TextComponent_t,
                     public TitledComponent_t,
                     public ColoredComponent_t {
 private:
-    std::string             text;
-    TextFieldVisualStatus_t visualStatus;
-    TextAlignment           alignment;
-    bool                    focused;
-    bool                    secure;
+    std::string               text;
+    TextFieldVisualStatus_t   visualStatus;
+    Graphics::Text::Alignment alignment;
+    bool                      focused;
+    bool                      secure;
 
-    Font_t*     font;
-    std::string ghostText;
-    bool        ghost;
+    Graphics::Text::Font* font;
+    std::string           ghostText;
+    bool                  ghost;
 
-    int     scrollX;
-    int     fontSize;
-    Color_t textColor;
-    Color_t sColor;
-    Insets  insets;
+    int                           scrollX;
+    int                           fontSize;
+    Graphics::Color::ArgbGradient textColor;
+    Graphics::Color::ArgbGradient sColor;
+    Graphics::Metrics::Insets     insets;
 
     int cursor;
     int marker;
 
-    LayoutedText* viewModel;
+    Graphics::Text::Layouted* viewModel;
 
-    cairo_t*  cr;
-    Rectangle bounds;
+    cairo_t*                     cr;
+    Graphics::Metrics::Rectangle bounds;
 
     void loadDefaultFont();
     void applyScroll();
@@ -102,10 +102,10 @@ public:
     virtual int  getMarker() {
         return marker;
     }
-    virtual Range       getSelectedRange();
-    virtual void        setGhostText(std::string text);
-    virtual void        setText(std::string text);
-    virtual std::string getText() {
+    virtual Graphics::Metrics::Range getSelectedRange();
+    virtual void                     setGhostText(std::string text);
+    virtual void                     setText(std::string text);
+    virtual std::string              getText() {
         return text;
     }
 
@@ -118,25 +118,26 @@ public:
     virtual std::string getTitle() {
         return getText();
     }
-    virtual void setFont(Font_t* f);
+    virtual void setFont(Graphics::Text::Font* f);
     virtual void setTitleFont(std::string fontName);
     virtual void setFontSize(int size);
-    virtual void setTitleAlignment(TextAlignment alignment);
+    virtual void setTitleAlignment(Graphics::Text::Alignment alignment);
 
     /**
      * colored component
      */
-    virtual void setColor(Color_t ShapeColor, Color_t titleColor);
+    virtual void setColor(Graphics::Color::ArgbGradient ShapeColor,
+                          Graphics::Color::ArgbGradient titleColor);
 
     /**
      * textfield
      */
-    void      backspace(IO::Keyboard::Info& info);
-    void      insert(std::string text);
-    int       viewToPosition(Point p);
-    Rectangle glyphToView(PositionedGlyph& g);
-    int       positionToUnscrolledCursorX(int pos);
-    Rectangle positionToCursorBounds(int pos);
+    void                         backspace(IO::Keyboard::Info& info);
+    void                         insert(std::string text);
+    int                          viewToPosition(Graphics::Metrics::Point p);
+    Graphics::Metrics::Rectangle glyphToView(Graphics::Text::PositionedGlyph& g);
+    int                          positionToUnscrolledCursorX(int pos);
+    Graphics::Metrics::Rectangle positionToCursorBounds(int pos);
 };
 
 #endif

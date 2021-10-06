@@ -36,22 +36,22 @@ class Scrollpane_t : public Component_t,
                      public ScrollHandler_t {
 private:
     Component_t* viewPort;
-    Point        scrollPosition;
+    Graphics::Metrics::Point        scrollPosition;
     Scrollbar_t  verticalScrollbar;
     Scrollbar_t  horizontalScrollbar;
 
 public:
     Scrollpane_t()
-        : scrollPosition(Point(0, 0)), viewPort(nullptr),
+        : scrollPosition(Graphics::Metrics::Point(0, 0)), viewPort(nullptr),
           verticalScrollbar(ScrollbarOrientation_t::VERTICAL),
           horizontalScrollbar(ScrollbarOrientation_t::HORIZONTAL) {
     }
 
-    virtual Point getPosition() const {
+    virtual Graphics::Metrics::Point getPosition() const {
         return scrollPosition;
     }
     virtual void         layout();
-    virtual void         setPosition(Point& position);
+    virtual void         setPosition(Graphics::Metrics::Point& position);
     virtual void         setViewPort(Component_t* content);
     virtual Component_t* getViewPort() const {
         return viewPort;

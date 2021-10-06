@@ -24,7 +24,7 @@
 
 #include "vbe.hpp"
 
-#include <graphics/vbe.hpp>
+#include <Graphics/Vbe.hh>
 #include <sstream>
 #include <stdint.h>
 #include <stdio.h>
@@ -231,7 +231,7 @@ int main() {
 
     Utils::log("vesa initialized");
 
-    size_t  buflen = sizeof(MessageHeader) + sizeof(VbeSetModeRequest);
+    size_t  buflen = sizeof(MessageHeader) + sizeof(Graphics::Vbe::SetModeRequest);
     uint8_t buf[buflen];
 
     while ( true ) {
@@ -240,22 +240,22 @@ int main() {
         if ( status != MESSAGE_RECEIVE_STATUS_SUCCESSFUL )
             continue;
 
-        MessageHeader*    header    = (MessageHeader*)buf;
-        VbeRequestHeader* vbeheader = (VbeRequestHeader*)MESSAGE_CONTENT(buf);
-        uint32_t          requester = header->m_sender_tid;
+        auto     header    = (MessageHeader*)buf;
+        auto     vbeheader = (Graphics::Vbe::RequestHeader*)MESSAGE_CONTENT(buf);
+        uint32_t requester = header->m_sender_tid;
 
         // handle command
-        if ( vbeheader->command == VBE_COMMAND_SET_MODE ) {
-            VbeSetModeRequest* request = (VbeSetModeRequest*)MESSAGE_CONTENT(buf);
+        if ( vbeheader->m_command == Graphics::Vbe::COMMAND_SET_MODE ) {
+            auto request = (Graphics::Vbe::SetModeRequest*)MESSAGE_CONTENT(buf);
 
             // create response
-            VbeSetModeResponse response;
+            Graphics::Vbe::SetModeResponse response;
 
             // switch video mode
             VesaVideoInfo result;
-            uint16_t      resX = request->width;
-            uint16_t      resY = request->height;
-            uint8_t       bpp  = request->bpp;
+            uint16_t      resX = request->m_width;
+            uint16_t      resY = request->m_height;
+            uint8_t       bpp  = request->m_bit_per_pixel;
 
             Utils::log("attempting to set video mode");
             if ( setVideoMode(resX, resY, bpp, result) ) {
@@ -263,30 +263,30 @@ int main() {
                 uint32_t lfbSize                  = result.bytesPerScanline * result.resolutionY;
                 void*    addressInRequestersSpace = s_share_mem(result.lfb, lfbSize, requester);
 
-                response.status        = VBE_SET_MODE_STATUS_SUCCESS;
-                response.modeInfo.lfb  = (uint32_t)addressInRequestersSpace;
-                response.modeInfo.resX = result.resolutionX;
-                response.modeInfo.resY = result.resolutionY;
-                response.modeInfo.bpp  = (uint8_t)result.bpp;
-                response.modeInfo.bpsl = (uint16_t)result.bytesPerScanline;
+                response.m_mode_status                    = Graphics::Vbe::SET_MODE_STATUS_SUCCESS;
+                response.m_mode_info.m_linear_framebuffer = (uint32_t)addressInRequestersSpace;
+                response.m_mode_info.m_width              = result.resolutionX;
+                response.m_mode_info.m_height             = result.resolutionY;
+                response.m_mode_info.m_bit_per_pixel      = (uint8_t)result.bpp;
+                response.m_mode_info.m_bytes_per_scanline = (uint16_t)result.bytesPerScanline;
 
             }
 
             else {
                 Utils::log("unable to switch to video resolution " + resX + 'x' + resY + 'x' + bpp);
-                response.status = VBE_SET_MODE_STATUS_FAILED;
+                response.m_mode_status = Graphics::Vbe::SET_MODE_STATUS_FAILED;
             }
 
             // send response
             s_send_message_t(header->m_sender_tid,
                              &response,
-                             sizeof(VbeSetModeResponse),
+                             sizeof(Graphics::Vbe::SetModeResponse),
                              header->m_transaction);
         }
 
         else {
             std::stringstream ukn;
-            ukn << "received unknown command " << vbeheader->command << " from task "
+            ukn << "received unknown command " << vbeheader->m_command << " from task "
                 << header->m_sender_tid;
             Utils::log(ukn.str());
         }

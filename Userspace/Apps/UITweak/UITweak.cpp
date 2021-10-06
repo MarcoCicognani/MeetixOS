@@ -83,12 +83,12 @@ static void previousHandler() {
 
     // there are another image? set it
     if ( rit != backgrounds.rend() )
-        pngPanel->setPNG(*it, Point(0, 0));
+        pngPanel->setPNG(*it, Graphics::Metrics::Point(0, 0));
 
     // restart circle
     else {
         rit = backgrounds.rbegin();
-        pngPanel->setPNG(*it, Point(0, 0));
+        pngPanel->setPNG(*it, Graphics::Metrics::Point(0, 0));
     }
 }
 
@@ -101,12 +101,12 @@ static void nextHandler() {
 
     // there are another image? set it
     if ( it != backgrounds.end() )
-        pngPanel->setPNG(*it, Point(0, 0));
+        pngPanel->setPNG(*it, Graphics::Metrics::Point(0, 0));
 
     // restart circle
     else {
         it = backgrounds.begin();
-        pngPanel->setPNG(*it, Point(0, 0));
+        pngPanel->setPNG(*it, Graphics::Metrics::Point(0, 0));
     }
 }
 
@@ -119,7 +119,7 @@ static void okayHandler() {
                            "Successful applied " + std::string(basename((char*)(*it).c_str()))
                                + std::string(" as background"),
                            5,
-                           RGB(0, 200, 0),
+                           Graphics::Color::as_rgb(0, 200, 0),
                            MessageAnimation_t::SIDE_SCROLL);
 
     else
@@ -127,7 +127,7 @@ static void okayHandler() {
                            "Unable to apply " + std::string(basename((char*)(*it).c_str()))
                                + std::string(" as background"),
                            5,
-                           RGB(200, 0, 0),
+                           Graphics::Color::as_rgb(200, 0, 0),
                            MessageAnimation_t::DARKENING);
 }
 
@@ -160,30 +160,37 @@ int main(int argc, char* argv[]) {
         window->onClose([] { lock = false; });
 
         // get screen resolution
-        Dimension resolution = UI::getResolution();
+        auto resolution = UI::getResolution();
 
         // set bounds
-        Rectangle bounds(resolution.width / 2 - 400, resolution.height / 2 - 300, 820, 655);
+        Graphics::Metrics::Rectangle bounds(resolution.width() / 2 - 400,
+                                            resolution.height() / 2 - 300,
+                                            820,
+                                            655);
         window->setBounds(bounds);
-        title->setBounds(Rectangle(0, 0, 800, 30));
-        pngPanel->setBounds(Rectangle(30, 30, 740, 540));
+        title->setBounds(Graphics::Metrics::Rectangle(0, 0, 800, 30));
+        pngPanel->setBounds(Graphics::Metrics::Rectangle(30, 30, 740, 540));
 
         // configure titles
         window->setTitle("OsmosUI tweak Tool");
         title->setTitle("Choose one of these images and click 'Okay' to set as background");
 
         // configure buttons
-        buttons->configure("prev", Rectangle(0, 30, 30, 540), "<", RGB(0, 255, 255), RGB(0, 0, 0));
+        buttons->configure("prev",
+                           Graphics::Metrics::Rectangle(0, 30, 30, 540),
+                           "<",
+                           Graphics::Color::as_rgb(0, 255, 255),
+                           Graphics::Color::as_rgb(0, 0, 0));
         buttons->configure("next",
-                           Rectangle(770, 30, 30, 540),
+                           Graphics::Metrics::Rectangle(770, 30, 30, 540),
                            ">",
-                           RGB(0, 255, 255),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_rgb(0, 255, 255),
+                           Graphics::Color::as_rgb(0, 0, 0));
         buttons->configure("okay",
-                           Rectangle(10, 570, 100, 30),
+                           Graphics::Metrics::Rectangle(10, 570, 100, 30),
                            "Okay",
-                           ARGB(120, 0, 200, 0),
-                           RGB(0, 0, 0));
+                           Graphics::Color::as_argb(120, 0, 200, 0),
+                           Graphics::Color::as_rgb(0, 0, 0));
 
         // show the window
         window->setVisible(true);
@@ -199,7 +206,7 @@ int main(int argc, char* argv[]) {
         // set iterators with first path
         it  = backgrounds.begin();
         rit = backgrounds.rbegin();
-        pngPanel->setPNG(*it, Point(0, 0));
+        pngPanel->setPNG(*it, Graphics::Metrics::Point(0, 0));
 
         // lock in event mode
         s_atomic_block(&lock);

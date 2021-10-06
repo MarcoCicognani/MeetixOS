@@ -46,40 +46,44 @@ void Scrollpane_t::setViewPort(Component_t* component) {
 void Scrollpane_t::layout() {
     auto bounds = getBounds();
 
-    verticalScrollbar.setModelArea(bounds.height, viewPort->getBounds().height);
-    verticalScrollbar.setBounds(Rectangle(bounds.width - 15, 0, 15, bounds.height - 15));
+    verticalScrollbar.setModelArea(bounds.height(), viewPort->getBounds().height());
+    verticalScrollbar.setBounds(
+        Graphics::Metrics::Rectangle(bounds.width() - 15, 0, 15, bounds.height() - 15));
 
-    horizontalScrollbar.setModelArea(bounds.width, viewPort->getBounds().width);
-    horizontalScrollbar.setBounds(Rectangle(0, bounds.height - 15, bounds.width - 15, 15));
+    horizontalScrollbar.setModelArea(bounds.width(), viewPort->getBounds().width());
+    horizontalScrollbar.setBounds(
+        Graphics::Metrics::Rectangle(0, bounds.height() - 15, bounds.width() - 15, 15));
 }
 
 /**
  *
  */
-void Scrollpane_t::setPosition(Point& newPosition) {
+void Scrollpane_t::setPosition(Graphics::Metrics::Point& newPosition) {
     if ( viewPort != nullptr ) {
         scrollPosition = newPosition;
 
-        Rectangle viewPortSize = viewPort->getBounds();
-        Rectangle bounds       = getBounds();
+        auto viewPortSize = viewPort->getBounds();
+        auto bounds       = getBounds();
 
         // limit if too small
-        if ( scrollPosition.x > 0 )
-            scrollPosition.x = 0;
-        else if ( viewPortSize.width < bounds.width )
-            scrollPosition.x = 0;
-        else if ( scrollPosition.x + viewPortSize.width < bounds.width )
-            scrollPosition.x = bounds.width - viewPortSize.width;
+        if ( scrollPosition.x() > 0 )
+            scrollPosition.set_x(0);
+        else if ( viewPortSize.width() < bounds.width() )
+            scrollPosition.set_x(0);
+        else if ( scrollPosition.x() + viewPortSize.width() < bounds.width() )
+            scrollPosition.set_x(bounds.width() - viewPortSize.width());
 
-        if ( scrollPosition.y > 0 )
-            scrollPosition.y = 0;
-        else if ( viewPortSize.height < bounds.height )
-            scrollPosition.y = 0;
-        else if ( scrollPosition.y + viewPortSize.height < bounds.height )
-            scrollPosition.y = bounds.height - viewPortSize.height;
+        if ( scrollPosition.y() > 0 )
+            scrollPosition.set_y(0);
+        else if ( viewPortSize.height() < bounds.height() )
+            scrollPosition.set_y(0);
+        else if ( scrollPosition.y() + viewPortSize.height() < bounds.height() )
+            scrollPosition.set_y(bounds.height() - viewPortSize.height());
 
-        viewPort->setBounds(
-            Rectangle(scrollPosition.x, scrollPosition.y, viewPortSize.width, viewPortSize.height));
+        viewPort->setBounds(Graphics::Metrics::Rectangle(scrollPosition.x(),
+                                                         scrollPosition.y(),
+                                                         viewPortSize.width(),
+                                                         viewPortSize.height()));
     }
 }
 
@@ -88,15 +92,12 @@ void Scrollpane_t::setPosition(Point& newPosition) {
  */
 void Scrollpane_t::handleScroll(Scrollbar_t* bar) {
     if ( bar == &verticalScrollbar ) {
-        Point pos = scrollPosition;
-        pos.y     = -verticalScrollbar.getModelPosition();
+        auto pos = scrollPosition;
+        pos.set_y( -verticalScrollbar.getModelPosition());
         setPosition(pos);
-
-    }
-
-    else if ( bar == &horizontalScrollbar ) {
-        Point pos = scrollPosition;
-        pos.x     = -horizontalScrollbar.getModelPosition();
+    } else if ( bar == &horizontalScrollbar ) {
+        auto pos = scrollPosition;
+        pos.set_x( -horizontalScrollbar.getModelPosition());
         setPosition(pos);
     }
 }

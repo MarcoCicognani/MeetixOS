@@ -42,7 +42,7 @@ public:
     CanvasResizeBoundsListener_t(GuiScreen* screen) : screen(screen) {
     }
 
-    virtual void handleBoundsChanged(Rectangle bounds) {
+    virtual void handleBoundsChanged(Graphics::Metrics::Rectangle bounds) {
         screen->updateVisibleBufferSize();
     }
 };
@@ -155,16 +155,16 @@ bool GuiScreen::initialize() {
 
     window = Window::create();
     window->setTitle("CandyTerminal");
-    window->setColor(ARGB(100, 0, 0, 0), ARGB(255, 255, 255, 255));
+    window->setColor(Graphics::Color::as_argb(100, 0, 0, 0), Graphics::Color::as_argb(255, 255, 255, 255));
     window->onClose(exitTerminalEntry);
 
     canvas = Canvas::create();
     window->setLayout(UI_LAYOUT_MANAGER_GRID);
     window->addChild(canvas);
 
-    Rectangle windowBounds = Rectangle(200, 200, 600, 480);
+    auto windowBounds = Graphics::Metrics::Rectangle(200, 200, 600, 480);
     window->setBounds(windowBounds);
-    canvas->setBounds(Rectangle(0, 0, windowBounds.width, windowBounds.height));
+    canvas->setBounds(Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
 
     canvas->setBufferListener(new CanvasBufferListener_t(this));
     canvas->setBoundsListener(new CanvasResizeBoundsListener_t(this));
@@ -172,7 +172,7 @@ bool GuiScreen::initialize() {
     window->setListener(UI_COMPONENT_EVENT_TYPE_FOCUS, new TerminalFocusListener_t(this));
     window->setVisible(true);
 
-    font = FontLoader::get("consolas");
+    font = Graphics::Text::FontLoader::get("consolas");
 
     s_create_thread_d((void*)paintEntry, this);
     s_create_thread_d((void*)blinkCursorEntry, this);
@@ -283,13 +283,13 @@ CharLayout* GuiScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
 
         // paint characters
         if ( rasterBuffer ) {
-            cairo_set_font_face(cr, font->getFace());
+            cairo_set_font_face(cr, font->cairo_font_face());
             cairo_set_font_size(cr, 14);
             auto scaledFace = cairo_get_scaled_font(cr);
 
-            for ( int y = 0; y < rasterSize.height; y++ ) {
-                for ( int x = 0; x < rasterSize.width; x++ ) {
-                    uint8_t c = rasterBuffer[y * rasterSize.width + x];
+            for ( int y = 0; y < rasterSize.height(); y++ ) {
+                for ( int x = 0; x < rasterSize.width(); x++ ) {
+                    uint8_t c = rasterBuffer[y * rasterSize.width() + x];
                     if ( !c )
                         continue;
 
@@ -318,7 +318,7 @@ CharLayout* GuiScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
 
         rasterLock.unlock();
 
-        canvas->blit(Rectangle(0, 0, bufferSize.width, bufferSize.height));
+        canvas->blit(Graphics::Metrics::Rectangle(0, 0, bufferSize.width(), bufferSize.height()));
 
         paintUpToDate = true;
         s_atomic_block(&paintUpToDate);
@@ -334,8 +334,8 @@ cairo_t* GuiScreen::getGraphics() {
     if ( !bufferInfo.buffer )
         return 0;
 
-    bufferSize.width  = bufferInfo.width;
-    bufferSize.height = bufferInfo.height;
+    bufferSize.set_width  ( bufferInfo.width);
+    bufferSize.set_height ( bufferInfo.height);
 
     // get the surface ready and go:
     if ( !existingSurface || existingSurfaceBuffer != bufferInfo.buffer ) {
@@ -369,7 +369,7 @@ bool charIsUtf8(char c) {
  */
 void GuiScreen::clean() {
     rasterLock.lock();
-    memset(rasterBuffer, 0, rasterSize.height * rasterSize.width);
+    memset(rasterBuffer, 0, rasterSize.height() * rasterSize.width());
     rasterLock.unlock();
     repaint();
 }
@@ -394,7 +394,7 @@ void GuiScreen::writeChar(char c) {
                 moveCursor(0, cursorY + 1);
             else {
                 rasterLock.lock();
-                rasterBuffer[cursorY * rasterSize.width + cursorX] = c;
+                rasterBuffer[cursorY * rasterSize.width() + cursorX] = c;
                 rasterLock.unlock();
                 moveCursor(cursorX + 1, cursorY);
             }
@@ -432,19 +432,19 @@ void GuiScreen::moveCursor(int x, int y) {
     cursorY = y;
 
     // Break line when cursor is at end of screen
-    if ( cursorX >= rasterSize.width ) {
+    if ( cursorX >= rasterSize.width() ) {
         cursorX = 0;
         cursorY++;
     }
     if ( cursorX < 0 ) {
-        cursorX = rasterSize.width - 1;
+        cursorX = rasterSize.width() - 1;
         cursorY--;
     }
 
     // Scroll screen if required
-    if ( cursorY >= rasterSize.height ) {
-        int rasterWidth = rasterSize.width;
-        int rasterBytes = rasterWidth * rasterSize.height;
+    if ( cursorY >= rasterSize.height() ) {
+        int rasterWidth = rasterSize.width();
+        int rasterBytes = rasterWidth * rasterSize.height();
 
         memcpy(rasterBuffer, &rasterBuffer[rasterWidth], rasterBytes - rasterWidth);
 
@@ -503,9 +503,9 @@ void GuiScreen::setFocused(bool _focused) {
  *
  */
 void GuiScreen::updateVisibleBufferSize() {
-    Rectangle canvasBounds   = canvas->getBounds();
-    int       requiredWidth  = canvasBounds.width / charWidth;
-    int       requiredHeight = canvasBounds.height / charHeight;
+    auto canvasBounds   = canvas->getBounds();
+    int       requiredWidth  = canvasBounds.width() / charWidth;
+    int       requiredHeight = canvasBounds.height() / charHeight;
 
     if ( requiredWidth < charWidth )
         requiredWidth = charWidth;
@@ -513,31 +513,31 @@ void GuiScreen::updateVisibleBufferSize() {
         requiredHeight = charHeight;
 
     if ( !rasterBuffer
-         || (rasterSize.width < requiredWidth || rasterSize.height < requiredHeight) ) {
+         || (rasterSize.width() < requiredWidth || rasterSize.height() < requiredHeight) ) {
         rasterLock.lock();
 
         uint8_t*  oldBuffer     = rasterBuffer;
-        Dimension oldBufferSize = rasterSize;
+        auto oldBufferSize = rasterSize;
 
         // Create a new buffer
         rasterBuffer = new uint8_t[requiredWidth * requiredHeight];
-        rasterSize   = Dimension(requiredWidth, requiredHeight);
+        rasterSize   = Graphics::Metrics::Dimension(requiredWidth, requiredHeight);
         memset(rasterBuffer, 0, requiredWidth * requiredHeight);
 
         // Copy contents of old buffer and delete it
         if ( oldBuffer ) {
-            for ( int y = 0; y < oldBufferSize.height; y++ )
-                for ( int x = 0; x < oldBufferSize.width; x++ )
-                    rasterBuffer[y * rasterSize.width + x] = oldBuffer[y * oldBufferSize.width + x];
+            for ( int y = 0; y < oldBufferSize.height(); y++ )
+                for ( int x = 0; x < oldBufferSize.width(); x++ )
+                    rasterBuffer[y * rasterSize.width() + x] = oldBuffer[y * oldBufferSize.width() + x];
 
             delete oldBuffer;
         }
 
         // Ensure cursor is in bounds
-        if ( cursorX > rasterSize.width )
-            cursorX = rasterSize.width;
-        if ( cursorY > rasterSize.height )
-            cursorY = rasterSize.height;
+        if ( cursorX > rasterSize.width() )
+            cursorX = rasterSize.width();
+        if ( cursorY > rasterSize.height() )
+            cursorY = rasterSize.height();
 
         rasterLock.unlock();
 
@@ -573,12 +573,12 @@ void GuiScreen::setCursorVisible(bool visible) { /* TODO */
  *
  */
 int GuiScreen::getWidth() {
-    return rasterSize.width;
+    return rasterSize.width();
 }
 
 /**
  *
  */
 int GuiScreen::getHeight() {
-    return rasterSize.height;
+    return rasterSize.height();
 }

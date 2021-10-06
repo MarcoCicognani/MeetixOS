@@ -44,20 +44,20 @@ Component_t::~Component_t() {
 /**
  *
  */
-void Component_t::setBounds(const Rectangle& newBounds) {
-    Rectangle oldBounds = bounds;
+void Component_t::setBounds(const Graphics::Metrics::Rectangle& newBounds) {
+    Graphics::Metrics::Rectangle oldBounds = bounds;
 
     markDirty();
     bounds = newBounds;
-    if ( bounds.width < minimumSize.width )
-        bounds.width = minimumSize.width;
+    if ( bounds.width() < minimumSize.width() )
+        bounds.set_width(minimumSize.width());
 
-    if ( bounds.height < minimumSize.height )
-        bounds.height = minimumSize.height;
+    if ( bounds.height() < minimumSize.height() )
+        bounds.set_height(minimumSize.height());
     markDirty();
 
-    if ( oldBounds.width != bounds.width || oldBounds.height != bounds.height ) {
-        graphics.resize(bounds.width, bounds.height);
+    if ( oldBounds.width() != bounds.width() || oldBounds.height() != bounds.height() ) {
+        graphics.resize(bounds.width(), bounds.height());
         markFor(COMPONENT_REQUIREMENT_LAYOUT);
         markFor(COMPONENT_REQUIREMENT_UPDATE);
         markFor(COMPONENT_REQUIREMENT_PAINT);
@@ -94,10 +94,10 @@ void Component_t::setVisible(bool visible) {
 /**
  *
  */
-void Component_t::markDirty(Rectangle rect) {
+void Component_t::markDirty(Graphics::Metrics::Rectangle rect) {
     if ( parent ) {
-        rect.x = rect.x + bounds.x;
-        rect.y = rect.y + bounds.y;
+        rect.set_left(rect.x() + bounds.x());
+        rect.set_top(rect.y() + bounds.y());
         parent->markDirty(rect);
     }
 }
@@ -105,27 +105,31 @@ void Component_t::markDirty(Rectangle rect) {
 /**
  *
  */
-void Component_t::blit(Graphics* out, Rectangle absClip, Point position) {
+void Component_t::blit(Graphics::Context*           out,
+                       Graphics::Metrics::Rectangle absClip,
+                       Graphics::Metrics::Point     position) {
     if ( this->visible ) {
-        if ( graphics.getContext() != 0 )
-            graphics.blitTo(out, absClip, position);
+        if ( graphics.cairo_context() != 0 )
+            graphics.blit_to(out, absClip, position);
 
-        Rectangle ownAbsBounds = getBounds();
-        ownAbsBounds.x         = position.x;
-        ownAbsBounds.y         = position.y;
-        int newTop
-            = absClip.getTop() > ownAbsBounds.getTop() ? absClip.getTop() : ownAbsBounds.getTop();
-        int newBottom = absClip.getBottom() < ownAbsBounds.getBottom() ? absClip.getBottom()
-                                                                       : ownAbsBounds.getBottom();
-        int newLeft   = absClip.getLeft() > ownAbsBounds.getLeft() ? absClip.getLeft()
-                                                                   : ownAbsBounds.getLeft();
-        int newRight  = absClip.getRight() < ownAbsBounds.getRight() ? absClip.getRight()
-                                                                     : ownAbsBounds.getRight();
+        Graphics::Metrics::Rectangle ownAbsBounds = getBounds();
+        ownAbsBounds.set_left(position.x());
+        ownAbsBounds.set_top(position.y());
+        int newTop = absClip.top() > ownAbsBounds.top() ? absClip.top() : ownAbsBounds.top();
+        int newBottom
+            = absClip.bottom() < ownAbsBounds.bottom() ? absClip.bottom() : ownAbsBounds.bottom();
+        int newLeft = absClip.left() > ownAbsBounds.left() ? absClip.left() : ownAbsBounds.left();
+        int newRight
+            = absClip.right() < ownAbsBounds.right() ? absClip.right() : ownAbsBounds.right();
 
-        Rectangle thisClip = Rectangle(newLeft, newTop, newRight - newLeft, newBottom - newTop);
+        Graphics::Metrics::Rectangle thisClip
+            = Graphics::Metrics::Rectangle(newLeft, newTop, newRight - newLeft, newBottom - newTop);
         for ( Component_t* c : children )
             if ( c->visible )
-                c->blit(out, thisClip, Point(position.x + c->bounds.x, position.y + c->bounds.y));
+                c->blit(out,
+                        thisClip,
+                        Graphics::Metrics::Point(position.x() + c->bounds.x(),
+                                                 position.y() + c->bounds.y()));
     }
 }
 
@@ -158,12 +162,13 @@ void Component_t::removeChild(Component_t* comp) {
 /**
  *
  */
-Component_t* Component_t::getComponentAt(Point p) {
+Component_t* Component_t::getComponentAt(Graphics::Metrics::Point p) {
     for ( int i = children.size() - 1; i >= 0; i-- ) {
         Component_t* child = children[i];
 
         if ( child->bounds.contains(p) )
-            return child->getComponentAt(Point(p.x - child->bounds.x, p.y - child->bounds.y));
+            return child->getComponentAt(
+                Graphics::Metrics::Point(p.x() - child->bounds.x(), p.y() - child->bounds.y()));
     }
 
     return this;
@@ -209,13 +214,13 @@ void Component_t::bringToFront() {
 /**
  *
  */
-Point Component_t::getLocationOnScreen() {
-    Point locationOnScreen(bounds.x, bounds.y);
+Graphics::Metrics::Point Component_t::getLocationOnScreen() {
+    Graphics::Metrics::Point locationOnScreen(bounds.x(), bounds.y());
 
     if ( parent ) {
-        Point parentLocationOnScreen = parent->getLocationOnScreen();
-        locationOnScreen.x           = locationOnScreen.x + parentLocationOnScreen.x;
-        locationOnScreen.y           = locationOnScreen.y + parentLocationOnScreen.y;
+        Graphics::Metrics::Point parentLocationOnScreen = parent->getLocationOnScreen();
+        locationOnScreen.set_x(locationOnScreen.x() + parentLocationOnScreen.x());
+        locationOnScreen.set_y(locationOnScreen.y() + parentLocationOnScreen.y());
     }
 
     return locationOnScreen;
@@ -233,14 +238,14 @@ bool Component_t::handle(Event_t& event) {
         if ( child->visible ) {
             if ( locatable ) {
                 if ( child->bounds.contains(locatable->position) ) {
-                    locatable->position.x -= child->bounds.x;
-                    locatable->position.y -= child->bounds.y;
+                    locatable->position.set_x(locatable->position.x() - child->bounds.x());
+                    locatable->position.set_y(locatable->position.y() - child->bounds.y());
 
                     if ( child->handle(event) )
                         return true;
 
-                    locatable->position.x += child->bounds.x;
-                    locatable->position.y += child->bounds.y;
+                    locatable->position.set_x(locatable->position.x() + child->bounds.x());
+                    locatable->position.set_y(locatable->position.y() + child->bounds.y());
                 }
             }
 
@@ -283,21 +288,21 @@ bool Component_t::handle(Event_t& event) {
 /**
  *
  */
-void Component_t::setPreferredSize(const Dimension& size) {
+void Component_t::setPreferredSize(const Graphics::Metrics::Dimension& size) {
     preferredSize = size;
 }
 
 /**
  *
  */
-void Component_t::setMinimumSize(const Dimension& size) {
+void Component_t::setMinimumSize(const Graphics::Metrics::Dimension& size) {
     minimumSize = size;
 }
 
 /**
  *
  */
-void Component_t::setMaximumSize(const Dimension& size) {
+void Component_t::setMaximumSize(const Graphics::Metrics::Dimension& size) {
     maximumSize = size;
 }
 
@@ -417,7 +422,7 @@ bool Component_t::getListener(UiComponentEventType eventType, EventListenerInfo_
  */
 void Component_t::clearSurface() {
     // clear surface
-    cairo_t* cr = graphics.getContext();
+    cairo_t* cr = graphics.cairo_context();
     cairo_save(cr);
     cairo_set_source_rgba(cr, 0, 0, 0, 0);
     cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);

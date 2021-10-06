@@ -25,7 +25,7 @@
 #ifndef __TITLED_COMPONENT__
 #define __TITLED_COMPONENT__
 
-#include <graphics/text/textalign.hpp>
+#include <Graphics/Text/Alignment.hh>
 #include <string>
 
 /**
@@ -62,7 +62,7 @@ public:
     /*
      *
      */
-    virtual void setTitleAlignment(TextAlignment alignment) = 0;
+    virtual void setTitleAlignment(Graphics::Text::Alignment alignment) = 0;
 };
 
 #endif

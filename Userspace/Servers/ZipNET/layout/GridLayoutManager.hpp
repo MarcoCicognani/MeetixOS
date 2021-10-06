@@ -25,7 +25,7 @@
 #ifndef GRIDLAYOUTMANAGER_HPP_
 #define GRIDLAYOUTMANAGER_HPP_
 
-#include <graphics/metrics/insets.hpp>
+#include <Graphics/Metrics/Insets.hh>
 #include <layout/LayoutManager.hpp>
 
 /**
@@ -33,18 +33,18 @@
  */
 class GridLayoutManager_t : public LayoutManager_t {
 private:
-    int    columns;
-    int    rows;
-    Insets padding;
-    int    horizontalCellSpace;
-    int    verticalCellSpace;
+    int                       columns;
+    int                       rows;
+    Graphics::Metrics::Insets padding;
+    int                       horizontalCellSpace;
+    int                       verticalCellSpace;
 
 public:
     GridLayoutManager_t(int columns, int rows);
-    void setPadding(Insets _padding) {
+    void setPadding(Graphics::Metrics::Insets _padding) {
         padding = _padding;
     }
-    Insets getPadding() const {
+    Graphics::Metrics::Insets getPadding() const {
         return padding;
     }
     void setHorizontalCellSpace(int _space) {

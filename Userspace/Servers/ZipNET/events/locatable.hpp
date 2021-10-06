@@ -32,8 +32,8 @@ class Component_t;
  */
 class Locatable_t {
 public:
-    Point position;
-    Point screenPosition;
+    Graphics::Metrics::Point position;
+    Graphics::Metrics::Point screenPosition;
 };
 
 #endif

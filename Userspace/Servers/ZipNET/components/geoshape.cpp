@@ -24,8 +24,8 @@
 #include <events/FocusEvent.hpp>
 #include <events/KeyEvent.hpp>
 #include <events/MouseEvent.hpp>
-#include <graphics/color.hpp>
-#include <graphics/text/fontmgr.hpp>
+#include <Graphics/Color.hh>
+#include <Graphics/Text/FontManager.hh>
 #include <gui/properties.hpp>
 #include <math.h>
 #include <zipNET.hpp>
@@ -36,7 +36,7 @@
 Geoshape_t::Geoshape_t() {
     resizable  = false;
     pathToLoad = false;
-    shapeColor = ARGB(10, 200, 200, 200);
+    shapeColor = Graphics::Color::as_argb(10, 200, 200, 200);
     type       = UI_COMPONENT_TYPE_GEOSHAPE;
 
     Component_t::addChild(&panel);
@@ -54,30 +54,30 @@ void Geoshape_t::addChild(Component_t* component) {
  *
  */
 void Geoshape_t::layout() {
-    Rectangle layoutBounds = getBounds();
+    auto layoutBounds = getBounds();
 
-    label.setBounds(Rectangle(6, 3, layoutBounds.width - 30, 25));
+    label.setBounds(Graphics::Metrics::Rectangle(6, 3, layoutBounds.width() - 30, 25));
 
-    panel.setBounds(Rectangle(0, 0, layoutBounds.width, layoutBounds.height));
-    panel.setBackground(ARGB(0, 0, 0, 0));
+    panel.setBounds(Graphics::Metrics::Rectangle(0, 0, layoutBounds.width(), layoutBounds.height()));
+    panel.setBackground(Graphics::Color::as_argb(0, 0, 0, 0));
 }
 
 /**
  *
  */
 void Geoshape_t::paint() {
-    geoshapeSurface = graphics.getContext();
+    geoshapeSurface = graphics.cairo_context();
     geoshapeBounds  = getBounds();
     clearSurface();
 
     cairo_set_source_rgba(geoshapeSurface, ARGB_TO_CAIRO_PARAMS(shapeColor));
-    cairo_rectangle(geoshapeSurface, 0, 0, geoshapeBounds.width, geoshapeBounds.height);
+    cairo_rectangle(geoshapeSurface, 0, 0, geoshapeBounds.width(), geoshapeBounds.height());
     cairo_fill(geoshapeSurface);
 
     if ( pathToLoad ) {
-        pngSurface = graphics.getContext();
+        pngSurface = graphics.cairo_context();
 
-        cairo_set_source_surface(pngSurface, png, pngPosition.x, pngPosition.y);
+        cairo_set_source_surface(pngSurface, png, pngPosition.x(), pngPosition.y());
         cairo_paint(pngSurface);
     }
 }
@@ -117,14 +117,14 @@ void Geoshape_t::setTitleFont(std::string fontName) {
 /*
  *
  */
-void Geoshape_t::setTitleAlignment(TextAlignment alignment) {
+void Geoshape_t::setTitleAlignment(Graphics::Text::Alignment alignment) {
     label.setTitleAlignment(alignment);
 }
 
 /**
  *
  */
-void Geoshape_t::setPNG(std::string path, Point positon) {
+void Geoshape_t::setPNG(std::string path, Graphics::Metrics::Point positon) {
     pathToLoad  = true;
     pngPosition = positon;
 
@@ -137,15 +137,15 @@ void Geoshape_t::setPNG(std::string path, Point positon) {
  *
  */
 void Geoshape_t::PngAnimation(std::string path,
-                              Point       PNGstartAnimation,
-                              Point       PNGendAnimation,
+                              Graphics::Metrics::Point       PNGstartAnimation,
+                              Graphics::Metrics::Point       PNGendAnimation,
                               size_t      sleep) {
 }
 
 /**
  *
  */
-void Geoshape_t::setColor(Color_t color, Color_t tltColor) {
+void Geoshape_t::setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor) {
     shapeColor = color;
 
     label.setFontColor(tltColor);

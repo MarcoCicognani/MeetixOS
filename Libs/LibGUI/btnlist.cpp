@@ -152,16 +152,18 @@ void ButtonList::show(const string& name, Geoshape* where) {
 /*
  * setup parameters to provided button name
  */
-void ButtonList::configure(const string& name, const Rectangle& bounds) {
+void ButtonList::configure(const string& name, const Graphics::Metrics::Rectangle& bounds) {
     // if parameters is provided
-    if ( bounds.width > 0 && bounds.height > 0 )
+    if ( bounds.width() > 0 && bounds.height() > 0 )
         buttons[name]->setBounds(bounds);
 }
 
 /*
  *
  */
-void ButtonList::configure(const string& name, const Rectangle& bounds, const string& title) {
+void ButtonList::configure(const string&                       name,
+                           const Graphics::Metrics::Rectangle& bounds,
+                           const string&                       title) {
     // call previous method
     configure(name, bounds);
 
@@ -172,11 +174,11 @@ void ButtonList::configure(const string& name, const Rectangle& bounds, const st
 /*
  *
  */
-void ButtonList::configure(const string&    name,
-                           const Rectangle& bounds,
-                           const string&    title,
-                           const string&    pathToPng,
-                           const Point&     pngPosition) {
+void ButtonList::configure(const string&                       name,
+                           const Graphics::Metrics::Rectangle& bounds,
+                           const string&                       title,
+                           const string&                       pathToPng,
+                           const Graphics::Metrics::Point&     pngPosition) {
     // call previous method
     configure(name, bounds, title);
 
@@ -187,11 +189,11 @@ void ButtonList::configure(const string&    name,
 /*
  *
  */
-void ButtonList::configure(const string&    name,
-                           const Rectangle& bounds,
-                           const string&    title,
-                           Color_t          buttonColor,
-                           Color_t          titleColor) {
+void ButtonList::configure(const string&                       name,
+                           const Graphics::Metrics::Rectangle& bounds,
+                           const string&                       title,
+                           Graphics::Color::ArgbGradient       buttonColor,
+                           Graphics::Color::ArgbGradient       titleColor) {
     // call previous method
     configure(name, bounds, title);
 
@@ -201,13 +203,13 @@ void ButtonList::configure(const string&    name,
 /*
  *
  */
-void ButtonList::configure(const string&    name,
-                           const Rectangle& bounds,
-                           const string&    title,
-                           const string&    pathToPng,
-                           const Point&     pngPosition,
-                           Color_t          buttonColor,
-                           Color_t          titleColor) {
+void ButtonList::configure(const string&                       name,
+                           const Graphics::Metrics::Rectangle& bounds,
+                           const string&                       title,
+                           const string&                       pathToPng,
+                           const Graphics::Metrics::Point&     pngPosition,
+                           Graphics::Color::ArgbGradient       buttonColor,
+                           Graphics::Color::ArgbGradient       titleColor) {
     // call previous method
     configure(name, bounds, title, pathToPng, pngPosition);
 

@@ -51,7 +51,7 @@ static Label* hourInfo;
 static Label* animation;
 
 // resolution of screen
-static Dimension resolution;
+static Graphics::Metrics::Dimension resolution;
 
 // locker for event mode
 static bool lock = true;
@@ -107,7 +107,8 @@ static void loginToMeetiX() {
 
     else {
         loginButton->setTitle("Wrong UserName or PassWord!");
-        loginButton->setColor(ARGB(200, 230, 230, 230), ARGB(255, 255, 0, 0));
+        loginButton->setColor(Graphics::Color::as_argb(200, 230, 230, 230),
+                              Graphics::Color::as_argb(255, 255, 0, 0));
 
         if ( mode == LOGIN )
             usernameField->setTitle("");
@@ -115,7 +116,8 @@ static void loginToMeetiX() {
 
         s_sleep(1500);
 
-        loginButton->setColor(ARGB(150, 0, 0, 0), ARGB(255, 255, 255, 255));
+        loginButton->setColor(Graphics::Color::as_argb(150, 0, 0, 0),
+                              Graphics::Color::as_argb(255, 255, 255, 255));
         loginButton->setTitle("Login");
     }
 }
@@ -128,8 +130,8 @@ static bool researchAccess(string username, string password, LoginMode_t mode) {
     ifstream users_tab("/MeetiX/Configs/Credentials/Users");
 
     // get file properties
-    Utils::PropertyFileParser  parser(users_tab);
-    map<string, string> properties = parser.properties();
+    Utils::PropertyFileParser parser(users_tab);
+    map<string, string>       properties = parser.properties();
 
     // always close file
     users_tab.close();
@@ -202,8 +204,10 @@ void initializeObjects() {
  */
 void configureMainWindow() {
     // setting main geoshape with dimension of screen
-    loginWindow->setBounds(Rectangle(0, 0, resolution.width, resolution.height));
-    loginWindow->setColor(ARGB(120, 180, 180, 180), ARGB(255, 0, 255, 0));
+    loginWindow->setBounds(
+        Graphics::Metrics::Rectangle(0, 0, resolution.width(), resolution.height()));
+    loginWindow->setColor(Graphics::Color::as_argb(120, 180, 180, 180),
+                          Graphics::Color::as_argb(255, 0, 255, 0));
     loginWindow->setTitle("Welcome in MeetiX OS");
 }
 
@@ -212,23 +216,24 @@ void configureMainWindow() {
  */
 void configureLabels() {
     // setting label with hostname and os version
-    info->setBounds(Rectangle(10, resolution.height - 30, 200, 30));
+    info->setBounds(Graphics::Metrics::Rectangle(10, resolution.height() - 30, 200, 30));
     info->setFont("consolas");
-    info->setColor(0, RGB(0, 0, 0));
+    info->setColor(0, Graphics::Color::as_rgb(0, 0, 0));
     info->setTitle("Version " + Utils::Environment::get("VERSION"));
     loginWindow->addChild(info);
 
     // setting hour label
     hourInfo->setFont("consolas");
-    hourInfo->setBounds(Rectangle(0, 10, 280, 30));
-    hourInfo->setTitleAlignment(TextAlignment::CENTER);
+    hourInfo->setBounds(Graphics::Metrics::Rectangle(0, 10, 280, 30));
+    hourInfo->setTitleAlignment(Graphics::Text::Alignment::CENTER);
     hourInfo->setFontSize(20);
-    hourInfo->setColor(0, RGB(255, 255, 255));
+    hourInfo->setColor(0, Graphics::Color::as_rgb(255, 255, 255));
 
     // setting info labels
-    info2->setBounds(Rectangle(resolution.width - 90, resolution.height - 30, 200, 30));
+    info2->setBounds(
+        Graphics::Metrics::Rectangle(resolution.width() - 90, resolution.height() - 30, 200, 30));
     info2->setFont("consolas");
-    info2->setColor(0, RGB(0, 0, 0));
+    info2->setColor(0, Graphics::Color::as_rgb(0, 0, 0));
     info2->setTitle(Utils::Environment::hostname() + "//");
     loginWindow->addChild(info2);
 }
@@ -239,27 +244,30 @@ void configureLabels() {
 void configureActionComponents() {
     if ( mode == LOGIN ) {
         // setting textfield for username
-        usernameField->setBounds(Rectangle(15, 50, 250, 30));
-        usernameField->setColor(ARGB(20, 0, 0, 0), ARGB(255, 255, 255, 255));
+        usernameField->setBounds(Graphics::Metrics::Rectangle(15, 50, 250, 30));
+        usernameField->setColor(Graphics::Color::as_argb(20, 0, 0, 0),
+                                Graphics::Color::as_argb(255, 255, 255, 255));
         usernameField->setGhostTitle("Enter your UserName");
     } else if ( mode == LOCK ) {
         // set label that display logged usernameField
-        usernameLabel->setBounds(Rectangle(0, 50, 280, 30));
-        usernameLabel->setColor(0, RGB(255, 255, 255));
+        usernameLabel->setBounds(Graphics::Metrics::Rectangle(0, 50, 280, 30));
+        usernameLabel->setColor(0, Graphics::Color::as_rgb(255, 255, 255));
         usernameLabel->setFontSize(20);
-        usernameLabel->setTitleAlignment(TextAlignment::CENTER);
+        usernameLabel->setTitleAlignment(Graphics::Text::Alignment::CENTER);
         usernameLabel->setTitle(Utils::Environment::get("USER"));
     }
 
     // setting textfield for password
-    passwordField->setBounds(Rectangle(15, 100, 250, 30));
-    passwordField->setColor(ARGB(20, 0, 0, 0), ARGB(255, 255, 255, 255));
+    passwordField->setBounds(Graphics::Metrics::Rectangle(15, 100, 250, 30));
+    passwordField->setColor(Graphics::Color::as_argb(20, 0, 0, 0),
+                            Graphics::Color::as_argb(255, 255, 255, 255));
     passwordField->setGhostTitle("Enter your PassWord");
     passwordField->setSecure(true);
 
     // setting button
-    loginButton->setBounds(Rectangle(15, 150, 250, 30));
-    loginButton->setColor(ARGB(150, 0, 0, 0), ARGB(255, 255, 255, 255));
+    loginButton->setBounds(Graphics::Metrics::Rectangle(15, 150, 250, 30));
+    loginButton->setColor(Graphics::Color::as_argb(150, 0, 0, 0),
+                          Graphics::Color::as_argb(255, 255, 255, 255));
     loginButton->setTitle("Login");
     loginButton->setActionListener(new LoginButtonActionListener());
 }
@@ -270,19 +278,20 @@ void configureActionComponents() {
 void paintAnimation() {
     // create a big label with "MeetiX OS"
     animation = Label::create();
-    animation->setBounds(Rectangle(0, 250, resolution.width, 200));
-    animation->setTitleAlignment(TextAlignment::CENTER);
+    animation->setBounds(Graphics::Metrics::Rectangle(0, 250, resolution.width(), 200));
+    animation->setTitleAlignment(Graphics::Text::Alignment::CENTER);
     animation->setFont("Xcelsion");
     animation->setFontSize(100);
     animation->setTitle("MeetiX OS");
-    animation->setColor(0, RGB(20, 180, 20));
+    animation->setColor(0, Graphics::Color::as_rgb(20, 180, 20));
     loginWindow->addChild(animation);
 
     // do an animation
     for ( int yPosition = 180; yPosition >= 100; yPosition-- ) {
         // show logo animation only in even position
         if ( !(yPosition % 2) )
-            animation->setBounds(Rectangle(0, yPosition, resolution.width, 200));
+            animation->setBounds(
+                Graphics::Metrics::Rectangle(0, yPosition, resolution.width(), 200));
 
         // sleep
         s_sleep(5);
@@ -313,9 +322,12 @@ int main(int argc, char* argv[]) {
 
         // setting login geoshape
         loginRectangle->setVisible(false);
-        loginRectangle->setBounds(
-            Rectangle(resolution.width / 2 - 140, resolution.height / 2 - 115, 280, 190));
-        loginRectangle->setColor(ARGB(120, 20, 150, 20), ARGB(255, 0, 0, 0));
+        loginRectangle->setBounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 140,
+                                                               resolution.height() / 2 - 115,
+                                                               280,
+                                                               190));
+        loginRectangle->setColor(Graphics::Color::as_argb(120, 20, 150, 20),
+                                 Graphics::Color::as_argb(255, 0, 0, 0));
 
         // run as a background thread the paint animation method
         s_create_thread_n((void*)&paintAnimation, "animation");

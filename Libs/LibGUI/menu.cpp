@@ -34,9 +34,9 @@ ButtonMenu::ButtonMenu(const string& pathToConfiguration) {
 /*
  *	constructor with map of configuration, bounds and geoshape base espected
  */
-ButtonMenu::ButtonMenu(const map<string, string>& configuration,
-                       const Rectangle&           bounds,
-                       Geoshape*                  where) {
+ButtonMenu::ButtonMenu(const map<string, string>&          configuration,
+                       const Graphics::Metrics::Rectangle& bounds,
+                       Geoshape*                           where) {
     create(configuration, bounds);
     show(where);
 }
@@ -44,9 +44,9 @@ ButtonMenu::ButtonMenu(const map<string, string>& configuration,
 /*
  *	constructor with map of configuration, bounds and window base espected
  */
-ButtonMenu::ButtonMenu(const map<string, string>& configuration,
-                       const Rectangle&           bounds,
-                       Window*                    where) {
+ButtonMenu::ButtonMenu(const map<string, string>&          configuration,
+                       const Graphics::Metrics::Rectangle& bounds,
+                       Window*                             where) {
     create(configuration, bounds);
     show(where);
 }
@@ -117,11 +117,11 @@ string ButtonMenu::parseCurrent(const pair<string, string>& current) {
 void ButtonMenu::configureCurrent(const pair<string, string>& current, int index) {
     // configure bounds
     if ( index == 0 )
-        buttonBounds = Rectangle(0, height, buttonBounds.width, buttonHeight);
+        buttonBounds = Graphics::Metrics::Rectangle(0, height, buttonBounds.width(), buttonHeight);
 
     else {
         height       = height + buttonHeight;
-        buttonBounds = Rectangle(0, height, buttonBounds.width, buttonHeight);
+        buttonBounds = Graphics::Metrics::Rectangle(0, height, buttonBounds.width(), buttonHeight);
     }
 
     // configure current button in buttonlist
@@ -129,15 +129,16 @@ void ButtonMenu::configureCurrent(const pair<string, string>& current, int index
                       buttonBounds,
                       current.first,
                       pngPaths[index],
-                      Point(0, 0),
-                      ARGB(10, 0, 0, 0),
-                      RGB(255, 255, 255));
+                      Graphics::Metrics::Point(0, 0),
+                      Graphics::Color::as_argb(10, 0, 0, 0),
+                      Graphics::Color::as_rgb(255, 255, 255));
 }
 
 /*
  * create menu
  */
-void ButtonMenu::create(const string& pathToConfiguration, const Rectangle& bounds) {
+void ButtonMenu::create(const string&                       pathToConfiguration,
+                        const Graphics::Metrics::Rectangle& bounds) {
     getMapFromPath(pathToConfiguration);
     setBounds(bounds);
     configure();
@@ -146,7 +147,8 @@ void ButtonMenu::create(const string& pathToConfiguration, const Rectangle& boun
 /*
  *	create menu
  */
-void ButtonMenu::create(const map<string, string>& configuration, const Rectangle& bounds) {
+void ButtonMenu::create(const map<string, string>&          configuration,
+                        const Graphics::Metrics::Rectangle& bounds) {
     cfg = configuration;
     setBounds(bounds);
     configure();
@@ -155,9 +157,9 @@ void ButtonMenu::create(const map<string, string>& configuration, const Rectangl
 /*
  *	set size of menu
  */
-void ButtonMenu::setBounds(const Rectangle& bounds) {
+void ButtonMenu::setBounds(const Graphics::Metrics::Rectangle& bounds) {
     bds          = bounds;
-    buttonBounds = Rectangle(0, 0, bounds.width, buttonHeight);
+    buttonBounds = { 0, 0, bounds.width(), buttonHeight };
 }
 
 /*
@@ -165,12 +167,12 @@ void ButtonMenu::setBounds(const Rectangle& bounds) {
  */
 void ButtonMenu::show(Geoshape* where) {
     // get bounds from geoshape
-    Rectangle bounds = where->getBounds();
+    auto bounds = where->getBounds();
 
     // if it have a smaller height set correct
-    if ( bounds.height < this->height ) {
+    if ( bounds.height() < this->height ) {
         // create new bounds and set it
-        bounds = Rectangle(bounds.x, bounds.y, bounds.width, this->height + 60);
+        bounds = { bounds.x(), bounds.y(), bounds.width(), this->height + 60 };
         where->setBounds(bounds);
     }
 

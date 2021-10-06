@@ -200,7 +200,7 @@ bool TitledComponent::setFontSize(int size) {
 /*
  *
  */
-bool TitledComponent::setTitleAlignment(TextAlignment alignment) {
+bool TitledComponent::setTitleAlignment(Graphics::Text::Alignment alignment) {
     if ( !UiInitialized )
         return false;
 

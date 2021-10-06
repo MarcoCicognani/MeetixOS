@@ -22,7 +22,7 @@
 /*
  *
  */
-bool ColoredComponent::setColor(Color_t shapeColor, Color_t titleColor) {
+bool ColoredComponent::setColor(Graphics::Color::ArgbGradient shapeColor, Graphics::Color::ArgbGradient titleColor) {
     if ( !UiInitialized )
         return false;
 

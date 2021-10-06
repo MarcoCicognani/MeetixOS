@@ -49,7 +49,7 @@ private:
     cairo_t* surface;
     cairo_t* microSurface;
 
-    Rectangle bounds;
+    Graphics::Metrics::Rectangle bounds;
 
 public:
     Checkbox_t();
@@ -60,12 +60,12 @@ public:
     virtual void layout();
     virtual void paint();
     virtual bool handle(Event_t& e);
-    virtual void handleBoundChange(Rectangle oldBounds);
+    virtual void handleBoundChange(Graphics::Metrics::Rectangle oldBounds);
 
     /*
      * colored components
      */
-    virtual void setColor(Color_t color, Color_t tltColor) {
+    virtual void setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor) {
         shapeColor = color;
     }
 

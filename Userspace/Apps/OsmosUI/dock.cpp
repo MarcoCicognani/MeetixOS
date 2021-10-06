@@ -27,14 +27,14 @@ using namespace std;
 /**
  *	Paint dock on screen
  */
-void SecondaryThread::OsmosUIDockThread(const Dimension& resolution) {
+void SecondaryThread::OsmosUIDockThread(const Graphics::Metrics::Dimension& resolution) {
     // creating button list
     ButtonList* dockButtons;
 
     // create dock geoshape
     Geoshape* dock = Geoshape::create();
-    dock->setBounds(Rectangle(resolution.width / 2 - 197, resolution.height - 64, 394, 64));
-    dock->setColor(ARGB(120, 0, 0, 0), ARGB(255, 0, 0, 0));
+    dock->setBounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 197, resolution.height() - 64, 394, 64));
+    dock->setColor(Graphics::Color::as_argb(120, 0, 0, 0), Graphics::Color::as_argb(255, 0, 0, 0));
 
     // creating button and add to list
     dockButtons = new ButtonList();
@@ -45,12 +45,12 @@ void SecondaryThread::OsmosUIDockThread(const Dimension& resolution) {
                 SECURITY_LEVEL_APPLICATION);
     });
     dockButtons->configure("shell",
-                           Rectangle(30, 7, 48, 48),
+                           Graphics::Metrics::Rectangle(30, 7, 48, 48),
                            "",
                            "/app/CandyShell/deps/icon/ico.png",
-                           Point(0, 0),
-                           ARGB(0, 0, 0, 0),
-                           ARGB(255, 0, 0, 0));
+                           Graphics::Metrics::Point(0, 0),
+                           Graphics::Color::as_argb(0, 0, 0, 0),
+                           Graphics::Color::as_argb(255, 0, 0, 0));
 
     // creating button and add to list
     dockButtons->add("calculator", [] {
@@ -60,34 +60,34 @@ void SecondaryThread::OsmosUIDockThread(const Dimension& resolution) {
                 SECURITY_LEVEL_APPLICATION);
     });
     dockButtons->configure("calculator",
-                           Rectangle(125, 7, 48, 48),
+                           Graphics::Metrics::Rectangle(125, 7, 48, 48),
                            "",
                            "/app/calculator/deps/icon/ico.png",
-                           Point(0, 0),
-                           ARGB(0, 0, 0, 0),
-                           ARGB(255, 0, 0, 0));
+                           Graphics::Metrics::Point(0, 0),
+                           Graphics::Color::as_argb(0, 0, 0, 0),
+                           Graphics::Color::as_argb(255, 0, 0, 0));
 
     // creating button and add to list
     dockButtons->add("editor", [] {
         s_spawn("/app/CandyNote/bin/CandyNote", "", "/app/CandyNote/", SECURITY_LEVEL_APPLICATION);
     });
     dockButtons->configure("editor",
-                           Rectangle(220, 7, 48, 48),
+                           Graphics::Metrics::Rectangle(220, 7, 48, 48),
                            "",
                            "/app/CandyNote/deps/icon/ico.png",
-                           Point(0, 0),
-                           ARGB(0, 0, 0, 0),
-                           ARGB(255, 0, 0, 0));
+                           Graphics::Metrics::Point(0, 0),
+                           Graphics::Color::as_argb(0, 0, 0, 0),
+                           Graphics::Color::as_argb(255, 0, 0, 0));
 
     // creating button and add to list
     dockButtons->add("shutdowns", meetiXOSLogout);
     dockButtons->configure("shutdowns",
-                           Rectangle(315, 7, 48, 48),
+                           Graphics::Metrics::Rectangle(315, 7, 48, 48),
                            "",
                            "/app/OsmosUI/deps/icon/shut.png",
-                           Point(0, 0),
-                           ARGB(0, 0, 0, 0),
-                           ARGB(255, 0, 0, 0));
+                           Graphics::Metrics::Point(0, 0),
+                           Graphics::Color::as_argb(0, 0, 0, 0),
+                           Graphics::Color::as_argb(255, 0, 0, 0));
 
     // add all buttons to dock
     dockButtons->show(dock);

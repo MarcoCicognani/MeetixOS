@@ -25,9 +25,9 @@
 #ifndef __VIDEO_OUTPUT__
 #define __VIDEO_OUTPUT__
 
-#include <graphics/color.hpp>
-#include <graphics/metrics/dimension.hpp>
-#include <graphics/metrics/rectangle.hpp>
+#include <Graphics/Color.hh>
+#include <Graphics/Metrics/Dimension.hh>
+#include <Graphics/Metrics/Rectangle.hh>
 
 /**
  * The video output is the abstract interface that the window server uses to
@@ -55,12 +55,15 @@ public:
      * @param source
      * 		source buffer
      */
-    virtual void blit(const Rectangle& invalid, const Rectangle& sourceSize, Color_t* source) = 0;
+    virtual void blit(const Graphics::Metrics::Rectangle& invalid,
+                      const Graphics::Metrics::Rectangle& sourceSize,
+                      Graphics::Color::ArgbGradient*      source)
+        = 0;
 
     /**
      * Returns the initialized resolution.
      */
-    virtual Dimension getResolution() = 0;
+    virtual Graphics::Metrics::Dimension getResolution() = 0;
 };
 
 #endif

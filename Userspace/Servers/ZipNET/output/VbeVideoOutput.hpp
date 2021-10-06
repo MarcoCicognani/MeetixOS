@@ -27,14 +27,14 @@
 
 #include "ConfigurationBasedVideoOutput.hpp"
 
-#include <graphics/vbe.hpp>
+#include <Graphics/Vbe.hh>
 
 /**
  *
  */
 class VbeVideoOutput_t : public ConfigurationBasedVideoOutput_t {
 private:
-    VbeModeInfo videoModeInformation;
+    Graphics::Vbe::ModeInfo videoModeInformation;
 
 public:
     /**
@@ -45,12 +45,14 @@ public:
     /**
      * @see base
      */
-    virtual void blit(const Rectangle& invalid, const Rectangle& sourceSize, Color_t* source);
+    virtual void blit(const Graphics::Metrics::Rectangle& invalid,
+                      const Graphics::Metrics::Rectangle& sourceSize,
+                      Graphics::Color::ArgbGradient*      source);
 
     /**
      * @see base
      */
-    virtual Dimension getResolution();
+    virtual Graphics::Metrics::Dimension getResolution();
 };
 
 #endif

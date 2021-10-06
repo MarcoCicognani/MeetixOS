@@ -21,7 +21,7 @@
 #define MEETIX_LIBRARY_UI_NOTIFICATION
 
 #include <Api.h>
-#include <graphics/color.hpp>
+#include <Graphics/Color.hh>
 #include <string>
 
 // max length of title
@@ -56,7 +56,7 @@ typedef struct {
     uint32_t displayTime;
 
     // color of message
-    Color_t color;
+    Graphics::Color::ArgbGradient color;
 
     // animation type
     MessageAnimation_t animation;
@@ -76,7 +76,7 @@ public:
     static void send(const std::string& title, const std::string& message);
     static void send(const std::string& title, const std::string& message, uint32_t sleep);
     static void
-    send(const std::string& title, const std::string& message, uint32_t sleep, Color_t color);
+    send(const std::string& title, const std::string& message, uint32_t sleep, Graphics::Color::ArgbGradient color);
 
     /*
      * send message to notification thread of UI
@@ -88,7 +88,7 @@ public:
     static void send(const std::string& title,
                      const std::string& message,
                      uint32_t           sleep,
-                     Color_t            color,
+                     Graphics::Color::ArgbGradient            color,
                      MessageAnimation_t animation);
 };
 

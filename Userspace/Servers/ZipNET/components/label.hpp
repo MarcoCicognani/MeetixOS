@@ -28,8 +28,8 @@
 #include <components/ColoredComponent.hpp>
 #include <components/component.hpp>
 #include <components/TitledComponent.hpp>
-#include <graphics/text/font.hpp>
-#include <graphics/text/textalign.hpp>
+#include <Graphics/Text/Alignment.hh>
+#include <Graphics/Text/Font.hh>
 
 /**
  *
@@ -38,15 +38,15 @@ class Label_t : public Component_t,
                 public TitledComponent_t,
                 public ColoredComponent_t {
 private:
-    Font_t*              font;
-    int                  fontSize;
-    cairo_text_extents_t lastExtents;
+    Graphics::Text::Font* font;
+    int                   fontSize;
+    cairo_text_extents_t  lastExtents;
 
-    cairo_t*  cr;
-    Rectangle bounds;
+    cairo_t*                     cr;
+    Graphics::Metrics::Rectangle bounds;
 
-    std::string   text;
-    TextAlignment alignment;
+    std::string               text;
+    Graphics::Text::Alignment alignment;
 
 public:
     Label_t();
@@ -68,22 +68,23 @@ public:
     virtual std::string getTitle();
     virtual void        setTitleFont(std::string fontName);
     virtual void        setFontSize(int size);
-    virtual void        setTitleAlignment(TextAlignment alignment);
+    virtual void        setTitleAlignment(Graphics::Text::Alignment alignment);
 
     /*
      * colored component
      */
-    virtual void setColor(Color_t color, Color_t tltColor) {
+    virtual void setColor(Graphics::Color::ArgbGradient color,
+                          Graphics::Color::ArgbGradient tltColor) {
         shapeColor = tltColor;
     }
 
     /*
      * label
      */
-    virtual void  setFont(Font_t* font);
-    void          setFontColor(Color_t ftcol);
-    void          setAlignment(TextAlignment alignment);
-    TextAlignment getAlignment();
+    virtual void              setFont(Graphics::Text::Font* font);
+    void                      setFontColor(Graphics::Color::ArgbGradient ftcol);
+    void                      setAlignment(Graphics::Text::Alignment alignment);
+    Graphics::Text::Alignment getAlignment();
 };
 
 #endif

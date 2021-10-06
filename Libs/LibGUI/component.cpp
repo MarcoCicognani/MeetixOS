@@ -78,7 +78,7 @@ bool Component::addChild(Component* child) {
 /**
  *
  */
-bool Component::setBounds(Rectangle rect) {
+bool Component::setBounds(Graphics::Metrics::Rectangle rect) {
     if ( !UiInitialized )
         return false;
 
@@ -109,9 +109,9 @@ bool Component::setBounds(Rectangle rect) {
 /**
  *
  */
-Rectangle Component::getBounds() {
+Graphics::Metrics::Rectangle Component::getBounds() {
     if ( !UiInitialized )
-        return Rectangle();
+        return Graphics::Metrics::Rectangle();
 
     // send initialization request
     MessageTransaction tx = s_get_message_tx_id();
@@ -133,7 +133,7 @@ Rectangle Component::getBounds() {
             return response->bounds;
     }
 
-    return Rectangle();
+    return Graphics::Metrics::Rectangle();
 }
 
 /**

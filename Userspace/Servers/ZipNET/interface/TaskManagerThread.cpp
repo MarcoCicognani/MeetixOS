@@ -25,7 +25,7 @@
 /*
  *
  */
-TaskManagerThread_t::TaskManagerThread_t(Label_t* where, const Rectangle& bounds)
+TaskManagerThread_t::TaskManagerThread_t(Label_t* where, const Graphics::Metrics::Rectangle& bounds)
     : internal(where), bounds(bounds) {
 }
 
@@ -36,7 +36,7 @@ void TaskManagerThread_t::run() {
     s_task_register_id("taskManager");
 
     internal->setVisible(true);
-    internal->setColor(0, RGB(255, 255, 255));
+    internal->setColor(0, Graphics::Color::as_rgb(255, 255, 255));
 
     while ( true ) {
         list<Window_t*> windows = ComponentRegistry::instance().getWindowsComponents();

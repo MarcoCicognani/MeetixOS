@@ -68,7 +68,7 @@ bool Cursor::load(const std::string& cursor_path) {
         return false;
 
     Utils::PropertyFileParser properties(in);
-    auto               content = properties.properties();
+    auto                      content = properties.properties();
 
     // Read required params
     auto name      = content["name"];
@@ -111,9 +111,10 @@ bool Cursor::load(const std::string& cursor_path) {
         return false;
     }
 
-    cursor_config.hitpoint     = Point(hPointX, hPointY);
-    cursor_config.size         = Dimension(cairo_image_surface_get_width(cursor_config.surface),
-                                           cairo_image_surface_get_height(cursor_config.surface));
+    cursor_config.hitpoint = Graphics::Metrics::Point(hPointX, hPointY);
+    cursor_config.size
+        = Graphics::Metrics::Dimension(cairo_image_surface_get_width(cursor_config.surface),
+                                       cairo_image_surface_get_height(cursor_config.surface));
     cursorConfigurations[name] = cursor_config;
     return true;
 }
@@ -121,21 +122,21 @@ bool Cursor::load(const std::string& cursor_path) {
 /**
  *
  */
-void Cursor::paint(Graphics* global) {
-    cr = global->getContext();
+void Cursor::paint(Graphics::Context* global) {
+    cr = global->cairo_context();
     cairo_reset_clip(cr);
 
     if ( currentConfiguration ) {
         // draw cursor image
         cairo_set_source_surface(cr,
                                  currentConfiguration->surface,
-                                 position.x - currentConfiguration->hitpoint.x,
-                                 position.y - currentConfiguration->hitpoint.y);
+                                 position.x() - currentConfiguration->hitpoint.x(),
+                                 position.y() - currentConfiguration->hitpoint.y());
         cairo_paint(cr);
     } else {
         // draw fallback cursor
         cairo_set_source_rgb(cr, 0, 0, 0);
-        cairo_rectangle(cr, position.x, position.y, FALLBACK_CURSOR_SIZE, FALLBACK_CURSOR_SIZE);
+        cairo_rectangle(cr, position.x(), position.y(), FALLBACK_CURSOR_SIZE, FALLBACK_CURSOR_SIZE);
         cairo_fill(cr);
     }
 }
@@ -143,14 +144,14 @@ void Cursor::paint(Graphics* global) {
 /**
  *
  */
-Rectangle Cursor::getArea() {
+Graphics::Metrics::Rectangle Cursor::getArea() {
     // get area for current cursor
     if ( currentConfiguration )
-        return Rectangle(position.x - currentConfiguration->hitpoint.x,
-                         position.y - currentConfiguration->hitpoint.y,
-                         currentConfiguration->size.width,
-                         currentConfiguration->size.height);
+        return { position.x() - currentConfiguration->hitpoint.x(),
+                 position.y() - currentConfiguration->hitpoint.y(),
+                 currentConfiguration->size.width(),
+                 currentConfiguration->size.height() };
 
     // fallback cursor is just a square
-    return { position.x, position.y, FALLBACK_CURSOR_SIZE, FALLBACK_CURSOR_SIZE };
+    return { position.x(), position.y(), FALLBACK_CURSOR_SIZE, FALLBACK_CURSOR_SIZE };
 }

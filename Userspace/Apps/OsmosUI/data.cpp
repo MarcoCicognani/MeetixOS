@@ -19,7 +19,6 @@
 #include "OsmosUI.hpp"
 #include "SecondaryThread.hpp"
 
-#include <new>
 #include <cstring>
 #include <fcntl.h>
 #include <fstream>
@@ -28,6 +27,7 @@
 #include <IO/Keyboard.hh>
 #include <list>
 #include <map>
+#include <new>
 #include <sstream>
 #include <Utils/Environment.hh>
 #include <Utils/PropertyFileParser.hh>
@@ -69,8 +69,8 @@ static Label* memLabel;
 
 // input container
 static list<IO::Keyboard::Info> inputBuffer;
-static bool                 inputBufferEmpty = true;
-static Tasking::Lock        locker;
+static bool                     inputBufferEmpty = true;
+static Tasking::Lock            locker;
 
 /**
  *	key listener for events
@@ -105,7 +105,8 @@ bool OsmosUI::init() {
 /**
  *	configure layout of UI with configuration file and provided resolution
  */
-void OsmosUI::configureUi(std::string pathToConfiguration, Dimension resolution) {
+void OsmosUI::configureUi(std::string                  pathToConfiguration,
+                          Graphics::Metrics::Dimension resolution) {
     // copy to internal resolution provided dimension
     this->resolution = resolution;
 
@@ -125,12 +126,13 @@ void OsmosUI::configureUi(std::string pathToConfiguration, Dimension resolution)
 
     // creating bar
     mainBar = Geoshape::create();
-    mainBar->setColor(ARGB(150, 0, 0, 0), ARGB(255, 255, 255, 255));
+    mainBar->setColor(Graphics::Color::as_argb(150, 0, 0, 0),
+                      Graphics::Color::as_argb(255, 255, 255, 255));
     mainBar->setListener(UI_COMPONENT_EVENT_TYPE_KEY, new InputKeyListener());
 
     if ( configuration["UiStyle"] == "GNOME" ) {
         // set bounds
-        mainBar->setBounds(Rectangle(0, 0, resolution.width, 30));
+        mainBar->setBounds(Graphics::Metrics::Rectangle(0, 0, resolution.width(), 30));
 
         // set mode
         mode = GNOME;
@@ -139,7 +141,8 @@ void OsmosUI::configureUi(std::string pathToConfiguration, Dimension resolution)
 
     else if ( configuration["UiStyle"] == "KDE" ) {
         // set bounds
-        mainBar->setBounds(Rectangle(0, resolution.height - 30, resolution.width, 30));
+        mainBar->setBounds(
+            Graphics::Metrics::Rectangle(0, resolution.height() - 30, resolution.width(), 30));
 
         // if mode is kde deactivate candydock thread if is active
         if ( configuration["CandyDockThread"] == "true" )
@@ -159,16 +162,19 @@ static void startEvent() {
         pressed = true;
 
         if ( loggedUser == "admin" )
-            menuButton->setColor(ARGB(255, 255, 10, 10), ARGB(255, 0, 0, 0));
+            menuButton->setColor(Graphics::Color::as_argb(255, 255, 10, 10),
+                                 Graphics::Color::as_argb(255, 0, 0, 0));
         else
-            menuButton->setColor(ARGB(255, 10, 255, 10), ARGB(255, 0, 0, 0));
+            menuButton->setColor(Graphics::Color::as_argb(255, 10, 255, 10),
+                                 Graphics::Color::as_argb(255, 0, 0, 0));
 
         menuTab->setVisible(true);
     }
 
     else {
         pressed = false;
-        menuButton->setColor(ARGB(255, 10, 200, 10), ARGB(255, 0, 0, 0));
+        menuButton->setColor(Graphics::Color::as_argb(255, 10, 200, 10),
+                             Graphics::Color::as_argb(255, 0, 0, 0));
         menuTab->setVisible(false);
     }
 }
@@ -185,12 +191,12 @@ void OsmosUI::setMenuButton() {
     buttons->add("menu", menuButton, startEvent);
 
     buttons->configure("menu",
-                       Rectangle(0, 0, 72, 30),
+                       Graphics::Metrics::Rectangle(0, 0, 72, 30),
                        "",
                        "/Apps/OsmosUI/Resources/Icons/OSLogo_ldpi.png",
-                       Point(0, 0),
-                       ARGB(255, 10, 200, 10),
-                       ARGB(255, 0, 0, 0));
+                       Graphics::Metrics::Point(0, 0),
+                       Graphics::Color::as_argb(255, 10, 200, 10),
+                       Graphics::Color::as_argb(255, 0, 0, 0));
     buttons->show(mainBar);
 }
 
@@ -203,9 +209,11 @@ void OsmosUI::setMenuTab() {
     menuTab->setVisible(pressed);
 
     if ( loggedUser == "admin" )
-        menuTab->setColor(ARGB(150, 0, 0, 0), ARGB(255, 255, 0, 0));
+        menuTab->setColor(Graphics::Color::as_argb(150, 0, 0, 0),
+                          Graphics::Color::as_argb(255, 255, 0, 0));
     else
-        menuTab->setColor(ARGB(150, 0, 0, 0), ARGB(255, 0, 255, 0));
+        menuTab->setColor(Graphics::Color::as_argb(150, 0, 0, 0),
+                          Graphics::Color::as_argb(255, 0, 255, 0));
 
     // get username
     loggedUser = Utils::Environment::logged_user();
@@ -214,9 +222,9 @@ void OsmosUI::setMenuTab() {
     menuTab->setTitle("MeetiX OS " + Utils::Environment::get("VERSION") + " [" + loggedUser + "]");
 
     if ( mode == GNOME )
-        menuTab->setBounds(Rectangle(0, 30, 350, 350));
+        menuTab->setBounds(Graphics::Metrics::Rectangle(0, 30, 350, 350));
     else if ( mode == KDE )
-        menuTab->setBounds(Rectangle(0, resolution.height - 380, 350, 350));
+        menuTab->setBounds(Graphics::Metrics::Rectangle(0, resolution.height() - 380, 350, 350));
 }
 
 /**
@@ -224,9 +232,9 @@ void OsmosUI::setMenuTab() {
  */
 void OsmosUI::setMemLabel() {
     memLabel = Label::create();
-    memLabel->setBounds(Rectangle(200, 3, 135, 30));
-    memLabel->setColor(0, RGB(255, 255, 255));
-    memLabel->setTitleAlignment(TextAlignment::CENTER);
+    memLabel->setBounds(Graphics::Metrics::Rectangle(200, 3, 135, 30));
+    memLabel->setColor(0, Graphics::Color::as_rgb(255, 255, 255));
+    memLabel->setTitleAlignment(Graphics::Text::Alignment::CENTER);
     menuTab->addChild(memLabel);
 }
 
@@ -236,9 +244,9 @@ void OsmosUI::setMemLabel() {
 void OsmosUI::setHourLabel() {
     // create and set hour label
     hourLabel = Label::create();
-    hourLabel->setBounds(Rectangle(resolution.width - 145, 0, 140, 30));
-    hourLabel->setColor(0, RGB(255, 255, 255));
-    hourLabel->setTitleAlignment(TextAlignment::RIGHT);
+    hourLabel->setBounds(Graphics::Metrics::Rectangle(resolution.width() - 145, 0, 140, 30));
+    hourLabel->setColor(0, Graphics::Color::as_rgb(255, 255, 255));
+    hourLabel->setTitleAlignment(Graphics::Text::Alignment::RIGHT);
     hourLabel->setFont("Xcelsion");
     hourLabel->setFontSize(22);
     mainBar->addChild(hourLabel);
@@ -249,8 +257,8 @@ void OsmosUI::setHourLabel() {
  */
 void OsmosUI::setTaskLabel() {
     taskLabel = Label::create();
-    taskLabel->setBounds(Rectangle(75, -3, resolution.width - 155, 30));
-    taskLabel->setColor(0, RGB(255, 255, 255));
+    taskLabel->setBounds(Graphics::Metrics::Rectangle(75, -3, resolution.width() - 155, 30));
+    taskLabel->setColor(0, Graphics::Color::as_rgb(255, 255, 255));
     mainBar->addChild(taskLabel);
 }
 
@@ -340,19 +348,19 @@ void OsmosUI::createMenu() {
     // create and setup logout button
     buttons->add("logout", meetiXOSLogout);
     buttons->configure("logout",
-                       Rectangle(0, 320, 160, 30),
+                       Graphics::Metrics::Rectangle(0, 320, 160, 30),
                        "LogOut",
-                       ARGB(120, 200, 0, 0),
-                       RGB(255, 255, 255));
+                       Graphics::Color::as_argb(120, 200, 0, 0),
+                       Graphics::Color::as_rgb(255, 255, 255));
     buttons->get("logout")->setFont("consolas");
 
     // create and setup about button
     buttons->add("about", aboutMeetiXOS);
     buttons->configure("about",
-                       Rectangle(190, 320, 160, 30),
+                       Graphics::Metrics::Rectangle(190, 320, 160, 30),
                        "About MeetiX OS",
-                       ARGB(120, 0, 200, 0),
-                       RGB(255, 255, 255));
+                       Graphics::Color::as_argb(120, 0, 200, 0),
+                       Graphics::Color::as_rgb(255, 255, 255));
     buttons->get("about")->setFont("consolas");
 
     // add this two buttons to start menu
@@ -384,7 +392,7 @@ IO::Keyboard::Info OsmosUI::readInput() {
     locker.lock();
 
     IO::Keyboard::Info result = inputBuffer.front(); // safety copy
-    inputBuffer.pop_front();                     // clear list
+    inputBuffer.pop_front();                         // clear list
 
     // unlock
     if ( inputBuffer.size() == 0 )

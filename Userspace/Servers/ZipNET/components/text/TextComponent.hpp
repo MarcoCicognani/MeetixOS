@@ -28,8 +28,8 @@
 #include <components/component.hpp>
 #include <components/text/CaretDirection.hpp>
 #include <components/text/move/CaretMoveStrategy.hpp>
-#include <graphics/metrics/range.hpp>
-#include <graphics/text/font.hpp>
+#include <Graphics/Metrics/Range.hh>
+#include <Graphics/Text/Font.hh>
 
 /**
  *
@@ -80,12 +80,12 @@ public:
     /**
      *
      */
-    virtual Range getSelectedRange() = 0;
+    virtual Graphics::Metrics::Range getSelectedRange() = 0;
 
     /**
      *
      */
-    virtual void setFont(Font_t* font) = 0;
+    virtual void setFont(Graphics::Text::Font* font) = 0;
 };
 
 #endif

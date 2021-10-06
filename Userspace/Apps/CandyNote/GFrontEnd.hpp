@@ -23,9 +23,9 @@
 
 #include <cairo/cairo.h>
 #include <fstream>
-#include <graphics/text/font.hpp>
-#include <graphics/text/fontldr.hpp>
-#include <graphics/text/textlyot.hpp>
+#include <Graphics/Text/Font.hh>
+#include <Graphics/Text/FontLoader.hh>
+#include <Graphics/Text/Layouter.hh>
 #include <gui/actionlistener.hpp>
 #include <gui/button.hpp>
 #include <gui/canvas.hpp>

@@ -19,14 +19,14 @@
 #ifndef _PNG_COMPONENT_
 #define _PNG_COMPONENT_
 
-#include <graphics/graphics.hpp>
+#include <Graphics/Context.hh>
 #include <string>
 #include <zipNET.hpp>
 
 class PngComponent_t {
 protected:
     // location of png on component
-    Point pngPosition;
+    Graphics::Metrics::Point pngPosition;
 
     // there is a png to render
     bool pathToLoad;
@@ -45,13 +45,15 @@ public:
     /**
      *	interface method to set png image from string and position
      */
-    virtual void setPNG(std::string path, Point position) = 0;
+    virtual void setPNG(std::string path, Graphics::Metrics::Point position) = 0;
 
     /**
      *	set png animation
      */
-    virtual void
-    PngAnimation(std::string path, Point PNGstartAnimation, Point PNGendAnimation, size_t sleep)
+    virtual void PngAnimation(std::string              path,
+                              Graphics::Metrics::Point PNGstartAnimation,
+                              Graphics::Metrics::Point PNGendAnimation,
+                              size_t                   sleep)
         = 0;
 };
 

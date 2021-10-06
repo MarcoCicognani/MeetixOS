@@ -31,13 +31,13 @@
  */
 void Scrollbar_t::paint() {
     bounds = getBounds();
-    cr     = graphics.getContext();
+    cr     = graphics.cairo_context();
     clearSurface();
 
     knob = calculateKnob();
 
     // knob
-    cairo_rectangle(cr, knob.x, knob.y, knob.width, knob.height);
+    cairo_rectangle(cr, knob.x(), knob.y(), knob.width(), knob.height());
     cairo_set_source_rgba(cr, 0, 0, 0, 0.5);
     cairo_fill(cr);
 }
@@ -54,16 +54,16 @@ bool Scrollbar_t::handle(Event_t& event) {
         }
 
         else if ( mouseEvent->type == MOUSE_EVENT_PRESS ) {
-            Rectangle knob = calculateKnob();
+            auto knob = calculateKnob();
             if ( knob.contains(mouseEvent->position) ) {
                 if ( orientation == ScrollbarOrientation_t::VERTICAL ) {
-                    dragPressPosition = mouseEvent->position.y;
-                    dragViewPosition  = knob.y;
+                    dragPressPosition = mouseEvent->position.y();
+                    dragViewPosition  = knob.y();
                 }
 
                 else if ( orientation == ScrollbarOrientation_t::HORIZONTAL ) {
-                    dragPressPosition = mouseEvent->position.x;
-                    dragViewPosition  = knob.x;
+                    dragPressPosition = mouseEvent->position.x();
+                    dragViewPosition  = knob.x();
                 }
             }
             markFor(COMPONENT_REQUIREMENT_PAINT);
@@ -73,11 +73,11 @@ bool Scrollbar_t::handle(Event_t& event) {
         else if ( mouseEvent->type == MOUSE_EVENT_DRAG ) {
             int mousePosition;
             if ( orientation == ScrollbarOrientation_t::VERTICAL ) {
-                mousePosition = mouseEvent->position.y;
+                mousePosition = mouseEvent->position.y();
             }
 
             else if ( orientation == ScrollbarOrientation_t::HORIZONTAL ) {
-                mousePosition = mouseEvent->position.x;
+                mousePosition = mouseEvent->position.x();
             }
 
             int viewPosition = dragViewPosition + (mousePosition - dragPressPosition);
@@ -137,8 +137,8 @@ void Scrollbar_t::setModelPosition(int pos) {
 /**
  *
  */
-Rectangle Scrollbar_t::calculateKnob() {
-    Rectangle bounds = getBounds();
+Graphics::Metrics::Rectangle Scrollbar_t::calculateKnob() {
+    auto bounds = getBounds();
 
     // calculate knob size
     int knobSize = getKnobSize();
@@ -153,13 +153,13 @@ Rectangle Scrollbar_t::calculateKnob() {
 
     // create rectangle for knob
     if ( orientation == ScrollbarOrientation_t::VERTICAL )
-        return Rectangle(0, viewPosition, bounds.width, knobSize);
+        return { 0, viewPosition, bounds.width(), knobSize };
 
     else if ( orientation == ScrollbarOrientation_t::HORIZONTAL )
-        return Rectangle(viewPosition, 0, knobSize, bounds.height);
+        return { viewPosition, 0, knobSize, bounds.height() };
 
     // dummy
-    return Rectangle(0, 0, 1, 1);
+    return { 0, 0, 1, 1 };
 }
 
 /**
@@ -167,10 +167,10 @@ Rectangle Scrollbar_t::calculateKnob() {
  */
 int Scrollbar_t::getViewMax() {
     if ( orientation == ScrollbarOrientation_t::VERTICAL )
-        return getBounds().height - getKnobSize();
+        return getBounds().height() - getKnobSize();
 
     else if ( orientation == ScrollbarOrientation_t::HORIZONTAL )
-        return getBounds().width - getKnobSize();
+        return getBounds().width() - getKnobSize();
 
     return 0;
 }
@@ -181,10 +181,10 @@ int Scrollbar_t::getViewMax() {
 int Scrollbar_t::getKnobSize() {
     int bounds;
     if ( orientation == ScrollbarOrientation_t::VERTICAL )
-        bounds = getBounds().height;
+        bounds = getBounds().height();
 
     else if ( orientation == ScrollbarOrientation_t::HORIZONTAL )
-        bounds = getBounds().width;
+        bounds = getBounds().width();
 
     int size = (bounds * modelVisibleArea) / modelTotalArea;
     if ( size < 20 )

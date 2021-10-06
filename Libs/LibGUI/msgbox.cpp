@@ -30,8 +30,8 @@ static Label*  message;
 /*
  * library objects
  */
-Dimension   resolution;
-ButtonList* btnControls;
+Graphics::Metrics::Dimension resolution;
+ButtonList*                  btnControls;
 
 // response for show with response
 PressedButton response = BUTTON_NONE;
@@ -68,15 +68,15 @@ void setupComponents(std::string msg, bool complete) {
     // instantiate and create window
     box = Window::create();
     box->onClose(garbageDelete);
-    box->setBounds(Rectangle((resolution.width / 2) - (boxWidth / 2),
-                             resolution.height / 2 - 100,
-                             boxWidth,
-                             200));
+    box->setBounds(Graphics::Metrics::Rectangle((resolution.width() / 2) - (boxWidth / 2),
+                                                resolution.height() / 2 - 100,
+                                                boxWidth,
+                                                200));
     box->setResizable(false);
 
     // instantiate and add label
     message = Label::create();
-    message->setBounds(Rectangle(10, 20, boxWidth, 30));
+    message->setBounds(Graphics::Metrics::Rectangle(10, 20, boxWidth, 30));
 
     // create okay button
     btnControls = new ButtonList();
@@ -88,10 +88,10 @@ void setupComponents(std::string msg, bool complete) {
             waiter   = false;
         });
         btnControls->configure("okay",
-                               Rectangle(boxWidth / 2 - 64, 110, 64, 30),
+                               Graphics::Metrics::Rectangle(boxWidth / 2 - 64, 110, 64, 30),
                                "Okay",
-                               ARGB(180, 0, 200, 0),
-                               RGB(0, 0, 0));
+                               Graphics::Color::as_argb(180, 0, 200, 0),
+                               Graphics::Color::as_rgb(0, 0, 0));
 
         // create cancel button
         btnControls->add("cancel", [] {
@@ -99,20 +99,20 @@ void setupComponents(std::string msg, bool complete) {
             waiter   = false;
         });
         btnControls->configure("cancel",
-                               Rectangle(boxWidth / 2, 110, 64, 30),
+                               Graphics::Metrics::Rectangle(boxWidth / 2, 110, 64, 30),
                                "Cancel",
-                               RGB(200, 0, 0),
-                               RGB(0, 0, 0));
+                               Graphics::Color::as_rgb(200, 0, 0),
+                               Graphics::Color::as_rgb(0, 0, 0));
     }
 
     // create only the okay button
     else {
         btnControls->add("okay", [] { waiter = false; });
         btnControls->configure("okay",
-                               Rectangle(boxWidth / 2 - 32, 110, 64, 30),
+                               Graphics::Metrics::Rectangle(boxWidth / 2 - 32, 110, 64, 30),
                                "Okay",
-                               ARGB(180, 0, 200, 0),
-                               RGB(0, 0, 0));
+                               Graphics::Color::as_argb(180, 0, 200, 0),
+                               Graphics::Color::as_rgb(0, 0, 0));
     }
 }
 

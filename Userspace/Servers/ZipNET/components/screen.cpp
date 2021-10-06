@@ -27,33 +27,32 @@
 /**
  *
  */
-void Screen_t::markDirty(Rectangle rect) {
+void Screen_t::markDirty(Graphics::Metrics::Rectangle rect) {
     // Mark area as invalid
-    if ( invalid.x == 0 && invalid.y == 0 && invalid.width == 0 && invalid.height == 0 ) {
+    if ( invalid.x() == 0 && invalid.y() == 0 && invalid.width() == 0 && invalid.height() == 0 ) {
         invalid = rect;
     } else {
-        int top  = rect.getTop() < invalid.getTop() ? rect.getTop() : invalid.getTop();
-        int left = rect.getLeft() < invalid.getLeft() ? rect.getLeft() : invalid.getLeft();
-        int bottom
-            = rect.getBottom() > invalid.getBottom() ? rect.getBottom() : invalid.getBottom();
-        int right = rect.getRight() > invalid.getRight() ? rect.getRight() : invalid.getRight();
+        int top    = rect.top() < invalid.top() ? rect.top() : invalid.top();
+        int left   = rect.left() < invalid.left() ? rect.left() : invalid.left();
+        int bottom = rect.bottom() > invalid.bottom() ? rect.bottom() : invalid.bottom();
+        int right  = rect.right() > invalid.right() ? rect.right() : invalid.right();
 
-        invalid = Rectangle(left, top, right - left, bottom - top);
+        invalid = Graphics::Metrics::Rectangle(left, top, right - left, bottom - top);
     }
 
     // Fix invalid area
-    if ( invalid.x < 0 ) {
-        invalid.width += invalid.x;
-        invalid.x = 0;
+    if ( invalid.x() < 0 ) {
+        invalid.set_width(invalid.width() + invalid.x());
+        invalid.set_left(0);
     }
 
-    if ( invalid.y < 0 ) {
-        invalid.height += invalid.y;
-        invalid.y = 0;
+    if ( invalid.y() < 0 ) {
+        invalid.set_height(invalid.height() + invalid.y());
+        invalid.set_top(0);
     }
 
-    if ( invalid.x + invalid.width > getBounds().width )
-        invalid.width = getBounds().width - invalid.x;
-    if ( invalid.y + invalid.height > getBounds().height )
-        invalid.height = getBounds().height - invalid.y;
+    if ( invalid.x() + invalid.width() > getBounds().width() )
+        invalid.set_width(getBounds().width() - invalid.x());
+    if ( invalid.y() + invalid.height() > getBounds().height() )
+        invalid.set_height(getBounds().height() - invalid.y());
 }

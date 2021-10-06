@@ -21,7 +21,7 @@
 #include <Api/utils/local.hpp>
 #include <cstring>
 #include <deque>
-#include <graphics/metrics/dimension.hpp>
+#include <Graphics/Metrics/Dimension.hh>
 #include <gui/actioncomponent.hpp>
 #include <gui/actionlistener.hpp>
 #include <gui/canvas.hpp>
@@ -148,9 +148,9 @@ UiCloseStatus UI::close() {
 /**
  *
  */
-Dimension UI::getResolution() {
+Graphics::Metrics::Dimension UI::getResolution() {
     if ( !UiInitialized )
-        return Dimension();
+        return Graphics::Metrics::Dimension();
 
     // send initialization request
     MessageTransaction tx = s_get_message_tx_id();
@@ -169,7 +169,7 @@ Dimension UI::getResolution() {
         return response->resolution;
     }
 
-    return Dimension();
+    return Graphics::Metrics::Dimension();
 }
 
 /**
@@ -294,7 +294,7 @@ bool UI::registerDesktopCanvas(Canvas* c) {
 /**
  *
  */
-bool UI::registerTaskManager(Component* where, const Rectangle& bounds) {
+bool UI::registerTaskManager(Component* where, const Graphics::Metrics::Rectangle& bounds) {
     if ( !UiInitialized )
         return false;
 

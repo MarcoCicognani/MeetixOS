@@ -28,8 +28,8 @@
 #include <components/BoundsEventComponent.hpp>
 #include <components/EventListenerInfo.hpp>
 #include <events/event.hpp>
-#include <graphics/graphics.hpp>
-#include <graphics/metrics/rectangle.hpp>
+#include <Graphics/Context.hh>
+#include <Graphics/Metrics/Rectangle.hh>
 #include <gui/uispech.hpp>
 #include <layout/LayoutManager.hpp>
 #include <map>
@@ -63,13 +63,13 @@ typedef uint32_t ComponentRequirement_t;
  */
 class Component_t : public BoundsEventComponent_t {
 private:
-    Rectangle            bounds{};
-    Component_t*         parent{ nullptr };
-    vector<Component_t*> children{};
+    Graphics::Metrics::Rectangle bounds{};
+    Component_t*                 parent{ nullptr };
+    vector<Component_t*>         children{};
 
-    Dimension minimumSize;
-    Dimension preferredSize;
-    Dimension maximumSize;
+    Graphics::Metrics::Dimension minimumSize;
+    Graphics::Metrics::Dimension preferredSize;
+    Graphics::Metrics::Dimension maximumSize;
 
     ComponentRequirement_t requirements;
     ComponentRequirement_t childRequirements;
@@ -79,8 +79,8 @@ private:
     int zIndex = 1000;
 
 protected:
-    LayoutManager_t* layoutManager;
-    Graphics         graphics;
+    LayoutManager_t*  layoutManager;
+    Graphics::Context graphics;
 
     int  type = -1;
     bool visible;
@@ -113,7 +113,7 @@ public:
     /**
      * Returns a Pointer to the components graphics
      */
-    Graphics* getGraphics() {
+    Graphics::Context* getGraphics() {
         return &graphics;
     }
 
@@ -161,50 +161,50 @@ public:
      *
      * @param bounds	the new bounds of the component
      */
-    void setBounds(const Rectangle& bounds);
+    void setBounds(const Graphics::Metrics::Rectangle& bounds);
 
     /**
      * Returns the bounds of the component.
      *
      * @return the bounds
      */
-    Rectangle getBounds() const {
+    Graphics::Metrics::Rectangle getBounds() const {
         return bounds;
     }
 
     /**
      *
      */
-    void setPreferredSize(const Dimension& size);
+    void setPreferredSize(const Graphics::Metrics::Dimension& size);
 
     /**
      *
      */
-    virtual Dimension getPreferredSize() {
+    virtual Graphics::Metrics::Dimension getPreferredSize() {
         return preferredSize;
     }
 
     /**
      *
      */
-    void setMinimumSize(const Dimension& size);
+    void setMinimumSize(const Graphics::Metrics::Dimension& size);
 
     /**
      *
      */
-    Dimension getMinimumSize() const {
+    Graphics::Metrics::Dimension getMinimumSize() const {
         return minimumSize;
     }
 
     /**
      *
      */
-    void setMaximumSize(const Dimension& size);
+    void setMaximumSize(const Graphics::Metrics::Dimension& size);
 
     /**
      *
      */
-    Dimension getMaximumSize() const {
+    Graphics::Metrics::Dimension getMaximumSize() const {
         return maximumSize;
     }
 
@@ -215,7 +215,9 @@ public:
      * @param absClip	absolute bounds that may not be exceeded
      * @param position	absolute screen position to blit to
      */
-    void blit(Graphics* out, Rectangle absClip, Point position);
+    void blit(Graphics::Context*           out,
+              Graphics::Metrics::Rectangle absClip,
+              Graphics::Metrics::Point     position);
 
     /**
      * Adds the given component as a child to this component
@@ -236,7 +238,7 @@ public:
      *
      * @param p		the Point
      */
-    virtual Component_t* getComponentAt(Point p);
+    virtual Component_t* getComponentAt(Graphics::Metrics::Point p);
 
     /**
      * Returns the first in the hierarchy that is a Window
@@ -262,7 +264,7 @@ public:
      *
      * @return the location
      */
-    virtual Point getLocationOnScreen();
+    virtual Graphics::Metrics::Point getLocationOnScreen();
 
     /**
      * Handles the given event
@@ -274,7 +276,8 @@ public:
     /**
      *
      */
-    virtual void handleBoundChange(Rectangle oldBounds) { /* May be implemented by subtypes */
+    virtual void
+    handleBoundChange(Graphics::Metrics::Rectangle oldBounds) { /* May be implemented by subtypes */
     }
 
     /**
@@ -294,13 +297,13 @@ public:
      *
      * @param rect	the Rectangle to mark dirty
      */
-    virtual void markDirty(Rectangle rect);
+    virtual void markDirty(Graphics::Metrics::Rectangle rect);
 
     /**
      * Marks the entire component as dirty
      */
     virtual void markDirty() {
-        markDirty(Rectangle(0, 0, bounds.width, bounds.height));
+        markDirty(Graphics::Metrics::Rectangle(0, 0, bounds.width(), bounds.height()));
     }
 
     /**

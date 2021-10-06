@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <graphics/metrics/dimension.hpp>
+#include <Graphics/Metrics/Dimension.hh>
 #include <gui/about.hpp>
 #include <gui/geoshape.hpp>
 #include <gui/label.hpp>
@@ -46,37 +46,37 @@ static void close() {
  */
 void aboutMeetiXOS() {
     // get resolution
-    Dimension rs      = UI::getResolution();
-    Rectangle wBounds = Rectangle(rs.width / 2 - 175, rs.height / 2 - 115, 350, 230);
+    auto rs      = UI::getResolution();
+    auto wBounds = Graphics::Metrics::Rectangle(rs.width() / 2 - 175, rs.height() / 2 - 115, 350, 230);
 
     // create and setup window
     about = Window::create();
     about->setBounds(wBounds);
-    about->setTitleAlignment(TextAlignment::CENTER);
-    about->setColor(RGB(255, 255, 255), RGB(0, 0, 0));
+    about->setTitleAlignment(Graphics::Text::Alignment::CENTER);
+    about->setColor(Graphics::Color::as_rgb(255, 255, 255), Graphics::Color::as_rgb(0, 0, 0));
     about->setTitle("About MeetiX OS");
     about->setResizable(false);
 
     // create and setup geoshape as panel of window
     panel = Geoshape::create();
     about->addChild(panel);
-    panel->setBounds(Rectangle(0, 0, 350, 230));
-    panel->setPNG("/Apps/OsmosUI/Resources/Icons/OSLogo_hdpi.png", Point(70, 50));
+    panel->setBounds(Graphics::Metrics::Rectangle(0, 0, 350, 230));
+    panel->setPNG("/Apps/OsmosUI/Resources/Icons/OSLogo_hdpi.png", Graphics::Metrics::Point(70, 50));
 
     // create and configure first line of about text
     line1 = Label::create();
     panel->addChild(line1);
-    line1->setBounds(Rectangle(0, 5, 320, 30));
-    line1->setTitleAlignment(TextAlignment::CENTER);
+    line1->setBounds(Graphics::Metrics::Rectangle(0, 5, 320, 30));
+    line1->setTitleAlignment(Graphics::Text::Alignment::CENTER);
     line1->setFontSize(25);
-    line1->setColor(0, RGB(0, 200, 0));
-    line1->setTitle("MeetiX OS " + Utils::Environment::get({ "VERSION" }));
+    line1->setColor(0, Graphics::Color::as_rgb(0, 200, 0));
+    line1->setTitle("MeetiX OS " + Utils::Environment::version());
 
     // create and configure second line of about text
     line2 = Label::create();
     panel->addChild(line2);
-    line2->setBounds(Rectangle(0, 130, 320, 30));
-    line2->setTitleAlignment(TextAlignment::CENTER);
+    line2->setBounds(Graphics::Metrics::Rectangle(0, 130, 320, 30));
+    line2->setTitleAlignment(Graphics::Text::Alignment::CENTER);
     line2->setTitle("[ Copyright (C) 2021, MeetiX OS Project ]");
 
     // show window about

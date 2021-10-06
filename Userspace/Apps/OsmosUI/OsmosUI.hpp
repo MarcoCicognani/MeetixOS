@@ -19,7 +19,7 @@
 #ifndef _OsmosUI_
 #define _OsmosUI_
 
-#include <graphics/metrics/dimension.hpp>
+#include <Graphics/Metrics/Dimension.hh>
 #include <gui/about.hpp>
 #include <gui/actionlistener.hpp>
 #include <gui/btnlist.hpp>
@@ -48,7 +48,7 @@ public:
     bool init();
 
     // configure ui with provided script
-    void configureUi(std::string pathToConfiguration, Dimension resolution);
+    void configureUi(std::string pathToConfiguration, Graphics::Metrics::Dimension resolution);
 
     // create the components of ui
     void createComponents();
@@ -85,7 +85,7 @@ private:
     IO::Keyboard::Info readInput();
 
     // resolution of screen
-    Dimension resolution;
+    Graphics::Metrics::Dimension resolution;
 
     // map that contains configuration provided by .ui.cfg file
     std::map<std::string, std::string> configuration;

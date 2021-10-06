@@ -83,27 +83,30 @@ int main(int argc, char* argv[]) {
     // open channel to windowserver
     if ( UI::open() == UI_OPEN_STATUS_SUCCESSFUL ) {
         // create components
-        Dimension resolution = UI::getResolution();
+        auto resolution = UI::getResolution();
 
         // configuring window
         window = Window::create();
-        window->setBounds(
-            Rectangle(resolution.width / 2 - 125, resolution.height / 2 - 75, 273, 132));
+        window->setBounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 125,
+                                                       resolution.height() / 2 - 75,
+                                                       273,
+                                                       132));
         window->setTitle("Exec");
         window->onClose([] { lock = false; });
 
         // configuring textfield
         exec = Textfield::create();
-        exec->setBounds(Rectangle(0, 10, 250, 30));
-        exec->setTitleAlignment(TextAlignment::CENTER);
+        exec->setBounds(Graphics::Metrics::Rectangle(0, 10, 250, 30));
+        exec->setTitleAlignment(Graphics::Text::Alignment::CENTER);
         exec->setGhostTitle("Enter app name");
         window->addChild(exec);
 
         // configuring button
         launch = Button::create();
-        launch->setBounds(Rectangle(0, 50, 250, 30));
+        launch->setBounds(Graphics::Metrics::Rectangle(0, 50, 250, 30));
         launch->setTitle("Run");
-        launch->setColor(ARGB(180, 0, 200, 0), RGB(0, 0, 0));
+        launch->setColor(Graphics::Color::as_argb(180, 0, 200, 0),
+                         Graphics::Color::as_rgb(0, 0, 0));
         launch->setActionListener(new ExecButtonHandler());
         window->addChild(launch);
 

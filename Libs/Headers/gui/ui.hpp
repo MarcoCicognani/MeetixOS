@@ -76,9 +76,9 @@ private:
     static void              eventDispatchQueueAdd(const UiEventDispatchData& data);
 
 public:
-    static UiOpenStatus  open();
-    static UiCloseStatus close();
-    static Dimension     getResolution();
+    static UiOpenStatus                 open();
+    static UiCloseStatus                close();
+    static Graphics::Metrics::Dimension getResolution();
 
     static bool setBackground(std::string path);
     static bool setMouseCursor(std::string name);
@@ -87,7 +87,7 @@ public:
     static void removeListener(Listener* l);
 
     static bool registerDesktopCanvas(Canvas* c);
-    static bool registerTaskManager(Component* where, const Rectangle& bounds);
+    static bool registerTaskManager(Component* where, const Graphics::Metrics::Rectangle& bounds);
 };
 
 #endif

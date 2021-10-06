@@ -1,11 +1,11 @@
 add_library(LibGraphics
         STATIC
-        vbe.cpp
-        text/textlyot.cpp
-        text/fontmgr.cpp
-        text/font.cpp
-        text/fontldr.cpp
-        graphics.cpp
-        cairoutils.cpp)
+        Vbe.cc
+        Text/Layouter.cc
+        Text/FontManager.cc
+        Text/Font.cc
+        Text/FontLoader.cc
+        Context.cc
+        Cairo.cc Color.cc)
 
 target_include_directories(LibGraphics PRIVATE ${TOOLCHAIN_INCLUDE}/freetype2)

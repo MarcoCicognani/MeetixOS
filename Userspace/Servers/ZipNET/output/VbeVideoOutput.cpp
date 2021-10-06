@@ -28,40 +28,40 @@
  *
  */
 bool VbeVideoOutput_t::initializeWithSettings(uint32_t width, uint32_t height, uint32_t bits) {
-    return Vbe::setMode(width, height, bits, videoModeInformation);
+    return Graphics::Vbe::set_mode(width, height, bits, videoModeInformation);
 }
 
 /**
  *
  */
-void VbeVideoOutput_t::blit(const Rectangle& invalid,
-                            const Rectangle& sourceSize,
-                            Color_t*         source) {
-    uint16_t bpp = videoModeInformation.bpp;
-    uint8_t* position
-        = ((uint8_t*)videoModeInformation.lfb) + (invalid.y * videoModeInformation.bpsl);
+void VbeVideoOutput_t::blit(const Graphics::Metrics::Rectangle& invalid,
+                            const Graphics::Metrics::Rectangle& sourceSize,
+                            Graphics::Color::ArgbGradient*      source) {
+    uint16_t bpp      = videoModeInformation.m_bit_per_pixel;
+    uint8_t* position = ((uint8_t*)videoModeInformation.m_linear_framebuffer)
+                      + (invalid.y() * videoModeInformation.m_bytes_per_scanline);
 
-    uint32_t right  = invalid.x + invalid.width;
-    uint32_t bottom = invalid.y + invalid.height;
+    uint32_t right  = invalid.x() + invalid.width();
+    uint32_t bottom = invalid.y() + invalid.height();
 
     if ( bpp == 32 ) {
-        for ( int y = invalid.y; y < bottom; y++ ) {
+        for ( int y = invalid.y(); y < bottom; y++ ) {
             uint32_t* position4 = (uint32_t*)position;
-            for ( int x = invalid.x; x < right; x++ )
-                position4[x] = source[y * sourceSize.width + x];
+            for ( int x = invalid.x(); x < right; x++ )
+                position4[x] = source[y * sourceSize.width() + x];
 
-            position = position + videoModeInformation.bpsl;
+            position = position + videoModeInformation.m_bytes_per_scanline;
         }
     } else if ( bpp == 24 ) {
-        for ( int y = invalid.y; y < bottom; y++ ) {
-            for ( int x = invalid.x; x < right; x++ ) {
-                Color_t color       = source[y * sourceSize.width + x];
-                position[x * 3]     = color & 0xFF;
-                position[x * 3 + 1] = (color >> 8) & 0xFF;
-                position[x * 3 + 2] = (color >> 16) & 0xFF;
+        for ( int y = invalid.y(); y < bottom; y++ ) {
+            for ( int x = invalid.x(); x < right; x++ ) {
+                Graphics::Color::ArgbGradient color = source[y * sourceSize.width() + x];
+                position[x * 3]                     = color & 0xFF;
+                position[x * 3 + 1]                 = (color >> 8) & 0xFF;
+                position[x * 3 + 2]                 = (color >> 16) & 0xFF;
             }
 
-            position = position + videoModeInformation.bpsl;
+            position = position + videoModeInformation.m_bytes_per_scanline;
         }
     }
 }
@@ -69,6 +69,6 @@ void VbeVideoOutput_t::blit(const Rectangle& invalid,
 /**
  *
  */
-Dimension VbeVideoOutput_t::getResolution() {
-    return Dimension(videoModeInformation.resX, videoModeInformation.resY);
+Graphics::Metrics::Dimension VbeVideoOutput_t::getResolution() {
+    return { videoModeInformation.m_width, videoModeInformation.m_height };
 }

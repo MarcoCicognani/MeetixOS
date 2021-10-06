@@ -38,11 +38,11 @@ Checkbox_t::Checkbox_t()
  *
  */
 void Checkbox_t::layout() {
-    Dimension preferredSize = label.getPreferredSize();
-    if ( preferredSize.height < boxSize + boxTextGap ) {
-        preferredSize.height = boxSize + boxTextGap;
+    auto preferredSize = label.getPreferredSize();
+    if ( preferredSize.height() < boxSize + boxTextGap ) {
+        preferredSize.set_height(boxSize + boxTextGap);
     }
-    preferredSize.width += preferredSize.height;
+    preferredSize.set_width(preferredSize.width() + preferredSize.height());
     setPreferredSize(preferredSize);
 }
 
@@ -51,27 +51,29 @@ void Checkbox_t::layout() {
  */
 void Checkbox_t::paint() {
     bounds  = getBounds();
-    surface = graphics.getContext();
+    surface = graphics.cairo_context();
     clearSurface();
 
     if ( hovered )
-        cairo_set_source_rgba(surface, ARGB_TO_CAIRO_PARAMS(ARGB(255, 200, 200, 200)));
+        cairo_set_source_rgba(surface,
+                              ARGB_TO_CAIRO_PARAMS(Graphics::Color::as_argb(255, 200, 200, 200)));
 
     else
         cairo_set_source_rgba(surface, ARGB_TO_CAIRO_PARAMS(shapeColor));
 
-    cairo_rectangle(surface, bounds.x, bounds.y, bounds.width, bounds.height);
+    cairo_rectangle(surface, bounds.x(), bounds.y(), bounds.width(), bounds.height());
     cairo_fill(surface);
 
     if ( checked ) {
-        microSurface = graphics.getContext();
+        microSurface = graphics.cairo_context();
 
-        cairo_set_source_rgba(microSurface, ARGB_TO_CAIRO_PARAMS(ARGB(255, 0, 200, 0)));
+        cairo_set_source_rgba(microSurface,
+                              ARGB_TO_CAIRO_PARAMS(Graphics::Color::as_argb(255, 0, 200, 0)));
         cairo_rectangle(microSurface,
-                        bounds.x + 2,
-                        bounds.y + 2,
-                        bounds.width - 4,
-                        bounds.height - 4);
+                        bounds.x() + 2,
+                        bounds.y() + 2,
+                        bounds.width() - 4,
+                        bounds.height() - 4);
     }
 }
 
@@ -103,9 +105,9 @@ bool Checkbox_t::handle(Event_t& event) {
                   || mouseEvent->type == MOUSE_EVENT_DRAG_RELEASE ) {
             pressed = false;
 
-            Rectangle minbounds = getBounds();
-            minbounds.x         = 0;
-            minbounds.y         = 0;
+            auto minbounds = getBounds();
+            minbounds.set_left(0);
+            minbounds.set_top(0);
             if ( mouseEvent->type == MOUSE_EVENT_RELEASE
                  && minbounds.contains(mouseEvent->position) ) {
                 checked = !checked;
@@ -122,9 +124,9 @@ bool Checkbox_t::handle(Event_t& event) {
 /**
  *
  */
-void Checkbox_t::handleBoundChange(Rectangle oldBounds) {
-    Rectangle unpositioned = getBounds();
-    unpositioned.x         = boxSize + boxTextGap;
-    unpositioned.y         = 0;
+void Checkbox_t::handleBoundChange(Graphics::Metrics::Rectangle oldBounds) {
+    auto unpositioned = getBounds();
+    unpositioned.set_left(boxSize + boxTextGap);
+    unpositioned.set_top(0);
     this->label.setBounds(unpositioned);
 }

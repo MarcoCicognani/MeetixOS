@@ -1,40 +1,31 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
-
-#include <graphics/cairoutils.hpp>
-#include <math.h>
-#include <stdint.h>
-#include <stdlib.h>
-
-/*
- * apply a radius blur to the provided surface
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
-void cairoBlurSurface(cairo_surface_t* surface, double radius) {
+
+#include <cmath>
+#include <cstdint>
+#include <Graphics/Cairo.hh>
+
+namespace Graphics::Cairo {
+
+void blur_surface(cairo_surface_t* surface, double radius) {
     // declare a temporary variable
     cairo_surface_t* tmp;
     int              width, height;
     int              srcStride, dstStride;
     int              x, y, z, w;
-    uint8_t *        src, *dst;
-    uint32_t *       s, *d, a, p;
+    u8 *             src, *dst;
+    usize *          s, *d, a, p;
     int              i, j, k;
-    uint8_t          kernel[17];
+    u8               kernel[17];
     const int        size = 17;
     const int        half = size / 2;
 
@@ -57,7 +48,7 @@ void cairoBlurSurface(cairo_surface_t* surface, double radius) {
         case CAIRO_FORMAT_A8:
             // Handle a8 surfaces by effectively unrolling the loops by a
             // factor of 4 - this is safe since we know that stride has to be a
-            // multiple of uint32_t.
+            // multiple of usize.
             width = width / 4;
             break;
 
@@ -87,8 +78,8 @@ void cairoBlurSurface(cairo_surface_t* surface, double radius) {
 
     // Horizontally blur from surface -> tmp
     for ( i = 0; i < height; i++ ) {
-        s = (uint32_t*)(src + i * srcStride);
-        d = (uint32_t*)(dst + i * dstStride);
+        s = (usize*)(src + i * srcStride);
+        d = (usize*)(dst + i * dstStride);
         for ( j = 0; j < width; j++ ) {
             if ( radius < j && j < width - radius ) {
                 d[j] = s[j];
@@ -113,8 +104,8 @@ void cairoBlurSurface(cairo_surface_t* surface, double radius) {
 
     // Then vertically blur from tmp -> surface
     for ( i = 0; i < height; i++ ) {
-        s = (uint32_t*)(dst + i * dstStride);
-        d = (uint32_t*)(src + i * srcStride);
+        s = (usize*)(dst + i * dstStride);
+        d = (usize*)(src + i * srcStride);
         for ( j = 0; j < width; j++ ) {
             if ( radius <= i && i < height - radius ) {
                 d[j] = s[j];
@@ -126,7 +117,7 @@ void cairoBlurSurface(cairo_surface_t* surface, double radius) {
                 if ( i - half + k < 0 || i - half + k >= height )
                     continue;
 
-                s = (uint32_t*)(dst + (i - half + k) * dstStride);
+                s = (usize*)(dst + (i - half + k) * dstStride);
                 p = s[j];
 
                 x += ((p >> 24) & 0xff) * kernel[k];
@@ -144,12 +135,12 @@ void cairoBlurSurface(cairo_surface_t* surface, double radius) {
 /*
  * create a cairo rectangle with smussed angles
  */
-void cairoRoundedRectangle(cairo_t* cr,
-                           double   x,
-                           double   y,
-                           double   width,
-                           double   height,
-                           double   radius) {
+void rounded_rectangle(cairo_t* cr,
+                       double   x,
+                       double   y,
+                       double   width,
+                       double   height,
+                       double   radius) {
     double degrees = M_PI / 180.0;
     cairo_new_sub_path(cr);
     cairo_arc(cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
@@ -158,3 +149,5 @@ void cairoRoundedRectangle(cairo_t* cr,
     cairo_arc(cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
     cairo_close_path(cr);
 }
+
+} /* namespace Graphics::Cairo */

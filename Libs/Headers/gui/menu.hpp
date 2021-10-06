@@ -45,10 +45,10 @@ private:
     int height = 30;
 
     // local bounds
-    Rectangle bds;
+    Graphics::Metrics::Rectangle bds;
 
     // used for dimension of each button
-    Rectangle buttonBounds;
+    Graphics::Metrics::Rectangle buttonBounds;
 
     // copy into cfg map the configuration in file on path
     void getMapFromPath(const std::string& path);
@@ -71,22 +71,22 @@ public:
 
     // constructor with map of configuration, bounds and geoshape base espected
     ButtonMenu(const std::map<std::string, std::string>& configuration,
-               const Rectangle&                          bounds,
+               const Graphics::Metrics::Rectangle&                          bounds,
                Geoshape*                                 where);
 
     // constructor with map of configuration, bounds and window base espected
     ButtonMenu(const std::map<std::string, std::string>& configuration,
-               const Rectangle&                          bounds,
+               const Graphics::Metrics::Rectangle&                          bounds,
                Window*                                   where);
 
     // create menu from file configuration
-    void create(const std::string& pathToConfiguration, const Rectangle& bounds);
+    void create(const std::string& pathToConfiguration, const Graphics::Metrics::Rectangle& bounds);
 
     // create menu from map configuration
-    void create(const std::map<std::string, std::string>& configuration, const Rectangle& bounds);
+    void create(const std::map<std::string, std::string>& configuration, const Graphics::Metrics::Rectangle& bounds);
 
     // set size of menu
-    inline void setBounds(const Rectangle& bounds);
+    inline void setBounds(const Graphics::Metrics::Rectangle& bounds);
 
     // menu on desire Geoshape form
     void show(Geoshape* where);

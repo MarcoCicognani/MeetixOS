@@ -26,14 +26,14 @@
  * redirect
  */
 void Notification::send(const std::string& title, const std::string& message) {
-    send(title, message, 5, RGB(255, 255, 255), MessageAnimation_t::DARKENING);
+    send(title, message, 5, Graphics::Color::as_rgb(255, 255, 255), MessageAnimation_t::DARKENING);
 }
 
 /*
  * redirect
  */
 void Notification::send(const std::string& title, const std::string& message, uint32_t sleep) {
-    send(title, message, sleep, RGB(255, 255, 255), MessageAnimation_t::DARKENING);
+    send(title, message, sleep, Graphics::Color::as_rgb(255, 255, 255), MessageAnimation_t::DARKENING);
 }
 
 /*
@@ -42,7 +42,7 @@ void Notification::send(const std::string& title, const std::string& message, ui
 void Notification::send(const std::string& title,
                         const std::string& message,
                         uint32_t           sleep,
-                        Color_t            color) {
+                        Graphics::Color::ArgbGradient            color) {
     send(title, message, sleep, color, MessageAnimation_t::DARKENING);
 }
 
@@ -54,7 +54,7 @@ void Notification::send(const std::string& title,
 void Notification::send(const std::string& title,
                         const std::string& message,
                         uint32_t           sleep,
-                        Color_t            color,
+                        Graphics::Color::ArgbGradient            color,
                         MessageAnimation_t animation) {
     // if ui is uninitialized instant return
     if ( !UiInitialized )

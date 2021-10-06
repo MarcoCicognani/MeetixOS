@@ -109,16 +109,16 @@ static void timerHandler() {
     // show color
     switch ( color ) {
         case RED:
-            display->setColor(RGB(200, 0, 0), 0);
+            display->setColor(Graphics::Color::as_rgb(200, 0, 0), 0);
             break;
         case GREEN:
-            display->setColor(RGB(0, 200, 0), 0);
+            display->setColor(Graphics::Color::as_rgb(0, 200, 0), 0);
             break;
         case BLUE:
-            display->setColor(RGB(0, 0, 200), 0);
+            display->setColor(Graphics::Color::as_rgb(0, 0, 200), 0);
             break;
         case YELLOW:
-            display->setColor(RGB(200, 200, 0), 0);
+            display->setColor(Graphics::Color::as_rgb(200, 200, 0), 0);
             break;
     }
 
@@ -151,20 +151,20 @@ void prepare() {
 void initializeInterface() {
     // create window
     window = Window::create();
-    window->setBounds(Rectangle(500, 500, 440, 350));
+    window->setBounds(Graphics::Metrics::Rectangle(500, 500, 440, 350));
     window->setTitle("Gurf");
     window->setResizable(false);
     window->onClose([] { _iterate = false; });
 
     // create shape that show estracted colors
     display = Geoshape::create();
-    display->setBounds(Rectangle(50, 100, 320, 100));
-    display->setColor(RGB(0, 0, 0), 0);
+    display->setBounds(Graphics::Metrics::Rectangle(50, 100, 320, 100));
+    display->setColor(Graphics::Color::as_rgb(0, 0, 0), 0);
     window->addChild(display);
 
     // create label that show current level
     level = Label::create();
-    level->setBounds(Rectangle(0, 200, 440, 30));
+    level->setBounds(Graphics::Metrics::Rectangle(0, 200, 440, 30));
     level->setTitle("Current level: 1");
     window->addChild(level);
 
@@ -179,35 +179,35 @@ void initializeInterface() {
 
     // configure buttons
     buttons->configure("red",
-                       Rectangle(10, 10, 150, 30),
+                       Graphics::Metrics::Rectangle(10, 10, 150, 30),
                        "RED",
-                       RGB(200, 0, 0),
-                       RGB(255, 255, 255));
+                       Graphics::Color::as_rgb(200, 0, 0),
+                       Graphics::Color::as_rgb(255, 255, 255));
     buttons->configure("green",
-                       Rectangle(180, 10, 150, 30),
+                       Graphics::Metrics::Rectangle(180, 10, 150, 30),
                        "GREEN",
-                       RGB(0, 200, 0),
-                       RGB(255, 255, 255));
+                       Graphics::Color::as_rgb(0, 200, 0),
+                       Graphics::Color::as_rgb(255, 255, 255));
     buttons->configure("blue",
-                       Rectangle(10, 50, 150, 30),
+                       Graphics::Metrics::Rectangle(10, 50, 150, 30),
                        "BLUE",
-                       RGB(0, 0, 200),
-                       RGB(255, 255, 255));
+                       Graphics::Color::as_rgb(0, 0, 200),
+                       Graphics::Color::as_rgb(255, 255, 255));
     buttons->configure("yellow",
-                       Rectangle(180, 50, 150, 30),
+                       Graphics::Metrics::Rectangle(180, 50, 150, 30),
                        "YELLOW",
-                       RGB(200, 200, 0),
-                       RGB(255, 255, 255));
+                       Graphics::Color::as_rgb(200, 200, 0),
+                       Graphics::Color::as_rgb(255, 255, 255));
     buttons->configure("begin",
-                       Rectangle(350, 10, 50, 30),
+                       Graphics::Metrics::Rectangle(350, 10, 50, 30),
                        "Begin",
-                       RGB(126, 126, 126),
-                       RGB(255, 255, 255));
+                       Graphics::Color::as_rgb(126, 126, 126),
+                       Graphics::Color::as_rgb(255, 255, 255));
     buttons->configure("end",
-                       Rectangle(350, 50, 50, 30),
+                       Graphics::Metrics::Rectangle(350, 50, 50, 30),
                        "end",
-                       RGB(126, 126, 126),
-                       RGB(255, 255, 255));
+                       Graphics::Color::as_rgb(126, 126, 126),
+                       Graphics::Color::as_rgb(255, 255, 255));
 
     // begin the game
     buttons->show(window);

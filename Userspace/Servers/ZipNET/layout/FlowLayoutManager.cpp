@@ -40,20 +40,20 @@ void FlowLayoutManager_t::layout() {
     int y          = 0;
     int lineHeight = 0;
 
-    Rectangle parentBounds = component->getBounds();
+    auto parentBounds = component->getBounds();
     for ( Component_t* c : children ) {
-        Dimension preferredSize = c->getPreferredSize();
+        auto preferredSize = c->getPreferredSize();
 
-        if ( x + preferredSize.width > parentBounds.width ) {
+        if ( x + preferredSize.width() > parentBounds.width() ) {
             x = 0;
             y += lineHeight;
             lineHeight = 0;
         }
 
-        c->setBounds(Rectangle(x, y, preferredSize.width, preferredSize.height));
-        x += preferredSize.width;
+        c->setBounds({ x, y, preferredSize.width(), preferredSize.height() });
+        x += preferredSize.width();
 
-        if ( preferredSize.height > lineHeight )
-            lineHeight = preferredSize.height;
+        if ( preferredSize.height() > lineHeight )
+            lineHeight = preferredSize.height();
     }
 }

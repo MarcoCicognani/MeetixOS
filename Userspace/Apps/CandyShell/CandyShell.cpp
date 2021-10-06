@@ -279,19 +279,19 @@ void CandyShell::run(CreateShellInfo* inf) {
             ifstream logofile("/sys/graphics/CandyShell/logo.oem-us");
             if ( logofile.good() ) {
                 string logo((istreambuf_iterator<char>(logofile)), istreambuf_iterator<char>());
-                screen->write(logo, RGB(0, 200, 0));
+                screen->write(logo, Graphics::Color::as_rgb(0, 200, 0));
                 logofile.close();
             }
 
             else
-                screen->write("\t\t\t\tLogo file not found", RGB(200, 0, 0));
+                screen->write("\t\t\t\tLogo file not found", Graphics::Color::as_rgb(200, 0, 0));
 
             stringstream msg2;
             msg2 << endl;
             msg2 << " Enter 'cat README' for a brief introduction." << endl;
             msg2 << " Or type 'Medit -read README' for read introduction whit Medit editor" << endl
                  << endl;
-            screen->write(msg2.str(), RGB(255, 255, 255));
+            screen->write(msg2.str(), Graphics::Color::as_rgb(255, 255, 255));
         }
 
         else {
@@ -314,16 +314,16 @@ void CandyShell::run(CreateShellInfo* inf) {
 
         if ( writeHeader ) {
             if ( currentUser == "root" )
-                screen->write(hostname, RGB(255, 0, 0));
+                screen->write(hostname, Graphics::Color::as_rgb(255, 0, 0));
 
             else
-                screen->write(hostname, RGB(0, 255, 0));
+                screen->write(hostname, Graphics::Color::as_rgb(0, 255, 0));
 
-            screen->write("@", RGB(255, 255, 255));
-            screen->write(currentUser, RGB(0, 255, 0));
-            screen->write(":", RGB(255, 255, 255));
-            screen->write(workingDirectory, RGB(0, 255, 255));
-            screen->write(">", RGB(255, 255, 255));
+            screen->write("@", Graphics::Color::as_rgb(255, 255, 255));
+            screen->write(currentUser, Graphics::Color::as_rgb(0, 255, 0));
+            screen->write(":", Graphics::Color::as_rgb(255, 255, 255));
+            screen->write(workingDirectory, Graphics::Color::as_rgb(0, 255, 255));
+            screen->write(">", Graphics::Color::as_rgb(255, 255, 255));
             screen->updateCursor();
         }
 
@@ -435,7 +435,7 @@ bool CandyShell::runTermCommand(string      command,
     FileHandle   firstPipeR;
     s_pipe_s(&firstPipeW, &firstPipeR, &firstPipeStat);
     if ( firstPipeStat != FS_PIPE_SUCCESSFUL ) {
-        screen->write("unable to create process pipe", RGB(255, 0, 0));
+        screen->write("unable to create process pipe", Graphics::Color::as_rgb(255, 0, 0));
         return false;
     }
     *termIn               = firstPipeW;
@@ -468,7 +468,7 @@ bool CandyShell::runTermCommand(string      command,
         FileHandle outPipeR;
         s_pipe_s(&outPipeW, &outPipeR, &pipeStat);
         if ( pipeStat != FS_PIPE_SUCCESSFUL ) {
-            screen->write("unable to create process out pipe", RGB(255, 0, 0));
+            screen->write("unable to create process out pipe", Graphics::Color::as_rgb(255, 0, 0));
             return false;
         }
 
@@ -485,7 +485,7 @@ bool CandyShell::runTermCommand(string      command,
             FileHandle errPipeR;
             s_pipe_s(&errPipeW, &errPipeR, &pipeStat);
             if ( pipeStat != FS_PIPE_SUCCESSFUL ) {
-                screen->write("unable to create process err pipe", RGB(255, 0, 0));
+                screen->write("unable to create process err pipe", Graphics::Color::as_rgb(255, 0, 0));
                 return false;
             }
             inStdio[2] = errPipeW;
@@ -528,40 +528,40 @@ bool CandyShell::runTermCommand(string      command,
  */
 bool CandyShell::handleBuiltin(string command) {
     if ( command == BUILTIN_COMMAND_HELP ) {
-        screen->write(" The shell has the following built-in functions:\n", RGB(255, 255, 255));
-        screen->write("\n", RGB(255, 255, 255));
-        screen->write(" help                  prints this help screen\n", RGB(255, 255, 255));
+        screen->write(" The shell has the following built-in functions:\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write("\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" help                  prints this help screen\n", Graphics::Color::as_rgb(255, 255, 255));
         screen->write(" ls                    lists all files in the current directory\n",
-                      RGB(255, 255, 255));
-        screen->write(" cd <path>             switches to a directory\n", RGB(255, 255, 255));
-        screen->write(" clear                 clears the screen\n", RGB(255, 255, 255));
+                      Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" cd <path>             switches to a directory\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" clear                 clears the screen\n", Graphics::Color::as_rgb(255, 255, 255));
         screen->write(" sleep <ms>            sleeps for the given number of milliseconds\n",
-                      RGB(255, 255, 255));
+                      Graphics::Color::as_rgb(255, 255, 255));
         screen->write(" & <program>           runs a program in the background\n",
-                      RGB(255, 255, 255));
-        screen->write("\n", RGB(255, 255, 255));
-        screen->write(" shell, ctrl+space     open a new shell\n", RGB(255, 255, 255));
+                      Graphics::Color::as_rgb(255, 255, 255));
+        screen->write("\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" shell, ctrl+space     open a new shell\n", Graphics::Color::as_rgb(255, 255, 255));
         screen->write(" shell <num>           switches to the shell with the given number\n",
-                      RGB(255, 255, 255));
-        screen->write(" tty                   lists all tty\n", RGB(255, 255, 255));
-        screen->write(" ctrl+tab              switches to the next shell\n", RGB(255, 255, 255));
-        screen->write("\n", RGB(255, 255, 255));
-        screen->write(" kb set <layout>       switches the keyboard layout\n", RGB(255, 255, 255));
-        screen->write(" kb info               prints the keyboard layout\n", RGB(255, 255, 255));
+                      Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" tty                   lists all tty\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" ctrl+tab              switches to the next shell\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write("\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" kb set <layout>       switches the keyboard layout\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" kb info               prints the keyboard layout\n", Graphics::Color::as_rgb(255, 255, 255));
         screen->write(" get time              Return hour:minute:second day/month/year\n",
-                      RGB(255, 255, 255));
-        screen->write(" uptime                Return uptime\n", RGB(255, 255, 255));
+                      Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" uptime                Return uptime\n", Graphics::Color::as_rgb(255, 255, 255));
         screen->write(" color <color>         change background and font color\n",
-                      RGB(255, 255, 255));
-        screen->write("\n", RGB(255, 255, 255));
-        screen->write(" logout                return to login manager\n", RGB(255, 255, 255));
+                      Graphics::Color::as_rgb(255, 255, 255));
+        screen->write("\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" logout                return to login manager\n", Graphics::Color::as_rgb(255, 255, 255));
         screen->write(" lock, crtl+l          lock the screen with current session\n",
-                      RGB(255, 255, 255));
-        screen->write("\n", RGB(255, 255, 255));
-        screen->write(" shutdown              shutdown the system\n", RGB(255, 255, 255));
-        screen->write(" reboot                reboot system\n", RGB(255, 255, 255));
-        screen->write(" exit                  terminate current CandyShell\n", RGB(255, 255, 255));
-        screen->write("\n", RGB(255, 255, 255));
+                      Graphics::Color::as_rgb(255, 255, 255));
+        screen->write("\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" shutdown              shutdown the system\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" reboot                reboot system\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(" exit                  terminate current CandyShell\n", Graphics::Color::as_rgb(255, 255, 255));
+        screen->write("\n", Graphics::Color::as_rgb(255, 255, 255));
 
         return true;
 
@@ -573,10 +573,10 @@ bool CandyShell::handleBuiltin(string command) {
         bool layoutLoaded = IO::Keyboard::instance().load_layout(command);
 
         if ( layoutLoaded )
-            screen->write("keyboard layout to '" + command + "' set \n", RGB(255, 255, 255));
+            screen->write("keyboard layout to '" + command + "' set \n", Graphics::Color::as_rgb(255, 255, 255));
 
         else
-            screen->write("keyboard layout to '" + command + "' not found\n", RGB(255, 255, 255));
+            screen->write("keyboard layout to '" + command + "' not found\n", Graphics::Color::as_rgb(255, 255, 255));
 
         return true;
     }
@@ -592,19 +592,19 @@ bool CandyShell::handleBuiltin(string command) {
                 msg << "scancode: " << (key.m_is_pressed ? "d " : "u ") << (uint32_t)key.m_scancode
                     << ", ctrl: " << key.m_ctrl << ", alt: " << key.m_alt
                     << ", shift: " << key.m_shift << endl;
-                screen->write(msg.str(), RGB(255, 255, 255));
+                screen->write(msg.str(), Graphics::Color::as_rgb(255, 255, 255));
             }
         }
 
         else
-            screen->write("This command is only available in headless mode.\n", RGB(255, 255, 255));
+            screen->write("This command is only available in headless mode.\n", Graphics::Color::as_rgb(255, 255, 255));
 
         return true;
     }
 
     else if ( command == BUILTIN_COMMAND_KBD_INFO ) {
         screen->write("keyboard layout is '" + IO::Keyboard::instance().current_layout() + "'\n",
-                      RGB(255, 255, 255));
+                      Graphics::Color::as_rgb(255, 255, 255));
         return true;
 
     }
@@ -619,8 +619,8 @@ bool CandyShell::handleBuiltin(string command) {
         stringstream Date;
         Date << time.m_day << "/" << time.m_month << "/" << time.m_year << "\n";
 
-        screen->write(Time.str(), RGB(255, 255, 255));
-        screen->write(Date.str(), RGB(255, 255, 255));
+        screen->write(Time.str(), Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(Date.str(), Graphics::Color::as_rgb(255, 255, 255));
 
         return true;
     }
@@ -630,16 +630,16 @@ bool CandyShell::handleBuiltin(string command) {
         command = command.substr(string(BUILTIN_COMMAND_SET_COLOR).length());
 
         if ( command == "-h" || command == "--help" ) {
-            screen->write("red               (Red background/black font)\n", RGB(255, 255, 255));
-            screen->write("green             (Green background/black font)\n", RGB(255, 255, 255));
-            screen->write("black             (Black background/gray font)\n", RGB(255, 255, 255));
+            screen->write("red               (Red background/black font)\n", Graphics::Color::as_rgb(255, 255, 255));
+            screen->write("green             (Green background/black font)\n", Graphics::Color::as_rgb(255, 255, 255));
+            screen->write("black             (Black background/gray font)\n", Graphics::Color::as_rgb(255, 255, 255));
             screen->write("white             (white background/black font (default)\n",
-                          RGB(255, 255, 255));
+                          Graphics::Color::as_rgb(255, 255, 255));
         }
 
         else if ( !screen->setColor(command) ) {
-            screen->write("Color '" + command + "' not found\n", RGB(255, 255, 255));
-            screen->write("Try color --help\n", RGB(255, 255, 255));
+            screen->write("Color '" + command + "' not found\n", Graphics::Color::as_rgb(255, 255, 255));
+            screen->write("Try color --help\n", Graphics::Color::as_rgb(255, 255, 255));
         }
 
         return true;
@@ -669,7 +669,7 @@ bool CandyShell::handleBuiltin(string command) {
 
         stringstream msg;
         msg << "process " << pid << "\n";
-        screen->write(msg.str(), RGB(255, 255, 255));
+        screen->write(msg.str(), Graphics::Color::as_rgb(255, 255, 255));
         return true;
 
     }
@@ -684,11 +684,11 @@ bool CandyShell::handleBuiltin(string command) {
         SetWorkingDirectoryStatus stat = writeWorkingDirectory();
 
         if ( stat == SET_WORKING_DIRECTORY_NOT_A_FOLDER )
-            screen->write("selected file not a folder\n", RGB(255, 0, 0));
+            screen->write("selected file not a folder\n", Graphics::Color::as_rgb(255, 0, 0));
         else if ( stat == SET_WORKING_DIRECTORY_NOT_FOUND )
-            screen->write("directory not found\n", RGB(255, 0, 0));
+            screen->write("directory not found\n", Graphics::Color::as_rgb(255, 0, 0));
         else if ( stat == SET_WORKING_DIRECTORY_ERROR )
-            screen->write("unable to switch to the selected directory\n", RGB(255, 0, 0));
+            screen->write("unable to switch to the selected directory\n", Graphics::Color::as_rgb(255, 0, 0));
 
         readWorkingDirectory();
         return true;
@@ -705,15 +705,15 @@ bool CandyShell::handleBuiltin(string command) {
         if ( ms > 0 && ms < 100000 ) {
             stringstream msg;
             msg << "sleeping for " << ms << "ms... ";
-            screen->write(msg.str(), RGB(255, 255, 255));
+            screen->write(msg.str(), Graphics::Color::as_rgb(255, 255, 255));
             s_sleep(ms);
-            screen->write("awake!\n", RGB(255, 255, 255));
+            screen->write("awake!\n", Graphics::Color::as_rgb(255, 255, 255));
         }
 
         else {
             stringstream msg;
             msg << "can't sleep this long (" << ms << "ms)\n";
-            screen->write(msg.str(), RGB(255, 255, 255));
+            screen->write(msg.str(), Graphics::Color::as_rgb(255, 255, 255));
         }
         return true;
 
@@ -730,7 +730,7 @@ bool CandyShell::handleBuiltin(string command) {
         stringstream msg;
         msg << tty.size();
         msg << " CandyShells active\n";
-        screen->write(msg.str(), RGB(255, 255, 255));
+        screen->write(msg.str(), Graphics::Color::as_rgb(255, 255, 255));
         return true;
 
     }
@@ -751,7 +751,7 @@ bool CandyShell::handleBuiltin(string command) {
             stringstream msg;
             msg << pos;
             msg << " is not a valid screen index\n";
-            screen->write(msg.str(), RGB(255, 255, 255));
+            screen->write(msg.str(), Graphics::Color::as_rgb(255, 255, 255));
         }
         return true;
 
@@ -789,13 +789,13 @@ bool CandyShell::handleBuiltin(string command) {
     }
 
     else if ( command == BUILTIN_COMMAND_REBOOT ) {
-        screen->write("rebooting MeetiX OS", RGB(255, 255, 255));
+        screen->write("rebooting MeetiX OS", Graphics::Color::as_rgb(255, 255, 255));
 
         return true;
     }
 
     else if ( command == BUILTIN_COMMAND_SHUTDOWN ) {
-        screen->write("Shutting down MeetiX OS", RGB(255, 255, 255));
+        screen->write("Shutting down MeetiX OS", Graphics::Color::as_rgb(255, 255, 255));
 
         return true;
     }
@@ -814,7 +814,7 @@ bool CandyShell::handleBuiltin(string command) {
         stringstream up;
         up << up_time.m_second << " seconds " << endl;
 
-        screen->write(up.str(), RGB(255, 255, 255));
+        screen->write(up.str(), Graphics::Color::as_rgb(255, 255, 255));
 
         return true;
     }
@@ -835,7 +835,7 @@ void CandyShell::standardOutThread(StandardOutThreadData* data) {
         int          read = s_read_s(data->stdoutReadEnd, buf, buflen, &stat);
 
         if ( stat == FS_READ_SUCCESSFUL ) {
-            Color_t localColor = (data->err ? RGB(255, 0, 0) : RGB(255, 255, 255));
+            Graphics::Color::ArgbGradient localColor = (data->err ? Graphics::Color::as_rgb(255, 0, 0) : Graphics::Color::as_rgb(255, 255, 255));
             for ( int i = 0; i < read; i++ ) {
                 char c = buf[i];
                 if ( c == '\r' )
@@ -960,7 +960,7 @@ bool CandyShell::execute(string     shortpath,
 
     stringstream msg;
     msg << "failed to execute binary '" << realpath << "', code: " << status << "\n";
-    screen->write(msg.str(), RGB(255, 0, 0));
+    screen->write(msg.str(), Graphics::Color::as_rgb(255, 0, 0));
     return false;
 }
 
@@ -1030,7 +1030,7 @@ string CandyShell::readInput(string            there,
                         }
 
                         line = line + appendix.str();
-                        screen->write(appendix.str(), RGB(255, 255, 255));
+                        screen->write(appendix.str(), Graphics::Color::as_rgb(255, 255, 255));
                         break;
                     }
                 }
@@ -1047,7 +1047,7 @@ string CandyShell::readInput(string            there,
                 screen->cleanLine(line.length());
 
                 line = history->getHistory();
-                screen->write(line, RGB(255, 255, 255));
+                screen->write(line, Graphics::Color::as_rgb(255, 255, 255));
             }
 
             else {
@@ -1057,7 +1057,7 @@ string CandyShell::readInput(string            there,
 
                     string out;
                     out = out + chr;
-                    screen->write(out, RGB(255, 255, 255), visible);
+                    screen->write(out, Graphics::Color::as_rgb(255, 255, 255), visible);
                 }
             }
 

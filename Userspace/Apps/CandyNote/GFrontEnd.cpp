@@ -30,10 +30,10 @@ GraphicFrontEnd_t::GraphicFrontEnd_t() {
 }
 
 void GraphicFrontEnd_t::initialize() {
-    Dimension resolution = UI::getResolution();
+    auto resolution = UI::getResolution();
 
     window = Window::create();
-    window->setBounds(Rectangle(resolution.width / 2 - 200, resolution.height / 2 - 300, 400, 600));
+    window->setBounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 200, resolution.height() / 2 - 300, 400, 600));
     window->setTitle("CandyNote");
     window->setVisible(true);
 
@@ -43,7 +43,7 @@ void GraphicFrontEnd_t::initialize() {
     });
 
     textBox = Textfield::create();
-    textBox->setBounds(Rectangle(0, 20, 400, 570));
+    textBox->setBounds(Graphics::Metrics::Rectangle(0, 20, 400, 570));
 }
 
 void GraphicFrontEnd_t::paintEntry() {

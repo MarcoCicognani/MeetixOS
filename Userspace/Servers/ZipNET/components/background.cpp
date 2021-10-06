@@ -29,7 +29,7 @@
 /**
  *
  */
-Background_t::Background_t(Rectangle bounds) {
+Background_t::Background_t(Graphics::Metrics::Rectangle bounds) {
     setBounds(bounds);
     setZIndex(0);
 
@@ -41,10 +41,10 @@ Background_t::Background_t(Rectangle bounds) {
  *
  */
 void Background_t::paint() {
-    cairo_t*  cr     = graphics.getContext();
-    Rectangle bounds = getBounds();
+    cairo_t*  cr     = graphics.cairo_context();
+    auto bounds = getBounds();
 
-    cairo_set_source_surface(cr, surface, bounds.x, bounds.y);
+    cairo_set_source_surface(cr, surface, bounds.x(), bounds.y());
     cairo_paint(cr);
 }
 

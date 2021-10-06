@@ -26,7 +26,7 @@
 #define SCREEN_HPP_
 
 #include <components/component.hpp>
-#include <graphics/metrics/rectangle.hpp>
+#include <Graphics/Metrics/Rectangle.hh>
 
 /**
  *
@@ -36,7 +36,7 @@ private:
     /**
      * Area that is invalid and needs to be copied to the video output.
      */
-    Rectangle invalid;
+    Graphics::Metrics::Rectangle invalid;
 
 public:
     /**
@@ -49,14 +49,14 @@ public:
      * Overrides the default invalidation method. On the component, this method
      * just dispatches to the parent, but here we must remember the invalidation.
      */
-    virtual void markDirty(Rectangle rect);
+    virtual void markDirty(Graphics::Metrics::Rectangle rect);
 
     /**
      *
      */
-    Rectangle grabInvalid() {
-        Rectangle ret = invalid;
-        invalid       = Rectangle();
+    Graphics::Metrics::Rectangle grabInvalid() {
+        Graphics::Metrics::Rectangle ret = invalid;
+        invalid       = Graphics::Metrics::Rectangle();
         return ret;
     }
 };

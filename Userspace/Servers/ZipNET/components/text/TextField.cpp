@@ -28,8 +28,8 @@
 #include <events/FocusEvent.hpp>
 #include <events/KeyEvent.hpp>
 #include <events/MouseEvent.hpp>
-#include <graphics/text/fontldr.hpp>
-#include <graphics/text/fontmgr.hpp>
+#include <Graphics/Text/FontLoader.hh>
+#include <Graphics/Text/FontManager.hh>
 #include <gui/properties.hpp>
 #include <sstream>
 
@@ -38,13 +38,14 @@
  */
 TextField_t::TextField_t()
     : cursor(0), marker(0), scrollX(0), secure(false), focused(false),
-      visualStatus(TextFieldVisualStatus_t::NORMAL), alignment(TextAlignment::CENTER), fontSize(14),
-      textColor(RGB(0, 0, 0)), insets(Insets(5, 5, 5, 5)), ghost(false) {
+      visualStatus(TextFieldVisualStatus_t::NORMAL), alignment(Graphics::Text::Alignment::CENTER), fontSize(14),
+      textColor(Graphics::Color::as_rgb(0, 0, 0)), insets(Graphics::Metrics::Insets(5, 5, 5, 5)),
+      ghost(false) {
     caretMoveStrategy = DefaultCaretMoveStrategy_t::getInstance();
     type              = UI_COMPONENT_TYPE_TEXTFIELD;
 
-    viewModel = TextLayouter::getInstance()->initializeBuffer();
-    setFont(FontLoader::get("default"));
+    viewModel = Graphics::Text::Layouter::instance().init_buffer();
+    setFont(Graphics::Text::FontLoader::get("default"));
 }
 
 /**
@@ -68,7 +69,7 @@ void TextField_t::setText(std::string newText) {
  */
 void TextField_t::update() {
     // Perform layouting
-    Rectangle bounds = getBounds();
+    auto bounds = getBounds();
 
     std::string visibleText = text;
 
@@ -81,14 +82,15 @@ void TextField_t::update() {
             visibleText = visibleText + "*";
     }
 
-    TextLayouter::getInstance()->layout(graphics.getContext(),
-                                        visibleText.c_str(),
-                                        font,
-                                        fontSize,
-                                        Rectangle(0, 0, bounds.width, bounds.height),
-                                        alignment,
-                                        viewModel,
-                                        false);
+    Graphics::Text::Layouter::instance().layout(
+        graphics.cairo_context(),
+        visibleText.c_str(),
+        font,
+        fontSize,
+        Graphics::Metrics::Rectangle(0, 0, bounds.width(), bounds.height()),
+        alignment,
+        viewModel,
+        false);
     markFor(COMPONENT_REQUIREMENT_PAINT);
 }
 
@@ -99,28 +101,28 @@ void TextField_t::paint() {
     if ( font == 0 )
         return;
 
-    cr     = graphics.getContext();
+    cr     = graphics.cairo_context();
     bounds = getBounds();
     clearSurface();
 
     // background
     cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(sColor));
-    cairo_rectangle(cr, 0, 0, bounds.width, bounds.height);
+    cairo_rectangle(cr, 0, 0, bounds.width(), bounds.height());
     cairo_fill(cr);
 
     // border
-    Color_t borderColor;
+    Graphics::Color::ArgbGradient borderColor;
     if ( focused )
-        borderColor = ARGB(255, 0, 200, 0);
+        borderColor = Graphics::Color::as_argb(255, 0, 200, 0);
 
     else if ( visualStatus == TextFieldVisualStatus_t::HOVERED )
-        borderColor = ARGB(255, 255, 255, 255);
+        borderColor = Graphics::Color::as_argb(255, 255, 255, 255);
 
     else
-        borderColor = ARGB(255, 180, 180, 180);
+        borderColor = Graphics::Color::as_argb(255, 180, 180, 180);
 
     cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(borderColor));
-    cairo_rectangle(cr, 0, 0, bounds.width, bounds.height);
+    cairo_rectangle(cr, 0, 0, bounds.width(), bounds.height());
     cairo_stroke(cr);
 
     // Scroll
@@ -133,16 +135,22 @@ void TextField_t::paint() {
     // Paint marking
     if ( focused ) {
         pos = 0;
-        for ( PositionedGlyph& g : viewModel->positions ) {
-            Color_t color = textColor;
+        for ( auto & g : viewModel->m_positioned_glyphs ) {
+            Graphics::Color::ArgbGradient color = textColor;
             if ( first != second && pos >= first && pos < second ) {
-                cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(ARGB(255, 0, 200, 0)));
-                Rectangle before = positionToCursorBounds(pos);
-                Rectangle after  = positionToCursorBounds(pos + 1);
-                cairo_rectangle(cr, before.x, before.y, after.x - before.x, before.height);
+                cairo_set_source_rgba(
+                    cr,
+                    ARGB_TO_CAIRO_PARAMS(Graphics::Color::as_argb(255, 0, 200, 0)));
+                auto before = positionToCursorBounds(pos);
+                auto after  = positionToCursorBounds(pos + 1);
+                cairo_rectangle(cr,
+                                before.x(),
+                                before.y(),
+                                after.x() - before.x(),
+                                before.height());
                 cairo_fill(cr);
 
-                color = ARGB(255, 255, 255, 255);
+                color = Graphics::Color::as_argb(255, 255, 255, 255);
             }
             ++pos;
         }
@@ -150,20 +158,20 @@ void TextField_t::paint() {
 
     // Paint glyphs
     pos = 0;
-    for ( PositionedGlyph& g : viewModel->positions ) {
-        Rectangle onView = glyphToView(g);
-        Color_t   color  = textColor;
+    for ( auto & g : viewModel->m_positioned_glyphs ) {
+        auto                          onView = glyphToView(g);
+        Graphics::Color::ArgbGradient color  = textColor;
 
         if ( ghost )
-            color = ARGB(160, 0, 0, 0);
+            color = Graphics::Color::as_argb(160, 0, 0, 0);
 
         else if ( focused && first != second && pos >= first && pos < second )
-            color = ARGB(255, 255, 255, 255);
+            color = Graphics::Color::as_argb(255, 255, 255, 255);
 
         cairo_save(cr);
         cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(color));
-        cairo_translate(cr, onView.x - g.glyph->x, onView.y - g.glyph->y); // TODO?
-        cairo_glyph_path(cr, g.glyph, g.glyphCount);
+        cairo_translate(cr, onView.x() - g.m_cairo_glyph->x, onView.y() - g.m_cairo_glyph->y); // TODO?
+        cairo_glyph_path(cr, g.m_cairo_glyph, g.m_cairo_glyph_count);
         cairo_fill(cr);
         cairo_restore(cr);
         ++pos;
@@ -174,11 +182,11 @@ void TextField_t::paint() {
         ghost = false;
 
         markFor(COMPONENT_REQUIREMENT_UPDATE);
-        cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(ARGB(255, 60, 60, 60)));
+        cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(Graphics::Color::as_argb(255, 60, 60, 60)));
 
-        Rectangle bounds = positionToCursorBounds(cursor);
+        auto bounds = positionToCursorBounds(cursor);
 
-        cairo_rectangle(cr, bounds.x, bounds.y, bounds.width, bounds.height);
+        cairo_rectangle(cr, bounds.x(), bounds.y(), bounds.width(), bounds.height());
         cairo_fill(cr);
     }
 
@@ -191,7 +199,8 @@ void TextField_t::paint() {
 /**
  *
  */
-void TextField_t::setColor(Color_t shapeColor, Color_t titleColor) {
+void TextField_t::setColor(Graphics::Color::ArgbGradient shapeColor,
+                           Graphics::Color::ArgbGradient titleColor) {
     sColor    = shapeColor;
     textColor = titleColor;
 
@@ -202,32 +211,32 @@ void TextField_t::setColor(Color_t shapeColor, Color_t titleColor) {
  *
  */
 void TextField_t::applyScroll() {
-    int       cursorX = positionToUnscrolledCursorX(cursor);
-    Rectangle bounds  = getBounds();
+    int  cursorX = positionToUnscrolledCursorX(cursor);
+    auto bounds  = getBounds();
 
     // scroll
-    if ( scrollX + cursorX > bounds.width - insets.right )
-        scrollX = bounds.width - cursorX - insets.right;
+    if ( scrollX + cursorX > bounds.width() - insets.right() )
+        scrollX = bounds.width() - cursorX - insets.right();
 
-    else if ( scrollX + cursorX < insets.left )
-        scrollX = -cursorX + insets.left + bounds.width / 2;
+    else if ( scrollX + cursorX < insets.left() )
+        scrollX = -cursorX + insets.left() + bounds.width() / 2;
 }
 
 /**
  *
  */
 int TextField_t::positionToUnscrolledCursorX(int pos) {
-    int cursorX        = insets.left;
-    int positionsCount = viewModel->positions.size();
+    int cursorX        = insets.left();
+    int positionsCount = viewModel->m_positioned_glyphs.size();
     for ( int i = 0; i < positionsCount; i++ ) {
-        PositionedGlyph& g = viewModel->positions[i];
+        auto & g = viewModel->m_positioned_glyphs[i];
         // After last?
         if ( i == positionsCount - 1 && pos == positionsCount )
-            cursorX = g.position.x + insets.left + g.advance.x;
+            cursorX = g.m_position.x() + insets.left() + g.m_advance.x();
 
         // Anywhere inside
         if ( i == pos )
-            cursorX = g.position.x + insets.left - 1;
+            cursorX = g.m_position.x() + insets.left() - 1;
     }
 
     return cursorX;
@@ -264,24 +273,24 @@ void TextField_t::setMarker(int pos) {
  */
 void TextField_t::backspace(IO::Keyboard::Info& info) {
     if ( text.length() > 0 ) {
-        Range selected = getSelectedRange();
+        auto selected = getSelectedRange();
 
-        int leftcut = selected.getFirst();
+        int leftcut = selected.first();
         if ( info.m_alt )
             leftcut = caretMoveStrategy->calculateSkip(text, leftcut, CaretDirection_t::LEFT);
 
         else if ( info.m_ctrl )
             leftcut = 0;
 
-        int rightcut = selected.getLast();
+        int rightcut = selected.last();
 
         if ( rightcut - leftcut == 0 )
             leftcut--;
 
         if ( leftcut >= 0 && rightcut <= text.length() ) {
-            std::string beforeCursor = text.substr(0, leftcut);
-            std::string afterCursor  = text.substr(rightcut);
-            text                     = beforeCursor + afterCursor;
+            auto beforeCursor = text.substr(0, leftcut);
+            auto afterCursor  = text.substr(rightcut);
+            text              = beforeCursor + afterCursor;
             setCursor(leftcut);
             setMarker(leftcut);
 
@@ -294,10 +303,10 @@ void TextField_t::backspace(IO::Keyboard::Info& info) {
  *
  */
 void TextField_t::insert(std::string ins) {
-    Range selected = getSelectedRange();
+    auto selected = getSelectedRange();
 
-    int first = selected.getFirst();
-    int last  = selected.getLast();
+    int first = selected.first();
+    int last  = selected.last();
 
     if ( first < 0 )
         first = 0;
@@ -371,8 +380,8 @@ bool TextField_t::handle(Event_t& event) {
         }
 
         else if ( mouseEvent->type == MOUSE_EVENT_PRESS ) {
-            Point p           = mouseEvent->position;
-            int   clickCursor = viewToPosition(p);
+            auto p           = mouseEvent->position;
+            int  clickCursor = viewToPosition(p);
 
             if ( mouseEvent->clickCount > 2 ) {
                 marker = 0;
@@ -396,8 +405,8 @@ bool TextField_t::handle(Event_t& event) {
         }
 
         else if ( mouseEvent->type == MOUSE_EVENT_DRAG ) {
-            Point p = mouseEvent->position;
-            cursor  = viewToPosition(p);
+            auto p = mouseEvent->position;
+            cursor = viewToPosition(p);
             markFor(COMPONENT_REQUIREMENT_PAINT);
         }
 
@@ -422,14 +431,13 @@ bool TextField_t::handle(Event_t& event) {
 /**
  *
  */
-int TextField_t::viewToPosition(Point p) {
+int TextField_t::viewToPosition(Graphics::Metrics::Point p) {
     int pos = 0;
 
-    for ( int i = 0; i < viewModel->positions.size(); i++ ) {
-        PositionedGlyph g      = viewModel->positions[i];
-        Rectangle       onView = glyphToView(g);
+    for ( auto& g : viewModel->m_positioned_glyphs ) {
+        auto onView = glyphToView(g);
 
-        if ( p.x < onView.x + onView.width / 2 )
+        if ( p.x() < onView.x() + onView.width() / 2 )
             break;
 
         ++pos;
@@ -440,28 +448,28 @@ int TextField_t::viewToPosition(Point p) {
 /**
  *
  */
-Rectangle TextField_t::glyphToView(PositionedGlyph& g) {
-    int yOffset = getBounds().height / 2 - fontSize / 2 - 2;
-    int x       = scrollX + g.position.x + insets.left;
-    int y       = g.position.y + yOffset;
-    return Rectangle(x, y, g.size.width, g.size.height);
+Graphics::Metrics::Rectangle TextField_t::glyphToView(Graphics::Text::PositionedGlyph& g) {
+    int yOffset = getBounds().height() / 2 - fontSize / 2 - 2;
+    int x       = scrollX + g.m_position.x() + insets.left();
+    int y       = g.m_position.y() + yOffset;
+    return { x, y, g.m_size.width(), g.m_size.height() };
 }
 
 /**
  *
  */
-Rectangle TextField_t::positionToCursorBounds(int pos) {
+Graphics::Metrics::Rectangle TextField_t::positionToCursorBounds(int pos) {
     int cursorX     = positionToUnscrolledCursorX(pos);
     int caretHeight = fontSize + 4;
 
-    return Rectangle(scrollX + cursorX, getBounds().height / 2 - caretHeight / 2, 1, caretHeight);
+    return { scrollX + cursorX, getBounds().height() / 2 - caretHeight / 2, 1, caretHeight };
 }
 
 /**
  *
  */
 void TextField_t::setTitleFont(std::string fontName) {
-    setFont(FontLoader::get(fontName));
+    setFont(Graphics::Text::FontLoader::get(fontName));
 }
 
 /*
@@ -474,7 +482,7 @@ void TextField_t::setFontSize(int size) {
 /*
  *
  */
-void TextField_t::setTitleAlignment(TextAlignment alignment) {
+void TextField_t::setTitleAlignment(Graphics::Text::Alignment alignment) {
     this->alignment = alignment;
     markFor(COMPONENT_REQUIREMENT_ALL);
 }
@@ -482,7 +490,7 @@ void TextField_t::setTitleAlignment(TextAlignment alignment) {
 /**
  *
  */
-void TextField_t::setFont(Font_t* f) {
+void TextField_t::setFont(Graphics::Text::Font* f) {
     font = f;
 }
 
@@ -499,8 +507,8 @@ void TextField_t::setGhostText(std::string text) {
 /**
  *
  */
-Range TextField_t::getSelectedRange() {
-    return Range(marker, cursor);
+Graphics::Metrics::Range TextField_t::getSelectedRange() {
+    return Graphics::Metrics::Range(marker, cursor);
 }
 
 /**

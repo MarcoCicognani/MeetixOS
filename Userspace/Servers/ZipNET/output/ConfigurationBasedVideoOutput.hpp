@@ -61,7 +61,10 @@ public:
     /**
      *
      */
-    virtual void blit(const Rectangle& invalid, const Rectangle& sourceSize, Color_t* source) = 0;
+    virtual void blit(const Graphics::Metrics::Rectangle& invalid,
+                      const Graphics::Metrics::Rectangle& sourceSize,
+                      Graphics::Color::ArgbGradient*      source)
+        = 0;
 };
 
 #endif
