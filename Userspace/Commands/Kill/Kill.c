@@ -90,17 +90,15 @@ int main(int argc, const char* argv[]) {
 
             // call kernel to kill the target
             switch ( s_kill(target) ) {
-                case KILL_STATUS_SUCCESSFUL:
-                    {
-                        println("%s %d successfully killed", tasktype, target);
-                        if ( restart && procname[0] ) {
-                            Pid pid;
-                            s_spawn_p(procname, "", "/", SECURITY_LEVEL_APPLICATION, &pid);
-                            println("restarted process %s with Pid %d", procname, pid);
-                        } else if ( restart && !procname[0] )
-                            fprintf(stderr, "unable to restart a Thread\n");
-                    }
-                    break;
+                case KILL_STATUS_SUCCESSFUL: {
+                    println("%s %d successfully killed", tasktype, target);
+                    if ( restart && procname[0] ) {
+                        Pid pid;
+                        s_spawn_p(procname, "", "/", SECURITY_LEVEL_APPLICATION, &pid);
+                        println("restarted process %s with Pid %d", procname, pid);
+                    } else if ( restart && !procname[0] )
+                        fprintf(stderr, "unable to restart a Thread\n");
+                } break;
 
                 case KILL_STATUS_NOT_FOUND:
                     fprintf(stderr, "%s %d does not exist\n", tasktype, target);

@@ -80,8 +80,8 @@ public:
      *
      */
     CandyTerminal(bool headless)
-        : headless(headless), screen(nullptr), shellIN(FD_NONE), shellOUT(FD_NONE), shellERR(FD_NONE),
-          echo(true), inputMode(IO::Shell::MODE_DEFAULT), currentProcess(-1) {
+        : headless(headless), screen(nullptr), shellIN(FD_NONE), shellOUT(FD_NONE),
+          shellERR(FD_NONE), echo(true), inputMode(IO::Shell::MODE_DEFAULT), currentProcess(-1) {
     }
 
     /**

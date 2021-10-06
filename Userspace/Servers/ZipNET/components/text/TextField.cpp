@@ -38,9 +38,9 @@
  */
 TextField_t::TextField_t()
     : cursor(0), marker(0), scrollX(0), secure(false), focused(false),
-      visualStatus(TextFieldVisualStatus_t::NORMAL), alignment(Graphics::Text::Alignment::CENTER), fontSize(14),
-      textColor(Graphics::Color::as_rgb(0, 0, 0)), insets(Graphics::Metrics::Insets(5, 5, 5, 5)),
-      ghost(false) {
+      visualStatus(TextFieldVisualStatus_t::NORMAL), alignment(Graphics::Text::Alignment::CENTER),
+      fontSize(14), textColor(Graphics::Color::as_rgb(0, 0, 0)),
+      insets(Graphics::Metrics::Insets(5, 5, 5, 5)), ghost(false) {
     caretMoveStrategy = DefaultCaretMoveStrategy_t::getInstance();
     type              = UI_COMPONENT_TYPE_TEXTFIELD;
 
@@ -135,7 +135,7 @@ void TextField_t::paint() {
     // Paint marking
     if ( focused ) {
         pos = 0;
-        for ( auto & g : viewModel->m_positioned_glyphs ) {
+        for ( auto& g : viewModel->m_positioned_glyphs ) {
             Graphics::Color::ArgbGradient color = textColor;
             if ( first != second && pos >= first && pos < second ) {
                 cairo_set_source_rgba(
@@ -158,7 +158,7 @@ void TextField_t::paint() {
 
     // Paint glyphs
     pos = 0;
-    for ( auto & g : viewModel->m_positioned_glyphs ) {
+    for ( auto& g : viewModel->m_positioned_glyphs ) {
         auto                          onView = glyphToView(g);
         Graphics::Color::ArgbGradient color  = textColor;
 
@@ -170,7 +170,9 @@ void TextField_t::paint() {
 
         cairo_save(cr);
         cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(color));
-        cairo_translate(cr, onView.x() - g.m_cairo_glyph->x, onView.y() - g.m_cairo_glyph->y); // TODO?
+        cairo_translate(cr,
+                        onView.x() - g.m_cairo_glyph->x,
+                        onView.y() - g.m_cairo_glyph->y); // TODO?
         cairo_glyph_path(cr, g.m_cairo_glyph, g.m_cairo_glyph_count);
         cairo_fill(cr);
         cairo_restore(cr);
@@ -229,7 +231,7 @@ int TextField_t::positionToUnscrolledCursorX(int pos) {
     int cursorX        = insets.left();
     int positionsCount = viewModel->m_positioned_glyphs.size();
     for ( int i = 0; i < positionsCount; i++ ) {
-        auto & g = viewModel->m_positioned_glyphs[i];
+        auto& g = viewModel->m_positioned_glyphs[i];
         // After last?
         if ( i == positionsCount - 1 && pos == positionsCount )
             cursorX = g.m_position.x() + insets.left() + g.m_advance.x();

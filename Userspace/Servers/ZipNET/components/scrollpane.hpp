@@ -35,10 +35,10 @@
 class Scrollpane_t : public Component_t,
                      public ScrollHandler_t {
 private:
-    Component_t* viewPort;
-    Graphics::Metrics::Point        scrollPosition;
-    Scrollbar_t  verticalScrollbar;
-    Scrollbar_t  horizontalScrollbar;
+    Component_t*             viewPort;
+    Graphics::Metrics::Point scrollPosition;
+    Scrollbar_t              verticalScrollbar;
+    Scrollbar_t              horizontalScrollbar;
 
 public:
     Scrollpane_t()

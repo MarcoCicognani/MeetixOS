@@ -65,7 +65,8 @@ public:
     /*
      * colored components
      */
-    virtual void setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor) {
+    virtual void setColor(Graphics::Color::ArgbGradient color,
+                          Graphics::Color::ArgbGradient tltColor) {
         shapeColor = color;
     }
 

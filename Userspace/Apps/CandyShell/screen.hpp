@@ -55,10 +55,14 @@ public:
 
     virtual void backspace()               = 0;
     virtual void cleanLine(int lineLength) = 0;
-    virtual void write(std::string message, Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255), bool visible = true)
+    virtual void write(std::string                   message,
+                       Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255),
+                       bool                          visible = true)
         = 0;
-    virtual void writeChar(char c, Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255)) = 0;
-    virtual void updateCursor()                                        = 0;
+    virtual void
+    writeChar(char c, Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255))
+        = 0;
+    virtual void updateCursor() = 0;
 
     virtual bool setColor(std::string color) = 0;
 

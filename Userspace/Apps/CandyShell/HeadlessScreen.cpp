@@ -187,8 +187,9 @@ void HeadlessScreen::normalize() {
         memcpy(outputCurrent, &outputCurrent[SCREEN_WIDTH * 2], screenSize - lineBytes);
 
         for ( uint32_t i = 0; i < SCREEN_WIDTH * 2; i += 2 ) {
-            outputCurrent[screenSize - lineBytes + i]     = ' ';
-            outputCurrent[screenSize - lineBytes + i + 1] = (uint8_t)Graphics::Color::as_rgb(0, 0, 0);
+            outputCurrent[screenSize - lineBytes + i] = ' ';
+            outputCurrent[screenSize - lineBytes + i + 1]
+                = (uint8_t)Graphics::Color::as_rgb(0, 0, 0);
         }
     }
 }

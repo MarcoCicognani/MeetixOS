@@ -33,7 +33,10 @@ void SecondaryThread::OsmosUIDockThread(const Graphics::Metrics::Dimension& reso
 
     // create dock geoshape
     Geoshape* dock = Geoshape::create();
-    dock->setBounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 197, resolution.height() - 64, 394, 64));
+    dock->setBounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 197,
+                                                 resolution.height() - 64,
+                                                 394,
+                                                 64));
     dock->setColor(Graphics::Color::as_argb(120, 0, 0, 0), Graphics::Color::as_argb(255, 0, 0, 0));
 
     // creating button and add to list

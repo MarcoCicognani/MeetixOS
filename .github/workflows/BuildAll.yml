@@ -1,6 +1,6 @@
 name: MeetiX CI Build
 
-on: [push]
+on: [ push ]
 
 jobs:
   build:

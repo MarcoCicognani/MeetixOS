@@ -93,11 +93,11 @@ void Scrollpane_t::setPosition(Graphics::Metrics::Point& newPosition) {
 void Scrollpane_t::handleScroll(Scrollbar_t* bar) {
     if ( bar == &verticalScrollbar ) {
         auto pos = scrollPosition;
-        pos.set_y( -verticalScrollbar.getModelPosition());
+        pos.set_y(-verticalScrollbar.getModelPosition());
         setPosition(pos);
     } else if ( bar == &horizontalScrollbar ) {
         auto pos = scrollPosition;
-        pos.set_x( -horizontalScrollbar.getModelPosition());
+        pos.set_x(-horizontalScrollbar.getModelPosition());
         setPosition(pos);
     }
 }

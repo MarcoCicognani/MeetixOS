@@ -57,47 +57,38 @@ void Madt::parse(AcpiTableHeader* madtSdtHeader) {
         // switching acpi table
         switch ( entryHeader->deviceType ) {
             // Local APIC
-            case 0:
-                {
-                    MadtLapicEntry* entry = (MadtLapicEntry*)entryHeader;
+            case 0: {
+                MadtLapicEntry* entry = (MadtLapicEntry*)entryHeader;
 
-                    // only useable if entry flag 1
-                    if ( entry->flags == 1 ) {
-                        logDebug("%# lapic, id: %i, processorId: %i, flags: %i",
-                                 entry->apicId,
-                                 entry->processorId,
-                                 entry->flags);
-                        System::addProcessor(entry->apicId);
-                    }
+                // only useable if entry flag 1
+                if ( entry->flags == 1 ) {
+                    logDebug("%# lapic, id: %i, processorId: %i, flags: %i",
+                             entry->apicId,
+                             entry->processorId,
+                             entry->flags);
+                    System::addProcessor(entry->apicId);
                 }
-                break;
+            } break;
 
             // IO Apic
-            case 1:
-                {
-                    MadtIoapicEntry* entry = (MadtIoapicEntry*)entryHeader;
-                    logDebug("%# ioapic, id: %i, address: %h",
-                             entry->ioapicId,
-                             entry->ioapicAddress);
-                    IoApicManager::create(entry->ioapicId,
-                                          entry->ioapicAddress,
-                                          entry->globalSystemInterruptBase);
-                }
-                break;
+            case 1: {
+                MadtIoapicEntry* entry = (MadtIoapicEntry*)entryHeader;
+                logDebug("%# ioapic, id: %i, address: %h", entry->ioapicId, entry->ioapicAddress);
+                IoApicManager::create(entry->ioapicId,
+                                      entry->ioapicAddress,
+                                      entry->globalSystemInterruptBase);
+            } break;
 
             // Interrupt Source Override
-            case 2:
-                {
+            case 2: {
 #if LOGGING_DEBUG
-                    MadtInterruptSrcOverrideEntry* entry
-                        = (MadtInterruptSrcOverrideEntry*)entryHeader;
-                    logDebug("%# int src override, irqSource: %i, globInt: %i, busSource: %i",
-                             entry->irqSource,
-                             entry->globalSystemInterrupt,
-                             entry->busSource);
+                MadtInterruptSrcOverrideEntry* entry = (MadtInterruptSrcOverrideEntry*)entryHeader;
+                logDebug("%# int src override, irqSource: %i, globInt: %i, busSource: %i",
+                         entry->irqSource,
+                         entry->globalSystemInterrupt,
+                         entry->busSource);
 #endif
-                }
-                break;
+            } break;
 
             default:
                 logDebug("%# device of unknown type %i", entryHeader->deviceType);

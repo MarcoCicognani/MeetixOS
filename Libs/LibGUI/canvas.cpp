@@ -60,7 +60,8 @@ CanvasBufferInfo Canvas::getBuffer() {
 
     else {
         // return buffer
-        info.buffer = (Graphics::Color::ArgbGradient*)(currentBuffer + sizeof(UiCanvasSharedMemoryHeader));
+        info.buffer
+            = (Graphics::Color::ArgbGradient*)(currentBuffer + sizeof(UiCanvasSharedMemoryHeader));
         UiCanvasSharedMemoryHeader* header = (UiCanvasSharedMemoryHeader*)currentBuffer;
         info.width                         = header->paintableWidth;
         info.height                        = header->paintableHeight;

@@ -56,24 +56,26 @@ public:
 
     // overloaded configure method, each method provide different combination of parameters
     void configure(const std::string& name, const Graphics::Metrics::Rectangle& bounds);
-    void configure(const std::string& name, const Graphics::Metrics::Rectangle& bounds, const std::string& title);
-    void configure(const std::string& name,
-                   const Graphics::Metrics::Rectangle&   bounds,
-                   const std::string& title,
-                   Graphics::Color::ArgbGradient            buttonColor,
-                   Graphics::Color::ArgbGradient            titleColor);
-    void configure(const std::string& name,
-                   const Graphics::Metrics::Rectangle&   bounds,
-                   const std::string& title,
-                   const std::string& pathToPng,
-                   const Graphics::Metrics::Point&       pngPosition);
-    void configure(const std::string& name,
-                   const Graphics::Metrics::Rectangle&   bounds,
-                   const std::string& title,
-                   const std::string& pathToPng,
-                   const Graphics::Metrics::Point&       pngPosition,
-                   Graphics::Color::ArgbGradient            buttonColor,
-                   Graphics::Color::ArgbGradient            titleColor);
+    void configure(const std::string&                  name,
+                   const Graphics::Metrics::Rectangle& bounds,
+                   const std::string&                  title);
+    void configure(const std::string&                  name,
+                   const Graphics::Metrics::Rectangle& bounds,
+                   const std::string&                  title,
+                   Graphics::Color::ArgbGradient       buttonColor,
+                   Graphics::Color::ArgbGradient       titleColor);
+    void configure(const std::string&                  name,
+                   const Graphics::Metrics::Rectangle& bounds,
+                   const std::string&                  title,
+                   const std::string&                  pathToPng,
+                   const Graphics::Metrics::Point&     pngPosition);
+    void configure(const std::string&                  name,
+                   const Graphics::Metrics::Rectangle& bounds,
+                   const std::string&                  title,
+                   const std::string&                  pathToPng,
+                   const Graphics::Metrics::Point&     pngPosition,
+                   Graphics::Color::ArgbGradient       buttonColor,
+                   Graphics::Color::ArgbGradient       titleColor);
 
     // method to display on screen buttons of map
     void show(Window* where);

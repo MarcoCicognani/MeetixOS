@@ -31,8 +31,8 @@
  *
  */
 GridLayoutManager_t::GridLayoutManager_t(int columns, int rows)
-    : columns(columns), rows(rows), padding(Graphics::Metrics::Insets(0, 0, 0, 0)), horizontalCellSpace(0),
-      verticalCellSpace(0) {
+    : columns(columns), rows(rows), padding(Graphics::Metrics::Insets(0, 0, 0, 0)),
+      horizontalCellSpace(0), verticalCellSpace(0) {
 }
 
 /**

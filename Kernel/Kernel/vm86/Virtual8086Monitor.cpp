@@ -49,229 +49,215 @@ VMResult Virtual8086Monitor::handleGpf(Thread* current) {
             /**
              * Enables 32bit operands for the next instructions
              */
-            case 0x66:
-                {
-                    operands32 = true;
-                    ++ip;
-                    ++ctx->defaultFrame.eip;
-                    break;
-                }
+            case 0x66: {
+                operands32 = true;
+                ++ip;
+                ++ctx->defaultFrame.eip;
+                break;
+            }
 
             /**
              * Enables 32bit addresses for the next instruction
              */
-            case 0x67:
-                {
-                    address32 = true;
-                    ++ip;
-                    ++ctx->defaultFrame.eip;
-                    break;
-                }
+            case 0x67: {
+                address32 = true;
+                ++ip;
+                ++ctx->defaultFrame.eip;
+                break;
+            }
 
             /**
              * Instruction 0x9C: PUSHF
              *
              * Pushes the CPU's eflags
              */
-            case 0x9C:
-                {
-                    if ( operands32 ) {
-                        ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) - 4) & 0xffff;
-                        esp--;
-                        esp[0] = ctx->defaultFrame.eflags & VALID_FLAGS;
+            case 0x9C: {
+                if ( operands32 ) {
+                    ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) - 4) & 0xffff;
+                    esp--;
+                    esp[0] = ctx->defaultFrame.eflags & VALID_FLAGS;
 
-                        if ( current->getVm86Information()->cpuIf )
-                            esp[0] |= EFLAG_IF;
-                        else
-                            esp[0] &= ~EFLAG_IF;
-                    }
-
-                    else {
-                        ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) - 2) & 0xffff;
-                        sp--;
-                        sp[0] = (uint16_t)ctx->defaultFrame.eflags;
-
-                        if ( current->getVm86Information()->cpuIf )
-                            sp[0] |= EFLAG_IF;
-                        else
-                            sp[0] &= ~EFLAG_IF;
-                    }
-
-                    ++ctx->defaultFrame.eip;
-                    return VMResult::SUCCESSFUL;
+                    if ( current->getVm86Information()->cpuIf )
+                        esp[0] |= EFLAG_IF;
+                    else
+                        esp[0] &= ~EFLAG_IF;
                 }
+
+                else {
+                    ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) - 2) & 0xffff;
+                    sp--;
+                    sp[0] = (uint16_t)ctx->defaultFrame.eflags;
+
+                    if ( current->getVm86Information()->cpuIf )
+                        sp[0] |= EFLAG_IF;
+                    else
+                        sp[0] &= ~EFLAG_IF;
+                }
+
+                ++ctx->defaultFrame.eip;
+                return VMResult::SUCCESSFUL;
+            }
 
             /**
              * Instruction 0x9D: POPF
              *
              * Pops the CPU's eflags
              */
-            case 0x9D:
-                {
-                    if ( operands32 ) {
-                        ctx->defaultFrame.eflags = EFLAG_IF | EFLAG_VM | (esp[0] & VALID_FLAGS);
-                        current->getVm86Information()->cpuIf = (esp[0] & EFLAG_IF) != 0;
-                        ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) + 4) & 0xffff;
-                    }
-
-                    else {
-                        ctx->defaultFrame.eflags             = EFLAG_IF | EFLAG_VM | sp[0];
-                        current->getVm86Information()->cpuIf = (sp[0] & EFLAG_IF) != 0;
-                        ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) + 2) & 0xffff;
-                    }
-
-                    ++ctx->defaultFrame.eip;
-                    return VMResult::SUCCESSFUL;
+            case 0x9D: {
+                if ( operands32 ) {
+                    ctx->defaultFrame.eflags = EFLAG_IF | EFLAG_VM | (esp[0] & VALID_FLAGS);
+                    current->getVm86Information()->cpuIf = (esp[0] & EFLAG_IF) != 0;
+                    ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) + 4) & 0xffff;
                 }
+
+                else {
+                    ctx->defaultFrame.eflags             = EFLAG_IF | EFLAG_VM | sp[0];
+                    current->getVm86Information()->cpuIf = (sp[0] & EFLAG_IF) != 0;
+                    ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) + 2) & 0xffff;
+                }
+
+                ++ctx->defaultFrame.eip;
+                return VMResult::SUCCESSFUL;
+            }
 
             /**
              * Instruction 0xCD: INT x
              *
              * Calls an interrupt
              */
-            case 0xCD:
-                {
-                    sp -= 3;
-                    ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) - 6) & 0xffff;
+            case 0xCD: {
+                sp -= 3;
+                ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) - 6) & 0xffff;
 
-                    sp[0] = (uint16_t)(ctx->defaultFrame.eip + 2);
-                    sp[1] = ctx->defaultFrame.cs;
-                    sp[2] = (uint16_t)ctx->defaultFrame.eflags;
+                sp[0] = (uint16_t)(ctx->defaultFrame.eip + 2);
+                sp[1] = ctx->defaultFrame.cs;
+                sp[2] = (uint16_t)ctx->defaultFrame.eflags;
 
-                    if ( current->getVm86Information()->cpuIf )
-                        sp[2] |= EFLAG_IF;
-                    else
-                        sp[2] &= ~EFLAG_IF;
+                if ( current->getVm86Information()->cpuIf )
+                    sp[2] |= EFLAG_IF;
+                else
+                    sp[2] &= ~EFLAG_IF;
 
-                    ctx->defaultFrame.cs  = FAR_PTR_SEGMENT(ivt->entry[ip[1]]);
-                    ctx->defaultFrame.eip = FAR_PTR_OFFSET(ivt->entry[ip[1]]);
+                ctx->defaultFrame.cs  = FAR_PTR_SEGMENT(ivt->entry[ip[1]]);
+                ctx->defaultFrame.eip = FAR_PTR_OFFSET(ivt->entry[ip[1]]);
 
-                    ++current->getVm86Information()->interruptRecursionLevel;
+                ++current->getVm86Information()->interruptRecursionLevel;
 
-                    return VMResult::SUCCESSFUL;
-                }
+                return VMResult::SUCCESSFUL;
+            }
 
             /**
              * Instruction 0xCF: IRET
              *
              * Returns from an interrupt
              */
-            case 0xCF:
-                {
-                    ctx->defaultFrame.eip                = sp[0];
-                    ctx->defaultFrame.cs                 = sp[1];
-                    ctx->defaultFrame.eflags             = EFLAG_IF | EFLAG_VM | sp[2];
-                    current->getVm86Information()->cpuIf = ((sp[2] & EFLAG_IF) != 0);
+            case 0xCF: {
+                ctx->defaultFrame.eip                = sp[0];
+                ctx->defaultFrame.cs                 = sp[1];
+                ctx->defaultFrame.eflags             = EFLAG_IF | EFLAG_VM | sp[2];
+                current->getVm86Information()->cpuIf = ((sp[2] & EFLAG_IF) != 0);
 
-                    ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) + 6) & 0xffff;
+                ctx->defaultFrame.esp = ((ctx->defaultFrame.esp & 0xffff) + 6) & 0xffff;
 
-                    if ( current->getVm86Information()->interruptRecursionLevel == 0 ) {
-                        current->getVm86Information()->out->ax = ctx->defaultFrame.eax;
-                        current->getVm86Information()->out->bx = ctx->defaultFrame.ebx;
-                        current->getVm86Information()->out->cx = ctx->defaultFrame.ecx;
-                        current->getVm86Information()->out->dx = ctx->defaultFrame.edx;
+                if ( current->getVm86Information()->interruptRecursionLevel == 0 ) {
+                    current->getVm86Information()->out->ax = ctx->defaultFrame.eax;
+                    current->getVm86Information()->out->bx = ctx->defaultFrame.ebx;
+                    current->getVm86Information()->out->cx = ctx->defaultFrame.ecx;
+                    current->getVm86Information()->out->dx = ctx->defaultFrame.edx;
 
-                        current->getVm86Information()->out->di = ctx->defaultFrame.edi;
-                        current->getVm86Information()->out->si = ctx->defaultFrame.esi;
-                        current->getVm86Information()->out->ds = ctx->ds;
-                        current->getVm86Information()->out->es = ctx->es;
+                    current->getVm86Information()->out->di = ctx->defaultFrame.edi;
+                    current->getVm86Information()->out->si = ctx->defaultFrame.esi;
+                    current->getVm86Information()->out->ds = ctx->ds;
+                    current->getVm86Information()->out->es = ctx->es;
 
-                        return VMResult::FINISHED;
-                    }
-
-                    --current->getVm86Information()->interruptRecursionLevel;
-                    return VMResult::SUCCESSFUL;
+                    return VMResult::FINISHED;
                 }
+
+                --current->getVm86Information()->interruptRecursionLevel;
+                return VMResult::SUCCESSFUL;
+            }
 
             /**
              * Instruction 0xFA: CLI
              *
              * Disables interrupts
              */
-            case 0xFA:
-                {
-                    current->getVm86Information()->cpuIf = false;
-                    ++ctx->defaultFrame.eip;
-                    return VMResult::SUCCESSFUL;
-                }
+            case 0xFA: {
+                current->getVm86Information()->cpuIf = false;
+                ++ctx->defaultFrame.eip;
+                return VMResult::SUCCESSFUL;
+            }
 
             /**
              * Instruction 0xFB: STI
              *
              * Enables interrupts
              */
-            case 0xFB:
-                {
-                    current->getVm86Information()->cpuIf = true;
-                    ++ctx->defaultFrame.eip;
-                    return VMResult::SUCCESSFUL;
-                }
+            case 0xFB: {
+                current->getVm86Information()->cpuIf = true;
+                ++ctx->defaultFrame.eip;
+                return VMResult::SUCCESSFUL;
+            }
 
             /**
              * Instruction 0xEE: OUT dx, al
              *
              * Output byte in AL to I/O port address in DX.
              */
-            case 0xEE:
-                {
-                    IOports::writeByte((uint16_t)ctx->defaultFrame.edx,
-                                       (uint8_t)ctx->defaultFrame.eax);
-                    ++ctx->defaultFrame.eip;
-                    return VMResult::SUCCESSFUL;
-                }
+            case 0xEE: {
+                IOports::writeByte((uint16_t)ctx->defaultFrame.edx, (uint8_t)ctx->defaultFrame.eax);
+                ++ctx->defaultFrame.eip;
+                return VMResult::SUCCESSFUL;
+            }
 
             /**
              * Instruction 0xEF: OUT dx, ax
              *
              * Output word in AX to I/O port address in DX.
              */
-            case 0xEF:
-                {
-                    IOports::writeShort((uint16_t)ctx->defaultFrame.edx,
-                                        (uint16_t)ctx->defaultFrame.eax);
-                    ++ctx->defaultFrame.eip;
-                    return VMResult::SUCCESSFUL;
-                }
+            case 0xEF: {
+                IOports::writeShort((uint16_t)ctx->defaultFrame.edx,
+                                    (uint16_t)ctx->defaultFrame.eax);
+                ++ctx->defaultFrame.eip;
+                return VMResult::SUCCESSFUL;
+            }
 
             /**
              * Instruction 0xEC: IN al, dx
              *
              * Input byte from I/O port in DX into AL.
              */
-            case 0xEC:
-                {
-                    uint8_t res = IOports::readByte((uint16_t)ctx->defaultFrame.edx);
-                    ctx->defaultFrame.eax &= ~(0xFF);
-                    ctx->defaultFrame.eax |= res;
-                    ++ctx->defaultFrame.eip;
-                    return VMResult::SUCCESSFUL;
-                }
+            case 0xEC: {
+                uint8_t res = IOports::readByte((uint16_t)ctx->defaultFrame.edx);
+                ctx->defaultFrame.eax &= ~(0xFF);
+                ctx->defaultFrame.eax |= res;
+                ++ctx->defaultFrame.eip;
+                return VMResult::SUCCESSFUL;
+            }
 
             /**
              * Instruction 0xED: IN al, dx
              *
              * Input word from I/O port in DX into AX.
              */
-            case 0xED:
-                {
-                    uint16_t res = IOports::readShort((uint16_t)ctx->defaultFrame.edx);
-                    ctx->defaultFrame.eax &= ~(0xFFFF);
-                    ctx->defaultFrame.eax |= res;
-                    ++ctx->defaultFrame.eip;
-                    return VMResult::SUCCESSFUL;
-                }
+            case 0xED: {
+                uint16_t res = IOports::readShort((uint16_t)ctx->defaultFrame.edx);
+                ctx->defaultFrame.eax &= ~(0xFFFF);
+                ctx->defaultFrame.eax |= res;
+                ++ctx->defaultFrame.eip;
+                return VMResult::SUCCESSFUL;
+            }
 
             /**
              * Unhandled operation
              */
-            default:
-                {
-                    logWarn("%! unhandled opcode %h at linear location %h",
-                            "vm86",
-                            (uint32_t)ip[0],
-                            ip);
-                    return VMResult::UNHANDLED_OPCODE;
-                }
+            default: {
+                logWarn("%! unhandled opcode %h at linear location %h",
+                        "vm86",
+                        (uint32_t)ip[0],
+                        ip);
+                return VMResult::UNHANDLED_OPCODE;
+            }
         }
     }
 

@@ -40,7 +40,9 @@ public:
     /**
      *
      */
-    virtual void setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor) = 0;
+    virtual void setColor(Graphics::Color::ArgbGradient color,
+                          Graphics::Color::ArgbGradient tltColor)
+        = 0;
 
     /*
      *

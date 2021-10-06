@@ -155,7 +155,8 @@ bool GuiScreen::initialize() {
 
     window = Window::create();
     window->setTitle("CandyTerminal");
-    window->setColor(Graphics::Color::as_argb(100, 0, 0, 0), Graphics::Color::as_argb(255, 255, 255, 255));
+    window->setColor(Graphics::Color::as_argb(100, 0, 0, 0),
+                     Graphics::Color::as_argb(255, 255, 255, 255));
     window->onClose(exitTerminalEntry);
 
     canvas = Canvas::create();
@@ -164,7 +165,8 @@ bool GuiScreen::initialize() {
 
     auto windowBounds = Graphics::Metrics::Rectangle(200, 200, 600, 480);
     window->setBounds(windowBounds);
-    canvas->setBounds(Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
+    canvas->setBounds(
+        Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
 
     canvas->setBufferListener(new CanvasBufferListener_t(this));
     canvas->setBoundsListener(new CanvasResizeBoundsListener_t(this));
@@ -334,8 +336,8 @@ cairo_t* GuiScreen::getGraphics() {
     if ( !bufferInfo.buffer )
         return 0;
 
-    bufferSize.set_width  ( bufferInfo.width);
-    bufferSize.set_height ( bufferInfo.height);
+    bufferSize.set_width(bufferInfo.width);
+    bufferSize.set_height(bufferInfo.height);
 
     // get the surface ready and go:
     if ( !existingSurface || existingSurfaceBuffer != bufferInfo.buffer ) {
@@ -504,8 +506,8 @@ void GuiScreen::setFocused(bool _focused) {
  */
 void GuiScreen::updateVisibleBufferSize() {
     auto canvasBounds   = canvas->getBounds();
-    int       requiredWidth  = canvasBounds.width() / charWidth;
-    int       requiredHeight = canvasBounds.height() / charHeight;
+    int  requiredWidth  = canvasBounds.width() / charWidth;
+    int  requiredHeight = canvasBounds.height() / charHeight;
 
     if ( requiredWidth < charWidth )
         requiredWidth = charWidth;
@@ -516,8 +518,8 @@ void GuiScreen::updateVisibleBufferSize() {
          || (rasterSize.width() < requiredWidth || rasterSize.height() < requiredHeight) ) {
         rasterLock.lock();
 
-        uint8_t*  oldBuffer     = rasterBuffer;
-        auto oldBufferSize = rasterSize;
+        uint8_t* oldBuffer     = rasterBuffer;
+        auto     oldBufferSize = rasterSize;
 
         // Create a new buffer
         rasterBuffer = new uint8_t[requiredWidth * requiredHeight];
@@ -528,7 +530,8 @@ void GuiScreen::updateVisibleBufferSize() {
         if ( oldBuffer ) {
             for ( int y = 0; y < oldBufferSize.height(); y++ )
                 for ( int x = 0; x < oldBufferSize.width(); x++ )
-                    rasterBuffer[y * rasterSize.width() + x] = oldBuffer[y * oldBufferSize.width() + x];
+                    rasterBuffer[y * rasterSize.width() + x]
+                        = oldBuffer[y * oldBufferSize.width() + x];
 
             delete oldBuffer;
         }

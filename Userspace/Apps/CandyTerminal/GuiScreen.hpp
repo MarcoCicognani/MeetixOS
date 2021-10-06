@@ -65,17 +65,17 @@ private:
 
     Graphics::Text::Font* font;
 
-    cairo_surface_t* existingSurface       = 0;
-    Graphics::Color::ArgbGradient*         existingSurfaceBuffer = 0;
-    Graphics::Metrics::Dimension        bufferSize;
-    cairo_t*         existingContext = 0;
+    cairo_surface_t*               existingSurface       = 0;
+    Graphics::Color::ArgbGradient* existingSurfaceBuffer = 0;
+    Graphics::Metrics::Dimension   bufferSize;
+    cairo_t*                       existingContext = 0;
 
     bool paintUpToDate = false;
     bool cursorBlink   = false;
 
     std::list<IO::Keyboard::Info> inputBuffer;
-    bool                      inputBufferEmpty = true;
-    Tasking::Lock             inputBufferLock;
+    bool                          inputBufferEmpty = true;
+    Tasking::Lock                 inputBufferLock;
 
     bool     focused       = false;
     uint64_t lastInputTime = 0;
@@ -83,11 +83,11 @@ private:
     /**
      * Screen buffer
      */
-    uint8_t*      rasterBuffer = 0;
-    Graphics::Metrics::Dimension     rasterSize;
-    Tasking::Lock rasterLock;
-    int           cursorX = 0;
-    int           cursorY = 0;
+    uint8_t*                     rasterBuffer = 0;
+    Graphics::Metrics::Dimension rasterSize;
+    Tasking::Lock                rasterLock;
+    int                          cursorX = 0;
+    int                          cursorY = 0;
 
     int charWidth  = 8;
     int charHeight = 12;
@@ -134,12 +134,12 @@ public:
     bool initialize();
 
     IO::Keyboard::Info readInput();
-    void           clean();
-    void           writeChar(char c);
-    void           moveCursor(int x, int y);
-    int            getCursorX();
-    int            getCursorY();
-    void           backspace();
+    void               clean();
+    void               writeChar(char c);
+    void               moveCursor(int x, int y);
+    int                getCursorX();
+    int                getCursorY();
+    void               backspace();
 
     void bufferInput(const IO::Keyboard::Info& info);
     void repaint();

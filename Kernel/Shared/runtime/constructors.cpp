@@ -36,8 +36,8 @@ typedef void (*Constructor)();
  * their address).
  */
 extern "C" {
-    void* startConstructors;
-    void* endConstructors;
+void* startConstructors;
+void* endConstructors;
 }
 
 /**

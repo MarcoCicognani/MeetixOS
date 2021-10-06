@@ -33,7 +33,10 @@ void GraphicFrontEnd_t::initialize() {
     auto resolution = UI::getResolution();
 
     window = Window::create();
-    window->setBounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 200, resolution.height() / 2 - 300, 400, 600));
+    window->setBounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 200,
+                                                   resolution.height() / 2 - 300,
+                                                   400,
+                                                   600));
     window->setTitle("CandyNote");
     window->setVisible(true);
 

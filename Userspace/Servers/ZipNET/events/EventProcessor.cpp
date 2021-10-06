@@ -682,10 +682,10 @@ void EventProcessor::translateKeyEvent(IO::Keyboard::Info& info) {
  *
  */
 void EventProcessor::processMouseState() {
-    auto       previousPosition       = Cursor::instance().position;
+    auto        previousPosition       = Cursor::instance().position;
     MouseButton previousPressedButtons = Cursor::instance().pressedButtons;
 
-    auto resolution = ZipNET::instance()->videoOutput->getResolution();
+    auto      resolution = ZipNET::instance()->videoOutput->getResolution();
     ZipNET*   instance   = ZipNET::instance();
     Screen_t* screen     = instance->screen;
 
@@ -694,8 +694,8 @@ void EventProcessor::processMouseState() {
         screen->markDirty(Cursor::instance().getArea());
 
         // set new cursor position
-        Cursor::instance().position.set_x( Cursor::instance().nextPosition.x());
-        Cursor::instance().position.set_y( Cursor::instance().nextPosition.y());
+        Cursor::instance().position.set_x(Cursor::instance().nextPosition.x());
+        Cursor::instance().position.set_y(Cursor::instance().nextPosition.y());
 
         // Invalidate new location
         screen->markDirty(Cursor::instance().getArea());

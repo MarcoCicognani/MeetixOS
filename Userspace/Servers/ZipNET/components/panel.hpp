@@ -54,14 +54,15 @@ public:
     /*
      * colored component
      */
-    virtual void setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor) {
+    virtual void setColor(Graphics::Color::ArgbGradient color,
+                          Graphics::Color::ArgbGradient tltColor) {
         shapeColor = color;
     }
 
     /*
      * panel methods
      */
-    void    setBackground(Graphics::Color::ArgbGradient color);
+    void                          setBackground(Graphics::Color::ArgbGradient color);
     Graphics::Color::ArgbGradient getBackground() {
         return getColor();
     }

@@ -42,7 +42,7 @@ private:
     uint32_t offset;
 
     uint32_t activeProcessId;
-    bool  lock = false;
+    bool     lock = false;
     void     normalize();
 
     bool cursorVisible = true;
@@ -56,14 +56,14 @@ public:
     HeadlessScreen();
 
     IO::Keyboard::Info readInput();
-    void           clean();
-    void           backspace();
-    void           writeChar(char c);
-    void           moveCursor(int x, int y);
-    int            getCursorX();
-    int            getCursorY();
-    int            getWidth();
-    int            getHeight();
+    void               clean();
+    void               backspace();
+    void               writeChar(char c);
+    void               moveCursor(int x, int y);
+    int                getCursorX();
+    int                getCursorY();
+    int                getWidth();
+    int                getHeight();
 
     void setScrollAreaScreen();
     void setScrollArea(int start, int end);

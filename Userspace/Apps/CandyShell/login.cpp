@@ -161,8 +161,8 @@ bool Login::researchCredential(const string& username, const string& password) {
     ifstream cred("/usr/crd");
 
     // parse it
-    Utils::PropertyFileParser  parser(cred);
-    map<string, string> properties = parser.properties();
+    Utils::PropertyFileParser parser(cred);
+    map<string, string>       properties = parser.properties();
 
     // find
     for ( pair<string, string> entry : properties ) {

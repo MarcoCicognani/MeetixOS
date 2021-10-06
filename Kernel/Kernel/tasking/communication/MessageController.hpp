@@ -86,8 +86,8 @@ public:
      * if <tx> isn't {MESSAGE_TRANSACTION_NONE} is copied to <out> the first message with <tx> id
      *
      * @param target:		the identifier of the thread that have to receive the message
-     * @param out:			the pointer to the userspace instance of the MessageHeader where
-     * write the last message
+     * @param out:			the pointer to the userspace instance of the MessageHeader
+     * where write the last message
      * @param max:			the size of the <out> buffer
      * @param tx:			the transaction identifier
      */

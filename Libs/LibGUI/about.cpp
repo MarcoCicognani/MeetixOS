@@ -46,8 +46,9 @@ static void close() {
  */
 void aboutMeetiXOS() {
     // get resolution
-    auto rs      = UI::getResolution();
-    auto wBounds = Graphics::Metrics::Rectangle(rs.width() / 2 - 175, rs.height() / 2 - 115, 350, 230);
+    auto rs = UI::getResolution();
+    auto wBounds
+        = Graphics::Metrics::Rectangle(rs.width() / 2 - 175, rs.height() / 2 - 115, 350, 230);
 
     // create and setup window
     about = Window::create();
@@ -61,7 +62,8 @@ void aboutMeetiXOS() {
     panel = Geoshape::create();
     about->addChild(panel);
     panel->setBounds(Graphics::Metrics::Rectangle(0, 0, 350, 230));
-    panel->setPNG("/Apps/OsmosUI/Resources/Icons/OSLogo_hdpi.png", Graphics::Metrics::Point(70, 50));
+    panel->setPNG("/Apps/OsmosUI/Resources/Icons/OSLogo_hdpi.png",
+                  Graphics::Metrics::Point(70, 50));
 
     // create and configure first line of about text
     line1 = Label::create();

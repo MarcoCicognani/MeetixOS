@@ -71,19 +71,20 @@ public:
 
     // constructor with map of configuration, bounds and geoshape base espected
     ButtonMenu(const std::map<std::string, std::string>& configuration,
-               const Graphics::Metrics::Rectangle&                          bounds,
+               const Graphics::Metrics::Rectangle&       bounds,
                Geoshape*                                 where);
 
     // constructor with map of configuration, bounds and window base espected
     ButtonMenu(const std::map<std::string, std::string>& configuration,
-               const Graphics::Metrics::Rectangle&                          bounds,
+               const Graphics::Metrics::Rectangle&       bounds,
                Window*                                   where);
 
     // create menu from file configuration
     void create(const std::string& pathToConfiguration, const Graphics::Metrics::Rectangle& bounds);
 
     // create menu from map configuration
-    void create(const std::map<std::string, std::string>& configuration, const Graphics::Metrics::Rectangle& bounds);
+    void create(const std::map<std::string, std::string>& configuration,
+                const Graphics::Metrics::Rectangle&       bounds);
 
     // set size of menu
     inline void setBounds(const Graphics::Metrics::Rectangle& bounds);

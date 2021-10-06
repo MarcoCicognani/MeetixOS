@@ -103,7 +103,8 @@ int main(int argc, char* argv[]) {
         // configure window
         window = Window::create();
         window->setBounds(Graphics::Metrics::Rectangle(70, 70, 195, 300));
-        window->setColor(Graphics::Color::as_rgb(0, 180, 0), Graphics::Color::as_argb(255, 255, 255, 255));
+        window->setColor(Graphics::Color::as_rgb(0, 180, 0),
+                         Graphics::Color::as_argb(255, 255, 255, 255));
         window->setTitle("Calculator");
         window->setResizable(false);
         window->onClose([] { blocker = false; });
@@ -112,7 +113,8 @@ int main(int argc, char* argv[]) {
         display = Textfield::create();
         display->setTitle("0");
         display->setBounds(Graphics::Metrics::Rectangle(10, 10, 150, 30));
-        display->setColor(Graphics::Color::as_argb(120, 0, 0, 0), Graphics::Color::as_rgb(255, 255, 255));
+        display->setColor(Graphics::Color::as_argb(120, 0, 0, 0),
+                          Graphics::Color::as_rgb(255, 255, 255));
         window->addChild(display);
 
         // add to list buttons

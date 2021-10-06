@@ -65,10 +65,10 @@ public:
      */
     Layouted() = default;
     Layouted(const Graphics::Metrics::Rectangle& text_bounds,
-                 cairo_glyph_t*                      cairo_glyph,
-                 i32                                 glyph_count,
-                 cairo_text_cluster_t*               cairo_text_cluster,
-                 i32                                 cluster_count)
+             cairo_glyph_t*                      cairo_glyph,
+             i32                                 glyph_count,
+             cairo_text_cluster_t*               cairo_text_cluster,
+             i32                                 cluster_count)
         : m_text_bounds{ text_bounds }, m_cairo_glyph{ cairo_glyph }, m_glyph_count{ glyph_count },
           m_cairo_text_cluster{ cairo_text_cluster }, m_cluster_count{ cluster_count } {
     }
@@ -97,8 +97,8 @@ public:
                 Font*                        font,
                 i32                          size,
                 Graphics::Metrics::Rectangle bounds,
-                const Alignment&         alignment,
-                Layouted*                layout,
+                const Alignment&             alignment,
+                Layouted*                    layout,
                 bool                         break_on_overflow = true);
 
     /**
@@ -112,12 +112,12 @@ private:
      */
     Layouter() = default;
 
-    void right_align(Layouted*                 layouted_text,
+    void right_align(Layouted*                     layouted_text,
                      usize                         line,
                      usize                         width,
                      Graphics::Metrics::Rectangle& bounds);
 
-    void center_align(Layouted*                 layouted_text,
+    void center_align(Layouted*                     layouted_text,
                       usize                         line,
                       usize                         width,
                       Graphics::Metrics::Rectangle& bounds);

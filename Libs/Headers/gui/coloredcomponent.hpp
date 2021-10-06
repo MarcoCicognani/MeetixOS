@@ -39,7 +39,8 @@ protected:
     }
 
 public:
-    virtual bool setColor(Graphics::Color::ArgbGradient shapeColor, Graphics::Color::ArgbGradient titleColor);
+    virtual bool setColor(Graphics::Color::ArgbGradient shapeColor,
+                          Graphics::Color::ArgbGradient titleColor);
 };
 
 #endif

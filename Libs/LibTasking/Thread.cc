@@ -16,7 +16,7 @@
 namespace Tasking {
 
 Thread::~Thread() {
-    if (is_running())
+    if ( is_running() )
         s_kill(m_thread_id);
 }
 

@@ -532,14 +532,13 @@ void CandyTerminal::processTermSequence(StreamControlStatus* status) {
             break;
 
             // Screen info
-        case 'i':
-            {
-                std::stringstream response;
-                response << (char)SHELLKEY_ESC << "{" << screen->getWidth() << ";"
-                         << screen->getHeight() << "i";
-                writeStringToShell(response.str().c_str());
-                break;
-            }
+        case 'i': {
+            std::stringstream response;
+            response << (char)SHELLKEY_ESC << "{" << screen->getWidth() << ";"
+                     << screen->getHeight() << "i";
+            writeStringToShell(response.str().c_str());
+            break;
+        }
 
             // Put char
         case 'p':

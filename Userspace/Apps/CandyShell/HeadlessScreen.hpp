@@ -54,8 +54,11 @@ public:
 
     void backspace();
     void cleanLine(int lineLength);
-    void write(std::string message, Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255), bool visible = true);
-    void writeChar(char c, Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255));
+    void write(std::string                   message,
+               Graphics::Color::ArgbGradient color   = Graphics::Color::as_rgb(255, 255, 255),
+               bool                          visible = true);
+    void writeChar(char                          c,
+                   Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255));
     void updateCursor();
 
     IO::Keyboard::Info readInput(bool* cancelCondition);

@@ -117,15 +117,14 @@ public:
             case STRING:
                 return mString == rhs.mString;
 
-            case OBJECT:
-                {
-                    // this could be optimized to only push ref_array once...
-                    this->push();
-                    rhs.push();
-                    bool equal = duk_equals(mContext, -1, -2) ? true : false;
-                    duk_pop_2(mContext);
-                    return equal;
-                }
+            case OBJECT: {
+                // this could be optimized to only push ref_array once...
+                this->push();
+                rhs.push();
+                bool equal = duk_equals(mContext, -1, -2) ? true : false;
+                duk_pop_2(mContext);
+                return equal;
+            }
 
             case POINTER:
                 return mPOD.pointer == rhs.mPOD.pointer;
@@ -162,13 +161,12 @@ public:
                 value.mPOD.number = duk_require_number(ctx, idx);
                 break;
 
-            case STRING:
-                {
-                    duk_size_t  len;
-                    const char* data = duk_get_lstring(ctx, idx, &len);
-                    value.mString.assign(data, len);
-                    break;
-                }
+            case STRING: {
+                duk_size_t  len;
+                const char* data = duk_get_lstring(ctx, idx, &len);
+                value.mString.assign(data, len);
+                break;
+            }
 
             case OBJECT:
                 value.mPOD.ref_array_idx = stash_ref(ctx, idx);
@@ -209,58 +207,54 @@ public:
             case NULLREF:
                 break;
 
-            case BOOLEAN:
-                {
-                    if ( data_len < 1 )
-                        throw DukException() << "Malformed boolean data";
+            case BOOLEAN: {
+                if ( data_len < 1 )
+                    throw DukException() << "Malformed boolean data";
 
-                    v.mPOD.boolean = data[1] == 1 ? true : false;
-                    break;
+                v.mPOD.boolean = data[1] == 1 ? true : false;
+                break;
+            }
+
+            case NUMBER: {
+                if ( data_len < sizeof(double) )
+                    throw DukException() << "Malformed number data";
+
+                v.mPOD.number = *((double*)data_ptr);
+                break;
+            }
+
+            case STRING: {
+                if ( data_len < sizeof(uint32_t) )
+                    throw DukException() << "Malformed string data (no length)";
+                uint32_t str_len = *((uint32_t*)data_ptr);
+
+                if ( data_len < sizeof(uint32_t) + str_len )
+                    throw DukException() << "Malformed string data (appears truncated)";
+
+                const char* str_data = (data_ptr + sizeof(uint32_t));
+                v.mString.assign(str_data, str_len);
+                break;
+            }
+
+            case OBJECT: {
+                if ( data_len < sizeof(uint32_t) )
+                    throw DukException() << "Malformed object JSON data (no length)";
+                uint32_t json_len = *((uint32_t*)data_ptr);
+
+                if ( data_len < sizeof(uint32_t) + json_len )
+                    throw DukException() << "Malformed object JSON data (appears truncated)";
+
+                const char* json_data = (data_ptr + sizeof(uint32_t));
+                duk_push_lstring(ctx, json_data, json_len);
+                int rc = duk_safe_call(ctx, &json_decode_safe, 1, 1);
+                if ( rc ) {
+                    throw DukErrorException(ctx, rc) << "Could not decode JSON";
+                } else {
+                    v.mPOD.ref_array_idx = stash_ref(ctx, -1);
+                    duk_pop(ctx);
                 }
-
-            case NUMBER:
-                {
-                    if ( data_len < sizeof(double) )
-                        throw DukException() << "Malformed number data";
-
-                    v.mPOD.number = *((double*)data_ptr);
-                    break;
-                }
-
-            case STRING:
-                {
-                    if ( data_len < sizeof(uint32_t) )
-                        throw DukException() << "Malformed string data (no length)";
-                    uint32_t str_len = *((uint32_t*)data_ptr);
-
-                    if ( data_len < sizeof(uint32_t) + str_len )
-                        throw DukException() << "Malformed string data (appears truncated)";
-
-                    const char* str_data = (data_ptr + sizeof(uint32_t));
-                    v.mString.assign(str_data, str_len);
-                    break;
-                }
-
-            case OBJECT:
-                {
-                    if ( data_len < sizeof(uint32_t) )
-                        throw DukException() << "Malformed object JSON data (no length)";
-                    uint32_t json_len = *((uint32_t*)data_ptr);
-
-                    if ( data_len < sizeof(uint32_t) + json_len )
-                        throw DukException() << "Malformed object JSON data (appears truncated)";
-
-                    const char* json_data = (data_ptr + sizeof(uint32_t));
-                    duk_push_lstring(ctx, json_data, json_len);
-                    int rc = duk_safe_call(ctx, &json_decode_safe, 1, 1);
-                    if ( rc ) {
-                        throw DukErrorException(ctx, rc) << "Could not decode JSON";
-                    } else {
-                        v.mPOD.ref_array_idx = stash_ref(ctx, -1);
-                        duk_pop(ctx);
-                    }
-                    break;
-                }
+                break;
+            }
 
             default:
                 throw DukException() << "not implemented";
@@ -423,60 +417,56 @@ public:
             case NULLREF:
                 break;
 
-            case BOOLEAN:
-                {
-                    buff.push_back(mPOD.boolean ? 1 : 0);
-                    break;
-                }
+            case BOOLEAN: {
+                buff.push_back(mPOD.boolean ? 1 : 0);
+                break;
+            }
 
-            case NUMBER:
-                {
-                    buff.resize(buff.size() + sizeof(double));
-                    *((double*)(buff.data() + sizeof(Type))) = mPOD.number;
-                    break;
-                }
+            case NUMBER: {
+                buff.resize(buff.size() + sizeof(double));
+                *((double*)(buff.data() + sizeof(Type))) = mPOD.number;
+                break;
+            }
 
-            case STRING:
-                {
-                    if ( mString.length() > static_cast<size_t>(UINT32_MAX) )
-                        throw DukException() << "String length larger than uint32_t max";
+            case STRING: {
+                if ( mString.length() > static_cast<size_t>(UINT32_MAX) )
+                    throw DukException() << "String length larger than uint32_t max";
 
-                    uint32_t len = mString.length();
-                    buff.resize(buff.size() + sizeof(uint32_t) + len);
+                uint32_t len = mString.length();
+                buff.resize(buff.size() + sizeof(uint32_t) + len);
 
-                    uint32_t* len_ptr = (uint32_t*)(buff.data() + sizeof(Type));
-                    *len_ptr          = len;
+                uint32_t* len_ptr = (uint32_t*)(buff.data() + sizeof(Type));
+                *len_ptr          = len;
 
-                    char* out_ptr = (char*)(buff.data() + sizeof(Type) + sizeof(uint32_t));
-                    strncpy(out_ptr, mString.data(), len); // note: this will NOT be null-terminated
-                    break;
-                }
+                char* out_ptr = (char*)(buff.data() + sizeof(Type) + sizeof(uint32_t));
+                strncpy(out_ptr, mString.data(), len); // note: this will NOT be null-terminated
+                break;
+            }
 
-            case OBJECT:
-                {
-                    push();
-                    if ( duk_is_function(mContext, -1) ) {
-                        duk_pop(mContext);
-                        throw DukException() << "Functions cannot be serialized";
-                        // well, technically they can...see the comments at the start of this method
-                    }
-
-                    std::string json = duk_json_encode(mContext, -1);
+            case OBJECT: {
+                push();
+                if ( duk_is_function(mContext, -1) ) {
                     duk_pop(mContext);
-
-                    if ( json.length() > static_cast<size_t>(UINT32_MAX) )
-                        throw DukException() << "JSON length larger than uint32_t max";
-
-                    uint32_t len = json.length();
-                    buff.resize(buff.size() + sizeof(uint32_t) + len);
-
-                    uint32_t* len_ptr = (uint32_t*)(buff.data() + sizeof(Type));
-                    *len_ptr          = len;
-
-                    char* out_ptr = (char*)(buff.data() + sizeof(Type) + sizeof(uint32_t));
-                    strncpy(out_ptr, json.data(), len); // note: this will NOT be null-terminated
-                    break;
+                    throw DukException() << "Functions cannot be serialized";
+                    // well, technically they can...see the comments at the start of this method
                 }
+
+                std::string json = duk_json_encode(mContext, -1);
+                duk_pop(mContext);
+
+                if ( json.length() > static_cast<size_t>(UINT32_MAX) )
+                    throw DukException() << "JSON length larger than uint32_t max";
+
+                uint32_t len = json.length();
+                buff.resize(buff.size() + sizeof(uint32_t) + len);
+
+                uint32_t* len_ptr = (uint32_t*)(buff.data() + sizeof(Type));
+                *len_ptr          = len;
+
+                char* out_ptr = (char*)(buff.data() + sizeof(Type) + sizeof(uint32_t));
+                strncpy(out_ptr, json.data(), len); // note: this will NOT be null-terminated
+                break;
+            }
 
             default:
                 throw DukException() << "Type not implemented for serialization.";

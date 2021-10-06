@@ -67,8 +67,8 @@ void Canvas_t::handleBoundChange(Graphics::Metrics::Rectangle oldBounds) {
  */
 void Canvas_t::checkBuffer() {
     // calculate how many pages we need for the shared area
-    auto bounds = getBounds();
-    uint32_t  requiredSize
+    auto     bounds = getBounds();
+    uint32_t requiredSize
         = sizeof(UiCanvasSharedMemoryHeader)
         + cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, ALIGN_UP(bounds.width()))
               * ALIGN_UP(bounds.height());

@@ -69,7 +69,7 @@ private:
 
     ScrollHandler_t* scrollHandler;
 
-    cairo_t*  cr;
+    cairo_t*                     cr;
     Graphics::Metrics::Rectangle bounds;
     Graphics::Metrics::Rectangle knob;
 

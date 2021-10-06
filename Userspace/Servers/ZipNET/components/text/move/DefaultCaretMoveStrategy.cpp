@@ -39,9 +39,9 @@ DefaultCaretMoveStrategy_t* DefaultCaretMoveStrategy_t::getInstance() {
 /**
  *
  */
-void DefaultCaretMoveStrategy_t::moveCaret(TextComponent_t* component,
-                                           CaretDirection_t direction,
-                                           IO::Keyboard::Info&  info) {
+void DefaultCaretMoveStrategy_t::moveCaret(TextComponent_t*    component,
+                                           CaretDirection_t    direction,
+                                           IO::Keyboard::Info& info) {
     int cursor            = component->getCursor();
     int newCursorPosition = cursor;
     int selectedLength    = component->getSelectedRange().len();
@@ -52,7 +52,7 @@ void DefaultCaretMoveStrategy_t::moveCaret(TextComponent_t* component,
         else
             newCursorPosition
                 = info.m_alt ? calculateSkip(component->getText(), cursor, CaretDirection_t::RIGHT)
-                           : (cursor + 1);
+                             : (cursor + 1);
     }
 
     else if ( direction == CaretDirection_t::LEFT ) {
@@ -61,7 +61,7 @@ void DefaultCaretMoveStrategy_t::moveCaret(TextComponent_t* component,
         else
             newCursorPosition
                 = info.m_alt ? calculateSkip(component->getText(), cursor, CaretDirection_t::LEFT)
-                           : (cursor - 1);
+                             : (cursor - 1);
     }
 
     component->setCursor(newCursorPosition);

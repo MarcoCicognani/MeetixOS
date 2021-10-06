@@ -172,7 +172,7 @@ void Window_t::paint() {
             cairo_set_source_rgba(cr, 0, 200, 0, 255);
             Graphics::Cairo::rounded_rectangle(cr,
                                                maximizeBounds.x() - 3,
-                                               maximizeBounds.y ()- 3,
+                                               maximizeBounds.y() - 3,
                                                maximizeBounds.width() + 6,
                                                maximizeBounds.height() + 6,
                                                radius);
@@ -515,13 +515,15 @@ bool Window_t::handle(Event_t& event) {
                         resizeMode = RESIZE_MODE_LEFT;
                     }
 
-                    else if ( (pressPoint.y() > currentBounds.height() - shadowSize - borderWidth / 2)
+                    else if ( (pressPoint.y()
+                               > currentBounds.height() - shadowSize - borderWidth / 2)
                               && (pressPoint.y()
                                   < currentBounds.height() - shadowSize + borderWidth / 2) ) {
                         resizeMode = RESIZE_MODE_BOTTOM;
                     }
 
-                    else if ( (pressPoint.x() > currentBounds.width() - shadowSize - borderWidth / 2)
+                    else if ( (pressPoint.x()
+                               > currentBounds.width() - shadowSize - borderWidth / 2)
                               && (pressPoint.x()
                                   < currentBounds.width() - shadowSize + borderWidth / 2) ) {
                         resizeMode = RESIZE_MODE_RIGHT;
@@ -549,17 +551,15 @@ bool Window_t::handle(Event_t& event) {
 
             else if ( maximizeBounds.contains(mouseEvent->position) ) {
                 if ( !isFullScreen ) {
-                    isFullScreen         = true;
-                    initialBounds        = getBounds();
+                    isFullScreen    = true;
+                    initialBounds   = getBounds();
                     auto resolution = ZipNET::instance()->videoOutput->getResolution();
 
                     Graphics::Metrics::Rectangle fullScreenBounds;
                     if ( style == "GNOME" )
-                        fullScreenBounds
-                            = { 0, 30, resolution.width(), resolution.height() - 94 };
+                        fullScreenBounds = { 0, 30, resolution.width(), resolution.height() - 94 };
                     else if ( style == "KDE" )
-                        fullScreenBounds
-                            = { 0, 0, resolution.width(), resolution.height() - 30 };
+                        fullScreenBounds = { 0, 0, resolution.width(), resolution.height() - 30 };
 
                     this->setBounds(fullScreenBounds);
                 }

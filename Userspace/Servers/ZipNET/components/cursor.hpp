@@ -42,9 +42,9 @@
  *
  */
 struct CursorConfiguration {
-    cairo_surface_t* surface;
-    Graphics::Metrics::Point            hitpoint;
-    Graphics::Metrics::Dimension        size;
+    cairo_surface_t*             surface;
+    Graphics::Metrics::Point     hitpoint;
+    Graphics::Metrics::Dimension size;
 };
 
 /**
@@ -54,10 +54,10 @@ class Cursor {
 public:
     static Cursor& instance();
 
-    Graphics::Metrics::Point       position{ 0, 0 };
-    Graphics::Metrics::Point       nextPosition{ 0, 0 };
-    MouseButton pressedButtons{ MOUSE_BUTTON_NONE };
-    MouseButton nextPressedButtons{ MOUSE_BUTTON_NONE };
+    Graphics::Metrics::Point position{ 0, 0 };
+    Graphics::Metrics::Point nextPosition{ 0, 0 };
+    MouseButton              pressedButtons{ MOUSE_BUTTON_NONE };
+    MouseButton              nextPressedButtons{ MOUSE_BUTTON_NONE };
 
     Component_t* draggedComponent{ nullptr };
     Component_t* hoveredComponent{ nullptr };

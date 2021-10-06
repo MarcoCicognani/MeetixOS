@@ -86,36 +86,32 @@ Thread* InterruptExceptionHandler::handle(Thread* currentThread) {
     bool resolved = false;
     switch ( currentThread->cpuState->intr ) {
         // Divide error
-        case 0x00:
-            {
-                currentThread = handleDivideError(currentThread);
-                resolved      = true;
-                break;
-            }
+        case 0x00: {
+            currentThread = handleDivideError(currentThread);
+            resolved      = true;
+            break;
+        }
 
         // Page fault
-        case 0x0E:
-            {
-                currentThread = handlePageFault(currentThread);
-                resolved      = true;
-                break;
-            }
+        case 0x0E: {
+            currentThread = handlePageFault(currentThread);
+            resolved      = true;
+            break;
+        }
 
         // General protection fault
-        case 0x0D:
-            {
-                currentThread = handleGeneralProtectionFault(currentThread);
-                resolved      = true;
-                break;
-            }
+        case 0x0D: {
+            currentThread = handleGeneralProtectionFault(currentThread);
+            resolved      = true;
+            break;
+        }
 
         // Invalid operation code
-        case 0x06:
-            {
-                currentThread = handleInvalidOperationCode(currentThread);
-                resolved      = true;
-                break;
-            }
+        case 0x06: {
+            currentThread = handleInvalidOperationCode(currentThread);
+            resolved      = true;
+            break;
+        }
     }
 
     // if exception is resolved continue the execution

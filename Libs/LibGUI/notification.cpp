@@ -33,16 +33,20 @@ void Notification::send(const std::string& title, const std::string& message) {
  * redirect
  */
 void Notification::send(const std::string& title, const std::string& message, uint32_t sleep) {
-    send(title, message, sleep, Graphics::Color::as_rgb(255, 255, 255), MessageAnimation_t::DARKENING);
+    send(title,
+         message,
+         sleep,
+         Graphics::Color::as_rgb(255, 255, 255),
+         MessageAnimation_t::DARKENING);
 }
 
 /*
  * redirect
  */
-void Notification::send(const std::string& title,
-                        const std::string& message,
-                        uint32_t           sleep,
-                        Graphics::Color::ArgbGradient            color) {
+void Notification::send(const std::string&            title,
+                        const std::string&            message,
+                        uint32_t                      sleep,
+                        Graphics::Color::ArgbGradient color) {
     send(title, message, sleep, color, MessageAnimation_t::DARKENING);
 }
 
@@ -51,11 +55,11 @@ void Notification::send(const std::string& title,
  * @param message: string to show on popup
  * @param sleep: seconds of stay of message on screen popup
  */
-void Notification::send(const std::string& title,
-                        const std::string& message,
-                        uint32_t           sleep,
-                        Graphics::Color::ArgbGradient            color,
-                        MessageAnimation_t animation) {
+void Notification::send(const std::string&            title,
+                        const std::string&            message,
+                        uint32_t                      sleep,
+                        Graphics::Color::ArgbGradient color,
+                        MessageAnimation_t            animation) {
     // if ui is uninitialized instant return
     if ( !UiInitialized )
         return;

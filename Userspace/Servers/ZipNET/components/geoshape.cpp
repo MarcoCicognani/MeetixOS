@@ -58,7 +58,8 @@ void Geoshape_t::layout() {
 
     label.setBounds(Graphics::Metrics::Rectangle(6, 3, layoutBounds.width() - 30, 25));
 
-    panel.setBounds(Graphics::Metrics::Rectangle(0, 0, layoutBounds.width(), layoutBounds.height()));
+    panel.setBounds(
+        Graphics::Metrics::Rectangle(0, 0, layoutBounds.width(), layoutBounds.height()));
     panel.setBackground(Graphics::Color::as_argb(0, 0, 0, 0));
 }
 
@@ -136,16 +137,17 @@ void Geoshape_t::setPNG(std::string path, Graphics::Metrics::Point positon) {
 /**
  *
  */
-void Geoshape_t::PngAnimation(std::string path,
-                              Graphics::Metrics::Point       PNGstartAnimation,
-                              Graphics::Metrics::Point       PNGendAnimation,
-                              size_t      sleep) {
+void Geoshape_t::PngAnimation(std::string              path,
+                              Graphics::Metrics::Point PNGstartAnimation,
+                              Graphics::Metrics::Point PNGendAnimation,
+                              size_t                   sleep) {
 }
 
 /**
  *
  */
-void Geoshape_t::setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor) {
+void Geoshape_t::setColor(Graphics::Color::ArgbGradient color,
+                          Graphics::Color::ArgbGradient tltColor) {
     shapeColor = color;
 
     label.setFontColor(tltColor);

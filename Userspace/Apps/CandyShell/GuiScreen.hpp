@@ -52,13 +52,13 @@ private:
     Window* window;
     Canvas* canvas;
 
-    cairo_surface_t* existingSurface       = 0;
-    Graphics::Color::ArgbGradient*         existingSurfaceBuffer = 0;
-    Graphics::Metrics::Dimension        bufferSize;
-    cairo_t*         existingContext;
+    cairo_surface_t*               existingSurface       = 0;
+    Graphics::Color::ArgbGradient* existingSurfaceBuffer = 0;
+    Graphics::Metrics::Dimension   bufferSize;
+    cairo_t*                       existingContext;
 
     Graphics::Text::Layouted* viewModel;
-    Graphics::Text::Font*       font;
+    Graphics::Text::Font*     font;
 
     Graphics::Color::ArgbGradient backgroundColor = Graphics::Color::as_argb(0, 0, 0, 0);
     Graphics::Color::ArgbGradient fontColor       = Graphics::Color::as_rgb(255, 255, 255);
@@ -85,8 +85,11 @@ public:
 
     void backspace();
     void cleanLine(int lineLenght);
-    void write(string message, Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255), bool visible = true);
-    void writeChar(char c, Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255));
+    void write(string                        message,
+               Graphics::Color::ArgbGradient color   = Graphics::Color::as_rgb(255, 255, 255),
+               bool                          visible = true);
+    void writeChar(char                          c,
+                   Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255));
     void updateCursor();
 
     IO::Keyboard::Info readInput(bool* cancelCondition);

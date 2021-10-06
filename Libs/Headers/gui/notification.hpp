@@ -75,8 +75,10 @@ public:
      */
     static void send(const std::string& title, const std::string& message);
     static void send(const std::string& title, const std::string& message, uint32_t sleep);
-    static void
-    send(const std::string& title, const std::string& message, uint32_t sleep, Graphics::Color::ArgbGradient color);
+    static void send(const std::string&            title,
+                     const std::string&            message,
+                     uint32_t                      sleep,
+                     Graphics::Color::ArgbGradient color);
 
     /*
      * send message to notification thread of UI
@@ -85,11 +87,11 @@ public:
      * @param sleep: time that the message remain on screen
      * @prama color: color of message showed
      */
-    static void send(const std::string& title,
-                     const std::string& message,
-                     uint32_t           sleep,
-                     Graphics::Color::ArgbGradient            color,
-                     MessageAnimation_t animation);
+    static void send(const std::string&            title,
+                     const std::string&            message,
+                     uint32_t                      sleep,
+                     Graphics::Color::ArgbGradient color,
+                     MessageAnimation_t            animation);
 };
 
 #endif

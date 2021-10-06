@@ -56,7 +56,7 @@ public:
      */
     Graphics::Metrics::Rectangle grabInvalid() {
         Graphics::Metrics::Rectangle ret = invalid;
-        invalid       = Graphics::Metrics::Rectangle();
+        invalid                          = Graphics::Metrics::Rectangle();
         return ret;
     }
 };

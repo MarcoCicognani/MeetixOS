@@ -75,8 +75,8 @@ void Label_t::update() {
 
     // Check if the component was ever layouted, otherwise set to a high value
     if ( !thisBounds.width() && !thisBounds.height() ) {
-        thisBounds.set_width( 9999);
-        thisBounds.set_height( 9999);
+        thisBounds.set_width(9999);
+        thisBounds.set_height(9999);
     }
 
     // get text bounds

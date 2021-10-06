@@ -54,8 +54,8 @@ static void threadRoutine(void* arg) {
  * routine executed by the posix threads
  */
 static void* pthreadRoutine(void* arg) {
-    int        count = *((int*)arg);
-    //pthread_t* self  = pthread_self();
+    int count = *((int*)arg);
+    // pthread_t* self  = pthread_self();
     if ( _verbose )
         println("Hi from the pthread %i, count start from %i", s_get_tid(), count);
     while ( live ) {
@@ -103,32 +103,32 @@ int testThread(uint8_t verbose) {
  * test the implementation of the Posix thread on the system
  */
 int testPosixThread(uint8_t verbose) {
-//    _verbose = verbose;
-//    pthread_t pthreads[threadCount];
-//    for ( int i = 0; i < threadCount; i++ ) {
-//        pthread_create(&pthreads[i], NULL, pthreadRoutine, &i);
-//        if ( _verbose )
-//            println("Created pthread number %i with tid %i", i, pthreads[i].m_thread_id);
-//    }
-//
-//    println("Created %i threads, waiting for 5 seconds until to s_kill all", threadCount);
-//    sleep(5);
-//
-//    // after this instruction all threads when become on the while conditions breaks
-//    live = false;
-//
-//    // wait for last termination
-//    for ( int i = 0; i < threadCount; i++ )
-//        pthread_join(&pthreads[i], NULL);
-//
-//    // show returns values
-//    if ( _verbose )
-//        for ( int i = 0; i < threadCount; i++ )
-//            if ( pthreads[i].m_exit_value )
-//                println("Pthread number %i, with tid %i have the return value %i",
-//                        i,
-//                        pthreads[i].m_thread_id,
-//                        *((int*)pthreads[i].m_exit_value));
+    //    _verbose = verbose;
+    //    pthread_t pthreads[threadCount];
+    //    for ( int i = 0; i < threadCount; i++ ) {
+    //        pthread_create(&pthreads[i], NULL, pthreadRoutine, &i);
+    //        if ( _verbose )
+    //            println("Created pthread number %i with tid %i", i, pthreads[i].m_thread_id);
+    //    }
+    //
+    //    println("Created %i threads, waiting for 5 seconds until to s_kill all", threadCount);
+    //    sleep(5);
+    //
+    //    // after this instruction all threads when become on the while conditions breaks
+    //    live = false;
+    //
+    //    // wait for last termination
+    //    for ( int i = 0; i < threadCount; i++ )
+    //        pthread_join(&pthreads[i], NULL);
+    //
+    //    // show returns values
+    //    if ( _verbose )
+    //        for ( int i = 0; i < threadCount; i++ )
+    //            if ( pthreads[i].m_exit_value )
+    //                println("Pthread number %i, with tid %i have the return value %i",
+    //                        i,
+    //                        pthreads[i].m_thread_id,
+    //                        *((int*)pthreads[i].m_exit_value));
 
     println("Bye bye");
 }

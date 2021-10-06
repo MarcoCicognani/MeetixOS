@@ -46,7 +46,7 @@ public:
     EventProcessor();
 
     deque<IO::Keyboard::Info> keyInfoBuffer;
-    void                  bufferKeyEvent(IO::Keyboard::Info keyInfo);
+    void                      bufferKeyEvent(IO::Keyboard::Info keyInfo);
 
     deque<void*> commandMessageBuffer;
     void         bufferCommandMessage(void* commandMessage);

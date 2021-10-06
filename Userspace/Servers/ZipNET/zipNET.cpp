@@ -227,7 +227,7 @@ void ZipNET::loadCursor() {
 Component_t* ZipNET::dispatchUpwards(Component_t* component, Event_t& event) {
     // store when dispatching to parents
     Graphics::Metrics::Point initialPosition;
-    auto  locatable = dynamic_cast<Locatable_t*>(&event);
+    auto                     locatable = dynamic_cast<Locatable_t*>(&event);
     if ( locatable )
         initialPosition = locatable->position;
 
@@ -257,8 +257,8 @@ bool ZipNET::dispatch(Component_t* component, Event_t& event) {
         Locatable_t* locatable = dynamic_cast<Locatable_t*>(&event);
         if ( locatable != 0 ) {
             auto locationOnScreen = component->getLocationOnScreen();
-            locatable->position.set_x(locatable->position.x()- locationOnScreen.x());
-            locatable->position.set_y(locatable->position.y()- locationOnScreen.y());
+            locatable->position.set_x(locatable->position.x() - locationOnScreen.x());
+            locatable->position.set_y(locatable->position.y() - locationOnScreen.y());
         }
 
         handled = component->handle(event);

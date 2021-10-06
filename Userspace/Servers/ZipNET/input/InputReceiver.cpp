@@ -70,7 +70,7 @@ void InputReceiver::startReceiveMouseEvents() {
         if ( Cursor::instance().nextPosition.x() < 0 )
             Cursor::instance().nextPosition.set_x(0);
         if ( Cursor::instance().nextPosition.x() > resolution.width() - 2 )
-            Cursor::instance().nextPosition.set_x( resolution.width() - 2);
+            Cursor::instance().nextPosition.set_x(resolution.width() - 2);
         if ( Cursor::instance().nextPosition.y() < 0 )
             Cursor::instance().nextPosition.set_y(0);
         if ( Cursor::instance().nextPosition.y() > resolution.height() - 2 )

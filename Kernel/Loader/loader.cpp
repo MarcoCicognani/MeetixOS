@@ -42,7 +42,7 @@
  * Linker symbols defined in the linker script
  */
 extern "C" {
-    void* endAddress;
+void* endAddress;
 }
 
 /**
