@@ -39,6 +39,13 @@ int main(int argc, const char* argv[]) {
         return EXIT_FAILURE;
     }
 
+    /* send the notification */
     Notification::send(argv[1], argv[2]);
-    return EXIT_SUCCESS;
+
+    /* close the communication with the window-server */
+    auto close_status = UI::close();
+    if ( close_status != UI_CLOSE_STATUS_SUCCESSFUL )
+        return EXIT_FAILURE;
+    else
+        return EXIT_SUCCESS;
 }
