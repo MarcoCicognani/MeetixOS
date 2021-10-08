@@ -16,6 +16,7 @@
 #include <Graphics/Text/FreeType.hh>
 #include <map>
 #include <string>
+#include <Tasking/Lock.hh>
 
 namespace Graphics::Text {
 
@@ -64,6 +65,7 @@ private:
     void fini_freetype();
 
 private:
+    Tasking::Lock                m_lock{};
     FT_Library                   m_freetype_library{};
     std::map<std::string, Font*> m_font_registry{};
 };

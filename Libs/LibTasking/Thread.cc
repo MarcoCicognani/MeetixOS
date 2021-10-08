@@ -20,12 +20,12 @@ Thread::~Thread() {
         s_kill(m_thread_id);
 }
 
-void Thread::execute(Thread* thread) {
+void Thread::execute_run(Thread* thread) {
     thread->run();
 }
 
 Tid Thread::start() {
-    return (m_thread_id = s_create_thread_d(reinterpret_cast<void*>(execute), this));
+    return (m_thread_id = s_create_thread_d(reinterpret_cast<void*>(execute_run), this));
 }
 
 } /* namespace Tasking */

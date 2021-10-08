@@ -11,6 +11,7 @@
  */
 
 #include <Graphics/Text/FontManager.hh>
+#include <Tasking/LockGuard.hh>
 #include <Utils/Utils.hh>
 
 namespace Graphics::Text {
@@ -23,9 +24,11 @@ FontManager& FontManager::instance() {
 }
 
 bool FontManager::create_font(const std::string& name, u8* source, usize len, Font::Style style) {
+    Tasking::LockGuard guard{ m_lock };
+
     /* check if font already exists */
     if ( m_font_registry.count(name) > 0 ) {
-        Utils::log("tried to create font '" + name + "' that already exists");
+        Utils::log("Tried to create font '" + name + "' that already exists");
         return false;
     }
 
@@ -35,12 +38,14 @@ bool FontManager::create_font(const std::string& name, u8* source, usize len, Fo
         delete new_font;
 
     /* register the font into the library */
-    m_font_registry.insert(std::make_pair(name, new_font));
-    Utils::log("created font '" + name + "'");
+    m_font_registry[name] = new_font;
+    Utils::log("Created font '" + name + "'");
     return true;
 }
 
 Font* FontManager::font_by_name(const std::string& name) {
+    Tasking::LockGuard guard{ m_lock };
+
     auto it = m_font_registry.find(name);
     if ( it != m_font_registry.end() )
         return it->second;
@@ -49,6 +54,8 @@ Font* FontManager::font_by_name(const std::string& name) {
 }
 
 void FontManager::destroy_font(Font* font) {
+    Tasking::LockGuard guard{ m_lock };
+
     m_font_registry.erase(font->name());
     delete font;
 }

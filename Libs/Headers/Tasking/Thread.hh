@@ -48,7 +48,7 @@ protected:
     Tid m_thread_id{ -1 };
 
 private:
-    static void execute(Thread* thread);
+    static void execute_run(Thread* thread);
 };
 
 } /* namespace Tasking */
