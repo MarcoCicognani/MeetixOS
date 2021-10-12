@@ -19,7 +19,7 @@
 #include <Api/Kernel.h>
 #include <Api/Ramdisk.h>
 #include <Api/Syscalls/CallsData.h>
-#include <Api/system.h>
+#include <Api/System.h>
 #include <Api/Types.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -1029,5 +1029,10 @@ usize s_get_pci_device_count();
  * @return whether the operation success
  */
 bool s_get_pci_device(usize position, PciDeviceHeader* header);
+
+/**
+ * @brief Fills the given <DateTime> with the current date-time
+ */
+bool s_get_date_time(DateTime* date_time);
 
 __END_C

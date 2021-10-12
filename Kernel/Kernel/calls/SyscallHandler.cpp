@@ -133,6 +133,8 @@ const SysCallHandler::CallHandler SysCallHandler::handlers[] = {
     [SYSCALL_GET_PROCESS_IDS_LIST]      = &SysCallHandler::getProcessIDs,
     [SYSCALL_GET_PROCESS_DESCRIPTOR]    = &SysCallHandler::getProcessDescriptor,
 
+    [SYSCALL_DATE_TIME_GET] = &SysCallHandler::getDateTime,
+
     [SYSCALL_SERVER_MANAGE]      = &SysCallHandler::serverManage,
     [SYSCALL_REGISTER_AS_SERVER] = &SysCallHandler::registerAsServer,
 };

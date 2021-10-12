@@ -205,7 +205,7 @@ VMResult Virtual8086Monitor::handleGpf(Thread* current) {
              * Output byte in AL to I/O port address in DX.
              */
             case 0xEE: {
-                IOports::writeByte((uint16_t)ctx->defaultFrame.edx, (uint8_t)ctx->defaultFrame.eax);
+                IOPorts::writeByte((uint16_t)ctx->defaultFrame.edx, (uint8_t)ctx->defaultFrame.eax);
                 ++ctx->defaultFrame.eip;
                 return VMResult::SUCCESSFUL;
             }
@@ -216,7 +216,7 @@ VMResult Virtual8086Monitor::handleGpf(Thread* current) {
              * Output word in AX to I/O port address in DX.
              */
             case 0xEF: {
-                IOports::writeShort((uint16_t)ctx->defaultFrame.edx,
+                IOPorts::writeShort((uint16_t)ctx->defaultFrame.edx,
                                     (uint16_t)ctx->defaultFrame.eax);
                 ++ctx->defaultFrame.eip;
                 return VMResult::SUCCESSFUL;
@@ -228,7 +228,7 @@ VMResult Virtual8086Monitor::handleGpf(Thread* current) {
              * Input byte from I/O port in DX into AL.
              */
             case 0xEC: {
-                uint8_t res = IOports::readByte((uint16_t)ctx->defaultFrame.edx);
+                uint8_t res = IOPorts::readByte((uint16_t)ctx->defaultFrame.edx);
                 ctx->defaultFrame.eax &= ~(0xFF);
                 ctx->defaultFrame.eax |= res;
                 ++ctx->defaultFrame.eip;
@@ -241,7 +241,7 @@ VMResult Virtual8086Monitor::handleGpf(Thread* current) {
              * Input word from I/O port in DX into AX.
              */
             case 0xED: {
-                uint16_t res = IOports::readShort((uint16_t)ctx->defaultFrame.edx);
+                uint16_t res = IOPorts::readShort((uint16_t)ctx->defaultFrame.edx);
                 ctx->defaultFrame.eax &= ~(0xFFFF);
                 ctx->defaultFrame.eax |= res;
                 ++ctx->defaultFrame.eip;

@@ -1,5 +1,5 @@
-printf:"Starting time driver"
-driver:"/MeetiX/Kernel/Servers/Time.sv"
+#printf:"Starting time driver"
+#driver:"/MeetiX/Kernel/Servers/Time.sv"
 
 printf:"Starting ps2 driver"
 driver:"/MeetiX/Kernel/Servers/Ps2.sv"

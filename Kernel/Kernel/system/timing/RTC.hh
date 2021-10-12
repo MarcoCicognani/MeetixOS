@@ -12,13 +12,14 @@
 
 #pragma once
 
-#include <Api/Common.h>
-#include <Api/FileSystem.h>
-#include <Api/IPC.h>
-#include <Api/Kernel.h>
-#include <Api/Ramdisk.h>
-#include <Api/Syscalls/CallsData.h>
-#include <Api/System.h>
+#include <Api/StdInt.h>
 #include <Api/Time.h>
-#include <Api/Types.h>
-#include <Api/User.h>
+
+namespace RTC {
+
+/**
+ * @brief Reads the real-time clock value and fills the given date-time
+ */
+void read(DateTime* date_time);
+
+} /* namespace RTC */

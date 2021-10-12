@@ -34,8 +34,8 @@ void Pic::sendEoi(uint8_t intr) {
     // If the interrupt is an IRQ (> 32) and on the second PIC (> 8)
     // we have to tell the slave that the interrupt has ended too
     if ( intr >= 0x20 + 0x08 )
-        IOports::writeByte(PIC2_COMMAND, 0x20);
-    IOports::writeByte(PIC1_COMMAND, 0x20);
+        IOPorts::writeByte(PIC2_COMMAND, 0x20);
+    IOPorts::writeByte(PIC1_COMMAND, 0x20);
 }
 
 /**
@@ -55,9 +55,9 @@ void Pic::maskIrq(uint8_t irq) {
         irq -= 8;
     }
 
-    value = IOports::readByte(port);
+    value = IOPorts::readByte(port);
     value |= (1 << irq);
-    IOports::writeByte(port, value);
+    IOPorts::writeByte(port, value);
 }
 
 /**
@@ -76,9 +76,9 @@ void Pic::unmaskIrq(uint8_t irq) {
         irq -= 8;
     }
 
-    value = IOports::readByte(port);
+    value = IOPorts::readByte(port);
     value &= ~(1 << irq);
-    IOports::writeByte(port, value);
+    IOPorts::writeByte(port, value);
 }
 
 /**
@@ -87,28 +87,28 @@ void Pic::unmaskIrq(uint8_t irq) {
  * conflicts between IRQs and exceptions.
  */
 void Pic::remapIrqs() {
-    IOports::writeByte(PIC1_COMMAND, 0x11);
-    IOports::writeByte(PIC2_COMMAND, 0x11);
-    IOports::writeByte(PIC1_DATA, 0x20); // IRQ0 - IRQ7 => interrupts 0x20-0x27
-    IOports::writeByte(PIC2_DATA, 0x28); // IRQ8 - IRQ15 => interrupts 0x28-0x2F
-    IOports::writeByte(PIC1_DATA, 0x4);
-    IOports::writeByte(PIC2_DATA, 0x2);
-    IOports::writeByte(PIC1_DATA, 0x1);
-    IOports::writeByte(PIC2_DATA, 0x1);
+    IOPorts::writeByte(PIC1_COMMAND, 0x11);
+    IOPorts::writeByte(PIC2_COMMAND, 0x11);
+    IOPorts::writeByte(PIC1_DATA, 0x20); // IRQ0 - IRQ7 => interrupts 0x20-0x27
+    IOPorts::writeByte(PIC2_DATA, 0x28); // IRQ8 - IRQ15 => interrupts 0x28-0x2F
+    IOPorts::writeByte(PIC1_DATA, 0x4);
+    IOPorts::writeByte(PIC2_DATA, 0x2);
+    IOPorts::writeByte(PIC1_DATA, 0x1);
+    IOPorts::writeByte(PIC2_DATA, 0x1);
 }
 
 /**
  * Masks all interrupts
  */
 void Pic::maskAll() {
-    IOports::writeByte(PIC1_DATA, 0xFF);
-    IOports::writeByte(PIC2_DATA, 0xFF);
+    IOPorts::writeByte(PIC1_DATA, 0xFF);
+    IOPorts::writeByte(PIC2_DATA, 0xFF);
 }
 
 /**
  * Unmasks all interrupts
  */
 void Pic::unmaskAll() {
-    IOports::writeByte(PIC1_DATA, 0x0);
-    IOports::writeByte(PIC2_DATA, 0x0);
+    IOPorts::writeByte(PIC1_DATA, 0x0);
+    IOPorts::writeByte(PIC2_DATA, 0x0);
 }

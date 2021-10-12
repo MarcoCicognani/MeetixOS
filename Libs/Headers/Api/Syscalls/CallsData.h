@@ -20,6 +20,7 @@
 #include <Api/Syscalls/CallsServer.h>
 #include <Api/Syscalls/CallsSpawning.h>
 #include <Api/Syscalls/CallsTasking.h>
+#include <Api/Syscalls/CallsTime.h>
 #include <Api/Syscalls/CallsVm86.h>
 
 __BEGIN_C
@@ -165,6 +166,8 @@ enum SyscallNumber
     SYSCALL_GET_PROCESS_COUNT,
     SYSCALL_GET_PROCESS_IDS_LIST,
     SYSCALL_GET_PROCESS_DESCRIPTOR,
+
+    SYSCALL_DATE_TIME_GET,
 
     /* TODO REMOVE THESE */
     SYSCALL_SERVER_MANAGE,

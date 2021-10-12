@@ -19,6 +19,7 @@
 #include "SecondaryThread.hpp"
 
 #include <Utils/Time.hh>
+#include <iomanip>
 
 using namespace std;
 
@@ -29,15 +30,19 @@ void SecondaryThread::HourManagerThread(Label* hourLabel) {
     // infinite iteration
     while ( true ) {
         // fill time struct
-        Utils::Time::Current time;
-        Utils::Time::current(time);
+        DateTime date_time;
+        s_get_date_time(&date_time);
 
         // write data to stringstream
-        stringstream hourStr;
-        hourStr << time.m_hour << ':' << time.m_minute << ':' << time.m_second;
+        stringstream ss;
+        ss << std::setfill('0') << std::setw(2) << date_time.m_hours;
+        ss << ':';
+        ss << std::setfill('0') << std::setw(2) << date_time.m_minutes;
+        ss << ':';
+        ss << std::setfill('0') << std::setw(2) << date_time.m_seconds;
 
         // and display on screen label
-        hourLabel->setTitle(hourStr.str());
+        hourLabel->setTitle(ss.str());
 
         // wait 1 second
         s_sleep(1000);

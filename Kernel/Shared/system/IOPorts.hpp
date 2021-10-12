@@ -30,7 +30,7 @@
 /**
  * class to manage the low level I/O on the CPU
  */
-class IOports {
+class IOPorts {
 public:
     /**
      * read a specific type of value from the specified port

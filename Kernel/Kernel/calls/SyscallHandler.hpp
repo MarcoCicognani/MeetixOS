@@ -197,6 +197,8 @@ private:
     static Thread* getProcessCount(Thread* state);
     static Thread* getProcessIDs(Thread* state);
     static Thread* getProcessDescriptor(Thread* state);
+
+    static Thread* getDateTime(Thread* state);
 };
 
 #endif

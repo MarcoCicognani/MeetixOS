@@ -59,10 +59,10 @@ uint32_t Pci::readConfiguration(uint8_t bus, uint8_t slot, uint8_t function, uin
                         | (reg & 0xFC) | ENABLE_BIT);
 
     // write address to address field
-    IOports::writeInt(CONFIG_ADDRESS, address);
+    IOPorts::writeInt(CONFIG_ADDRESS, address);
 
     // read data from data field
-    return IOports::readInt(CONFIG_DATA);
+    return IOPorts::readInt(CONFIG_DATA);
 }
 
 /**

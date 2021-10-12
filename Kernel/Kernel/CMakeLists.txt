@@ -75,8 +75,9 @@ add_executable(Kernel
         system/acpi/acpi.cpp
         system/acpi/AcpiEntry.cpp
         system/acpi/madt.cpp
+        system/timing/RTC.cc
         vm86/Virtual8086Monitor.cpp
-        ${ASM_SOURCES})
+        ${ASM_SOURCES} calls/SyscallHandlerTime.cc)
 
 target_include_directories(Kernel PRIVATE . ../Shared)
 target_link_libraries(Kernel Shared)

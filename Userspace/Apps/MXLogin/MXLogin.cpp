@@ -31,6 +31,7 @@
 #include <Utils/PropertyFileParser.hh>
 #include <Utils/Time.hh>
 #include <Utils/Utils.hh>
+#include <iomanip>
 
 using namespace std;
 
@@ -159,16 +160,19 @@ static bool researchAccess(string username, string password, LoginMode_t mode) {
 
     // infinite iteration, end when login terminate
     while ( true ) {
-        // call timedriver to fill time struct
-        Utils::Time::Current time;
-        Utils::Time::current(time);
+        DateTime date_time;
+        s_get_date_time(&date_time);
 
-        // pack data
-        stringstream hours;
-        hours << time.m_hour << ":" << time.m_minute << ":" << time.m_second;
+        // write data to stringstream
+        stringstream ss;
+        ss << std::setfill('0') << std::setw(2) << date_time.m_hours;
+        ss << ':';
+        ss << std::setfill('0') << std::setw(2) << date_time.m_minutes;
+        ss << ':';
+        ss << std::setfill('0') << std::setw(2) << date_time.m_seconds;
 
         // and write in hour label
-        hourInfo->setTitle(hours.str());
+        hourInfo->setTitle(ss.str());
 
         // wait one second
         s_sleep(1000);

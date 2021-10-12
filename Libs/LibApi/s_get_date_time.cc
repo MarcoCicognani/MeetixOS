@@ -10,15 +10,10 @@
  * GNU General Public License version 3
  */
 
-#pragma once
-
-#include <Api/Common.h>
-#include <Api/FileSystem.h>
-#include <Api/IPC.h>
-#include <Api/Kernel.h>
-#include <Api/Ramdisk.h>
-#include <Api/Syscalls/CallsData.h>
-#include <Api/System.h>
-#include <Api/Time.h>
-#include <Api/Types.h>
 #include <Api/User.h>
+
+bool s_get_date_time(DateTime* date_time) {
+    SyscallDateTime data{ date_time, false };
+    do_syscall(SYSCALL_DATE_TIME_GET, (usize)&data);
+    return data.m_result;
+}

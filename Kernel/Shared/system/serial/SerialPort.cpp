@@ -33,14 +33,14 @@
  */
 void SerialPort::initializePort(uint16_t port, bool interruptsEnabled) {
     // Disable the interrupts
-    IOports::writeByte(port + SERIAL_PORT_OFFSET_INTERRUPT_ENABLE, 0x00);
+    IOPorts::writeByte(port + SERIAL_PORT_OFFSET_INTERRUPT_ENABLE, 0x00);
 
     // Set DLAB
-    IOports::writeByte(port + SERIAL_PORT_OFFSET_LINE_CONTROL, 0x80);
+    IOPorts::writeByte(port + SERIAL_PORT_OFFSET_LINE_CONTROL, 0x80);
 
     // Divisor to 3, baud 38400
-    IOports::writeByte(port + SERIAL_PORT_OFFSET_DIVISOR_LEAST, 0x03); // Low byte
-    IOports::writeByte(port + SERIAL_PORT_OFFSET_DIVISOR_MOST, 0x00);  // High byte
+    IOPorts::writeByte(port + SERIAL_PORT_OFFSET_DIVISOR_LEAST, 0x03); // Low byte
+    IOPorts::writeByte(port + SERIAL_PORT_OFFSET_DIVISOR_MOST, 0x00);  // High byte
 
     // Set line control to 0x03. Bits:
     // 0: 1  Charlen 8
@@ -49,29 +49,29 @@ void SerialPort::initializePort(uint16_t port, bool interruptsEnabled) {
     // 3: 0  no parity
     // 4: 0  ^
     // 5: 0  ^
-    IOports::writeByte(port + SERIAL_PORT_OFFSET_LINE_CONTROL, 0x03);
+    IOPorts::writeByte(port + SERIAL_PORT_OFFSET_LINE_CONTROL, 0x03);
 
     if ( interruptsEnabled ) {
         // Enable FIFO
-        IOports::writeByte(port + SERIAL_PORT_OFFSET_INT_FIFO, 0xC7);
+        IOPorts::writeByte(port + SERIAL_PORT_OFFSET_INT_FIFO, 0xC7);
 
         // Enable IRQs with RTS/DSR set
-        IOports::writeByte(port + SERIAL_PORT_OFFSET_MODEM_CONTROL, 0x0B);
+        IOPorts::writeByte(port + SERIAL_PORT_OFFSET_MODEM_CONTROL, 0x0B);
 
         // Enable the interrupts
         // 0: 1  Receiver has data interrupt on
         // 1: 1  Transmitter empty interrupt on
         // 2: 0  Error/break interrupt off
         // 3: 0  Status change interrupt off
-        IOports::writeByte(port + SERIAL_PORT_OFFSET_INTERRUPT_ENABLE, 0x02);
+        IOPorts::writeByte(port + SERIAL_PORT_OFFSET_INTERRUPT_ENABLE, 0x02);
     }
 
     else {
         // Turn off FIFO
-        IOports::writeByte(port + SERIAL_PORT_OFFSET_INT_FIFO, 0x00);
+        IOPorts::writeByte(port + SERIAL_PORT_OFFSET_INT_FIFO, 0x00);
 
         // Loopback off, no IRQs, not RTS/DTR
-        IOports::writeByte(port + SERIAL_PORT_OFFSET_MODEM_CONTROL, 0x00);
+        IOPorts::writeByte(port + SERIAL_PORT_OFFSET_MODEM_CONTROL, 0x00);
     }
 }
 
@@ -83,11 +83,11 @@ void SerialPort::initializePort(uint16_t port, bool interruptsEnabled) {
  */
 uint8_t SerialPort::read(uint16_t port) {
     // Wait byte available
-    while ( !(IOports::readByte(port + SERIAL_PORT_OFFSET_LINE_STATUS) & 0x01) )
+    while ( !(IOPorts::readByte(port + SERIAL_PORT_OFFSET_LINE_STATUS) & 0x01) )
         ;
 
     // Receive byte
-    return IOports::readByte(port + SERIAL_PORT_OFFSET_DATA_REGISTER);
+    return IOPorts::readByte(port + SERIAL_PORT_OFFSET_DATA_REGISTER);
 }
 
 /**
@@ -98,9 +98,9 @@ uint8_t SerialPort::read(uint16_t port) {
  */
 void SerialPort::write(uint16_t port, uint8_t value) {
     // Wait until ready
-    while ( !(IOports::readByte(port + SERIAL_PORT_OFFSET_LINE_STATUS) & 0x20) )
+    while ( !(IOPorts::readByte(port + SERIAL_PORT_OFFSET_LINE_STATUS) & 0x20) )
         ;
 
     // Write byte
-    IOports::writeByte(port + SERIAL_PORT_OFFSET_DATA_REGISTER, value);
+    IOPorts::writeByte(port + SERIAL_PORT_OFFSET_DATA_REGISTER, value);
 }

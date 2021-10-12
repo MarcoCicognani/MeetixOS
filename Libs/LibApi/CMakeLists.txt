@@ -78,7 +78,7 @@ add_library(LibApi
         s_share_mem.cc
         s_get_pid_for_tid.cc
         s_cli_args_release.cc
-        do_syscall.cc)
+        do_syscall.cc s_get_date_time.cc)
 add_custom_command(
         TARGET LibApi
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibApi> ${TOOLCHAIN_ROOT}/lib/libapi.a

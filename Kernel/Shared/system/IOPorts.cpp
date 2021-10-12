@@ -30,7 +30,7 @@
  * @param port:		the port where read
  * @return the readed value
  */
-uint8_t IOports::readByte(uint16_t port) {
+uint8_t IOPorts::readByte(uint16_t port) {
     uint8_t value;
     asm volatile("inb %1, %0" : "=a"(value) : "dN"(port));
     return value;
@@ -42,7 +42,7 @@ uint8_t IOports::readByte(uint16_t port) {
  * @param port:		the port where write
  * @param data:		the data to write
  */
-void IOports::writeByte(uint16_t port, uint8_t value) {
+void IOPorts::writeByte(uint16_t port, uint8_t value) {
     asm volatile("outb %1, %0" : : "dN"(port), "a"(value));
 }
 
@@ -52,7 +52,7 @@ void IOports::writeByte(uint16_t port, uint8_t value) {
  * @param port:		the port where read
  * @return the readed value
  */
-uint16_t IOports::readShort(uint16_t port) {
+uint16_t IOPorts::readShort(uint16_t port) {
     uint16_t value;
     asm volatile("inw %1, %0" : "=a"(value) : "dN"(port));
     return value;
@@ -64,7 +64,7 @@ uint16_t IOports::readShort(uint16_t port) {
  * @param port:		the port where write
  * @param data:		the data to write
  */
-void IOports::writeShort(uint16_t port, uint16_t value) {
+void IOPorts::writeShort(uint16_t port, uint16_t value) {
     asm volatile("outw %1, %0" : : "dN"(port), "a"(value));
 }
 
@@ -74,7 +74,7 @@ void IOports::writeShort(uint16_t port, uint16_t value) {
  * @param port:		the port where read
  * @return the readed value
  */
-uint32_t IOports::readInt(uint16_t port) {
+uint32_t IOPorts::readInt(uint16_t port) {
     uint32_t value;
     asm volatile("inl %1, %0" : "=a"(value) : "dN"(port));
     return value;
@@ -86,6 +86,6 @@ uint32_t IOports::readInt(uint16_t port) {
  * @param port:		the port where write
  * @param data:		the data to write
  */
-void IOports::writeInt(uint16_t port, uint32_t value) {
+void IOPorts::writeInt(uint16_t port, uint32_t value) {
     asm volatile("outl %1, %0" : : "dN"(port), "a"(value));
 }

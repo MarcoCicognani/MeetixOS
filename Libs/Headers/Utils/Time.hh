@@ -43,7 +43,14 @@ struct Current {
     u16 m_month{ 0 };
     u16 m_year{ 0 };
 
+    /**
+     * @brief Constructors
+     */
     Current() = default;
+    Current(u16 second, u16 minute, u16 hour, u16 day, u16 month, u16 year)
+        : m_second{ second }, m_minute{ minute }, m_hour{ hour }, m_day{ day }, m_month{ month },
+          m_year{ year } {
+    }
 } A_PACKED;
 
 struct UpTime {

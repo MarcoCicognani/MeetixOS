@@ -3400,7 +3400,7 @@ static int bin_find(mstate m, mchunkptr x) {
 /* Traverse each chunk and check it; return total */
 static size_t traverse_and_check(mstate m) {
     size_t sum = 0;
-    if ( is_initialized(m) ) {
+    if ( g_is_initialized(m) ) {
         msegmentptr s = &m->seg;
         sum += m->topsize + TOP_FOOT_SIZE;
         while ( s != 0 ) {
@@ -5051,7 +5051,7 @@ static void
 internal_inspect_all(mstate m,
                      void (*handler)(void* start, void* end, size_t used_bytes, void* callback_arg),
                      void* arg) {
-    if ( is_initialized(m) ) {
+    if ( g_is_initialized(m) ) {
         mchunkptr   top = m->top;
         msegmentptr s;
         for ( s = &m->seg; s != 0; s = s->next ) {

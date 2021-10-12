@@ -390,7 +390,7 @@ add_library(LibC
         stdlib/ldiv.cc
         stdlib/qsort.cc
         stdlib/exit.cc
-        stdlib/system.cc
+        stdlib/System.cc
         stdlib/getenv.cc
         stdlib/atol.cc
         stdlib/atof.cc

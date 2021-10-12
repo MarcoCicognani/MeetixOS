@@ -13,12 +13,16 @@
 #pragma once
 
 #include <Api/Common.h>
-#include <Api/FileSystem.h>
-#include <Api/IPC.h>
-#include <Api/Kernel.h>
-#include <Api/Ramdisk.h>
-#include <Api/Syscalls/CallsData.h>
-#include <Api/System.h>
 #include <Api/Time.h>
-#include <Api/Types.h>
-#include <Api/User.h>
+
+__BEGIN_C
+
+/**
+ * @brief s_time system call data
+ */
+typedef struct {
+    DateTime* m_date_time;
+    bool      m_result;
+} A_PACKED SyscallDateTime;
+
+__END_C

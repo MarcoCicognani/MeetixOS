@@ -118,10 +118,10 @@ void ConsoleVideo::clear() {
  */
 void ConsoleVideo::setVisualCursor(int x, int y) {
     uint16_t position = (y * WIDTH) + x;
-    IOports::writeByte(0x3D4, 0x0F);
-    IOports::writeByte(0x3D5, (uint8_t)(position & 0xFF));
-    IOports::writeByte(0x3D4, 0x0E);
-    IOports::writeByte(0x3D5, (uint8_t)((position >> 8) & 0xFF));
+    IOPorts::writeByte(0x3D4, 0x0F);
+    IOPorts::writeByte(0x3D5, (uint8_t)(position & 0xFF));
+    IOPorts::writeByte(0x3D4, 0x0E);
+    IOPorts::writeByte(0x3D5, (uint8_t)((position >> 8) & 0xFF));
 }
 
 /**

@@ -42,6 +42,7 @@
 #include <Utils/Time.hh>
 #include <Utils/Utils.hh>
 #include <vector>
+#include <iomanip>
 
 using namespace std;
 
@@ -628,17 +629,26 @@ bool CandyShell::handleBuiltin(string command) {
     }
 
     else if ( command == BUILTIN_COMMAND_GETHOUR ) {
-        Utils::Time::Current time;
-        Utils::Time::current(time);
+        DateTime date_time;
+        s_get_date_time(&date_time);
 
-        stringstream Time;
-        Time << time.m_hour << ":" << time.m_minute << ":" << time.m_second << "\n";
+        // write data to stringstream
+        stringstream ss_time;
+        ss_time << std::setfill('0') << std::setw(2) << date_time.m_hours;
+        ss_time << ':';
+        ss_time << std::setfill('0') << std::setw(2) << date_time.m_minutes;
+        ss_time << ':';
+        ss_time << std::setfill('0') << std::setw(2) << date_time.m_seconds;
 
-        stringstream Date;
-        Date << time.m_day << "/" << time.m_month << "/" << time.m_year << "\n";
+        stringstream ss_date;
+        ss_date << std::setfill('0') << std::setw(2) << date_time.m_month_day;
+        ss_date << ':';
+        ss_date << std::setfill('0') << std::setw(2) << date_time.m_month;
+        ss_date << ':';
+        ss_date << std::setfill('0') << std::setw(2) << date_time.m_year;
 
-        screen->write(Time.str(), Graphics::Color::as_rgb(255, 255, 255));
-        screen->write(Date.str(), Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(ss_time.str(), Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(ss_date.str(), Graphics::Color::as_rgb(255, 255, 255));
 
         return true;
     }

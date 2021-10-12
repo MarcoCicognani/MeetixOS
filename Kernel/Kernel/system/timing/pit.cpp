@@ -44,12 +44,12 @@ void Pit::prepareSleep(uint32_t microseconds) {
     }
 
     // Disable the speaker
-    uint8_t speakerControlByte = IOports::readByte(0x61);
+    uint8_t speakerControlByte = IOPorts::readByte(0x61);
     speakerControlByte &= ~2; // set bit 1 to 0 (disables speaker output)
-    IOports::writeByte(0x61, speakerControlByte);
+    IOPorts::writeByte(0x61, speakerControlByte);
 
     // Initialize PIT
-    IOports::writeByte(0x43, PIT_CHANNEL_2 | PIT_OPMODE_0_IOTC | PIT_ACCESS_LOHIBYTE);
+    IOPorts::writeByte(0x43, PIT_CHANNEL_2 | PIT_OPMODE_0_IOTC | PIT_ACCESS_LOHIBYTE);
 
     // Configure PIT, calculate divisor for the requested microseconds
     sleepDivisor = PIT_FREQUENCY / (1000000 / microseconds);
@@ -61,16 +61,16 @@ void Pit::prepareSleep(uint32_t microseconds) {
  */
 void Pit::performSleep() {
     // Write the prepared sleep divisor
-    IOports::writeByte(0x42, sleepDivisor & 0xFF);
-    IOports::writeByte(0x42, sleepDivisor >> 8);
+    IOPorts::writeByte(0x42, sleepDivisor & 0xFF);
+    IOPorts::writeByte(0x42, sleepDivisor >> 8);
 
     // Reset the PIT counter and let it start
-    uint8_t pitControlByte = IOports::readByte(0x61);
-    IOports::writeByte(0x61, (uint8_t)pitControlByte & ~1); // clear bit 0
-    IOports::writeByte(0x61, (uint8_t)pitControlByte | 1);  // set bit 0
+    uint8_t pitControlByte = IOPorts::readByte(0x61);
+    IOPorts::writeByte(0x61, (uint8_t)pitControlByte & ~1); // clear bit 0
+    IOPorts::writeByte(0x61, (uint8_t)pitControlByte | 1);  // set bit 0
 
     // Wait for PIT counter to reach 0
-    while ( !(IOports::readByte(0x61) & 0x20) ) {
+    while ( !(IOPorts::readByte(0x61) & 0x20) ) {
     }
 }
 
@@ -84,9 +84,9 @@ void Pit::startAsTimer(uint32_t hz) {
 
     timerClocking    = hz;
     uint32_t divisor = PIT_FREQUENCY / hz; // Calculate the divisor
-    IOports::writeByte(0x43, PIT_CHANNEL_0 | PIT_ACCESS_LOHIBYTE | PIT_OPMODE_3_SQUARE_WAV);
-    IOports::writeByte(0x40, divisor & 0xFF); // Set low byte of the divisor
-    IOports::writeByte(0x40, divisor >> 8);   // Set high byte of the divisor
+    IOPorts::writeByte(0x43, PIT_CHANNEL_0 | PIT_ACCESS_LOHIBYTE | PIT_OPMODE_3_SQUARE_WAV);
+    IOPorts::writeByte(0x40, divisor & 0xFF); // Set low byte of the divisor
+    IOPorts::writeByte(0x40, divisor >> 8);   // Set high byte of the divisor
 }
 
 /**
