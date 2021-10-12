@@ -18,7 +18,6 @@
 
 #include "SecondaryThread.hpp"
 
-#include <Utils/Time.hh>
 #include <iomanip>
 
 using namespace std;

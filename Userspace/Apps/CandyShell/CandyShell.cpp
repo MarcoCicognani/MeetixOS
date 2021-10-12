@@ -39,7 +39,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <Utils/Environment.hh>
-#include <Utils/Time.hh>
 #include <Utils/Utils.hh>
 #include <vector>
 #include <iomanip>

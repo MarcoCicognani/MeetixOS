@@ -29,7 +29,6 @@
 #include <gui/window.hpp>
 #include <Utils/Environment.hh>
 #include <Utils/PropertyFileParser.hh>
-#include <Utils/Time.hh>
 #include <Utils/Utils.hh>
 #include <iomanip>
 
