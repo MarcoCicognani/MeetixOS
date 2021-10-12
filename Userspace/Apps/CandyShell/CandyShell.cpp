@@ -841,13 +841,10 @@ bool CandyShell::handleBuiltin(string command) {
     }
 
     else if ( command == BUILTIN_COMMAND_GET_UPTIME ) {
-        Utils::Time::UpTime up_time;
-        Utils::Time::up_time(up_time);
+        stringstream ss;
+        ss << s_millis() << " seconds " << endl;
 
-        stringstream up;
-        up << up_time.m_second << " seconds " << endl;
-
-        screen->write(up.str(), Graphics::Color::as_rgb(255, 255, 255));
+        screen->write(ss.str(), Graphics::Color::as_rgb(255, 255, 255));
 
         return true;
     }
