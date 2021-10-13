@@ -28,16 +28,13 @@ int show_usages(int argc, const char** argv) {
 }
 
 int main(int argc, const char** argv) {
-    for ( auto i = 0; i < argc; ++i )
-        std::cout << argv[i] << std::endl;
-
     if ( getopt_is_help(argc, argv) || argc != 3 )
         return show_usages(argc, argv);
 
     for ( auto& entry : std::filesystem::recursive_directory_iterator(argv[1]) ) {
         if ( entry.path().string().ends_with(argv[2]) ) {
             std::cout << "Found: " << entry.path() << std::endl;
-            return EXIT_FAILURE;
+            return EXIT_SUCCESS;
         }
     }
 
