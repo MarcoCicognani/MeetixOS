@@ -10,11 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef toupper
 
 extern "C" int toupper(int c) {
-    if ( c >= 'a' && c <= 'z' )
-        return 'A' + (c - 'a');
-    else
-        return c;
+    return __inline_toupper(c);
 }

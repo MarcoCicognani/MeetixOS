@@ -26,7 +26,7 @@
 #define __BOUNDS_EVENT_COMPONENT__
 
 #include <Api.h>
-#include <gui/uispech.hpp>
+#include <GUI/Protocol.hh>
 #include <list>
 #include <string>
 

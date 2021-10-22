@@ -10,8 +10,7 @@
  * GNU General Public License version 3
  */
 
-#ifndef LIBC_BUILDING_LIBSTDCXX
-#    include <stdio.h>
+#include <cstdio>
 
 extern "C" FILE* tmpfile() {
     /* obtain temporary filename */
@@ -27,10 +26,3 @@ extern "C" FILE* tmpfile() {
     delete[] name_buf;
     return stream;
 }
-#else
-#    include <stdio.h>
-
-extern "C" FILE* tmpfile() {
-    return nullptr;
-}
-#endif

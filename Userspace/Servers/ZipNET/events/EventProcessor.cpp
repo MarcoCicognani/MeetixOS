@@ -33,7 +33,7 @@
 #include <events/FocusEvent.hpp>
 #include <events/KeyEvent.hpp>
 #include <events/MouseEvent.hpp>
-#include <gui/uispech.hpp>
+#include <GUI/Protocol.hh>
 #include <interface/ComponentRegistry.hpp>
 #include <interface/TaskManagerThread.hpp>
 #include <layout/GridLayoutManager.hpp>
@@ -106,7 +106,7 @@ void EventProcessor::process() {
 void EventProcessor::processCommand(Tid                       senderTid,
                                     UiMessageHeader*          requestHeader,
                                     CommandMessageResponse_t& responseOut) {
-    if ( requestHeader->id == UI_PROTOCOL_CREATE_COMPONENT ) {
+    if ( requestHeader->m_command == UI_PROTOCOL_CREATE_COMPONENT ) {
         Component_t*  component   = 0;
         UiComponentID componentID = -1;
 
@@ -152,7 +152,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
 
         // create response message
         UiCreateComponentResponse* response = new UiCreateComponentResponse();
-        response->header.id                 = UI_PROTOCOL_CREATE_COMPONENT;
+        response->header.m_command          = UI_PROTOCOL_CREATE_COMPONENT;
         response->id                        = componentID;
         response->status = (component != 0 ? UI_PROTOCOL_SUCCESS : UI_PROTOCOL_FAIL);
 
@@ -160,7 +160,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         responseOut.length  = sizeof(UiCreateComponentResponse);
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_REMOVE_COMPONENT ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_REMOVE_COMPONENT ) {
         UiRemoveComponentRequest* deletionRequest = (UiRemoveComponentRequest*)requestHeader;
 
         // remove from regex
@@ -173,7 +173,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         responseOut.length  = 0;
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_REMOVE_COMPONENT_MAP ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_REMOVE_COMPONENT_MAP ) {
         UiRemoveComponentMapRequest* deletionRequest = (UiRemoveComponentMapRequest*)requestHeader;
 
         // create response
@@ -189,7 +189,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         responseOut.length  = sizeof(UiRemoveComponentMapResponse);
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_ADD_COMPONENT ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_ADD_COMPONENT ) {
         UiComponentAddChildRequest* request = (UiComponentAddChildRequest*)requestHeader;
         Component_t*                parent  = ComponentRegistry::instance().get(request->parent);
         Component_t*                child   = ComponentRegistry::instance().get(request->child);
@@ -215,7 +215,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
 
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_SET_BOUNDS ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_BOUNDS ) {
         UiComponentSetBoundsRequest* request   = (UiComponentSetBoundsRequest*)requestHeader;
         Component_t*                 component = ComponentRegistry::instance().get(request->id);
 
@@ -233,7 +233,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         responseOut.length  = sizeof(UiComponentSetBoundsResponse);
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_GET_BOUNDS ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_GET_BOUNDS ) {
         UiComponentGetBoundsRequest* request   = (UiComponentGetBoundsRequest*)requestHeader;
         Component_t*                 component = ComponentRegistry::instance().get(request->id);
 
@@ -251,7 +251,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         responseOut.length  = sizeof(UiComponentGetBoundsResponse);
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_SET_VISIBLE ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_VISIBLE ) {
         UiComponentSetVisibleRequest* request   = (UiComponentSetVisibleRequest*)requestHeader;
         Component_t*                  component = ComponentRegistry::instance().get(request->id);
 
@@ -270,7 +270,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
 
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_SET_LISTENER ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_LISTENER ) {
         UiComponentSetListenerRequest* request   = (UiComponentSetListenerRequest*)requestHeader;
         Component_t*                   component = ComponentRegistry::instance().get(request->id);
 
@@ -289,7 +289,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
 
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_SET_NUMERIC_PROPERTY ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_NUMERIC_PROPERTY ) {
         UiComponentSetNumericPropertyRequest* request
             = (UiComponentSetNumericPropertyRequest*)requestHeader;
         Component_t* component = ComponentRegistry::instance().get(request->id);
@@ -313,7 +313,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
 
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_GET_NUMERIC_PROPERTY ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_GET_NUMERIC_PROPERTY ) {
         UiComponentGetNumericPropertyRequest* request
             = (UiComponentGetNumericPropertyRequest*)requestHeader;
         Component_t* component = ComponentRegistry::instance().get(request->id);
@@ -340,7 +340,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
 
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_SET_TITLE ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_TITLE ) {
         UiComponentSetTitleRequest* request   = (UiComponentSetTitleRequest*)requestHeader;
         Component_t*                component = ComponentRegistry::instance().get(request->id);
 
@@ -365,7 +365,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
 
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_GET_TITLE ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_GET_TITLE ) {
         UiComponentGetTitleRequest* request   = (UiComponentGetTitleRequest*)requestHeader;
         Component_t*                component = ComponentRegistry::instance().get(request->id);
 
@@ -384,8 +384,8 @@ void EventProcessor::processCommand(Tid                       senderTid,
 
                 // fill text (truncate if necessary)
                 size_t titleLen;
-                if ( title.length() >= UI_COMPONENT_TITLE_MAXIMUM )
-                    titleLen = UI_COMPONENT_TITLE_MAXIMUM;
+                if ( title.length() >= C_TITLE_LEN_MAX )
+                    titleLen = C_TITLE_LEN_MAX;
 
                 else
                     titleLen = title.length();
@@ -401,7 +401,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
 
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_SET_GHOST_TITLE ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_GHOST_TITLE ) {
         UiComponentSetGhostTitleRequest* request = (UiComponentSetGhostTitleRequest*)requestHeader;
         Component_t*                     component = ComponentRegistry::instance().get(request->id);
 
@@ -420,7 +420,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         responseOut.length  = sizeof(UiComponentSetGhostTitleResponse);
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_SET_TITLE_FONT ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_TITLE_FONT ) {
         UiComponentSetTitleFontRequest* request   = (UiComponentSetTitleFontRequest*)requestHeader;
         Component_t*                    component = ComponentRegistry::instance().get(request->id);
 
@@ -439,7 +439,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         responseOut.length  = sizeof(UiComponentSetTitleFontResponse);
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_CANVAS_ACK_BUFFER_REQUEST ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_CANVAS_ACK_BUFFER_REQUEST ) {
         UiComponentCanvasAckBufferRequest* request
             = (UiComponentCanvasAckBufferRequest*)requestHeader;
         Component_t* component = ComponentRegistry::instance().get(request->id);
@@ -448,7 +448,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         canvas->clientHasAcknowledgedCurrentBuffer();
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_CANVAS_BLIT ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_CANVAS_BLIT ) {
         UiComponentCanvasAckBufferRequest* request
             = (UiComponentCanvasAckBufferRequest*)requestHeader;
         Component_t* component = ComponentRegistry::instance().get(request->id);
@@ -457,7 +457,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         canvas->blit();
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_REGISTER_DESKTOP_CANVAS ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_REGISTER_DESKTOP_CANVAS ) {
         UiRegisterDesktopCanvasRequest* request = (UiRegisterDesktopCanvasRequest*)requestHeader;
         Component_t* component = ComponentRegistry::instance().get(request->canvasID);
 
@@ -481,7 +481,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         responseOut.length  = sizeof(UiRegisterDesktopCanvasResponse);
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_SET_PNG ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_PNG ) {
         UiComponentSetupPng* request   = (UiComponentSetupPng*)requestHeader;
         Component_t*         component = ComponentRegistry::instance().get(request->id);
 
@@ -507,7 +507,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
     }
 
     // setup component color
-    else if ( requestHeader->id == UI_PROTOCOL_SET_COMPONENT_COLOR ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_COMPONENT_COLOR ) {
         UiComponentColor* request   = (UiComponentColor*)requestHeader;
         Component_t*      component = ComponentRegistry::instance().get(request->id);
 
@@ -532,7 +532,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
     }
 
     // change background image
-    else if ( requestHeader->id == UI_PROTOCOL_CHANGE_BACKGROUND ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_CHANGE_BACKGROUND ) {
         // get request
         UiChangeBackgroundRequest* request = (UiChangeBackgroundRequest*)requestHeader;
 
@@ -548,7 +548,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
     }
 
     // get screen resolution
-    else if ( requestHeader->id == UI_PROTOCOL_GET_RESOLUTION ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_GET_RESOLUTION ) {
         auto resolution = ZipNET::instance()->videoOutput->getResolution();
 
         UiGetResolutionResponse* response = new UiGetResolutionResponse();
@@ -560,7 +560,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
     }
 
     // set focus component
-    else if ( requestHeader->id == UI_PROTOCOL_SET_FOCUS ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_FOCUS ) {
         UiComponentFocusRequest* request   = (UiComponentFocusRequest*)requestHeader;
         Component_t*             component = ComponentRegistry::instance().get(request->id);
 
@@ -579,7 +579,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
     }
 
     // set font size on label
-    else if ( requestHeader->id == UI_PROTOCOL_SET_FONT_SIZE ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_FONT_SIZE ) {
         auto request   = (UiSetFontSizeRequest*)requestHeader;
         auto component = ComponentRegistry::instance().get(request->id);
 
@@ -603,7 +603,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         responseOut.length  = sizeof(UiSetFontSizeResponse);
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_SET_TITLE_ALIGNMENT ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_TITLE_ALIGNMENT ) {
         auto request   = (UiSetTitleAlignmentRequest*)requestHeader;
         auto component = ComponentRegistry::instance().get(request->id);
 
@@ -627,7 +627,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         responseOut.length  = sizeof(UiSetTitleAlignmentResponse);
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_REGISTER_TASK_MANAGER ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_REGISTER_TASK_MANAGER ) {
         UiRegisterTaskManagerRequest* request   = (UiRegisterTaskManagerRequest*)requestHeader;
         Component_t*                  component = ComponentRegistry::instance().get(request->id);
 
@@ -651,7 +651,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         responseOut.length  = sizeof(UiRegisterTaskManagerResponse);
     }
 
-    else if ( requestHeader->id == UI_PROTOCOL_SET_MOUSE_CURSOR_FORM ) {
+    else if ( requestHeader->m_command == UI_PROTOCOL_SET_MOUSE_CURSOR_FORM ) {
         // get request and get response
         UiSetMouseCursorFormRequest*  request  = (UiSetMouseCursorFormRequest*)requestHeader;
         UiSetMouseCursorFormResponse* response = new UiSetMouseCursorFormResponse();

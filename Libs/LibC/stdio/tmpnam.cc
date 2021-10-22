@@ -10,29 +10,22 @@
  * GNU General Public License version 3
  */
 
-#ifndef LIBC_BUILDING_LIBSTDCXX
-#    include <Api.h>
-#    include <errno.h>
-#    include <inttypes.h>
-#    include <stdio.h>
+#include <Api.h>
+#include <cerrno>
+#include <cinttypes>
+#include <cstdio>
 
-bool  g_lock    = false;
-char* g_buffer  = nullptr;
-u64   g_next_id = 0;
+static bool  g_lock    = false;
+static char* g_buffer  = nullptr;
+static u64   g_next_id = 0;
 
 extern "C" char* tmpnam(char* buffer) {
     s_atomic_lock(&g_lock);
 
     if ( !buffer ) {
         /* allocate the internal buffer if necessary */
-        if ( !g_buffer ) {
+        if ( !g_buffer )
             g_buffer = new char[L_tmpnam];
-            if ( !g_buffer ) {
-                errno  = ENOMEM;
-                g_lock = false;
-                return nullptr;
-            }
-        }
 
         /* use internal buffer */
         buffer = g_buffer;
@@ -44,10 +37,3 @@ extern "C" char* tmpnam(char* buffer) {
 
     return buffer;
 }
-#else
-#    include <stdio.h>
-
-extern "C" char* tmpnam(char*) {
-    return nullptr;
-}
-#endif

@@ -16,7 +16,7 @@
 
 class Inspector {
 public:
-    static Inspector* inspect_file(std::ifstream& stream);
+    static Inspector* inspector_for_file(std::ifstream& stream);
 
     virtual std::string inspection() = 0;
 

@@ -12,31 +12,28 @@
 
 #include "Inspector.hh"
 
-#include <fstream>
 #include <iostream>
-#include <unistd.h>
+#include <string>
+#include <Utils/ArgsParser.hh>
 #include <vector>
 
-#define VERSION "0.0.1"
-
-int show_usages(int, const char** argv) {
-    std::cout << "File Classifier Utility v" << VERSION << '\n';
-    std::cout << "Usage:\n";
-    std::cout << "\t" << argv[0] << " [Options] FileNames...\n";
-    std::cout << "\t -h | --help | -?: Shows this help\n";
-    std::cout << '\n';
-    std::cout << "Compiled with g++ v" << __VERSION__ << " (" << __TIMESTAMP__ << ")" << std::endl;
-
-    return EXIT_SUCCESS;
-}
+#define V_MAJOR 0
+#define V_MINOR 0
+#define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    if ( getopt_is_help(argc, argv) || argc < 2 )
-        return show_usages(argc, argv);
+    auto files_paths = std::vector<std::string>{};
 
-    /* collect filenames */
-    for ( auto arg = 1; arg < argc; ++arg ) {
-        auto file_path = std::string{ argv[arg] };
+    auto args_parser = Utils::ArgsParser{ "File Classifier Utility", V_MAJOR, V_MINOR, V_PATCH };
+    args_parser.add_positional_argument(files_paths,
+                                        "Files to inspect and classify",
+                                        "FileToInspect",
+                                        true);
+
+    /* parse the arguments */
+    args_parser.parse(argc, argv);
+
+    for ( auto& file_path : files_paths ) {
         std::cout << file_path << ": ";
 
         /* open the file-stream */
@@ -47,7 +44,7 @@ int main(int argc, const char** argv) {
         }
 
         /* try to inspect the file */
-        auto inspector = Inspector::inspect_file(file_stream);
+        auto inspector = Inspector::inspector_for_file(file_stream);
         if ( !inspector ) {
             std::cerr << "Error: no known inspector for file '" << file_path << "'\n";
             continue;
@@ -56,6 +53,5 @@ int main(int argc, const char** argv) {
         /* print-out the inspection */
         std::cout << inspector->inspection() << std::flush;
     }
-
     return EXIT_SUCCESS;
 }

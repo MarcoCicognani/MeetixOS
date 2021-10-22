@@ -30,7 +30,7 @@
 #include <events/MouseEvent.hpp>
 #include <Graphics/Cairo.hh>
 #include <Graphics/Text/FontManager.hh>
-#include <gui/properties.hpp>
+#include <GUI/Properties.hh>
 #include <math.h>
 #include <Utils/Environment.hh>
 #include <zipNET.hpp>

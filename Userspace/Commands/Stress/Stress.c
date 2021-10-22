@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <getopt.h>
 
 /**
  * show the usage of the command

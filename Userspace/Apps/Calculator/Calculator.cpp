@@ -26,14 +26,14 @@
 
 #include <algorithm>
 #include <fstream>
-#include <gui/actionlistener.hpp>
-#include <gui/btnlist.hpp>
-#include <gui/button.hpp>
-#include <gui/geoshape.hpp>
-#include <gui/label.hpp>
-#include <gui/textfield.hpp>
-#include <gui/ui.hpp>
-#include <gui/window.hpp>
+#include <GUI/Application.hh>
+#include <GUI/ButtonList.hh>
+#include <GUI/Component/Button.hh>
+#include <GUI/Component/Geoshape.hh>
+#include <GUI/Component/Label.hh>
+#include <GUI/Component/TextField.hh>
+#include <GUI/Component/Window.hh>
+#include <GUI/Listener/ActionListener.hh>
 #include <sstream>
 #include <stdlib.h>
 
@@ -67,7 +67,7 @@ public:
     }
 
     //
-    virtual void handleAction() {
+    virtual void handle_action() {
         padButtonPressed(number);
     }
 };
@@ -86,7 +86,7 @@ public:
     }
 
     //
-    virtual void handleAction() {
+    virtual void handle_action() {
         commandPressed(command);
     }
 };
@@ -102,20 +102,20 @@ int main(int argc, char* argv[]) {
 
         // configure window
         window = Window::create();
-        window->setBounds(Graphics::Metrics::Rectangle(70, 70, 195, 300));
-        window->setColor(Graphics::Color::as_rgb(0, 180, 0),
-                         Graphics::Color::as_argb(255, 255, 255, 255));
-        window->setTitle("Calculator");
-        window->setResizable(false);
-        window->onClose([] { blocker = false; });
+        window->set_bounds(Graphics::Metrics::Rectangle(70, 70, 195, 300));
+        window->set_color(Graphics::Color::as_rgb(0, 180, 0),
+                          Graphics::Color::as_argb(255, 255, 255, 255));
+        window->set_title("Calculator");
+        window->set_resizable(false);
+        window->on_close([] { blocker = false; });
 
         // configure display
         display = Textfield::create();
-        display->setTitle("0");
-        display->setBounds(Graphics::Metrics::Rectangle(10, 10, 150, 30));
-        display->setColor(Graphics::Color::as_argb(120, 0, 0, 0),
-                          Graphics::Color::as_rgb(255, 255, 255));
-        window->addChild(display);
+        display->set_title("0");
+        display->set_bounds(Graphics::Metrics::Rectangle(10, 10, 150, 30));
+        display->set_color(Graphics::Color::as_argb(120, 0, 0, 0),
+                           Graphics::Color::as_rgb(255, 255, 255));
+        window->add_child(display);
 
         // add to list buttons
         keyBoard.add("0", new NumPressActionListener(0));
@@ -221,7 +221,7 @@ int main(int argc, char* argv[]) {
                            Graphics::Color::as_rgb(0, 0, 0));
 
         // show the window application
-        window->setVisible(true);
+        window->set_visible(true);
 
         // lock application, if unlock the flag ui closing and terminating
         s_atomic_block(&blocker);
@@ -236,16 +236,16 @@ int main(int argc, char* argv[]) {
  *
  */
 void padButtonPressed(int num) {
-    keyBoard["*"]->setEnabled(true);
-    keyBoard["-"]->setEnabled(true);
-    keyBoard["*"]->setEnabled(true);
-    keyBoard["/"]->setEnabled(true);
+    keyBoard["*"]->set_enabled(true);
+    keyBoard["-"]->set_enabled(true);
+    keyBoard["*"]->set_enabled(true);
+    keyBoard["/"]->set_enabled(true);
 
     currentValue = currentValue * 10 + num;
 
     std::stringstream str;
     str << currentValue;
-    display->setTitle(str.str());
+    display->set_title(str.str());
 
     if ( previousCommand == COM_EQ || previousCommand == COM_CLEAR || previousCommand == COM_NONE )
         totalValue = currentValue;
@@ -255,10 +255,10 @@ void padButtonPressed(int num) {
  *
  */
 void commandPressed(int command) {
-    keyBoard["*"]->setEnabled(true);
-    keyBoard["-"]->setEnabled(true);
-    keyBoard["*"]->setEnabled(true);
-    keyBoard["/"]->setEnabled(true);
+    keyBoard["*"]->set_enabled(true);
+    keyBoard["-"]->set_enabled(true);
+    keyBoard["*"]->set_enabled(true);
+    keyBoard["/"]->set_enabled(true);
 
     if ( previousCommand == COM_PLUS )
         totalValue = totalValue + currentValue;
@@ -272,23 +272,23 @@ void commandPressed(int command) {
         totalValue = currentValue;
 
     if ( command == COM_PLUS )
-        keyBoard["*"]->setEnabled(false);
+        keyBoard["*"]->set_enabled(false);
     else if ( command == COM_MINUS )
-        keyBoard["-"]->setEnabled(false);
+        keyBoard["-"]->set_enabled(false);
     else if ( command == COM_MULT )
-        keyBoard["*"]->setEnabled(false);
+        keyBoard["*"]->set_enabled(false);
     else if ( command == COM_DIV )
-        keyBoard["/"]->setEnabled(false);
+        keyBoard["/"]->set_enabled(false);
     else if ( command == COM_EQ ) {
         std::stringstream ss;
         ss << totalValue;
-        display->setTitle(ss.str());
+        display->set_title(ss.str());
     }
 
     else if ( command == COM_CLEAR ) {
         if ( currentValue == 0 )
             totalValue = 0;
-        display->setTitle("0");
+        display->set_title("0");
     }
 
     currentValue    = 0;

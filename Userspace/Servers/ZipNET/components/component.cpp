@@ -29,7 +29,7 @@
 #include <events/KeyEvent.hpp>
 #include <events/locatable.hpp>
 #include <events/MouseEvent.hpp>
-#include <gui/properties.hpp>
+#include <GUI/Properties.hh>
 #include <layout/FlowLayoutManager.hpp>
 #include <layout/GridLayoutManager.hpp>
 

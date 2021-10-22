@@ -10,8 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef iscntrl
 
 extern "C" int iscntrl(int c) {
-    return c >= 0 && c < 32;
+    return __inline_iscntrl(c);
 }

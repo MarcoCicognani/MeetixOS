@@ -25,13 +25,11 @@
 #include "mx.hpp"
 #include "parser.hpp"
 
-#include <Api/utils/local.hpp>
+#include <cstdio>
 #include <IO/Shell.hh>
 #include <iostream>
-#include <sstream>
-#include <stdio.h>
-#include <string.h>
 #include <string>
+#include <Utils/Utils.hh>
 
 // copy of environment object
 Environment* g_shell_env;
@@ -51,12 +49,12 @@ bool readInputLine(std::string& line) {
             return false;
 
         if ( c == SHELLKEY_BACKSPACE ) {
-            if ( line.size() > 0 && caret > 0 ) {
+            if ( !line.empty() && caret > 0 ) {
                 char deleted = line.at(caret - 1);
 
                 auto pos        = IO::Shell::instance().cursor();
                 auto afterCaret = line.substr(caret);
-                line            = line.substr(0, caret - 1) + afterCaret;
+                line            = line.substr(0, caret - 1).append(afterCaret);
                 caret--;
 
                 if ( deleted == '\t' ) {
@@ -69,36 +67,27 @@ bool readInputLine(std::string& line) {
                     afterCaret += ' ';
                 }
                 IO::Shell::instance().set_cursor(pos);
-                for ( char c : afterCaret )
-                    std::cout << c;
+                for ( auto cc : afterCaret )
+                    std::cout << cc;
                 IO::Shell::instance().set_cursor(pos);
             }
-
-        }
-
-        else if ( c == '\t' || c == SHELLKEY_STAB /* TODO implement completion */ ) {
+        } else if ( c == '\t' || c == SHELLKEY_STAB /* TODO implement completion */ ) {
             auto pos = IO::Shell::instance().cursor();
             std::cout << "    ";
 
             auto afterCaret = line.substr(caret);
-            line            = line.substr(0, caret) + '\t' + afterCaret;
+            line            = line.substr(0, caret).append("\t").append(afterCaret);
             caret++;
 
             pos.m_x += 4;
             IO::Shell::instance().set_cursor(pos);
-            for ( char c : afterCaret ) {
-                std::cout << c;
-            }
+            for ( auto cc : afterCaret )
+                std::cout << cc;
             IO::Shell::instance().set_cursor(pos);
-
-        }
-
-        else if ( c == SHELLKEY_ENTER ) {
+        } else if ( c == SHELLKEY_ENTER ) {
             std::cout << '\n';
             break;
-        }
-
-        else if ( c == SHELLKEY_LEFT ) {
+        } else if ( c == SHELLKEY_LEFT ) {
             if ( caret > 0 ) {
                 char beforeCaret = line.at(caret - 1);
 
@@ -108,9 +97,7 @@ bool readInputLine(std::string& line) {
                 else
                     IO::Shell::instance().move_cursor_back(1);
             }
-        }
-
-        else if ( c == SHELLKEY_RIGHT ) {
+        } else if ( c == SHELLKEY_RIGHT ) {
             if ( caret < line.size() ) {
                 char atCaret = line.at(caret);
                 caret++;
@@ -119,20 +106,18 @@ bool readInputLine(std::string& line) {
                 else
                     IO::Shell::instance().move_cursor_forward(1);
             }
-        }
-
-        else if ( c < 0x100 ) {
+        } else if ( c < 0x100 ) {
             auto pos = IO::Shell::instance().cursor();
             std::cout << (char)c;
 
             auto afterCaret = line.substr(caret);
-            line            = line.substr(0, caret) + (char)c + afterCaret;
+            line            = line.substr(0, caret) + static_cast<char>(c) + afterCaret;
             caret++;
 
             pos.m_x++;
             IO::Shell::instance().set_cursor(pos);
-            for ( char c : afterCaret )
-                std::cout << c;
+            for ( auto cc : afterCaret )
+                std::cout << cc;
             IO::Shell::instance().set_cursor(pos);
         }
     }
@@ -143,7 +128,7 @@ bool readInputLine(std::string& line) {
 /**
  *
  */
-bool fileExists(std::string path) {
+bool fileExists(const std::string& path) {
     FileHandle file;
     if ( (file = s_open(path.c_str())) != -1 ) {
         s_close(file);
@@ -180,8 +165,11 @@ std::string findProgram(std::string cwd, std::string name) {
 bool handleBuiltin(std::string cwd, ProgramCall* call) {
     if ( call->program == "cd" ) {
         if ( call->arguments.size() == 1 ) {
-            auto newdir = call->arguments.at(0);
-            s_set_working_directory(newdir.c_str());
+            auto set_work_dir_status = s_set_working_directory(call->arguments.at(0).c_str());
+            if ( set_work_dir_status != SET_WORKING_DIRECTORY_SUCCESSFUL ) {
+                std::cerr << "cd: Failed to set working directory" << std::endl;
+                return false;
+            }
         } else
             std::cerr << "Usage:\tcd /path/to/target" << std::endl;
         return true;
@@ -213,7 +201,7 @@ void MXShell::shellMode(Environment* env) {
     char* cwdbuf = new char[PATH_MAX];
 
     g_shell_env = env;
-    g_shell_env->setVariable("USER", "user");
+    g_shell_env->setVariable("USER", "Admin");
     std::string user = g_shell_env->getVariable("USER");
     std::string host = g_shell_env->getVariable("HOSTNAME");
     std::string dir  = "/Users/" + user;
@@ -230,8 +218,7 @@ void MXShell::shellMode(Environment* env) {
 
         std::string cwd(cwdbuf);
         std::cout << '>';
-        std::cout << (char)27 << "[0m";
-        std::flush(std::cout);
+        std::cout << (char)27 << "[0m" << std::flush;
 
         IO::Shell::instance().set_cursor(IO::Shell::instance().cursor());
 
@@ -243,9 +230,9 @@ void MXShell::shellMode(Environment* env) {
         IO::Shell::instance().set_mode(IO::Shell::MODE_DEFAULT);
         IO::Shell::instance().set_echo(true);
 
-        Parser          cmdparser(line);
-        PipeExpression* pipeexpr;
-        if ( !cmdparser.pipeExpression(&pipeexpr) )
+        Parser          cmd_parser{ line };
+        PipeExpression* pipe_expression;
+        if ( !cmd_parser.pipeExpression(&pipe_expression) )
             continue;
 
         // perform spawning
@@ -254,23 +241,25 @@ void MXShell::shellMode(Environment* env) {
         Pid        lastProcessID    = -1;
         bool       success          = false;
 
-        auto numCalls = pipeexpr->calls.size();
+        auto numCalls = pipe_expression->calls.size();
         for ( int c = 0; c < numCalls; c++ ) {
-            ProgramCall* call = pipeexpr->calls[c];
+            auto call = pipe_expression->calls[c];
 
             // builtin calls (only allowed as single call)
             if ( numCalls == 1 && c == 0 && handleBuiltin(cwd, call) )
                 break;
 
             // concatenate arguments to one argument string
-            std::stringstream argstream;
-            bool              first = true;
-            for ( auto arg : call->arguments ) {
-                if ( first )
-                    first = false;
+            std::stringstream args_ss;
+            bool              is_first_arg = true;
+            for ( auto& arg : call->arguments ) {
+                if ( is_first_arg )
+                    is_first_arg = false;
                 else
-                    argstream << (char)CLIARGS_SEPARATOR;
-                argstream << arg;
+                    args_ss << " ";
+                // args_ss << (char)CLIARGS_SEPARATOR;
+
+                args_ss << arg;
             }
 
             // create out pipe if necessary
@@ -310,7 +299,7 @@ void MXShell::shellMode(Environment* env) {
             Pid         outPid;
             FileHandle  outStdio[3];
             SpawnStatus status = s_spawn_poi(findProgram(cwd, call->program).c_str(),
-                                             argstream.str().c_str(),
+                                             args_ss.str().c_str(),
                                              cwdbuf,
                                              SECURITY_LEVEL_APPLICATION,
                                              &outPid,
@@ -334,9 +323,7 @@ void MXShell::shellMode(Environment* env) {
 
                 // remember for next process
                 previousOutPipeR = outPipeR;
-            }
-
-            else {
+            } else {
                 success = false;
                 // error during one spawn
                 // TODO clean up pipes
@@ -362,5 +349,5 @@ void MXShell::shellMode(Environment* env) {
         }
     }
 
-    delete cwdbuf;
+    delete[] cwdbuf;
 }

@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <gui/uispech.hpp>
+#include <GUI/Protocol.hh>
 #include <interface/CommandMessageReceiverThread.hpp>
 #include <stdio.h>
 #include <string.h>
@@ -34,7 +34,7 @@
  */
 void CommandMessageReceiverThread::run() {
     // create a buffer for incoming command messages
-    auto bufferLength = sizeof(MessageHeader) + UI_MAXIMUM_MESSAGE_SIZE;
+    auto bufferLength = sizeof(MessageHeader) + C_MESSAGE_LEN_MAX;
     auto buffer       = new uint8_t[bufferLength];
 
     while ( !stop ) {

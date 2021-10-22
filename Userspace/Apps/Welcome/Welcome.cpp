@@ -17,12 +17,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
 #include <Api.h>
-#include <gui/actionlistener.hpp>
-#include <gui/button.hpp>
-#include <gui/geoshape.hpp>
-#include <gui/label.hpp>
-#include <gui/ui.hpp>
-#include <gui/window.hpp>
+#include <GUI/Application.hh>
+#include <GUI/Component/Button.hh>
+#include <GUI/Component/Geoshape.hh>
+#include <GUI/Component/Label.hh>
+#include <GUI/Component/Window.hh>
+#include <GUI/Listener/ActionListener.hh>
 #include <Utils/Environment.hh>
 
 // ui style, i change the presentation in base the style
@@ -119,67 +119,67 @@ void fillPresentation() {
  */
 static void showPage(int index) {
     if ( index == 1 ) {
-        mainWindow->setBounds(windowDimension);
+        mainWindow->set_bounds(windowDimension);
         if ( style == UiStyle_t::GNOME )
-            backGround->setPNG("/app/welcome/deps/icon/arrow_up.png",
-                               Graphics::Metrics::Point(resolution.width() / 2 - 53, 0));
+            backGround->set_image("/app/welcome/deps/icon/arrow_up.png",
+                                  Graphics::Metrics::Point(resolution.width() / 2 - 53, 0));
         else
-            backGround->setPNG(
+            backGround->set_image(
                 "/app/welcome/deps/icon/arrow_down.png",
                 Graphics::Metrics::Point(resolution.width() / 2 - 53, resolution.height() - 230));
 
-        lb1->setTitle(rg1[index]);
-        lb2->setTitle(rg2[index]);
-        lb3->setTitle(rg3[index]);
-        lb4->setTitle(rg4[index]);
-        lb5->setTitle(rg5[index]);
+        lb1->set_title(rg1[index]);
+        lb2->set_title(rg2[index]);
+        lb3->set_title(rg3[index]);
+        lb4->set_title(rg4[index]);
+        lb5->set_title(rg5[index]);
     }
 
     else if ( index == 2 ) {
-        mainWindow->setBounds(windowDimension);
+        mainWindow->set_bounds(windowDimension);
         if ( style == UiStyle_t::GNOME )
-            backGround->setPNG(
+            backGround->set_image(
                 "/app/welcome/deps/icon/arrow_down.png",
                 Graphics::Metrics::Point(resolution.width() / 2 - 53, resolution.height() - 300));
-        lb1->setTitle(rg1[index]);
-        lb2->setTitle(rg2[index]);
-        lb3->setTitle(rg3[index]);
-        lb4->setTitle(rg4[index]);
-        lb5->setTitle(rg5[index]);
+        lb1->set_title(rg1[index]);
+        lb2->set_title(rg2[index]);
+        lb3->set_title(rg3[index]);
+        lb4->set_title(rg4[index]);
+        lb5->set_title(rg5[index]);
     }
 
     else if ( index == 3 ) {
-        mainWindow->setBounds(windowDimension);
+        mainWindow->set_bounds(windowDimension);
         if ( style == UiStyle_t::GNOME )
-            backGround->setPNG(
+            backGround->set_image(
                 "/app/welcome/deps/icon/arrow_down.png",
                 Graphics::Metrics::Point(resolution.width() / 2 - 200, resolution.height() - 300));
-        lb1->setTitle(rg1[index]);
-        lb2->setTitle(rg2[index]);
-        lb3->setTitle(rg3[index]);
-        lb4->setTitle(rg4[index]);
-        lb5->setTitle(rg5[index]);
+        lb1->set_title(rg1[index]);
+        lb2->set_title(rg2[index]);
+        lb3->set_title(rg3[index]);
+        lb4->set_title(rg4[index]);
+        lb5->set_title(rg5[index]);
 
-        nextButton->setColor(Graphics::Color::as_argb(180, 0, 200, 0),
-                             Graphics::Color::as_rgb(0, 0, 0));
-        nextButton->setTitle("Next");
+        nextButton->set_color(Graphics::Color::as_argb(180, 0, 200, 0),
+                              Graphics::Color::as_rgb(0, 0, 0));
+        nextButton->set_title("Next");
     }
 
     else if ( index == 4 ) {
-        mainWindow->setBounds(windowDimension);
-        lb1->setTitle(rg1[index]);
-        lb2->setTitle(rg2[index]);
-        lb3->setTitle(rg3[index]);
-        lb4->setTitle(rg4[index]);
+        mainWindow->set_bounds(windowDimension);
+        lb1->set_title(rg1[index]);
+        lb2->set_title(rg2[index]);
+        lb3->set_title(rg3[index]);
+        lb4->set_title(rg4[index]);
 
-        lb5->setColor(0, Graphics::Color::as_rgb(200, 0, 0));
-        lb5->setTitle(rg5[index]);
-        lb5->setColor(0, Graphics::Color::as_rgb(0, 0, 0));
+        lb5->set_color(0, Graphics::Color::as_rgb(200, 0, 0));
+        lb5->set_title(rg5[index]);
+        lb5->set_color(0, Graphics::Color::as_rgb(0, 0, 0));
 
-        nextButton->setColor(Graphics::Color::as_rgb(200, 0, 0), Graphics::Color::as_rgb(0, 0, 0));
-        nextButton->setFontSize(20);
-        nextButton->setTitle("s_exit");
-        nextButton->setFontSize(14);
+        nextButton->set_color(Graphics::Color::as_rgb(200, 0, 0), Graphics::Color::as_rgb(0, 0, 0));
+        nextButton->set_font_size(20);
+        nextButton->set_title("s_exit");
+        nextButton->set_font_size(14);
     }
 
     else if ( index == 5 )
@@ -191,7 +191,7 @@ static void showPage(int index) {
  */
 class ButtonNextListener : public ActionListener {
 public:
-    virtual void handleAction() {
+    virtual void handle_action() {
         showPage(++page);
     }
 };
@@ -201,7 +201,7 @@ public:
  */
 class ButtonPrevListener : public ActionListener {
 public:
-    virtual void handleAction() {
+    virtual void handle_action() {
         showPage(--page);
     }
 };
@@ -213,7 +213,7 @@ int main(int argc, char* argv[]) {
     // open comunication with the window server
     if ( UI::open() == UI_OPEN_STATUS_SUCCESSFUL ) {
         // get screen resolution and set window resolution
-        resolution      = UI::getResolution();
+        resolution      = UI::screen_dimension();
         windowDimension = Graphics::Metrics::Rectangle(resolution.width() / 2 - 375,
                                                        resolution.height() / 2 - 225,
                                                        750,
@@ -227,96 +227,96 @@ int main(int argc, char* argv[]) {
 
         // setting background geoshape
         backGround = Geoshape::create();
-        backGround->setBounds(Graphics::Metrics::Rectangle(
+        backGround->set_bounds(Graphics::Metrics::Rectangle(
             0,
             style == UiStyle_t::KDE ? 0 : 30,
             resolution.width(),
             resolution.height() - (style == UiStyle_t::KDE ? 30 : 94)));
-        backGround->setColor(Graphics::Color::as_argb(120, 0, 0, 0),
-                             Graphics::Color::as_rgb(255, 255, 255));
+        backGround->set_color(Graphics::Color::as_argb(120, 0, 0, 0),
+                              Graphics::Color::as_rgb(255, 255, 255));
 
         // set frontend window
         mainWindow = Window::create();
-        mainWindow->setBounds(windowDimension);
-        mainWindow->setTitleAlignment(Graphics::Text::Alignment::CENTER);
-        mainWindow->setTitle("Welcome to the Meetix Operating System");
-        mainWindow->setResizable(false);
-        mainWindow->onClose([] { blocker = false; });
+        mainWindow->set_bounds(windowDimension);
+        mainWindow->set_title_alignment(Graphics::Text::Alignment::CENTER);
+        mainWindow->set_title("Welcome to the Meetix Operating System");
+        mainWindow->set_resizable(false);
+        mainWindow->on_close([] { blocker = false; });
 
         // configuring label
         lb1 = Label::create();
-        lb1->setBounds(Graphics::Metrics::Rectangle(0, 20, windowDimension.width(), 30));
-        lb1->setTitleAlignment(Graphics::Text::Alignment::CENTER);
-        mainWindow->addChild(lb1);
+        lb1->set_bounds(Graphics::Metrics::Rectangle(0, 20, windowDimension.width(), 30));
+        lb1->set_title_alignment(Graphics::Text::Alignment::CENTER);
+        mainWindow->add_child(lb1);
 
         // configuring label
         lb2 = Label::create();
-        lb2->setBounds(Graphics::Metrics::Rectangle(0, 50, windowDimension.width(), 30));
-        lb2->setTitleAlignment(Graphics::Text::Alignment::CENTER);
-        mainWindow->addChild(lb2);
+        lb2->set_bounds(Graphics::Metrics::Rectangle(0, 50, windowDimension.width(), 30));
+        lb2->set_title_alignment(Graphics::Text::Alignment::CENTER);
+        mainWindow->add_child(lb2);
 
         // configuring label
         lb3 = Label::create();
-        lb3->setBounds(Graphics::Metrics::Rectangle(0, 80, windowDimension.width(), 30));
-        lb3->setTitleAlignment(Graphics::Text::Alignment::CENTER);
-        mainWindow->addChild(lb3);
+        lb3->set_bounds(Graphics::Metrics::Rectangle(0, 80, windowDimension.width(), 30));
+        lb3->set_title_alignment(Graphics::Text::Alignment::CENTER);
+        mainWindow->add_child(lb3);
 
         // configuring label
         lb4 = Label::create();
-        lb4->setBounds(Graphics::Metrics::Rectangle(0, 110, windowDimension.width(), 30));
-        lb4->setTitleAlignment(Graphics::Text::Alignment::CENTER);
-        mainWindow->addChild(lb4);
+        lb4->set_bounds(Graphics::Metrics::Rectangle(0, 110, windowDimension.width(), 30));
+        lb4->set_title_alignment(Graphics::Text::Alignment::CENTER);
+        mainWindow->add_child(lb4);
 
         // configuring label
         lb5 = Label::create();
-        lb5->setBounds(Graphics::Metrics::Rectangle(0, 140, windowDimension.width(), 30));
-        lb5->setTitleAlignment(Graphics::Text::Alignment::CENTER);
-        mainWindow->addChild(lb5);
+        lb5->set_bounds(Graphics::Metrics::Rectangle(0, 140, windowDimension.width(), 30));
+        lb5->set_title_alignment(Graphics::Text::Alignment::CENTER);
+        mainWindow->add_child(lb5);
 
         // show the window
-        mainWindow->setVisible(true);
+        mainWindow->set_visible(true);
 
         // configuring button
         nextButton = Button::create();
-        nextButton->setBounds(
+        nextButton->set_bounds(
             Graphics::Metrics::Rectangle(windowDimension.width() / 2 - 200, 300, 400, 30));
-        nextButton->setColor(Graphics::Color::as_argb(180, 0, 200, 0),
-                             Graphics::Color::as_rgb(0, 0, 0));
+        nextButton->set_color(Graphics::Color::as_argb(180, 0, 200, 0),
+                              Graphics::Color::as_rgb(0, 0, 0));
 
-        nextButton->setTitle("Next");
-        nextButton->setActionListener(new ButtonNextListener());
-        mainWindow->addChild(nextButton);
+        nextButton->set_title("Next");
+        nextButton->set_action_listener(new ButtonNextListener());
+        mainWindow->add_child(nextButton);
 
         // configuring button
         PrevButton = Button::create();
-        PrevButton->setBounds(
+        PrevButton->set_bounds(
             Graphics::Metrics::Rectangle(windowDimension.width() / 2 - 200, 350, 400, 30));
-        PrevButton->setColor(Graphics::Color::as_argb(180, 0, 200, 0),
-                             Graphics::Color::as_rgb(0, 0, 0));
+        PrevButton->set_color(Graphics::Color::as_argb(180, 0, 200, 0),
+                              Graphics::Color::as_rgb(0, 0, 0));
 
-        PrevButton->setTitle("Previous");
-        PrevButton->setActionListener(new ButtonPrevListener());
-        mainWindow->addChild(PrevButton);
+        PrevButton->set_title("Previous");
+        PrevButton->set_action_listener(new ButtonPrevListener());
+        mainWindow->add_child(PrevButton);
 
         // set page to first
         page = 0;
 
         // initialize labels
-        lb1->setColor(0, Graphics::Color::as_rgb(20, 200, 20));
-        lb1->setFontSize(30);
-        lb1->setTitle(rg1[page]);
-        lb1->setColor(0, Graphics::Color::as_rgb(0, 0, 0));
-        lb1->setFontSize(14);
+        lb1->set_color(0, Graphics::Color::as_rgb(20, 200, 20));
+        lb1->set_font_size(30);
+        lb1->set_title(rg1[page]);
+        lb1->set_color(0, Graphics::Color::as_rgb(0, 0, 0));
+        lb1->set_font_size(14);
 
-        lb2->setTitle(rg2[page]);
-        lb3->setTitle(rg3[page]);
-        lb4->setTitle(rg4[page]);
+        lb2->set_title(rg2[page]);
+        lb3->set_title(rg3[page]);
+        lb4->set_title(rg4[page]);
 
-        lb5->setColor(0, Graphics::Color::as_rgb(200, 0, 0));
-        lb5->setFontSize(20);
-        lb5->setTitle(rg5[page]);
-        lb5->setColor(0, Graphics::Color::as_rgb(0, 0, 0));
-        lb5->setFontSize(14);
+        lb5->set_color(0, Graphics::Color::as_rgb(200, 0, 0));
+        lb5->set_font_size(20);
+        lb5->set_title(rg5[page]);
+        lb5->set_color(0, Graphics::Color::as_rgb(0, 0, 0));
+        lb5->set_font_size(14);
 
         // wait for events
         s_atomic_block(&blocker);

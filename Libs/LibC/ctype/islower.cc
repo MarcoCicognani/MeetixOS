@@ -10,8 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef islower
 
 extern "C" int islower(int c) {
-    return c >= 'a' && c <= 'z';
+    return __inline_islower(c);
 }

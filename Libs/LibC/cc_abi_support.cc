@@ -10,9 +10,5 @@
  * GNU General Public License version 3
  */
 
-#include <Api/Common.h>
-
-extern "C" {
-void __cxa_atexit(A_UNUSED void (*func)(void*), A_UNUSED void* arg, A_UNUSED void* dso_handle) {
-}
+extern "C" void __cxa_atexit(void (*)(void*), void*, void*) {
 }

@@ -10,10 +10,9 @@
  * GNU General Public License version 3
  */
 
-#ifndef LIBC_BUILDING_LIBSTDCXX
-#    include <Api.h>
-#    include <dirent.h>
-#    include <errno.h>
+#include <Api.h>
+#include <cerrno>
+#include <dirent.h>
 
 extern "C" DIR* opendir(const char* path) {
     FsOpenDirectoryStatus stat;
@@ -27,10 +26,3 @@ extern "C" DIR* opendir(const char* path) {
 
     return nullptr;
 }
-#else
-#    include <dirent.h>
-
-extern "C" DIR* opendir(const char*) {
-    return nullptr;
-}
-#endif

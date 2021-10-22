@@ -12,6 +12,7 @@
 
 #include "stdio_internal.hh"
 
+#include <cstdio>
 #include <fcntl.h>
 #include <unistd.h>
 

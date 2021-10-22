@@ -18,8 +18,8 @@
 
 #include "SecondaryThread.hpp"
 
-#include <gui/componentregistry.hpp>
-#include <gui/notification.hpp>
+#include <GUI/Component/ComponentRegistry.hh>
+#include <GUI/Notification.hh>
 #include <Utils/Environment.hh>
 
 using namespace std;
@@ -43,15 +43,15 @@ static void showPopupAnimation(Geoshape* popup, MessageAnimation_t animation, bo
         // do animation
         for ( int index = start; index < end; index++ )
             if ( !(index % 2) )
-                popup->setColor(Graphics::Color::as_argb(index, 0, 0, 0),
-                                Graphics::Color::as_argb(255, 255, 255, 255));
+                popup->set_color(Graphics::Color::as_argb(index, 0, 0, 0),
+                                 Graphics::Color::as_argb(255, 255, 255, 255));
     }
 
     else if ( animation == MessageAnimation_t::SIDE_SCROLL ) {
         // get bounds from popup
-        auto bounds = popup->getBounds();
-        popup->setColor(Graphics::Color::as_argb(150, 0, 0, 0),
-                        Graphics::Color::as_argb(255, 255, 255, 255));
+        auto bounds = popup->bounds();
+        popup->set_color(Graphics::Color::as_argb(150, 0, 0, 0),
+                         Graphics::Color::as_argb(255, 255, 255, 255));
 
         // set limits with bolean flag
         int start = first ? bounds.x() + bounds.width() : bounds.x();
@@ -60,7 +60,7 @@ static void showPopupAnimation(Geoshape* popup, MessageAnimation_t animation, bo
         // do animation
         for ( int index = start; index < end; index++ )
             if ( !(index % 6) )
-                popup->setBounds({ index, bounds.y(), bounds.width(), bounds.height() });
+                popup->set_bounds({ index, bounds.y(), bounds.width(), bounds.height() });
     }
 }
 
@@ -71,7 +71,7 @@ static void showOnScreen(Notification_t* msg) {
     // create popup only if message exist and display time is major than 0
     if ( msg->message[0] && msg->displayTime ) {
         // get screen dimension
-        auto resolution = UI::getResolution();
+        auto resolution = UI::screen_dimension();
 
         // create the popup and the components
         Geoshape* popup             = Geoshape::create();
@@ -81,24 +81,24 @@ static void showOnScreen(Notification_t* msg) {
         uint32_t xPos = resolution.width() - boxWidth - 5;
         uint32_t dist = popupOnScreen == 1 ? 35 : 5 * popupOnScreen;
         uint32_t yPos = resolution.height() - dist - boxheight * popupOnScreen;
-        popup->setBounds({ static_cast<i32>(xPos),
-                           static_cast<i32>(yPos),
-                           static_cast<i32>(boxWidth),
-                           static_cast<i32>(boxheight) });
-        messageContenitor->setBounds(
+        popup->set_bounds({ static_cast<i32>(xPos),
+                            static_cast<i32>(yPos),
+                            static_cast<i32>(boxWidth),
+                            static_cast<i32>(boxheight) });
+        messageContenitor->set_bounds(
             { 0, 0, static_cast<i32>(boxWidth), static_cast<i32>(boxheight) });
 
         // set title
-        popup->setTitle(msg->title);
+        popup->set_title(msg->title);
 
         // set text message
-        messageContenitor->setTitleAlignment(Graphics::Text::Alignment::CENTER);
-        messageContenitor->setColor(0, msg->color);
-        messageContenitor->setTitle(msg->message);
-        popup->addChild(messageContenitor);
+        messageContenitor->set_title_alignment(Graphics::Text::Alignment::CENTER);
+        messageContenitor->set_color(0, msg->color);
+        messageContenitor->set_title(msg->message);
+        popup->add_child(messageContenitor);
 
         // show popup with animation
-        popup->setVisible(true);
+        popup->set_visible(true);
         showPopupAnimation(popup, msg->animation, true);
 
         // wait for provided time

@@ -22,8 +22,8 @@
 #include <cstring>
 #include <fcntl.h>
 #include <fstream>
-#include <gui/about.hpp>
-#include <gui/menu.hpp>
+#include <GUI/About.hh>
+#include <GUI/ButtonMenu.hh>
 #include <IO/Keyboard.hh>
 #include <list>
 #include <map>
@@ -77,9 +77,9 @@ static Tasking::Lock            locker;
  */
 class InputKeyListener : public KeyListener {
 public:
-    virtual void handleKeyEvent(KeyEvent& e) {
+    virtual void handle_key_event(KeyEvent& e) {
         locker.lock();
-        inputBuffer.push_back(IO::Keyboard::instance().full_key_info(e.info));
+        inputBuffer.push_back(IO::Keyboard::instance().full_key_info(e.m_info_basic));
         inputBufferEmpty = false;
         locker.unlock();
     }
@@ -126,13 +126,13 @@ void OsmosUI::configureUi(std::string                  pathToConfiguration,
 
     // creating bar
     mainBar = Geoshape::create();
-    mainBar->setColor(Graphics::Color::as_argb(150, 0, 0, 0),
-                      Graphics::Color::as_argb(255, 255, 255, 255));
-    mainBar->setListener(UI_COMPONENT_EVENT_TYPE_KEY, new InputKeyListener());
+    mainBar->set_color(Graphics::Color::as_argb(150, 0, 0, 0),
+                       Graphics::Color::as_argb(255, 255, 255, 255));
+    mainBar->set_listener(UI_COMPONENT_EVENT_TYPE_KEY, new InputKeyListener());
 
     if ( configuration["UiStyle"] == "GNOME" ) {
         // set bounds
-        mainBar->setBounds(Graphics::Metrics::Rectangle(0, 0, resolution.width(), 30));
+        mainBar->set_bounds(Graphics::Metrics::Rectangle(0, 0, resolution.width(), 30));
 
         // set mode
         mode = GNOME;
@@ -141,7 +141,7 @@ void OsmosUI::configureUi(std::string                  pathToConfiguration,
 
     else if ( configuration["UiStyle"] == "KDE" ) {
         // set bounds
-        mainBar->setBounds(
+        mainBar->set_bounds(
             Graphics::Metrics::Rectangle(0, resolution.height() - 30, resolution.width(), 30));
 
         // if mode is kde deactivate candydock thread if is active
@@ -162,20 +162,20 @@ static void startEvent() {
         pressed = true;
 
         if ( loggedUser == "admin" )
-            menuButton->setColor(Graphics::Color::as_argb(255, 255, 10, 10),
-                                 Graphics::Color::as_argb(255, 0, 0, 0));
+            menuButton->set_color(Graphics::Color::as_argb(255, 255, 10, 10),
+                                  Graphics::Color::as_argb(255, 0, 0, 0));
         else
-            menuButton->setColor(Graphics::Color::as_argb(255, 10, 255, 10),
-                                 Graphics::Color::as_argb(255, 0, 0, 0));
+            menuButton->set_color(Graphics::Color::as_argb(255, 10, 255, 10),
+                                  Graphics::Color::as_argb(255, 0, 0, 0));
 
-        menuTab->setVisible(true);
+        menuTab->set_visible(true);
     }
 
     else {
         pressed = false;
-        menuButton->setColor(Graphics::Color::as_argb(255, 10, 200, 10),
-                             Graphics::Color::as_argb(255, 0, 0, 0));
-        menuTab->setVisible(false);
+        menuButton->set_color(Graphics::Color::as_argb(255, 10, 200, 10),
+                              Graphics::Color::as_argb(255, 0, 0, 0));
+        menuTab->set_visible(false);
     }
 }
 
@@ -206,25 +206,25 @@ void OsmosUI::setMenuButton() {
 void OsmosUI::setMenuTab() {
     // create menutab
     menuTab = Geoshape::create();
-    menuTab->setVisible(pressed);
+    menuTab->set_visible(pressed);
 
     if ( loggedUser == "admin" )
-        menuTab->setColor(Graphics::Color::as_argb(150, 0, 0, 0),
-                          Graphics::Color::as_argb(255, 255, 0, 0));
+        menuTab->set_color(Graphics::Color::as_argb(150, 0, 0, 0),
+                           Graphics::Color::as_argb(255, 255, 0, 0));
     else
-        menuTab->setColor(Graphics::Color::as_argb(150, 0, 0, 0),
-                          Graphics::Color::as_argb(255, 0, 255, 0));
+        menuTab->set_color(Graphics::Color::as_argb(150, 0, 0, 0),
+                           Graphics::Color::as_argb(255, 0, 255, 0));
 
     // get username
     loggedUser = Utils::Environment::logged_user();
 
     // set title of start menu
-    menuTab->setTitle("MeetiX OS " + Utils::Environment::get("VERSION") + " [" + loggedUser + "]");
+    menuTab->set_title("MeetiX OS " + Utils::Environment::get("VERSION") + " [" + loggedUser + "]");
 
     if ( mode == GNOME )
-        menuTab->setBounds(Graphics::Metrics::Rectangle(0, 30, 350, 350));
+        menuTab->set_bounds(Graphics::Metrics::Rectangle(0, 30, 350, 350));
     else if ( mode == KDE )
-        menuTab->setBounds(Graphics::Metrics::Rectangle(0, resolution.height() - 380, 350, 350));
+        menuTab->set_bounds(Graphics::Metrics::Rectangle(0, resolution.height() - 380, 350, 350));
 }
 
 /**
@@ -232,10 +232,10 @@ void OsmosUI::setMenuTab() {
  */
 void OsmosUI::setMemLabel() {
     memLabel = Label::create();
-    memLabel->setBounds(Graphics::Metrics::Rectangle(200, 3, 135, 30));
-    memLabel->setColor(0, Graphics::Color::as_rgb(255, 255, 255));
-    memLabel->setTitleAlignment(Graphics::Text::Alignment::CENTER);
-    menuTab->addChild(memLabel);
+    memLabel->set_bounds(Graphics::Metrics::Rectangle(200, 3, 135, 30));
+    memLabel->set_color(0, Graphics::Color::as_rgb(255, 255, 255));
+    memLabel->set_title_alignment(Graphics::Text::Alignment::CENTER);
+    menuTab->add_child(memLabel);
 }
 
 /**
@@ -244,12 +244,12 @@ void OsmosUI::setMemLabel() {
 void OsmosUI::setHourLabel() {
     // create and set hour label
     hourLabel = Label::create();
-    hourLabel->setBounds(Graphics::Metrics::Rectangle(resolution.width() - 145, 0, 140, 30));
-    hourLabel->setColor(0, Graphics::Color::as_rgb(255, 255, 255));
-    hourLabel->setTitleAlignment(Graphics::Text::Alignment::RIGHT);
-    hourLabel->setFont("Xcelsion");
-    hourLabel->setFontSize(22);
-    mainBar->addChild(hourLabel);
+    hourLabel->set_bounds(Graphics::Metrics::Rectangle(resolution.width() - 145, 0, 140, 30));
+    hourLabel->set_color(0, Graphics::Color::as_rgb(255, 255, 255));
+    hourLabel->set_title_alignment(Graphics::Text::Alignment::RIGHT);
+    hourLabel->set_font("Xcelsion");
+    hourLabel->set_font_size(22);
+    mainBar->add_child(hourLabel);
 }
 
 /**
@@ -257,9 +257,9 @@ void OsmosUI::setHourLabel() {
  */
 void OsmosUI::setTaskLabel() {
     taskLabel = Label::create();
-    taskLabel->setBounds(Graphics::Metrics::Rectangle(75, -3, resolution.width() - 155, 30));
-    taskLabel->setColor(0, Graphics::Color::as_rgb(255, 255, 255));
-    mainBar->addChild(taskLabel);
+    taskLabel->set_bounds(Graphics::Metrics::Rectangle(75, -3, resolution.width() - 155, 30));
+    taskLabel->set_color(0, Graphics::Color::as_rgb(255, 255, 255));
+    mainBar->add_child(taskLabel);
 }
 
 /*
@@ -342,7 +342,7 @@ std::map<string, string> createMenuConfiguration() {
  */
 void OsmosUI::createMenu() {
     // crete and configure menu object with script file
-    start.create(createMenuConfiguration(), menuTab->getBounds());
+    start.create(createMenuConfiguration(), menuTab->bounds());
     start.show(menuTab);
 
     // create and setup logout button
@@ -352,16 +352,16 @@ void OsmosUI::createMenu() {
                        "LogOut",
                        Graphics::Color::as_argb(120, 200, 0, 0),
                        Graphics::Color::as_rgb(255, 255, 255));
-    buttons->get("logout")->setFont("consolas");
+    buttons->get("logout")->set_font("consolas");
 
     // create and setup about button
-    buttons->add("about", aboutMeetiXOS);
+    buttons->add("about", about_os);
     buttons->configure("about",
                        Graphics::Metrics::Rectangle(190, 320, 160, 30),
                        "About MeetiX OS",
                        Graphics::Color::as_argb(120, 0, 200, 0),
                        Graphics::Color::as_rgb(255, 255, 255));
-    buttons->get("about")->setFont("consolas");
+    buttons->get("about")->set_font("consolas");
 
     // add this two buttons to start menu
     buttons->show("about", menuTab);
@@ -410,7 +410,7 @@ IO::Keyboard::Info OsmosUI::readInput() {
 void OsmosUI::mainLoop() {
     // exec asincronous thread if in configuration are enabled
     if ( configuration["TaskManagerThread"] == "true" )
-        UI::registerTaskManager(taskLabel, taskLabel->getBounds());
+        UI::register_task_manager(taskLabel, taskLabel->bounds());
     if ( configuration["HourManagerThread"] == "true" )
         threads.push_back(s_create_thread_dn((void*)&SecondaryThread::HourManagerThread,
                                              (void*)hourLabel,
@@ -434,9 +434,9 @@ void OsmosUI::mainLoop() {
 
         if ( key.m_is_pressed ) {
             // reading combination
-            if ( key.m_alt && key.key == "KEY_T" )
+            if ( key.m_alt && key.m_key == "KEY_T" )
                 s_spawn("/Apps/CandyShell/Bin/CandyShell", "", "/", SECURITY_LEVEL_APPLICATION);
-            else if ( key.m_alt && key.key == "KEY_S" )
+            else if ( key.m_alt && key.m_key == "KEY_S" )
                 s_spawn("/Apps/CandyNote/Bin/CandyNote", "-new", "/", SECURITY_LEVEL_APPLICATION);
         }
     }

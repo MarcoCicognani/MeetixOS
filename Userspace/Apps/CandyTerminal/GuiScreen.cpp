@@ -42,7 +42,7 @@ public:
     CanvasResizeBoundsListener_t(GuiScreen* screen) : screen(screen) {
     }
 
-    virtual void handleBoundsChanged(Graphics::Metrics::Rectangle bounds) {
+    virtual void handle_bounds_changed(Graphics::Metrics::Rectangle bounds) {
         screen->updateVisibleBufferSize();
     }
 };
@@ -64,8 +64,8 @@ public:
     /**
      *
      */
-    virtual void handleKeyEvent(KeyEvent& e) {
-        screen->bufferInput(IO::Keyboard::instance().full_key_info(e.info));
+    virtual void handle_key_event(KeyEvent& e) {
+        screen->bufferInput(IO::Keyboard::instance().full_key_info(e.m_info_basic));
     }
 };
 
@@ -86,7 +86,7 @@ public:
     /**
      *
      */
-    virtual void handleBufferChanged() {
+    virtual void handle_buffer_changed() {
         screen->updateVisibleBufferSize();
         screen->repaint();
     }
@@ -109,7 +109,7 @@ public:
     /**
      *
      */
-    virtual void handleFocusChanged(bool nowFocused) {
+    virtual void handle_focus_changed(bool nowFocused) {
         screen->setFocused(nowFocused);
         screen->repaint();
     }
@@ -154,25 +154,25 @@ bool GuiScreen::initialize() {
     }
 
     window = Window::create();
-    window->setTitle("CandyTerminal");
-    window->setColor(Graphics::Color::as_argb(100, 0, 0, 0),
-                     Graphics::Color::as_argb(255, 255, 255, 255));
-    window->onClose(exitTerminalEntry);
+    window->set_title("CandyTerminal");
+    window->set_color(Graphics::Color::as_argb(100, 0, 0, 0),
+                      Graphics::Color::as_argb(255, 255, 255, 255));
+    window->on_close(exitTerminalEntry);
 
     canvas = Canvas::create();
-    window->setLayout(UI_LAYOUT_MANAGER_GRID);
-    window->addChild(canvas);
+    window->set_layout(UI_LAYOUT_MANAGER_GRID);
+    window->add_child(canvas);
 
     auto windowBounds = Graphics::Metrics::Rectangle(200, 200, 600, 480);
-    window->setBounds(windowBounds);
-    canvas->setBounds(
+    window->set_bounds(windowBounds);
+    canvas->set_bounds(
         Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
 
-    canvas->setBufferListener(new CanvasBufferListener_t(this));
-    canvas->setBoundsListener(new CanvasResizeBoundsListener_t(this));
-    canvas->setListener(UI_COMPONENT_EVENT_TYPE_KEY, new InputKeyListener_t(this));
-    window->setListener(UI_COMPONENT_EVENT_TYPE_FOCUS, new TerminalFocusListener_t(this));
-    window->setVisible(true);
+    canvas->set_buffer_listener(new CanvasBufferListener_t(this));
+    canvas->set_bounds_listener(new CanvasResizeBoundsListener_t(this));
+    canvas->set_listener(UI_COMPONENT_EVENT_TYPE_KEY, new InputKeyListener_t(this));
+    window->set_listener(UI_COMPONENT_EVENT_TYPE_FOCUS, new TerminalFocusListener_t(this));
+    window->set_visible(true);
 
     font = Graphics::Text::FontLoader::get("consolas");
 
@@ -247,7 +247,7 @@ CharLayout* GuiScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
 [[noreturn]] void GuiScreen::paint() {
     int padding = 0;
     while ( true ) {
-        auto windowBounds = window->getBounds();
+        auto windowBounds = window->bounds();
         updateVisibleBufferSize();
 
         cairo_t* cr = getGraphics();
@@ -332,7 +332,7 @@ CharLayout* GuiScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
  */
 cairo_t* GuiScreen::getGraphics() {
     // get buffer
-    auto bufferInfo = canvas->getBuffer();
+    auto bufferInfo = canvas->buffer_info();
     if ( !bufferInfo.buffer )
         return 0;
 
@@ -505,7 +505,7 @@ void GuiScreen::setFocused(bool _focused) {
  *
  */
 void GuiScreen::updateVisibleBufferSize() {
-    auto canvasBounds   = canvas->getBounds();
+    auto canvasBounds   = canvas->bounds();
     int  requiredWidth  = canvasBounds.width() / charWidth;
     int  requiredHeight = canvasBounds.height() / charHeight;
 

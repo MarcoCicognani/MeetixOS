@@ -10,8 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef isxdigit
 
 extern "C" int isxdigit(int c) {
-    return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+    return __inline_isxdigit(c);
 }

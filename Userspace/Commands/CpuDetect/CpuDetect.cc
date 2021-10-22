@@ -17,7 +17,7 @@
 
 #include <iostream>
 
-int main(int argc, char* argv[]) {
+int main(int argc, char** argv) {
     usize ebx;
     usize dummy;
     CPU_ID(0, dummy, ebx, dummy, dummy);

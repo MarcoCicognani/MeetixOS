@@ -71,12 +71,12 @@ void processSpawnRequest(SpawnCommandSpawnRequest* request, Tid requester, Messa
 
 /**
  * Creates the standard input & output streams for the process
- * with the id <pid>. Writes the result to the output parameters
+ * with the m_command <pid>. Writes the result to the output parameters
  *
  * @param createdPid
- * 		target process id
+ * 		target process m_command
  * @param requesterPid
- * 		process id of the requesting task
+ * 		process m_command of the requesting task
  * @param outInw
  * 		write end of stdin of the process
  * @param outOutr
@@ -123,7 +123,7 @@ BinaryFormat detectFormat(FileHandle file);
  * @param sec_lvl
  * 		security level
  * @param requesterPid
- * 		process id of the requester
+ * 		process m_command of the requester
  */
 SpawnStatus spawn(const char*   path,
                   const char*   args,

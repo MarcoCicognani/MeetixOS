@@ -10,8 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef isgraph
 
 extern "C" int isgraph(int c) {
-    return c >= '!' && c <= '~';
+    return __inline_isgraph(c);
 }

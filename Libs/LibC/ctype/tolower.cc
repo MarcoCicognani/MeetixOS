@@ -10,11 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef tolower
 
 extern "C" int tolower(int c) {
-    if ( c >= 'A' && c <= 'Z' ) {
-        return 'a' + (c - 'A');
-    }
-    return c;
+    return __inline_tolower(c);
 }

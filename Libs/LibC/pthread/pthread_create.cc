@@ -10,12 +10,13 @@
  * GNU General Public License version 3
  */
 
-#ifndef LIBC_BUILDING_LIBSTDCXX
-#    include "pthread_internal.hh"
+#include "pthread_internal.hh"
 
-#    include <Api.h>
-#    include <errno.h>
-#    include <pthread.h>
+#include <Api.h>
+#include <cerrno>
+#include <malloc.h>
+#include <new>
+#include <pthread.h>
 
 using PThreadFn = void* (*)(void*);
 
@@ -25,13 +26,15 @@ struct PThreadArgs {
     PThreadFn  m_user_routine{ nullptr };
 
     PThreadArgs(void* arg_ptr, pthread_t* pthread, PThreadFn user_routine)
-        : m_arg_ptr(arg_ptr), m_pthread(pthread), m_user_routine(user_routine) {
+        : m_arg_ptr{ arg_ptr }
+        , m_pthread{ pthread }
+        , m_user_routine{ user_routine } {
     }
 };
 
-static A_NOINLINE void pthread_entry_point(PThreadArgs* args) {
-    args->m_pthread->m_exit_value = args->m_user_routine(args->m_arg_ptr);
-    delete args;
+static A_NOINLINE void pthread_entry_point(PThreadArgs* pthread_args) {
+    pthread_args->m_pthread->m_exit_value = pthread_args->m_user_routine(pthread_args->m_arg_ptr);
+    delete pthread_args;
 }
 
 extern "C" int pthread_create(pthread_t*            pthread,
@@ -63,10 +66,3 @@ extern "C" int pthread_create(pthread_t*            pthread,
         return -1;
     }
 }
-#else
-#    include <pthread.h>
-
-extern "C" int pthread_create(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*) {
-    return -1;
-}
-#endif

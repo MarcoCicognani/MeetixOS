@@ -27,7 +27,7 @@
 
 #include <components/component.hpp>
 #include <components/window.hpp>
-#include <gui/uispech.hpp>
+#include <GUI/Protocol.hh>
 #include <list>
 #include <Tasking/Thread.hh>
 

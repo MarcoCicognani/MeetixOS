@@ -10,35 +10,37 @@
  * GNU General Public License version 3
  */
 
-#ifndef LIBC_BUILDING_LIBSTDCXX
-#    include <Api.h>
-#    include <ctype.h>
-#    include <libgen.h>
-#    include <malloc.h>
-#    include <stdlib.h>
-#    include <string.h>
+#include <Api.h>
+#include <cctype>
+#include <cerrno>
+#include <cstdlib>
+#include <cstring>
+#include <libgen.h>
 
-#    define SKIP_WHITESPACE(pos)                                                                   \
-        while ( *pos && isspace(*pos) ) {                                                          \
+#define SKIP_WHITESPACE(pos)                                                                       \
+    do {                                                                                           \
+        while ( *pos && isspace(*pos) )                                                            \
             ++pos;                                                                                 \
-        }
+    } while ( 0 )
 
-#    define SKIP_ARGUMENT(pos)                                                                     \
+#define SKIP_ARGUMENT(pos)                                                                         \
+    do {                                                                                           \
         auto instr = false;                                                                        \
         auto esc   = false;                                                                        \
         while ( *pos ) {                                                                           \
             if ( *pos == '"' && !esc ) {                                                           \
                 instr = !instr;                                                                    \
                 esc   = false;                                                                     \
-            } else if ( *pos == '\\' && !esc ) {                                                   \
+            } else if ( *pos == '\\' && !esc )                                                     \
                 esc = true;                                                                        \
-            } else if ( isspace(*pos) && !instr && !esc ) {                                        \
+            else if ( isspace(*pos) && !instr && !esc )                                            \
                 break;                                                                             \
-            } else {                                                                               \
+            else                                                                                   \
                 esc = false;                                                                       \
-            }                                                                                      \
+                                                                                                   \
             ++pos;                                                                                 \
-        }
+        }                                                                                          \
+    } while ( 0 )
 
 static char* get_executable_name() {
     /* obtain the executable path of this process */
@@ -127,10 +129,3 @@ extern "C" bool parse_cli_args(int* out_argc, char*** out_args) {
     *out_args = argv;
     return true;
 }
-#else
-#    include <stdlib.h>
-
-extern "C" bool parse_cli_args(int*, char***) {
-    return false;
-}
-#endif

@@ -27,7 +27,7 @@
 #include <events/FocusEvent.hpp>
 #include <events/MouseEvent.hpp>
 #include <Graphics/Text/Alignment.hh>
-#include <gui/properties.hpp>
+#include <GUI/Properties.hh>
 #include <math.h>
 
 /**

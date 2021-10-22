@@ -10,8 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef isalpha
 
 extern "C" int isalpha(int c) {
-    return islower(c) || isupper(c);
+    return __inline_isalpha(c);
 }

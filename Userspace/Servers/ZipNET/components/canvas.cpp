@@ -50,7 +50,7 @@ Canvas_t::~Canvas_t() {
 }
 
 /**
- * When the bounds of a canvas are changed, the buffer must be checked.
+ * When the bounds of a m_canvas are changed, the buffer must be checked.
  */
 void Canvas_t::handleBoundChange(Graphics::Metrics::Rectangle oldBounds) {
     checkBuffer();
@@ -69,7 +69,7 @@ void Canvas_t::checkBuffer() {
     // calculate how many pages we need for the shared area
     auto     bounds = getBounds();
     uint32_t requiredSize
-        = sizeof(UiCanvasSharedMemoryHeader)
+        = UI_CANVAS_SHARED_MEMORY_HEADER_SIZE
         + cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, ALIGN_UP(bounds.width()))
               * ALIGN_UP(bounds.height());
     uint16_t requiredPages = PAGE_ALIGN_UP(requiredSize) / PAGE_SIZE;
@@ -111,7 +111,7 @@ void Canvas_t::createNewBuffer(uint16_t requiredPages) {
     nextBuffer.localMapping = (uint8_t*)s_alloc_mem(requiredPages * PAGE_SIZE);
 
     if ( nextBuffer.localMapping == 0 ) {
-        klog("warning: failed to allocate a buffer for a canvas");
+        klog("warning: failed to allocate a buffer for a m_canvas");
         return;
     }
 
@@ -120,7 +120,7 @@ void Canvas_t::createNewBuffer(uint16_t requiredPages) {
         = (uint8_t*)s_share_mem(nextBuffer.localMapping, requiredPages * PAGE_SIZE, partnerProcess);
 
     if ( nextBuffer.remoteMapping == 0 ) {
-        klog("warning: failed to share a buffer for a canvas to proc %i", partnerProcess);
+        klog("warning: failed to share a buffer for a m_canvas to proc %i", partnerProcess);
         s_unmap_mem(nextBuffer.localMapping);
         return;
     }
@@ -133,6 +133,7 @@ void Canvas_t::createNewBuffer(uint16_t requiredPages) {
     header->blitY                      = 0;
     header->blitWidth                  = 0;
     header->blitHeight                 = 0;
+    header->is_ready                   = false;
 
     requestClientToAcknowledgeNewBuffer();
 }
@@ -144,7 +145,7 @@ void Canvas_t::requestClientToAcknowledgeNewBuffer() {
     // look for a listener
     EventListenerInfo_t listenerInfo;
     if ( getListener(UI_COMPONENT_EVENT_TYPE_CANVAS_WFA, listenerInfo) ) {
-        // create a canvas-wait-for-acknowledge-event
+        // create a m_canvas-wait-for-acknowledge-event
         UiComponentCanvasWfaEvent event;
         event.header.type        = UI_COMPONENT_EVENT_TYPE_CANVAS_WFA;
         event.header.componentID = listenerInfo.componentID;
@@ -167,6 +168,9 @@ void Canvas_t::clientHasAcknowledgedCurrentBuffer() {
     currentBuffer.acknowledged = true;
     nextBuffer.localMapping    = 0;
 
+    auto header      = (UiCanvasSharedMemoryHeader*)currentBuffer.localMapping;
+    header->is_ready = false;
+
     // if the window was resized during an un-acknowledged state, we must now create a new buffer
     if ( mustCheckAgain ) {
         mustCheckAgain = false;
@@ -184,26 +188,29 @@ void Canvas_t::paint() {
 
     // there muts be a buffer that is acknowledged
     if ( currentBuffer.localMapping != 0 && currentBuffer.acknowledged ) {
-        // make background empty
-        clearSurface();
+        auto header = (UiCanvasSharedMemoryHeader*)currentBuffer.localMapping;
 
-        // create a cairo surface from the buffer
-        UiCanvasSharedMemoryHeader* header
-            = (UiCanvasSharedMemoryHeader*)currentBuffer.localMapping;
-        uint8_t* bufferContent
-            = (uint8_t*)(currentBuffer.localMapping + sizeof(UiCanvasSharedMemoryHeader));
+        if ( header->is_ready ) {
+            header->is_ready = false;
+            // make background empty
+            clearSurface();
 
-        cairo_surface_t* bufferSurface = cairo_image_surface_create_for_data(
-            bufferContent,
-            CAIRO_FORMAT_ARGB32,
-            header->paintableWidth,
-            header->paintableHeight,
-            cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, header->paintableWidth));
-        cairo_set_source_surface(cr, bufferSurface, 0, 0);
-        cairo_paint(cr);
+            // create a cairo surface from the buffer
+            auto bufferContent
+                = (uint8_t*)(currentBuffer.localMapping + UI_CANVAS_SHARED_MEMORY_HEADER_SIZE);
 
-        // mark painted area as dirty
-        markDirty({ header->blitX, header->blitY, header->blitWidth, header->blitHeight });
+            cairo_surface_t* bufferSurface = cairo_image_surface_create_for_data(
+                bufferContent,
+                CAIRO_FORMAT_ARGB32,
+                header->paintableWidth,
+                header->paintableHeight,
+                cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, header->paintableWidth));
+            cairo_set_source_surface(cr, bufferSurface, 0, 0);
+            cairo_paint(cr);
+
+            // mark painted area as dirty
+            markDirty({ header->blitX, header->blitY, header->blitWidth, header->blitHeight });
+        }
     }
 }
 

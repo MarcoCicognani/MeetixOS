@@ -9,6 +9,8 @@ PACKAGE=$1
 SOURCE_DIR=$(realpath ..)
 BUILD_ROOT="$SOURCE_DIR/Build/Ports"
 TOOLCHAIN_ROOT="$SOURCE_DIR/Toolchain/Local"
+MEETIX_LIBC_DIR="$SOURCE_DIR/Build/Release/Libs/LibC"
+MEETIX_EXTRA_LIBS="-lLibC -lsupc++ -lstdc++"
 BUILD_IN_SOURCE_DIR=0
 
 # Fails with the given error message and exits
@@ -18,7 +20,7 @@ fail() {
 }
 
 # Use the amount of CPUs as JOB_COUNT
-if [ -f "/proc/cpuinfo" ]; then
+if [ -f /proc/cpuinfo ]; then
     BUILD_JOBS=$(grep -c '^processor[[:space:]]*:' </proc/cpuinfo)
 else
     BUILD_JOBS=1

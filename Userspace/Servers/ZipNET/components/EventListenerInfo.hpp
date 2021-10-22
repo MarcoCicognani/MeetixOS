@@ -26,7 +26,7 @@
 #define __EVENT_LISTENER_INFO__
 
 #include <Api.h>
-#include <gui/uispech.hpp>
+#include <GUI/Protocol.hh>
 #include <list>
 #include <string>
 

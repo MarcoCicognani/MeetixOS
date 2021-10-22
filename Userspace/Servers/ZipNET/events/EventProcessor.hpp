@@ -26,7 +26,7 @@
 #define __EVENT_PROCESSOR__
 
 #include <deque>
-#include <gui/uispech.hpp>
+#include <GUI/Protocol.hh>
 #include <interface/CommandMessageResponderThread.hpp>
 #include <IO/Keyboard.hh>
 #include <IO/Mouse.hh>

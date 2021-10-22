@@ -53,7 +53,7 @@ public:
      */
     struct Info : public InfoBasic {
     public:
-        std::string key{ "KEY_NONE" };
+        std::string m_key{ "KEY_NONE" };
 
         /**
          * @brief Constructors
@@ -63,7 +63,7 @@ public:
             : InfoBasic(pressed, ctrl, alt, shift, scancode) {
         }
         Info(const std::string& key, bool pressed, bool ctrl, bool alt, bool shift, u8 scancode)
-            : InfoBasic{ pressed, ctrl, alt, shift, scancode }, key{ key } {
+            : InfoBasic{ pressed, ctrl, alt, shift, scancode }, m_key{ key } {
         }
         Info(const InfoBasic& basic) : InfoBasic{ basic } {
         }
@@ -72,9 +72,9 @@ public:
          * @brief operator less overload
          */
         bool operator<(const Info& other) const {
-            if ( key > other.key )
+            if ( m_key > other.m_key )
                 return false;
-            if ( key < other.key )
+            if ( m_key < other.m_key )
                 return true;
             if ( m_is_pressed > other.m_is_pressed )
                 return false;

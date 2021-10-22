@@ -50,9 +50,9 @@ string                                output;
  *
  */
 class InputKeyListener : public KeyListener {
-    virtual void handleKeyEvent(KeyEvent& e) {
+    virtual void handle_key_event(KeyEvent& e) {
         waitingInputLock.lock();
-        waitingInput.push_back(IO::Keyboard::instance().full_key_info(e.info));
+        waitingInput.push_back(IO::Keyboard::instance().full_key_info(e.m_info_basic));
         lastInput        = s_millis();
         noInputAvailable = false;
         waitingInputLock.unlock();
@@ -69,7 +69,7 @@ public:
     CanvasResizeBoundsListener(Canvas* canvas) : localCanvas(canvas) {
     }
 
-    virtual void handleBoundsChanged(Graphics::Metrics::Rectangle bounds) {
+    virtual void handle_bounds_changed(Graphics::Metrics::Rectangle bounds) {
         paintIsFresh = false;
     }
 };
@@ -79,7 +79,7 @@ public:
  */
 class CanvasBufferListener_t : public CanvasBufferListener {
 public:
-    virtual void handleBufferChanged() {
+    virtual void handle_buffer_changed() {
         paintIsFresh = false;
     }
 };
@@ -89,7 +89,7 @@ public:
  */
 class ShellFocusListener : public FocusListener {
 public:
-    virtual void handleFocusChanged(bool nowFocused) {
+    virtual void handle_focus_changed(bool nowFocused) {
         focus        = nowFocused;
         paintIsFresh = false;
         lastInput    = s_millis();
@@ -120,34 +120,34 @@ void exitEntry() {
  */
 void GuiScreen::initialize() {
     window = Window::create();
-    window->setTitle("CandyShell");
-    window->onClose([] { UI::close(); });
+    window->set_title("CandyShell");
+    window->on_close([] { UI::close(); });
 
     canvas = Canvas::create();
-    window->addChild(canvas);
+    window->add_child(canvas);
 
-    window->setBoundsListener(new CanvasResizeBoundsListener(canvas));
+    window->set_bounds_listener(new CanvasResizeBoundsListener(canvas));
 
-    auto resolution   = UI::getResolution();
+    auto resolution   = UI::screen_dimension();
     auto windowBounds = Graphics::Metrics::Rectangle(resolution.width() / 2 - 275,
                                                      resolution.height() / 2 - 175,
                                                      550,
                                                      350);
-    window->setBounds(windowBounds);
-    window->setColor(Graphics::Color::as_argb(100, 0, 0, 0),
-                     Graphics::Color::as_argb(255, 255, 255, 255));
-    canvas->setBounds(
+    window->set_bounds(windowBounds);
+    window->set_color(Graphics::Color::as_argb(100, 0, 0, 0),
+                      Graphics::Color::as_argb(255, 255, 255, 255));
+    canvas->set_bounds(
         Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
 
-    canvas->setListener(UI_COMPONENT_EVENT_TYPE_KEY, new InputKeyListener());
-    canvas->setBufferListener(new CanvasBufferListener_t());
-    window->setListener(UI_COMPONENT_EVENT_TYPE_FOCUS, new ShellFocusListener());
-    window->setVisible(true);
+    canvas->set_listener(UI_COMPONENT_EVENT_TYPE_KEY, new InputKeyListener());
+    canvas->set_buffer_listener(new CanvasBufferListener_t());
+    window->set_listener(UI_COMPONENT_EVENT_TYPE_FOCUS, new ShellFocusListener());
+    window->set_visible(true);
 
     font      = Graphics::Text::FontLoader::get("consolas");
     viewModel = Graphics::Text::Layouter::instance().init_buffer();
 
-    s_create_thread_n((void*)&paintEntry, "canvas");
+    s_create_thread_n((void*)&paintEntry, "m_canvas");
     s_create_thread_n((void*)&blinkCursorThread, "blinker");
 }
 
@@ -175,8 +175,8 @@ void GuiScreen::paint() {
     cairo_t*                     cr;
 
     while ( true ) {
-        windowBounds = window->getBounds();
-        canvas->setBounds(
+        windowBounds = window->bounds();
+        canvas->set_bounds(
             Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
 
         cr = getGraphics();
@@ -263,7 +263,7 @@ void GuiScreen::paint() {
  */
 cairo_t* GuiScreen::getGraphics() {
     // get buffer
-    CanvasBufferInfo bufferInfo = canvas->getBuffer();
+    CanvasBufferInfo bufferInfo = canvas->buffer_info();
     if ( bufferInfo.buffer == 0 )
         return 0;
 
@@ -432,5 +432,5 @@ IO::Keyboard::Info GuiScreen::readInput(bool* cancelCondition) {
  *
  */
 void GuiScreen::workingDirectoryChanged(string str) {
-    window->setTitle("CandyShell - " + str);
+    window->set_title("CandyShell - " + str);
 }

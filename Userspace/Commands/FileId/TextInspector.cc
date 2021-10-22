@@ -19,7 +19,9 @@ std::string TextInspector::inspection() {
     ss << m_stream.rdbuf();
     auto str = ss.str();
 
-    if ( std::any_of(str.begin(), str.end(), isutf8) )
+    if ( std::any_of(str.begin(), str.end(), [](int c) {
+             return c == 0x09 || c == 0x0A || c == 0x0D || (0x20 <= c && c <= 0x7E);
+         }) )
         return { "UTF-8 Encoded text file" };
     else
         return { "ASCII text file" };

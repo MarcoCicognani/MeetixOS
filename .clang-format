@@ -57,3 +57,4 @@ PointerAlignment: Left
 SortIncludes: CaseInsensitive
 SpaceAfterTemplateKeyword: false
 SpacesInConditionalStatement: true
+BreakConstructorInitializers: BeforeComma

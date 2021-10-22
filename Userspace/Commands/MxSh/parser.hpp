@@ -29,7 +29,6 @@
 #include <vector>
 
 // previous declaration
-struct PipeExpression;
 struct ProgramCall;
 
 /**
@@ -64,7 +63,7 @@ public:
 
     bool pipeExpression(PipeExpression** out);
     bool programCall(ProgramCall** out);
-    bool argument(std::string out);
+    bool argument(std::string& out);
 };
 
 #endif

@@ -24,7 +24,7 @@
 
 #include "RegistrationThread.hpp"
 
-#include <gui/uispech.hpp>
+#include <GUI/Protocol.hh>
 #include <interface/ApplicationExitCleanupThread.hpp>
 #include <interface/CommandMessageReceiverThread.hpp>
 #include <Utils/Utils.hh>
@@ -60,7 +60,7 @@
 
             // send response
             UiInitializeResponse response;
-            response.header.id                  = UI_PROTOCOL_INITIALIZATION;
+            response.header.m_command           = UI_PROTOCOL_INITIALIZATION;
             response.status                     = UI_PROTOCOL_SUCCESS;
             response.windowServerDelegateThread = communicatorTid;
             response.windowServerCleanUPThread  = cleanerTid;

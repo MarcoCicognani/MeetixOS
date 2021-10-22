@@ -27,7 +27,7 @@
 
 #include <events/event.hpp>
 #include <events/locatable.hpp>
-#include <gui/uispech.hpp>
+#include <GUI/Protocol.hh>
 
 /**
  *

@@ -74,7 +74,7 @@ void Shell::scroll(int value) {
 }
 
 void Shell::set_echo(bool do_echo) {
-    std::cout << SHELLKEY_ESC << "{" << (do_echo ? "1" : "0") << "e" << std::flush;
+    std::cout << SHELLKEY_ESC << "{" << (do_echo ? 1 : 0) << "e" << std::flush;
 }
 
 void Shell::set_mode(Mode mode) {
@@ -98,7 +98,7 @@ void Shell::set_scroll_area(int start, int end) {
 }
 
 void Shell::set_cursor_visible(bool visible) {
-    std::cout << SHELLKEY_ESC << "{" << 0 << ";" << (visible ? 1 : 0) << "C" << std::flush;
+    std::cout << SHELLKEY_ESC << "{0;" << (visible ? 1 : 0) << "C" << std::flush;
 }
 
 Shell::CursorPosition Shell::cursor() {
@@ -146,7 +146,7 @@ int Shell::read_unbuffered() {
         if ( b1 < 0 )
             return -1;
 
-        int b2 = getc(stdin);
+        auto b2 = getc(stdin);
         if ( b2 < 0 )
             return -1;
 

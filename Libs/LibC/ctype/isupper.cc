@@ -10,8 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef isupper
 
 extern "C" int isupper(int c) {
-    return c >= 'A' && c <= 'Z';
+    return __inline_isupper(c);
 }

@@ -16,11 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <gui/btnlist.hpp>
-#include <gui/geoshape.hpp>
-#include <gui/label.hpp>
-#include <gui/ui.hpp>
-#include <gui/window.hpp>
+#include <GUI/Application.hh>
+#include <GUI/ButtonList.hh>
+#include <GUI/Component/Geoshape.hh>
+#include <GUI/Component/Label.hh>
+#include <GUI/Component/Window.hh>
 #include <stdlib.h>
 #include <Tasking/Timer.hh>
 #include <Utils/TimeSpan.hh>
@@ -68,7 +68,7 @@ public:
     }
 
     // event method
-    virtual void handleAction() {
+    virtual void handle_action() {
         userseq.push_back(color);
         _clicked++;
     }
@@ -109,16 +109,16 @@ static void timerHandler() {
     // show color
     switch ( color ) {
         case RED:
-            display->setColor(Graphics::Color::as_rgb(200, 0, 0), 0);
+            display->set_color(Graphics::Color::as_rgb(200, 0, 0), 0);
             break;
         case GREEN:
-            display->setColor(Graphics::Color::as_rgb(0, 200, 0), 0);
+            display->set_color(Graphics::Color::as_rgb(0, 200, 0), 0);
             break;
         case BLUE:
-            display->setColor(Graphics::Color::as_rgb(0, 0, 200), 0);
+            display->set_color(Graphics::Color::as_rgb(0, 0, 200), 0);
             break;
         case YELLOW:
-            display->setColor(Graphics::Color::as_rgb(200, 200, 0), 0);
+            display->set_color(Graphics::Color::as_rgb(200, 200, 0), 0);
             break;
     }
 
@@ -151,22 +151,22 @@ void prepare() {
 void initializeInterface() {
     // create window
     window = Window::create();
-    window->setBounds(Graphics::Metrics::Rectangle(500, 500, 440, 350));
-    window->setTitle("Gurf");
-    window->setResizable(false);
-    window->onClose([] { _iterate = false; });
+    window->set_bounds(Graphics::Metrics::Rectangle(500, 500, 440, 350));
+    window->set_title("Gurf");
+    window->set_resizable(false);
+    window->on_close([] { _iterate = false; });
 
     // create shape that show estracted colors
     display = Geoshape::create();
-    display->setBounds(Graphics::Metrics::Rectangle(50, 100, 320, 100));
-    display->setColor(Graphics::Color::as_rgb(0, 0, 0), 0);
-    window->addChild(display);
+    display->set_bounds(Graphics::Metrics::Rectangle(50, 100, 320, 100));
+    display->set_color(Graphics::Color::as_rgb(0, 0, 0), 0);
+    window->add_child(display);
 
     // create label that show current level
     level = Label::create();
-    level->setBounds(Graphics::Metrics::Rectangle(0, 200, 440, 30));
-    level->setTitle("Current level: 1");
-    window->addChild(level);
+    level->set_bounds(Graphics::Metrics::Rectangle(0, 200, 440, 30));
+    level->set_title("Current level: 1");
+    window->add_child(level);
 
     // create buttons
     buttons = new ButtonList();
@@ -211,7 +211,7 @@ void initializeInterface() {
 
     // begin the game
     buttons->show(window);
-    window->setVisible(true);
+    window->set_visible(true);
 }
 
 /*
@@ -252,7 +252,7 @@ void mainloop() {
                     // set new level
                     std::stringstream lvl;
                     lvl << "Current Level" << ++_level;
-                    level->setTitle(lvl.str());
+                    level->set_title(lvl.str());
                 }
 
                 // player have scazzed the sequence
@@ -270,7 +270,7 @@ void mainloop() {
                     // set new level
                     std::stringstream lvl;
                     lvl << "Current Level" << (_level = 1);
-                    level->setTitle(lvl.str());
+                    level->set_title(lvl.str());
 
                     // begin timer
                     timer->start();

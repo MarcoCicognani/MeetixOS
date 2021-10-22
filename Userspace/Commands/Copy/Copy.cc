@@ -13,28 +13,22 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <unistd.h>
+#include <Utils/ArgsParser.hh>
 
-#define VERSION "0.0.1"
+#define V_MAJOR 0
+#define V_MINOR 0
+#define V_PATCH 1
 
-int show_usages(int, const char** argv) {
-    std::cout << "Copy Utility v" << VERSION << '\n';
-    std::cout << "Usage:\n";
-    std::cout << "\t" << argv[0] << " Source Destination\n";
-    std::cout << "\t -h | --help | -?: Shows this help\n";
-    std::cout << '\n';
-    std::cout << "Compiled with g++ v" << __VERSION__ << " (" << __TIMESTAMP__ << ")" << std::endl;
+int main(int argc, const char** argv) {
+    auto src_path = std::string{};
+    auto dst_path = std::string{};
 
-    return EXIT_SUCCESS;
-}
+    auto args_parser = Utils::ArgsParser{ "Copy Utility", V_MAJOR, V_MINOR, V_PATCH };
+    args_parser.add_positional_argument(src_path, "Source file to copy", "SourcePath");
+    args_parser.add_positional_argument(dst_path, "Destination file", "DestinationPath");
 
-int main(int argc, const char* argv[]) {
-    /* show help/usages if request by the command-line */
-    if ( getopt_is_help(argc, argv) || argc != 3 )
-        return show_usages(argc, argv);
-
-    auto src_path = std::string{ argv[1] };
-    auto dst_path = std::string{ argv[2] };
+    /* parse the arguments */
+    args_parser.parse(argc, argv);
 
     /* open the source file to copy */
     auto src_stream = std::ifstream{ src_path };

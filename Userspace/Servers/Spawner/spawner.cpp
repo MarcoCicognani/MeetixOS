@@ -405,7 +405,7 @@ SpawnStatus spawn(const char*   path,
         // attached loaded process
         s_attach_created_process(targetProc, entryAddress);
 
-        // out-set process id
+        // out-set process m_command
         *outPid   = targetPid;
         spawnStat = SPAWN_STATUS_SUCCESSFUL;
     } else {

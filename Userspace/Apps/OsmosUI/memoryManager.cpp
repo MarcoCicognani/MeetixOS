@@ -38,7 +38,7 @@ void SecondaryThread::MemoryUsageThread(Label* memLabel) {
               << memUsage.m_memory_total_amount / 1024 << "MB";
 
         // and display in screen label
-        memLabel->setTitle(usage.str());
+        memLabel->set_title(usage.str());
 
         // wait 50 milliseconds
         s_sleep(50);

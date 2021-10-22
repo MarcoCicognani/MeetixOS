@@ -20,6 +20,7 @@
 #include <string.h>
 #include <Tasking/Tasking.hh>
 #include <unistd.h>
+#include <getopt.h>
 
 /**
  * create the type comparator
@@ -27,7 +28,7 @@
 using CompareFn = bool (*)(const ProcessDescriptor& task1, const ProcessDescriptor& task2);
 
 /*
- * compare by id
+ * compare by m_command
  */
 static inline bool compare_by_pid(const ProcessDescriptor& task1, const ProcessDescriptor& task2) {
     return task1.m_main_thread.m_tid > task2.m_main_thread.m_tid;
@@ -108,8 +109,8 @@ void show_usages(const char* cmd_name) {
     println("Process List utility");
     println("Usage: %s [filter]", cmd_name);
     println("Available filters:");
-    println("\t-i/--sort-by-id    [show the task list sorted by the process numeric id]");
-    println("\t-n/--sort-by-name  [show the task list sorted by the process string id]");
+    println("\t-i/--sort-by-m_command    [show the task list sorted by the process numeric m_command]");
+    println("\t-n/--sort-by-name  [show the task list sorted by the process string m_command]");
     println("\t-m/--sort-by-mem   [show the task list sorted by the process memory use]");
     println("\t-u/--use-megabytes [show the heap and the image size using MB as unit]");
     println("\t-h/-?              [show this help]");
@@ -125,7 +126,7 @@ int main(int argc, const char* argv[]) {
     bool useMegabytes = true;
 
     // create args
-    option long_cmdline_opts[] = { { "sort-by-id", no_argument, nullptr, 'i' },
+    option long_cmdline_opts[] = { { "sort-by-m_command", no_argument, nullptr, 'i' },
                                    { "sort-by-name", no_argument, nullptr, 'n' },
                                    { "sort-by-mem", no_argument, nullptr, 'm' },
                                    { "use-megabytes", no_argument, nullptr, 'u' },

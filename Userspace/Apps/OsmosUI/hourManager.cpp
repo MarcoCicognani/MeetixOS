@@ -41,7 +41,7 @@ void SecondaryThread::HourManagerThread(Label* hourLabel) {
         ss << std::setfill('0') << std::setw(2) << date_time.m_seconds;
 
         // and display on screen label
-        hourLabel->setTitle(ss.str());
+        hourLabel->set_title(ss.str());
 
         // wait 1 second
         s_sleep(1000);

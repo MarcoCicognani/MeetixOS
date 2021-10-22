@@ -10,8 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef isprint
 
 extern "C" int isprint(int c) {
-    return c >= ' ' && c <= '~';
+    return __inline_isprint(c);
 }

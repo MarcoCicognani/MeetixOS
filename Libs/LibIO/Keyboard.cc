@@ -68,7 +68,7 @@ bool Keyboard::key_for_scancode(u8 scancode, Info* out) {
         /* try to find a compound key */
         auto pos = m_scancode_layout.find(compound_scancode);
         if ( pos != m_scancode_layout.end() ) {
-            out->key                = pos->second;
+            out->m_key              = pos->second;
             found_compound          = true;
             m_have_last_unknown_key = false;
         }
@@ -84,15 +84,15 @@ bool Keyboard::key_for_scancode(u8 scancode, Info* out) {
             m_last_unknown_key      = *out;
             return false;
         } else
-            out->key = pos->second;
+            out->m_key = pos->second;
     }
 
     /* handle special keys */
-    if ( out->key == "KEY_CTRL_L" || out->key == "KEY_CTRL_R" )
+    if ( out->m_key == "KEY_CTRL_L" || out->m_key == "KEY_CTRL_R" )
         m_status_ctrl = out->m_is_pressed;
-    else if ( out->key == "KEY_SHIFT_L" || out->key == "KEY_SHIFT_R" )
+    else if ( out->m_key == "KEY_SHIFT_L" || out->m_key == "KEY_SHIFT_R" )
         m_status_shift = out->m_is_pressed;
-    else if ( out->key == "KEY_ALT_L" || out->key == "KEY_ALT_R" )
+    else if ( out->m_key == "KEY_ALT_L" || out->m_key == "KEY_ALT_R" )
         m_status_alt = out->m_is_pressed;
 
     /* set control key info */
@@ -114,7 +114,7 @@ Keyboard::Info Keyboard::full_key_info(const InfoBasic& basic) {
     Info info{ basic };
     auto pos = m_scancode_layout.find(basic.m_scancode);
     if ( pos != m_scancode_layout.end() )
-        info.key = pos->second;
+        info.m_key = pos->second;
 
     return info;
 }
@@ -211,7 +211,7 @@ bool Keyboard::load_conversion_layout(const std::string& iso) {
         }
 
         /* set key name */
-        info.key = key_name;
+        info.m_key = key_name;
 
         /* push the mapping */
         auto c     = char{ -1 };

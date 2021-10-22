@@ -17,13 +17,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
 #include <Api.h>
-#include <gui/actionlistener.hpp>
-#include <gui/button.hpp>
-#include <gui/label.hpp>
-#include <gui/msgbox.hpp>
-#include <gui/textfield.hpp>
-#include <gui/ui.hpp>
-#include <gui/window.hpp>
+#include <GUI/Application.hh>
+#include <GUI/Component/Button.hh>
+#include <GUI/Component/Label.hh>
+#include <GUI/Component/TextField.hh>
+#include <GUI/Component/Window.hh>
+#include <GUI/Listener/ActionListener.hh>
+#include <GUI/MessageBox.hh>
 #include <sstream>
 #include <Utils/Environment.hh>
 
@@ -46,9 +46,9 @@ static bool lock = true;
  */
 class ExecButtonHandler : public ActionListener {
 public:
-    virtual void handleAction() {
+    virtual void handle_action() {
         // get textfield content
-        string content = exec->getTitle();
+        string content = exec->title();
 
         // continue only if there is characters
         if ( !content.empty() ) {
@@ -62,16 +62,16 @@ public:
                 // exec
                 if ( s_spawn(app.c_str(), arg.c_str(), "/", SECURITY_LEVEL_APPLICATION)
                      != SPAWN_STATUS_SUCCESSFUL )
-                    MsgBox::show("Unable to exec " + app, "Exec");
+                    MessageBox::show("Unable to exec " + app, "Exec");
             }
 
             // only exec provided name
             else if ( s_spawn(content.c_str(), "", "/", SECURITY_LEVEL_APPLICATION)
                       != SPAWN_STATUS_SUCCESSFUL )
-                MsgBox::show("Unable to exec " + content, "Exec");
+                MessageBox::show("Unable to exec " + content, "Exec");
 
             // set title
-            window->setTitle(content);
+            window->set_title(content);
         }
     }
 };
@@ -83,35 +83,35 @@ int main(int argc, char* argv[]) {
     // open channel to windowserver
     if ( UI::open() == UI_OPEN_STATUS_SUCCESSFUL ) {
         // create components
-        auto resolution = UI::getResolution();
+        auto resolution = UI::screen_dimension();
 
         // configuring window
         window = Window::create();
-        window->setBounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 125,
-                                                       resolution.height() / 2 - 75,
-                                                       273,
-                                                       132));
-        window->setTitle("Exec");
-        window->onClose([] { lock = false; });
+        window->set_bounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 125,
+                                                        resolution.height() / 2 - 75,
+                                                        273,
+                                                        132));
+        window->set_title("Exec");
+        window->on_close([] { lock = false; });
 
         // configuring textfield
         exec = Textfield::create();
-        exec->setBounds(Graphics::Metrics::Rectangle(0, 10, 250, 30));
-        exec->setTitleAlignment(Graphics::Text::Alignment::CENTER);
-        exec->setGhostTitle("Enter app name");
-        window->addChild(exec);
+        exec->set_bounds(Graphics::Metrics::Rectangle(0, 10, 250, 30));
+        exec->set_title_alignment(Graphics::Text::Alignment::CENTER);
+        exec->set_ghost_title("Enter app name");
+        window->add_child(exec);
 
         // configuring button
         launch = Button::create();
-        launch->setBounds(Graphics::Metrics::Rectangle(0, 50, 250, 30));
-        launch->setTitle("Run");
-        launch->setColor(Graphics::Color::as_argb(180, 0, 200, 0),
-                         Graphics::Color::as_rgb(0, 0, 0));
-        launch->setActionListener(new ExecButtonHandler());
-        window->addChild(launch);
+        launch->set_bounds(Graphics::Metrics::Rectangle(0, 50, 250, 30));
+        launch->set_title("Run");
+        launch->set_color(Graphics::Color::as_argb(180, 0, 200, 0),
+                          Graphics::Color::as_rgb(0, 0, 0));
+        launch->set_action_listener(new ExecButtonHandler());
+        window->add_child(launch);
 
         // show window
-        window->setVisible(true);
+        window->set_visible(true);
 
         // event mode
         s_atomic_block(&lock);

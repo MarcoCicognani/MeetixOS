@@ -178,7 +178,7 @@ void CandyTerminal::startShell() {
 /**
  *
  */
-void CandyTerminal::writeStringToShell(std::string line) {
+void CandyTerminal::writeStringToShell(std::string line) const {
     const char* lineContent = line.c_str();
     int         lineLength  = strlen(lineContent);
 
@@ -190,7 +190,7 @@ void CandyTerminal::writeStringToShell(std::string line) {
         if ( len <= 0 )
             break;
 
-        written = written + len;
+        written += len;
     }
 }
 
@@ -208,41 +208,35 @@ void CandyTerminal::writeShellkeyToShell(int shellkey) {
 /**
  *
  */
-void CandyTerminal::inputRoutine() {
-    std::string buffer = "";
+[[noreturn]] void CandyTerminal::inputRoutine() {
+    std::string buffer;
     while ( true ) {
         IO::Keyboard::Info readInput = screen->readInput();
 
         // Default line-buffered input
         if ( inputMode == IO::Shell::MODE_DEFAULT ) {
-            if ( readInput.key == "KEY_ENTER" && readInput.m_is_pressed ) {
+            if ( readInput.m_key == "KEY_ENTER" && readInput.m_is_pressed ) {
                 if ( echo ) {
                     screenLock.lock();
                     screen->writeChar('\n');
                     screenLock.unlock();
                 }
 
-                buffer = buffer + '\n';
+                buffer += '\n';
                 writeStringToShell(buffer);
 
                 buffer = "";
-            }
-
-            else if ( (readInput.m_ctrl && readInput.key == "KEY_C")
-                      || (readInput.key == "KEY_ESC") ) {
+            } else if ( (readInput.m_ctrl && readInput.m_key == "KEY_C")
+                        || (readInput.m_key == "KEY_ESC") ) {
                 if ( currentProcess )
                     s_raise_signal(currentProcess, SIGINT);
-            }
-
-            else if ( readInput.key == "KEY_BACKSPACE" && readInput.m_is_pressed ) {
-                buffer = buffer.size() > 0 ? buffer.substr(0, buffer.size() - 1) : buffer;
+            } else if ( readInput.m_key == "KEY_BACKSPACE" && readInput.m_is_pressed ) {
+                buffer = !buffer.empty() ? buffer.substr(0, buffer.size() - 1) : buffer;
                 screen->backspace();
-            }
-
-            else {
+            } else {
                 char chr = IO::Keyboard::instance().char_for_key(readInput);
                 if ( chr != -1 ) {
-                    buffer = buffer + chr;
+                    buffer += chr;
 
                     if ( echo ) {
                         screenLock.lock();
@@ -251,11 +245,8 @@ void CandyTerminal::inputRoutine() {
                     }
                 }
             }
-
-        }
-
-        else if ( inputMode == IO::Shell::MODE_RAW ) {
-            if ( readInput.key == "KEY_ENTER" && readInput.m_is_pressed ) {
+        } else if ( inputMode == IO::Shell::MODE_RAW ) {
+            if ( readInput.m_key == "KEY_ENTER" && readInput.m_is_pressed ) {
                 writeShellkeyToShell(SHELLKEY_ENTER);
 
                 if ( echo ) {
@@ -263,9 +254,7 @@ void CandyTerminal::inputRoutine() {
                     screen->writeChar('\n');
                     screenLock.unlock();
                 }
-            }
-
-            else if ( readInput.key == "KEY_BACKSPACE" && readInput.m_is_pressed ) {
+            } else if ( readInput.m_key == "KEY_BACKSPACE" && readInput.m_is_pressed ) {
                 writeShellkeyToShell(SHELLKEY_BACKSPACE);
 
                 if ( echo ) {
@@ -273,17 +262,14 @@ void CandyTerminal::inputRoutine() {
                     screen->backspace();
                     screenLock.unlock();
                 }
-            }
-
-            else if ( readInput.key == "KEY_ARROW_LEFT" && readInput.m_is_pressed )
+            } else if ( readInput.m_key == "KEY_ARROW_LEFT" && readInput.m_is_pressed )
                 writeShellkeyToShell(SHELLKEY_LEFT);
-            else if ( readInput.key == "KEY_ARROW_RIGHT" && readInput.m_is_pressed )
+            else if ( readInput.m_key == "KEY_ARROW_RIGHT" && readInput.m_is_pressed )
                 writeShellkeyToShell(SHELLKEY_RIGHT);
-            else if ( readInput.key == "KEY_ARROW_UP" && readInput.m_is_pressed )
+            else if ( readInput.m_key == "KEY_ARROW_UP" && readInput.m_is_pressed )
                 writeShellkeyToShell(SHELLKEY_UP);
-            else if ( readInput.key == "KEY_ARROW_DOWN" && readInput.m_is_pressed )
+            else if ( readInput.m_key == "KEY_ARROW_DOWN" && readInput.m_is_pressed )
                 writeShellkeyToShell(SHELLKEY_DOWN);
-
             else {
                 char chr = IO::Keyboard::instance().char_for_key(readInput);
                 if ( chr != -1 ) {
@@ -334,7 +320,7 @@ void CandyTerminal::outputRoutine(OutputRoutineStartinfo* info) {
     }
 
     // clean up
-    delete buffer;
+    delete[] buffer;
     delete info;
 }
 

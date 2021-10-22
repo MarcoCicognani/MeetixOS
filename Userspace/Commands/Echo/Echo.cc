@@ -11,44 +11,37 @@
  */
 
 #include <iostream>
-#include <unistd.h>
+#include <string>
+#include <Utils/ArgsParser.hh>
+#include <vector>
 
-#define VERSION "0.0.1"
-
-int show_usages(int, const char** argv) {
-    std::cout << "Echo Utility v" << VERSION << '\n';
-    std::cout << "Usage:\n";
-    std::cout << "\t" << argv[0] << " [Arguments-To-Print]\n";
-    std::cout << "\t -n:               Does not print newline at the end\n";
-    std::cout << "\t -h | --help | -?: Shows this help\n";
-    std::cout << '\n';
-    std::cout << "Compiled with g++ v" << __VERSION__ << " (" << __TIMESTAMP__ << ")" << std::endl;
-
-    return EXIT_SUCCESS;
-}
+#define V_MAJOR 0
+#define V_MINOR 0
+#define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    if ( getopt_is_help(argc, argv) )
-        return show_usages(argc, argv);
+    auto values     = std::vector<std::string>{};
+    auto no_newline = false;
 
-    bool print_newline = true;
-    switch ( getopt(argc, argv, "n") ) {
-        case 'n':
-            print_newline = false;
-            break;
-    }
+    auto args_parser = Utils::ArgsParser{ "Echo Utility", V_MAJOR, V_MINOR, V_PATCH };
+    args_parser.add_option(no_newline, "Avoid print newline at last", "no-newline", 'n');
+    args_parser.add_positional_argument(values, "Values to print on screen", "ValueToPrint", false);
 
-    if ( argc == 1 ) {
+    /* parse the arguments */
+    args_parser.parse(argc, argv);
+
+    if ( values.empty() ) {
         char c;
         while ( std::cin.read(&c, 1) )
             std::cout << c;
     } else {
-        for ( auto i = 1; i < argc; ++i )
-            std::cout << argv[i] << " ";
+        for ( auto& value : values )
+            std::cout << value << " ";
 
-        if ( print_newline )
+        if ( !no_newline )
             std::cout << '\n';
     }
 
+    std::cout << std::flush;
     return EXIT_SUCCESS;
 }

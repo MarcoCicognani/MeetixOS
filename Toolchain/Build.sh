@@ -144,12 +144,18 @@ dir_push $BUILD_GCC
         ../$GCC_UNPACKED/configure --target=$TARGET             \
                                    --prefix="$TOOLCHAIN_PREFIX" \
                                    --enable-languages=c,c++     \
+                                   --with-newlib                \
+                                   --disable-nls                \
+                                   --enable-lto                 \
                                    --with-sysroot="$TOOLCHAIN_PREFIX" || exit 1
     build_step "GCC/Build"   make $MAKE_JOBS all-gcc     || exit 1
     build_step "GCC/Install" make $MAKE_JOBS install-gcc || exit 1
 
     build_step "GCC/LibGCC Build"   make $MAKE_JOBS all-target-libgcc     || exit 1
     build_step "GCC/LibGCC Install" make $MAKE_JOBS install-target-libgcc || exit 1
+
+    build_step "LibStdC++/Build"   make $MAKE_JOBS all-target-libstdc++-v3     || exit 1
+    build_step "LibStdC++/Install" make $MAKE_JOBS install-target-libstdc++-v3 || exit 1
 dir_pop
 
 # Configure CMake then build C and API library
@@ -160,24 +166,19 @@ dir_push ../Build/Release
     build_step "Libs/LibC"      ninja LibC           || exit 1
 dir_pop
 
-# Build GCC libstdc++-v3
-dir_push $BUILD_GCC
-    build_step "LibStdC++/Build"   make $MAKE_JOBS all-target-libstdc++-v3     || exit 1
-    build_step "LibStdC++/Install" make $MAKE_JOBS install-target-libstdc++-v3 || exit 1
-dir_pop
-
 # Build cross port libs
 dir_push ../Ports
-    build_step "Ports/zlib"     bash BuildPort.sh zlib     || exit 1
-    build_step "Ports/libpng"   bash BuildPort.sh libpng   || exit 1
-    build_step "Ports/pixman"   bash BuildPort.sh pixman   || exit 1
-    build_step "Ports/freetype" bash BuildPort.sh freetype || exit 1
-    build_step "Ports/cairo"    bash BuildPort.sh cairo    || exit 1
+    build_step "Ports/LibZ"        bash BuildPort.sh LibZ        || exit 1
+    build_step "Ports/LibPNG"      bash BuildPort.sh LibPNG      || exit 1
+    build_step "Ports/LibPixMan"   bash BuildPort.sh LibPixMan   || exit 1
+    build_step "Ports/LibFreeType" bash BuildPort.sh LibFreeType || exit 1
+    build_step "Ports/LibCairo"    bash BuildPort.sh LibCairo    || exit 1
 dir_pop
 
 # Clean build stuffs
-#echo "Last Cleaning"
-#rm -rf $BUILD_DIR || exit 1
+echo "Last Cleaning"
+rm -rf $BUILD_DIR || exit 1
 
 # Finished
 echo "${GREEN}Toolchain successfully built${RESET}"
+

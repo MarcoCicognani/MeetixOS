@@ -28,15 +28,15 @@
 #include <Graphics/Text/Font.hh>
 #include <Graphics/Text/FontLoader.hh>
 #include <Graphics/Text/Layouter.hh>
-#include <gui/actionlistener.hpp>
-#include <gui/button.hpp>
-#include <gui/canvas.hpp>
-#include <gui/focuslistener.hpp>
-#include <gui/keylistener.hpp>
-#include <gui/label.hpp>
-#include <gui/textfield.hpp>
-#include <gui/ui.hpp>
-#include <gui/window.hpp>
+#include <GUI/Application.hh>
+#include <GUI/Component/Button.hh>
+#include <GUI/Component/Canvas.hh>
+#include <GUI/Component/Label.hh>
+#include <GUI/Component/TextField.hh>
+#include <GUI/Component/Window.hh>
+#include <GUI/Listener/ActionListener.hh>
+#include <GUI/Listener/FocusListener.hh>
+#include <GUI/Listener/KeyListener.hpp>
 #include <list>
 #include <map>
 #include <Tasking/Lock.hh>
@@ -95,7 +95,7 @@ private:
     std::map<char, CharLayout*> charLayoutCache;
 
     /**
-     * Prepares the canvas buffer for painting.
+     * Prepares the m_canvas buffer for painting.
      *
      * @return the cairo instance to paint with
      */

@@ -17,12 +17,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
 #include <Api.h>
-#include <gui/btnlist.hpp>
-#include <gui/geoshape.hpp>
-#include <gui/label.hpp>
-#include <gui/notification.hpp>
-#include <gui/ui.hpp>
-#include <gui/window.hpp>
+#include <GUI/Application.hh>
+#include <GUI/ButtonList.hh>
+#include <GUI/Component/Geoshape.hh>
+#include <GUI/Component/Label.hh>
+#include <GUI/Component/Window.hh>
+#include <GUI/Notification.hh>
 #include <libgen.h>
 #include <string.h>
 #include <string>
@@ -83,12 +83,12 @@ static void previousHandler() {
 
     // there are another image? set it
     if ( rit != backgrounds.rend() )
-        pngPanel->setPNG(*it, Graphics::Metrics::Point(0, 0));
+        pngPanel->set_image(*it, Graphics::Metrics::Point(0, 0));
 
     // restart circle
     else {
         rit = backgrounds.rbegin();
-        pngPanel->setPNG(*it, Graphics::Metrics::Point(0, 0));
+        pngPanel->set_image(*it, Graphics::Metrics::Point(0, 0));
     }
 }
 
@@ -101,12 +101,12 @@ static void nextHandler() {
 
     // there are another image? set it
     if ( it != backgrounds.end() )
-        pngPanel->setPNG(*it, Graphics::Metrics::Point(0, 0));
+        pngPanel->set_image(*it, Graphics::Metrics::Point(0, 0));
 
     // restart circle
     else {
         it = backgrounds.begin();
-        pngPanel->setPNG(*it, Graphics::Metrics::Point(0, 0));
+        pngPanel->set_image(*it, Graphics::Metrics::Point(0, 0));
     }
 }
 
@@ -114,7 +114,7 @@ static void nextHandler() {
  * event method for okay button
  */
 static void okayHandler() {
-    if ( UI::setBackground(*it) )
+    if ( UI::set_background(*it) )
         Notification::send("UItweak background changer",
                            "Successful applied " + std::string(basename((char*)(*it).c_str()))
                                + std::string(" as background"),
@@ -152,28 +152,28 @@ int main(int argc, char* argv[]) {
         buttons->add("okay", okayHandler);
 
         // add components to window
-        window->addChild(title);
-        window->addChild(pngPanel);
+        window->add_child(title);
+        window->add_child(pngPanel);
         buttons->show(window);
 
         // set exit event
-        window->onClose([] { lock = false; });
+        window->on_close([] { lock = false; });
 
         // get screen resolution
-        auto resolution = UI::getResolution();
+        auto resolution = UI::screen_dimension();
 
         // set bounds
         Graphics::Metrics::Rectangle bounds(resolution.width() / 2 - 400,
                                             resolution.height() / 2 - 300,
                                             820,
                                             655);
-        window->setBounds(bounds);
-        title->setBounds(Graphics::Metrics::Rectangle(0, 0, 800, 30));
-        pngPanel->setBounds(Graphics::Metrics::Rectangle(30, 30, 740, 540));
+        window->set_bounds(bounds);
+        title->set_bounds(Graphics::Metrics::Rectangle(0, 0, 800, 30));
+        pngPanel->set_bounds(Graphics::Metrics::Rectangle(30, 30, 740, 540));
 
         // configure titles
-        window->setTitle("OsmosUI tweak Tool");
-        title->setTitle("Choose one of these images and click 'Okay' to set as background");
+        window->set_title("OsmosUI tweak Tool");
+        title->set_title("Choose one of these images and click 'Okay' to set as background");
 
         // configure buttons
         buttons->configure("prev",
@@ -193,20 +193,20 @@ int main(int argc, char* argv[]) {
                            Graphics::Color::as_rgb(0, 0, 0));
 
         // show the window
-        window->setVisible(true);
-        pngPanel->setTitle("Loading images");
+        window->set_visible(true);
+        pngPanel->set_title("Loading images");
 
         // wait for thread finisching
         while ( !finisced )
             s_yield();
 
         // images loaded
-        pngPanel->setTitle("");
+        pngPanel->set_title("");
 
         // set iterators with first path
         it  = backgrounds.begin();
         rit = backgrounds.rbegin();
-        pngPanel->setPNG(*it, Graphics::Metrics::Point(0, 0));
+        pngPanel->set_image(*it, Graphics::Metrics::Point(0, 0));
 
         // lock in event mode
         s_atomic_block(&lock);

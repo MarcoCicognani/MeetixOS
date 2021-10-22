@@ -17,6 +17,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
 #include <Api.h>
+#include <getopt.h>
 #include <stdio.h>
 #include <string.h>
 #include <Tasking/Tasking.hh>
@@ -35,14 +36,16 @@ void show_usages(const char* cmd_name) {
     println("Thread List utility");
     println("Usage: %s [filter]", cmd_name);
     println("The following filters are available:");
-    println("\t-i/--sort-by-tid           show the task list sorted by the Thread numeric id");
-    println("\t-n/--sort-by-name          show the task list sorted by the Thread string id");
+    println(
+        "\t-i/--sort-by-tid           show the task list sorted by the Thread numeric m_command");
+    println(
+        "\t-n/--sort-by-name          show the task list sorted by the Thread string m_command");
     println("\t-m/--sort-by-mem           show the task list sorted by the Thread memory use");
     println("\t-h/--help                  show this help");
     println("");
 }
 
-// compare by id
+// compare by m_command
 static inline bool compare_by_tid(const ThreadDescriptor& task1, const ThreadDescriptor& task2) {
     return task1.m_tid > task2.m_tid;
 }
@@ -65,7 +68,7 @@ int main(int argc, const char* argv[]) {
     bool show_help = false;
 
     // create args
-    option long_cmdline_opts[] = { { "sort-by-id", no_argument, nullptr, 'i' },
+    option long_cmdline_opts[] = { { "sort-by-m_command", no_argument, nullptr, 'i' },
                                    { "sort-by-name", no_argument, nullptr, 'n' },
                                    { "sort-by-mem", no_argument, nullptr, 'm' },
                                    { "help", no_argument, nullptr, 'h' },

@@ -30,8 +30,9 @@
 #include <Api.h>
 #include <dirent.h>
 #include <fstream>
-#include <gui/ui.hpp>
+#include <GUI/Application.hh>
 #include <IO/Keyboard.hh>
+#include <iomanip>
 #include <iostream>
 #include <signal.h>
 #include <stdint.h>
@@ -41,7 +42,6 @@
 #include <Utils/Environment.hh>
 #include <Utils/Utils.hh>
 #include <vector>
-#include <iomanip>
 
 using namespace std;
 
@@ -602,7 +602,7 @@ bool CandyShell::handleBuiltin(string command) {
         if ( headless ) {
             while ( true ) {
                 IO::Keyboard::Info key = IO::Keyboard::instance().read();
-                if ( key.m_is_pressed && key.m_ctrl && key.key == "KEY_C" )
+                if ( key.m_is_pressed && key.m_ctrl && key.m_key == "KEY_C" )
                     break;
 
                 stringstream msg;
@@ -1008,32 +1008,32 @@ string CandyShell::readInput(string            there,
         IO::Keyboard::Info key = screen->readInput(continueInput);
 
         if ( key.m_is_pressed ) {
-            if ( (key.m_ctrl && key.key == "KEY_C") || (key.key == "KEY_ESC") ) {
+            if ( (key.m_ctrl && key.m_key == "KEY_C") || (key.m_key == "KEY_ESC") ) {
                 *outStatus = SHELL_INPUT_STATUS_EXIT;
                 break;
             }
 
-            else if ( key.m_ctrl && key.key == "KEY_L" ) {
+            else if ( key.m_ctrl && key.m_key == "KEY_L" ) {
                 *outStatus = SHELL_INPUT_STATUS_CLEAR;
                 break;
             }
 
-            else if ( key.m_ctrl && key.key == "KEY_SPACE" ) {
+            else if ( key.m_ctrl && key.m_key == "KEY_SPACE" ) {
                 *outStatus = SHELL_INPUT_STATUS_SCREEN_CREATE;
                 break;
             }
 
-            else if ( key.m_ctrl && key.key == "KEY_TAB" ) {
+            else if ( key.m_ctrl && key.m_key == "KEY_TAB" ) {
                 *outStatus = SHELL_INPUT_STATUS_SCREEN_SWITCH;
                 break;
             }
 
-            else if ( key.key == "KEY_ENTER" ) {
+            else if ( key.m_key == "KEY_ENTER" ) {
                 *outStatus = SHELL_INPUT_STATUS_DEFAULT;
                 break;
             }
 
-            else if ( key.key == "KEY_BACKSPACE" ) {
+            else if ( key.m_key == "KEY_BACKSPACE" ) {
                 if ( line.length() > 0 ) {
                     line = line.substr(0, line.length() - 1);
                     screen->backspace();
@@ -1041,7 +1041,7 @@ string CandyShell::readInput(string            there,
                 }
             }
 
-            else if ( key.key == "KEY_TAB" ) {
+            else if ( key.m_key == "KEY_TAB" ) {
                 // open current dir
                 DIR*    dir = opendir(workingDirectory.c_str());
                 dirent* ent;
@@ -1072,7 +1072,7 @@ string CandyShell::readInput(string            there,
             }
 
             // show history
-            else if ( key.key == "KEY_PAD_8" ) {
+            else if ( key.m_key == "KEY_PAD_8" ) {
                 string output;
 
                 screen->cleanLine(line.length());

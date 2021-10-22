@@ -10,8 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef isdigit
 
 extern "C" int isdigit(int c) {
-    return c >= '0' && c <= '9';
+    return __inline_isdigit(c);
 }

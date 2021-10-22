@@ -24,7 +24,7 @@
 
 #include <Api.h>
 #include <events/EventProcessor.hpp>
-#include <gui/uispech.hpp>
+#include <GUI/Protocol.hh>
 #include <interface/CommandMessageResponderThread.hpp>
 #include <stdio.h>
 #include <zipNET.hpp>

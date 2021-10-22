@@ -31,8 +31,8 @@
 #include <components/panel.hpp>
 #include <components/PngComponent.hpp>
 #include <components/TitledComponent.hpp>
-#include <gui/properties.hpp>
-#include <gui/uispech.hpp>
+#include <GUI/Properties.hh>
+#include <GUI/Protocol.hh>
 
 /**
  * constants for border sizes

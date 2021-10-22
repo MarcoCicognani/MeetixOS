@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <getopt.h>
 
 /*
  * show the help
@@ -30,7 +31,7 @@ void show_usages(const char* cmdname) {
     println("");
     println("s_kill command utility");
     println("");
-    println("usage: %s [filter] <task-id>");
+    println("usage: %s [filter] <task-m_command>");
     println("avaible filters");
     println("\t-r    [restart the killed task, only if it is a process]");
     println("\t-h/-? [show this help]");
@@ -104,7 +105,7 @@ int main(int argc, const char* argv[]) {
                     fprintf(stderr, "%s %d does not exist\n", tasktype, target);
                     break;
                 default:
-                    fprintf(stderr, "Please supply a valid task id.\n");
+                    fprintf(stderr, "Please supply a valid task m_command.\n");
                     break;
             }
         }

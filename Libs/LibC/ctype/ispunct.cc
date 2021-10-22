@@ -10,8 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef ispunct
 
 extern "C" int ispunct(int c) {
-    return isgraph(c) && !isalnum(c);
+    return __inline_ispunct(c);
 }

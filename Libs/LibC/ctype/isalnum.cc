@@ -10,8 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef isalnum
 
 extern "C" int isalnum(int c) {
-    return isalpha(c) || isdigit(c);
+    return __inline_isalnum(c);
 }

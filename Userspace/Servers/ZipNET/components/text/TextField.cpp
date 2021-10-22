@@ -30,7 +30,7 @@
 #include <events/MouseEvent.hpp>
 #include <Graphics/Text/FontLoader.hh>
 #include <Graphics/Text/FontManager.hh>
-#include <gui/properties.hpp>
+#include <GUI/Properties.hh>
 #include <sstream>
 
 /**
@@ -333,20 +333,20 @@ bool TextField_t::handle(Event_t& event) {
 
     KeyEvent_t* keyEvent = dynamic_cast<KeyEvent_t*>(&event);
     if ( keyEvent ) {
-        if ( keyEvent->info.key == "KEY_SHIFT_L" )
+        if ( keyEvent->info.m_key == "KEY_SHIFT_L" )
             shiftDown = keyEvent->info.m_is_pressed;
 
         if ( keyEvent->info.m_is_pressed ) {
-            if ( keyEvent->info.key == "KEY_BACKSPACE" )
+            if ( keyEvent->info.m_key == "KEY_BACKSPACE" )
                 backspace(keyEvent->info);
 
-            else if ( keyEvent->info.key == "KEY_ARROW_LEFT" )
+            else if ( keyEvent->info.m_key == "KEY_ARROW_LEFT" )
                 caretMoveStrategy->moveCaret(this, CaretDirection_t::LEFT, keyEvent->info);
 
-            else if ( keyEvent->info.key == "KEY_ARROW_RIGHT" )
+            else if ( keyEvent->info.m_key == "KEY_ARROW_RIGHT" )
                 caretMoveStrategy->moveCaret(this, CaretDirection_t::RIGHT, keyEvent->info);
 
-            else if ( keyEvent->info.key == "KEY_A" && keyEvent->info.m_ctrl ) {
+            else if ( keyEvent->info.m_key == "KEY_A" && keyEvent->info.m_ctrl ) {
                 marker = 0;
                 cursor = text.length();
                 markFor(COMPONENT_REQUIREMENT_PAINT);

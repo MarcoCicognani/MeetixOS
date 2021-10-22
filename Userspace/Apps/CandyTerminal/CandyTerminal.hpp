@@ -108,7 +108,7 @@ public:
     /**
      *
      */
-    void writeStringToShell(std::string line);
+    void writeStringToShell(std::string line) const;
 
     /**
      *
@@ -119,7 +119,7 @@ public:
      * Thread that continuously reads the keyboard input, processes and redirects
      * it to the shell.
      */
-    void inputRoutine();
+    [[noreturn]] void inputRoutine();
 
     /**
      * Thread that reads the output of the executing program and processes it.

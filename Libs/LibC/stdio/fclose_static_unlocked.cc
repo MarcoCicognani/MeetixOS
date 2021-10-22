@@ -10,11 +10,10 @@
  * GNU General Public License version 3
  */
 
-#ifndef LIBC_BUILDING_LIBSTDCXX
-#    include "stdio_internal.hh"
+#include "stdio_internal.hh"
 
-#    include <stdio.h>
-#    include <string.h>
+#include <cstdio>
+#include <cstring>
 
 int fclose_static_unlocked(FILE* stream) {
     fflush_unlocked(stream);
@@ -32,12 +31,3 @@ int fclose_static_unlocked(FILE* stream) {
     open_file_list_remove(stream);
     return 0;
 }
-#else
-#    include "stdio_internal.hh"
-
-#    include <stdio.h>
-
-int fclose_static_unlocked(FILE*) {
-    return EOF;
-}
-#endif

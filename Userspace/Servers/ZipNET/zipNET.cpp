@@ -294,7 +294,7 @@ bool ZipNET::cleanup(Pid process) {
     // if component exist set false visible to clear screen
     if ( components ) {
         // remove all process components and set unvisible
-        for ( std::pair<const int, Component_t*>& entry : *components ) {
+        for ( auto& entry : *components ) {
             Component_t* current = entry.second;
             if ( current ) {
                 current->setVisible(false);

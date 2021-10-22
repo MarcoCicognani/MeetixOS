@@ -12,27 +12,32 @@
 
 #include <filesystem>
 #include <iostream>
-#include <unistd.h>
+#include <string>
+#include <Utils/ArgsParser.hh>
 
-#define VERSION "0.0.1"
-
-int show_usages(int argc, const char** argv) {
-    std::cout << "Find Utility v" << VERSION << '\n';
-    std::cout << "Usage:\n";
-    std::cout << "\t" << argv[0] << " SourceDir FileName\n";
-    std::cout << "\t -h | --help | -?: Shows this help\n";
-    std::cout << '\n';
-    std::cout << "Compiled with g++ v" << __VERSION__ << " (" << __TIMESTAMP__ << ")" << std::endl;
-
-    return EXIT_SUCCESS;
-}
+#define V_MAJOR 0
+#define V_MINOR 0
+#define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    if ( getopt_is_help(argc, argv) || argc != 3 )
-        return show_usages(argc, argv);
+    auto start_dir = std::string{};
+    auto file_name = std::string{};
 
-    for ( auto& entry : std::filesystem::recursive_directory_iterator(argv[1]) ) {
-        if ( entry.path().string().ends_with(argv[2]) ) {
+    auto args_parser = Utils::ArgsParser{ "Find Utility", V_MAJOR, V_MINOR, V_PATCH };
+    args_parser.add_positional_argument(start_dir,
+                                        "Initial directory where start search",
+                                        "SourceDir",
+                                        true);
+    args_parser.add_positional_argument(file_name,
+                                        "Filename to search in each sub-directory",
+                                        "FileName",
+                                        true);
+
+    /* parse the arguments */
+    args_parser.parse(argc, argv);
+
+    for ( auto& entry : std::filesystem::recursive_directory_iterator(start_dir) ) {
+        if ( entry.path().string().ends_with(file_name) ) {
             std::cout << "Found: " << entry.path() << std::endl;
             return EXIT_SUCCESS;
         }

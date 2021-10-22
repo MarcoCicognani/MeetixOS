@@ -425,7 +425,8 @@ add_library(LibC
         unistd/read.cc
         unistd/getcwd.cc
         unistd/access.cc
-        unistd/getopt.cc
+        getopt/getopt.cc
+        getopt/OptionsParser.cc
         unistd/close.cc
         unistd/getppid.cc
         unistd/symlink.cc
@@ -451,7 +452,6 @@ add_library(LibC
         ctype/islower.cc
         ctype/isblank.cc
         ctype/ispunct.cc
-        ctype/isutf8.cc
         ctype/isprint.cc
         ctype/isalnum.cc
         ctype/isascii.cc
@@ -571,13 +571,9 @@ add_library(LibC
         pthread/pthread_join.cc
         pthread/pthread_self.cc
         pthread/pthread_kill.cc
-        pthread/pthread_exit.cc)
+        pthread/pthread_exit.cc ctype/ctype.cc ctype/toascii.cc sys/stat/fchmod.cc)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-narrowing")
-
-if (NOT EXISTS ${TOOLCHAIN_ROOT}/${TOOLCHAIN_TRIPLET}/lib/libstdc++.a)
-    target_compile_definitions(LibC PRIVATE LIBC_BUILDING_LIBSTDCXX=1)
-endif ()
 
 target_include_directories(LibC PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/musl)
 add_custom_command(

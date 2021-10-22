@@ -30,23 +30,23 @@ GraphicFrontEnd_t::GraphicFrontEnd_t() {
 }
 
 void GraphicFrontEnd_t::initialize() {
-    auto resolution = UI::getResolution();
+    auto resolution = UI::screen_dimension();
 
     window = Window::create();
-    window->setBounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 200,
-                                                   resolution.height() / 2 - 300,
-                                                   400,
-                                                   600));
-    window->setTitle("CandyNote");
-    window->setVisible(true);
+    window->set_bounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 200,
+                                                    resolution.height() / 2 - 300,
+                                                    400,
+                                                    600));
+    window->set_title("CandyNote");
+    window->set_visible(true);
 
-    window->onClose([] {
+    window->on_close([] {
         UI::close();
         s_kill(s_get_tid());
     });
 
     textBox = Textfield::create();
-    textBox->setBounds(Graphics::Metrics::Rectangle(0, 20, 400, 570));
+    textBox->set_bounds(Graphics::Metrics::Rectangle(0, 20, 400, 570));
 }
 
 void GraphicFrontEnd_t::paintEntry() {

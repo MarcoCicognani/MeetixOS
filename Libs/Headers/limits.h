@@ -46,6 +46,7 @@
 #    define FILESIZEBITS       64
 #    define NAME_MAX           FILENAME_MAX
 #    define SYMLINK_MAX        FILENAME_MAX
+#    define PATH_MAX           512
 #    define NZERO              20
 #    define NGROUPS_MAX        32
 #    define ARG_MAX            131072

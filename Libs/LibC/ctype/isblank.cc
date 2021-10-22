@@ -10,8 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <cctype>
+
+#undef isblank
 
 extern "C" int isblank(int c) {
-    return c == ' ' || c == '\t';
+    return __inline_isblank(c);
 }

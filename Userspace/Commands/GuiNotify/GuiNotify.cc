@@ -10,27 +10,26 @@
  * GNU General Public License version 3
  */
 
-#include <gui/notification.hpp>
-#include <gui/ui.hpp>
+#include <GUI/Application.hh>
+#include <GUI/Notification.hh>
 #include <iostream>
-#include <unistd.h>
+#include <string>
+#include <Utils/ArgsParser.hh>
 
-#define VERSION "0.0.1"
+#define V_MAJOR 0
+#define V_MINOR 0
+#define V_PATCH 1
 
-int show_usages(int argc, const char** argv) {
-    std::cout << "GUI Notificator Utility v" << VERSION << '\n';
-    std::cout << "Usage:\n";
-    std::cout << "\t" << argv[0] << " \"Title\" \"Message\"\n";
-    std::cout << "\t -h | --help | -?: Shows this help\n";
-    std::cout << '\n';
-    std::cout << "Compiled with g++ v" << __VERSION__ << " (" << __TIMESTAMP__ << ")" << std::endl;
+int main(int argc, const char** argv) {
+    auto msg_title   = std::string{};
+    auto msg_content = std::string{};
 
-    return EXIT_SUCCESS;
-}
+    auto args_parser = Utils::ArgsParser{ "GUI Notificator Utility", V_MAJOR, V_MINOR, V_PATCH };
+    args_parser.add_positional_argument(msg_title, "Title of the message", "Title", true);
+    args_parser.add_positional_argument(msg_content, "Content of the message", "Message", true);
 
-int main(int argc, const char* argv[]) {
-    if ( getopt_is_help(argc, argv) || argc != 3 )
-        return show_usages(argc, argv);
+    /* parse the arguments */
+    args_parser.parse(argc, argv);
 
     /* open the communication with the window-server */
     auto open_status = UI::open();
@@ -40,7 +39,7 @@ int main(int argc, const char* argv[]) {
     }
 
     /* send the notification */
-    Notification::send(argv[1], argv[2]);
+    Notification::send(msg_title, msg_content);
 
     /* close the communication with the window-server */
     auto close_status = UI::close();

@@ -13,43 +13,38 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <unistd.h>
+#include <Utils/ArgsParser.hh>
 #include <zlib.h>
 
-#define VERSION "0.0.1"
-
-int show_usages(int, const char** argv) {
-    std::cout << "GNU Zip Utility v" << VERSION << '\n';
-    std::cout << "Usage:\n";
-    std::cout << "\t" << argv[0] << " FilesToExtract...\n";
-    std::cout << "\t -h | --help | -?: Shows this help\n";
-    std::cout << '\n';
-    std::cout << "Compiled with g++ v" << __VERSION__ << " (" << __TIMESTAMP__ << ")" << std::endl;
-
-    return EXIT_SUCCESS;
-}
+#define V_MAJOR 0
+#define V_MINOR 0
+#define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    if ( getopt_is_help(argc, argv) || argc < 2 )
-        return show_usages(argc, argv);
+    auto archives = std::vector<std::string>{};
 
-    for ( auto arg = 1; arg < argc; ++arg ) {
+    auto args_parser = Utils::ArgsParser{ "GNU Zip Utility", V_MAJOR, V_MINOR, V_PATCH };
+    args_parser.add_positional_argument(archives, "Archives to extract", "Archive", true);
+
+    /* parse the arguments */
+    args_parser.parse(argc, argv);
+
+    for ( auto& archive : archives ) {
         /* check for right extension in filename */
-        auto gz_path = std::string{ argv[arg] };
-        if ( !gz_path.ends_with(".gz") ) {
-            std::cerr << gz_path << ": Not sure this file is gzipped\n";
+        if ( !archive.ends_with(".gz") ) {
+            std::cerr << archive << ": Not sure this file is gzipped\n";
             continue;
         }
 
         /* open the gz-file */
-        gzFile gz_file = gzopen(gz_path.c_str(), "r");
+        auto gz_file = gzopen(archive.c_str(), "r");
         if ( !gz_file ) {
-            std::cerr << gz_path << ": Unable to open\n";
+            std::cerr << archive << ": Unable to open\n";
             continue;
         }
 
         /* open the output stream */
-        auto dest_path   = gz_path.substr(0, gz_path.length() - 3);
+        auto dest_path   = archive.substr(0, archive.length() - 3);
         auto dest_stream = std::ofstream{ dest_path };
         if ( !dest_stream.is_open() ) {
             std::cerr << dest_path << ": Unable to open/create\n";
@@ -69,6 +64,5 @@ int main(int argc, const char** argv) {
 
         gzclose(gz_file);
     }
-
     return EXIT_SUCCESS;
 }

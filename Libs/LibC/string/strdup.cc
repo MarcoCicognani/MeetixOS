@@ -10,8 +10,7 @@
  * GNU General Public License version 3
  */
 
-#ifndef LIBC_BUILDING_LIBSTDCXX
-#    include <string.h>
+#include <cstring>
 
 extern "C" char* strdup(const char* src) {
     auto src_len = strlen(src);
@@ -20,10 +19,3 @@ extern "C" char* strdup(const char* src) {
     strncpy(dest, src, src_len);
     return dest;
 }
-#else
-#    include <string.h>
-
-extern "C" char* strdup(const char*) {
-    return nullptr;
-}
-#endif

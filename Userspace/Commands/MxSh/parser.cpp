@@ -26,11 +26,12 @@
 
 #include <Api/utils/local.hpp>
 #include <iostream>
+#include <utility>
 
 /**
  *
  */
-Parser::Parser(std::string input) : input(input) {
+Parser::Parser(std::string input) : input(std::move(input)) {
     position = 0;
     current  = -1;
     step();
@@ -80,9 +81,7 @@ bool Parser::pipeExpression(PipeExpression** out) {
                 std::cout << (char)27 << "[0m";
                 return false;
             }
-        }
-
-        else {
+        } else {
             std::cout << (char)27 << "[31m";
             std::cerr << "syntax error: expected a program call at position: " << position
                       << std::endl;
@@ -123,7 +122,7 @@ bool Parser::programCall(ProgramCall** out) {
 /**
  *
  */
-bool Parser::argument(std::string out) {
+bool Parser::argument(std::string& out) {
     // skip whitespace
     skipWhitespace();
 
@@ -136,7 +135,7 @@ bool Parser::argument(std::string out) {
         return false;
 
     // parse content
-    std::string arg = "";
+    std::string arg ;
 
     bool instr   = false;
     bool escaped = false;
