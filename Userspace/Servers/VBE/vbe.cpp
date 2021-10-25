@@ -175,10 +175,12 @@ bool setVideoMode(uint32_t       wantedWidth,
                 bestFoundDepthDiff      = depthDiff;
                 bestFoundResolutionDiff = resolutionDiff;
 
-                Utils::log("vbe: updated best matching mode to %ix%ix%i",
-                           modeInfoBlock->resolutionX,
-                           modeInfoBlock->resolutionY,
-                           modeInfoBlock->bpp);
+                if ( debugOutput ) {
+                    Utils::log("vbe: updated best matching mode to %ix%ix%i",
+                               modeInfoBlock->resolutionX,
+                               modeInfoBlock->resolutionY,
+                               modeInfoBlock->bpp);
+                }
 
                 // Break on perfect match
                 if ( depthDiff == 0 && resolutionDiff == 0 )
@@ -259,7 +261,7 @@ int main() {
 
             Utils::log("attempting to set video mode");
             if ( setVideoMode(resX, resY, bpp, result) ) {
-                Utils::log("changed video mode to " + resX + 'x' + resY + 'x' + bpp);
+                Utils::log("changed video mode to %ix%ix%i", resX, resY, bpp);
                 uint32_t lfbSize                  = result.bytesPerScanline * result.resolutionY;
                 void*    addressInRequestersSpace = s_share_mem(result.lfb, lfbSize, requester);
 
