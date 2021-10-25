@@ -1,118 +1,58 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
 #include <Api.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <getopt.h>
+#include <Api/utils/local.hpp>
+#include <iostream>
+#include <string_view>
+#include <Utils/ArgsParser.hh>
 
-/*
- * show the help
- */
-void show_usages(const char* cmdname) {
-    println("");
-    println("s_kill command utility");
-    println("");
-    println("usage: %s [filter] <task-m_command>");
-    println("avaible filters");
-    println("\t-r    [restart the killed task, only if it is a process]");
-    println("\t-h/-? [show this help]");
-    println("");
-}
+#define V_MAJOR 0
+#define V_MINOR 0
+#define V_PATCH 1
 
-/**
- * s_kill command utility
- */
-int main(int argc, const char* argv[]) {
-    // create flag for help
-    bool showHelp = false;
-    bool restart  = false;
+int main(int argc, const char** argv) {
+    auto target_thread_id = Tid{ -1 };
 
-    // check for args
-    char opt;
-    while ( (opt = getopt(argc, argv, "rh?")) != EOF ) {
-        switch ( opt ) {
-            case 'r':
-                restart = true;
-                break;
-            case 'h':
-                showHelp = true;
-                break;
-            case '?':
-                showHelp = true;
-                break;
-        }
+    auto args_parser = Utils::ArgsParser{ "Kill Utility", V_MAJOR, V_MINOR, V_PATCH };
+    args_parser.add_positional_argument(target_thread_id, "Thread/Process ID", "TargetID");
+
+    /* parse the arguments */
+    args_parser.parse(argc, argv);
+
+    /* obtain the pid of the process */
+    auto task_type      = std::string_view{ "Thread" };
+    auto target_proc_id = s_get_pid_for_tid(target_thread_id);
+    if ( target_proc_id == target_thread_id )
+        task_type = std::string_view{ "Process" };
+
+    /* obtain the task name */
+    auto task_name = Local{ new char[STRING_IDENTIFIER_MAX_LENGTH] };
+    s_get_task_identifier(target_thread_id, task_name());
+
+    std::cout << task_type << " '" << task_name() << "':" << target_thread_id << ": ";
+
+    /* well now kill the task */
+    auto kill_status = s_kill(target_thread_id);
+    switch ( kill_status ) {
+        case KILL_STATUS_SUCCESSFUL:
+            std::cout << "Killed successfully" << std::endl;
+            break;
+        case KILL_STATUS_NOT_FOUND:
+            std::cout << "Not found" << std::endl;
+            break;
+        case KILL_STATUS_FAILED:
+            std::cout << "Failed" << std::endl;
+            break;
     }
-
-    // if we haven't to show the help
-    if ( !showHelp ) {
-        // create target pid
-        Pid target;
-
-        // check the tid to kill
-        for ( int arg = 0; arg < argc; ++arg )
-            if ( argv[arg][0] != '-' )
-                target = atoi(argv[arg]);
-
-        // only if conversion is good
-        if ( target ) {
-            // create a string for output
-            char tasktype[8];
-            char procname[512];
-            procname[0] = '\0';
-
-            // check if the target is a process or a Thread
-            if ( s_get_pid_for_tid(target) == target ) {
-                strcpy(tasktype, "Process");
-
-                // only if we have a process we can restart it
-                if ( restart )
-                    s_get_task_identifier(target, procname);
-            } else
-                strcpy(tasktype, "Thread");
-
-            // call kernel to kill the target
-            switch ( s_kill(target) ) {
-                case KILL_STATUS_SUCCESSFUL: {
-                    println("%s %d successfully killed", tasktype, target);
-                    if ( restart && procname[0] ) {
-                        Pid pid;
-                        s_spawn_p(procname, "", "/", SECURITY_LEVEL_APPLICATION, &pid);
-                        println("restarted process %s with Pid %d", procname, pid);
-                    } else if ( restart && !procname[0] )
-                        fprintf(stderr, "unable to restart a Thread\n");
-                } break;
-
-                case KILL_STATUS_NOT_FOUND:
-                    fprintf(stderr, "%s %d does not exist\n", tasktype, target);
-                    break;
-                default:
-                    fprintf(stderr, "Please supply a valid task m_command.\n");
-                    break;
-            }
-        }
-    }
-
-    else
-        show_usages(argv[0]);
-
-    return 0;
+    return kill_status == KILL_STATUS_SUCCESSFUL ? EXIT_SUCCESS : EXIT_FAILURE;
 }
