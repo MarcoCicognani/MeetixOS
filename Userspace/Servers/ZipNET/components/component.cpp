@@ -32,13 +32,14 @@
 #include <GUI/Properties.hh>
 #include <layout/FlowLayoutManager.hpp>
 #include <layout/GridLayoutManager.hpp>
+#include <ranges>
+#include <Tasking/LockGuard.hh>
 
 /**
  *
  */
 Component_t::~Component_t() {
-    if ( layoutManager )
-        delete layoutManager;
+    delete layoutManager;
 }
 
 /**
@@ -122,29 +123,37 @@ void Component_t::blit(Graphics::Context*           out,
         int newRight
             = absClip.right() < ownAbsBounds.right() ? absClip.right() : ownAbsBounds.right();
 
+        Tasking::LockGuard lock_guard{ m_children_lock };
+
         Graphics::Metrics::Rectangle thisClip
             = Graphics::Metrics::Rectangle(newLeft, newTop, newRight - newLeft, newBottom - newTop);
-        for ( Component_t* c : children )
-            if ( c->visible )
-                c->blit(out,
-                        thisClip,
-                        Graphics::Metrics::Point(position.x() + c->bounds.x(),
-                                                 position.y() + c->bounds.y()));
+        for ( auto c : children )
+            if ( c.m_component->visible )
+                c.m_component->blit(
+                    out,
+                    thisClip,
+                    Graphics::Metrics::Point(position.x() + c.m_component->bounds.x(),
+                                             position.y() + c.m_component->bounds.y()));
     }
 }
 
 /**
  *
  */
-void Component_t::addChild(Component_t* comp) {
+void Component_t::addChild(Component_t* comp, ChildComponentRefType ref_type) {
     if ( comp->parent )
         comp->parent->removeChild(comp);
 
-    children.push_back(comp);
+    Tasking::LockGuard lock_guard{ m_children_lock };
 
-    sort(children.begin(), children.end(), [](Component_t*& cmp1, Component_t*& cmp2) {
-        return cmp1->zIndex < cmp2->zIndex;
-    });
+    ChildComponentRef child_component{ comp, ref_type };
+    children.push_back(child_component);
+
+    std::sort(children.begin(),
+              children.end(),
+              [](ChildComponentRef& cmp1, ChildComponentRef& cmp2) {
+                  return cmp1.m_component->zIndex < cmp2.m_component->zIndex;
+              });
 
     comp->parent = this;
     markFor(COMPONENT_REQUIREMENT_LAYOUT);
@@ -154,8 +163,16 @@ void Component_t::addChild(Component_t* comp) {
  *
  */
 void Component_t::removeChild(Component_t* comp) {
-    children.erase(remove(children.begin(), children.end(), comp), children.end());
-    comp->parent = 0;
+    Tasking::LockGuard lock_guard{ m_children_lock };
+
+    for ( auto it = children.begin(); it != children.end(); ) {
+        if ( (*it).m_component == comp )
+            it = children.erase(it);
+        else
+            ++it;
+    }
+
+    comp->parent = nullptr;
     markFor(COMPONENT_REQUIREMENT_LAYOUT);
 }
 
@@ -163,14 +180,16 @@ void Component_t::removeChild(Component_t* comp) {
  *
  */
 Component_t* Component_t::getComponentAt(Graphics::Metrics::Point p) {
-    for ( int i = children.size() - 1; i >= 0; i-- ) {
-        Component_t* child = children[i];
-
-        if ( child->bounds.contains(p) )
+    m_children_lock.lock();
+    for ( auto it = children.rbegin(); it != children.rend(); ) {
+        auto child = (*it).m_component;
+        if ( child->isVisible() && child->bounds.contains(p) ) {
+            m_children_lock.unlock();
             return child->getComponentAt(
                 Graphics::Metrics::Point(p.x() - child->bounds.x(), p.y() - child->bounds.y()));
+        }
     }
-
+    m_children_lock.unlock();
     return this;
 }
 
@@ -178,24 +197,26 @@ Component_t* Component_t::getComponentAt(Graphics::Metrics::Point p) {
  *
  */
 Window_t* Component_t::getWindow() {
-    Window_t* thisAsWindow = dynamic_cast<Window_t*>(this);
-    if ( thisAsWindow != 0 )
-        return thisAsWindow;
-
-    if ( parent )
+    if ( isWindow() )
+        return (Window_t*)this;
+    else if ( parent )
         return parent->getWindow();
-
-    return 0;
+    else
+        return nullptr;
 }
 
 /**
  *
  */
 void Component_t::bringChildToFront(Component_t* comp) {
-    for ( uint32_t index = 0; index < children.size(); index++ ) {
-        if ( children[index] == comp ) {
+    Tasking::LockGuard lock_guard{ m_children_lock };
+
+    for ( auto index = 0; index < children.size(); index++ ) {
+        if ( children[index].m_component == comp ) {
+            auto ref = children[index];
+
             children.erase(children.begin() + index);
-            children.push_back(comp);
+            children.push_back(ref);
             markDirty(comp->bounds);
             break;
         }
@@ -206,7 +227,6 @@ void Component_t::bringChildToFront(Component_t* comp) {
  *
  */
 void Component_t::bringToFront() {
-    Component_t* parent = getParent();
     if ( parent )
         parent->bringChildToFront(this);
 }
@@ -230,10 +250,11 @@ Graphics::Metrics::Point Component_t::getLocationOnScreen() {
  *
  */
 bool Component_t::handle(Event_t& event) {
-    Locatable_t* locatable = dynamic_cast<Locatable_t*>(&event);
+    Tasking::LockGuard lock_guard{ m_children_lock };
 
-    for ( int i = children.size() - 1; i >= 0; i-- ) {
-        Component_t* child = children[i];
+    auto locatable = dynamic_cast<Locatable_t*>(&event);
+    for ( auto& child_ref : std::ranges::reverse_view(children) ) {
+        auto child = child_ref.m_component;
 
         if ( child->visible ) {
             if ( locatable ) {
@@ -374,9 +395,11 @@ void Component_t::mark_children_for(ComponentRequirement_t req) {
  */
 void Component_t::resolveRequirement(ComponentRequirement_t req) {
     if ( childRequirements & req ) {
+        Tasking::LockGuard lock_guard{ m_children_lock };
+
         for ( auto child : children ) {
-            if ( child->visible ) {
-                child->resolveRequirement(req);
+            if ( child.m_component->visible ) {
+                child.m_component->resolveRequirement(req);
             }
         }
         childRequirements &= ~COMPONENT_REQUIREMENT_NONE;
@@ -400,19 +423,27 @@ void Component_t::resolveRequirement(ComponentRequirement_t req) {
  *
  */
 void Component_t::setListener(UiComponentEventType eventType, Tid targetThread, UiComponentID id) {
-    EventListenerInfo_t info;
-    info.targetThread    = targetThread;
-    info.componentID     = id;
-    listeners[eventType] = info;
+    auto listener_entry = new ListenerEntry{ eventType, { targetThread, id }, nullptr, nullptr };
+
+    if ( listeners ) {
+        listener_entry->m_next = listeners;
+        listeners->m_previous  = listener_entry;
+    }
+
+    listeners = listener_entry;
 }
 
 /**
  *
  */
 bool Component_t::getListener(UiComponentEventType eventType, EventListenerInfo_t& out) {
-    if ( listeners.count(eventType) ) {
-        out = listeners[eventType];
-        return true;
+    auto listener = listeners;
+    while ( listener ) {
+        if ( listener->m_event_type == eventType ) {
+            out = listener->m_event_listener_info;
+            return true;
+        }
+        listener = listener->m_next;
     }
     return false;
 }
@@ -467,5 +498,16 @@ bool Component_t::setNumericProperty(int property, uint32_t value) {
         }
     }
 
+    return false;
+}
+bool Component_t::getChildReference(Component_t* child, ChildComponentRef& out) {
+    Tasking::LockGuard lock_guard{ m_children_lock };
+
+    for ( auto& child_ref : children ) {
+        if ( child_ref.m_component == child ) {
+            out = child_ref;
+            return true;
+        }
+    }
     return false;
 }

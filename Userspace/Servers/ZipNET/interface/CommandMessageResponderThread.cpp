@@ -24,9 +24,8 @@
 
 #include <Api.h>
 #include <events/EventProcessor.hpp>
-#include <GUI/Protocol.hh>
 #include <interface/CommandMessageResponderThread.hpp>
-#include <stdio.h>
+#include <Tasking/LockGuard.hh>
 #include <zipNET.hpp>
 
 /**
@@ -36,11 +35,11 @@
     s_task_register_id("messageResponder");
     EventProcessor* eventProcessor = ZipNET::instance()->eventProcessor;
     while ( true ) {
-        // wait until messages are added
-        s_atomic_lock(&bufferEmpty);
+        s_atomic_lock(&m_buffer_empty_lock);
+        Tasking::LockGuard buffer_guard{ m_buffer_lock };
 
         // process all
-        while ( buffer.size() > 0 ) {
+        while ( !buffer.empty() ) {
             // get reference to response from the queue
             CommandMessageResponse_t& response = buffer.back();
             s_send_message_t(response.target,
@@ -61,6 +60,7 @@
  *
  */
 void CommandMessageResponderThread::sendResponse(CommandMessageResponse_t& response) {
+    Tasking::LockGuard buffer_guard{ m_buffer_lock };
     buffer.push_back(response);
-    bufferEmpty = false;
+    m_buffer_empty_lock = false;
 }

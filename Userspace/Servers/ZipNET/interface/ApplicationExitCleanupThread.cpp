@@ -23,6 +23,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
 #include <interface/ApplicationExitCleanupThread.hpp>
+#include <interface/ComponentRegistry.hpp>
 #include <zipNET.hpp>
 
 /**
@@ -38,5 +39,5 @@ void ApplicationExitCleanupThread::run() {
     commandReceiver->stop = true;
 
     // make the window server clean up
-    ZipNET::instance()->cleanup(pid);
+    ComponentRegistry::instance().cleanup_process(pid);
 }

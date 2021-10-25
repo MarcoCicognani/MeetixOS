@@ -29,9 +29,13 @@
  *
  */
 Checkbox_t::Checkbox_t()
-    : Component_t(true), checked(false), boxSize(DEFAULT_BOX_SIZE),
-      boxTextGap(DEFAULT_BOX_TEXT_GAP), hovered(false), pressed(false) {
-    addChild(&label);
+    : Component_t(true)
+    , checked(false)
+    , boxSize(DEFAULT_BOX_SIZE)
+    , boxTextGap(DEFAULT_BOX_TEXT_GAP)
+    , hovered(false)
+    , pressed(false) {
+    addChild(&label, ChildComponentRefType::Internal);
 }
 
 /**

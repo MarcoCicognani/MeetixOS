@@ -281,31 +281,3 @@ ZipNET* ZipNET::instance() {
 void ZipNET::triggerRender() {
     renderAtom = false;
 }
-
-/**
- *
- */
-bool ZipNET::cleanup(Pid process) {
-    klog("removing components for process %i", process);
-
-    // get components mapped for process
-    auto components = ComponentRegistry::instance().getProcessMap(process);
-
-    // if component exist set false visible to clear screen
-    if ( components ) {
-        // remove all process components and set unvisible
-        for ( auto& entry : *components ) {
-            Component_t* current = entry.second;
-            if ( current ) {
-                current->setVisible(false);
-                ComponentRegistry::instance().removeComponent(process, entry.first);
-            }
-        }
-
-        ComponentRegistry::instance().removeProcessMap(process);
-
-        return true;
-    }
-
-    return false;
-}

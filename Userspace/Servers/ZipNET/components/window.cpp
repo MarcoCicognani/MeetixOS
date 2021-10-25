@@ -38,7 +38,9 @@
 /**
  *
  */
-Window_t::Window_t() : borderWidth(DEFAULT_BORDER_WIDTH), cornerSize(DEFAULT_CORNER_SIZE) {
+Window_t::Window_t()
+    : borderWidth(DEFAULT_BORDER_WIDTH)
+    , cornerSize(DEFAULT_CORNER_SIZE) {
     type = UI_COMPONENT_TYPE_WINDOW;
 
     visible   = false;
@@ -58,8 +60,8 @@ Window_t::Window_t() : borderWidth(DEFAULT_BORDER_WIDTH), cornerSize(DEFAULT_COR
 
     style = Utils::Environment::get("UISTYLE");
 
-    Component_t::addChild(&label);
-    Component_t::addChild(&panel);
+    Component_t::addChild(&label, ChildComponentRefType::Internal);
+    Component_t::addChild(&panel, ChildComponentRefType::Internal);
 
     setMinimumSize(Graphics::Metrics::Dimension(100, 50));
 }
@@ -79,8 +81,8 @@ void Window_t::layout() {
 /**
  *
  */
-void Window_t::addChild(Component_t* component) {
-    panel.addChild(component);
+void Window_t::addChild(Component_t* component, ChildComponentRefType ref_type) {
+    panel.addChild(component, ref_type);
 }
 
 /**

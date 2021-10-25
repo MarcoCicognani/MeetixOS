@@ -31,8 +31,11 @@
  *
  */
 GridLayoutManager_t::GridLayoutManager_t(int columns, int rows)
-    : columns(columns), rows(rows), padding(Graphics::Metrics::Insets(0, 0, 0, 0)),
-      horizontalCellSpace(0), verticalCellSpace(0) {
+    : columns(columns)
+    , rows(rows)
+    , padding(Graphics::Metrics::Insets(0, 0, 0, 0))
+    , horizontalCellSpace(0)
+    , verticalCellSpace(0) {
 }
 
 /**
@@ -42,7 +45,7 @@ void GridLayoutManager_t::layout() {
     if ( !component )
         return;
 
-    std::vector<Component_t*>& children = component->getChildren();
+    auto& children = component->getChildren();
 
     auto usedBounds = component->getBounds();
     usedBounds.set_left(padding.left());
@@ -56,8 +59,9 @@ void GridLayoutManager_t::layout() {
 
     int widthPerComponent = (columns > 0) ? (usedBounds.width() / columns) : usedBounds.width();
 
-    for ( Component_t* c : children ) {
-        int usedHeight = (rows > 0) ? (usedBounds.height() / rows) : c->getPreferredSize().height();
+    for ( auto c : children ) {
+        int usedHeight = (rows > 0) ? (usedBounds.height() / rows)
+                                    : c.m_component->getPreferredSize().height();
 
         if ( x + widthPerComponent > usedBounds.width() ) {
             x = usedBounds.x();
@@ -65,7 +69,7 @@ void GridLayoutManager_t::layout() {
             rowHeight = 0;
         }
 
-        c->setBounds({ x, y, widthPerComponent, usedHeight });
+        c.m_component->setBounds({ x, y, widthPerComponent, usedHeight });
         x += widthPerComponent;
 
         if ( usedHeight > rowHeight )

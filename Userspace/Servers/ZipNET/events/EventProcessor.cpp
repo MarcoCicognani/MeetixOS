@@ -38,6 +38,7 @@
 #include <interface/TaskManagerThread.hpp>
 #include <layout/GridLayoutManager.hpp>
 #include <Tasking/Lock.hh>
+#include <Tasking/LockGuard.hh>
 #include <Utils/Utils.hh>
 #include <zipNET.hpp>
 
@@ -52,6 +53,7 @@ EventProcessor::EventProcessor() {
  *
  */
 void EventProcessor::bufferKeyEvent(IO::Keyboard::Info keyInfo) {
+    Tasking::LockGuard lock_guard{ m_key_info_lock };
     keyInfoBuffer.push_back(keyInfo);
 }
 
@@ -59,6 +61,7 @@ void EventProcessor::bufferKeyEvent(IO::Keyboard::Info keyInfo) {
  *
  */
 void EventProcessor::bufferCommandMessage(void* commandMessage) {
+    Tasking::LockGuard lock_guard{ m_buffer_lock };
     commandMessageBuffer.push_back(commandMessage);
 }
 
@@ -67,11 +70,16 @@ void EventProcessor::bufferCommandMessage(void* commandMessage) {
  */
 void EventProcessor::process() {
     // process key events
-    while ( keyInfoBuffer.size() > 0 ) {
-        translateKeyEvent(keyInfoBuffer.back());
-        keyInfoBuffer.pop_back();
+    {
+        Tasking::LockGuard lock_guard{ m_key_info_lock };
+
+        while ( keyInfoBuffer.size() > 0 ) {
+            translateKeyEvent(keyInfoBuffer.back());
+            keyInfoBuffer.pop_back();
+        }
     }
 
+    Tasking::LockGuard lock_guard{ m_buffer_lock };
     // process command messages
     while ( commandMessageBuffer.size() > 0 ) {
         // take next message from buffer
@@ -180,8 +188,7 @@ void EventProcessor::processCommand(Tid                       senderTid,
         UiRemoveComponentMapResponse* response = new UiRemoveComponentMapResponse();
 
         // remove components map
-        // ComponentRegistry_t::removeProcessMap(senderTid);
-        klog("removed components map of process %i", senderTid);
+        //ComponentRegistry_t::removeProcessMap(senderTid);
 
         response->status = UI_PROTOCOL_SUCCESS;
 

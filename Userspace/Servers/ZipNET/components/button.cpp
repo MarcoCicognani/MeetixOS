@@ -40,7 +40,7 @@ Button_t::Button_t() : insets(Graphics::Metrics::Insets(0, 0, 0, 0)), ActionComp
     shapeColor = Graphics::Color::as_argb(255, 230, 230, 230);
     border     = Graphics::Color::as_rgb(160, 160, 160);
 
-    addChild(&label);
+    addChild(&label, ChildComponentRefType::Internal);
     label.setAlignment(Graphics::Text::Alignment::CENTER);
 }
 

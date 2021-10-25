@@ -42,14 +42,17 @@ using namespace std;
 class EventProcessor {
 public:
     uint32_t multiclickTimespan;
-
     EventProcessor();
 
     deque<IO::Keyboard::Info> keyInfoBuffer;
-    void                      bufferKeyEvent(IO::Keyboard::Info keyInfo);
+    Tasking::Lock             m_key_info_lock;
 
-    deque<void*> commandMessageBuffer;
-    void         bufferCommandMessage(void* commandMessage);
+    void bufferKeyEvent(IO::Keyboard::Info keyInfo);
+
+    deque<void*>  commandMessageBuffer;
+    Tasking::Lock m_buffer_lock;
+
+    void bufferCommandMessage(void* commandMessage);
 
     void process();
     void processCommand(Tid                       senderTid,

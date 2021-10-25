@@ -34,12 +34,34 @@
 #include <layout/LayoutManager.hpp>
 #include <map>
 #include <stdio.h>
+#include <Tasking/Lock.hh>
 #include <vector>
 
 using namespace std;
 
 // forward declarations
 class Window_t;
+class Component_t;
+
+enum class ChildComponentRefType
+{
+    Default,
+    Internal
+};
+
+struct ChildComponentRef {
+public:
+    Component_t*          m_component;
+    ChildComponentRefType m_ref_type;
+};
+
+struct ListenerEntry {
+public:
+    UiComponentEventType m_event_type;
+    EventListenerInfo_t  m_event_listener_info;
+    ListenerEntry*       m_previous;
+    ListenerEntry*       m_next;
+};
 
 /**
  * A component requirement is a flag that is put on the component
@@ -65,7 +87,8 @@ class Component_t : public BoundsEventComponent_t {
 private:
     Graphics::Metrics::Rectangle bounds{};
     Component_t*                 parent{ nullptr };
-    vector<Component_t*>         children{};
+    Tasking::Lock                m_children_lock{};
+    vector<ChildComponentRef>   children{};
 
     Graphics::Metrics::Dimension minimumSize;
     Graphics::Metrics::Dimension preferredSize;
@@ -74,7 +97,7 @@ private:
     ComponentRequirement_t requirements;
     ComponentRequirement_t childRequirements;
 
-    map<UiComponentEventType, EventListenerInfo_t> listeners;
+    ListenerEntry* listeners{ nullptr };
 
     int zIndex = 1000;
 
@@ -93,9 +116,14 @@ public:
      * and sets no parent
      */
     Component_t(bool transparentBackground = false)
-        : id(-1), graphics(transparentBackground), visible(true),
-          requirements(COMPONENT_REQUIREMENT_ALL), childRequirements(COMPONENT_REQUIREMENT_ALL),
-          parent(nullptr), layoutManager(nullptr), BoundsEventComponent_t(this) {
+        : id(-1)
+        , graphics(transparentBackground)
+        , visible(true)
+        , requirements(COMPONENT_REQUIREMENT_ALL)
+        , childRequirements(COMPONENT_REQUIREMENT_ALL)
+        , parent(nullptr)
+        , layoutManager(nullptr)
+        , BoundsEventComponent_t(this) {
     }
 
     /**
@@ -129,7 +157,7 @@ public:
     /**
      *
      */
-    vector<Component_t*>& getChildren() {
+    vector<ChildComponentRef>& getChildren() {
         return children;
     }
 
@@ -224,7 +252,8 @@ public:
      *
      * @param comp	the component to add
      */
-    virtual void addChild(Component_t* comp);
+    virtual void addChild(Component_t*          comp,
+                          ChildComponentRefType ref_type = ChildComponentRefType::Default);
 
     /**
      * Removes the given component from this component
@@ -246,6 +275,10 @@ public:
      * @return the window
      */
     virtual Window_t* getWindow();
+
+    virtual bool isWindow() const {
+        return false;
+    }
 
     /**
      * Brings this component to the front
@@ -305,6 +338,8 @@ public:
     virtual void markDirty() {
         markDirty(Graphics::Metrics::Rectangle(0, 0, bounds.width(), bounds.height()));
     }
+
+    bool getChildReference(Component_t* child, ChildComponentRef& out);
 
     /**
      * Places the flag for the given requirement on the parent component (if non-null).

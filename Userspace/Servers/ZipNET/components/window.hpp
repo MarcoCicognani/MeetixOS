@@ -105,7 +105,8 @@ public:
      * component
      */
     virtual void setFocus(bool focus);
-    virtual void addChild(Component_t* component);
+    virtual void addChild(Component_t*          component,
+                          ChildComponentRefType ref_type = ChildComponentRefType::Default);
     virtual void layout();
     virtual void paint();
 
@@ -141,6 +142,10 @@ public:
     virtual void        setFontSize(int size) {
     }
     virtual void setTitleAlignment(Graphics::Text::Alignment alignment);
+
+    bool isWindow() const override {
+        return true;
+    }
 
     /**
      *

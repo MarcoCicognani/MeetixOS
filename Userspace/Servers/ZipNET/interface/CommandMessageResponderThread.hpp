@@ -26,6 +26,7 @@
 #define __INTERFACE_COMMAND_MESSAGE_RESPONDER_THREAD__
 
 #include <deque>
+#include <Tasking/Lock.hh>
 #include <Tasking/Thread.hh>
 
 /**
@@ -44,7 +45,8 @@ typedef struct {
 class CommandMessageResponderThread : public Tasking::Thread {
 public:
     std::deque<CommandMessageResponse_t> buffer;
-    bool                                 bufferEmpty = true;
+    bool                                 m_buffer_empty_lock{ true };
+    Tasking::Lock                        m_buffer_lock;
 
     /**
      *

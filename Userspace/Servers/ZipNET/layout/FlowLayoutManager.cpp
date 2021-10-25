@@ -34,15 +34,15 @@ void FlowLayoutManager_t::layout() {
     if ( !component )
         return;
 
-    std::vector<Component_t*>& children = component->getChildren();
+    auto& children = component->getChildren();
 
     int x          = 0;
     int y          = 0;
     int lineHeight = 0;
 
     auto parentBounds = component->getBounds();
-    for ( Component_t* c : children ) {
-        auto preferredSize = c->getPreferredSize();
+    for ( auto& c : children ) {
+        auto preferredSize = c.m_component->getPreferredSize();
 
         if ( x + preferredSize.width() > parentBounds.width() ) {
             x = 0;
@@ -50,7 +50,7 @@ void FlowLayoutManager_t::layout() {
             lineHeight = 0;
         }
 
-        c->setBounds({ x, y, preferredSize.width(), preferredSize.height() });
+        c.m_component->setBounds({ x, y, preferredSize.width(), preferredSize.height() });
         x += preferredSize.width();
 
         if ( preferredSize.height() > lineHeight )

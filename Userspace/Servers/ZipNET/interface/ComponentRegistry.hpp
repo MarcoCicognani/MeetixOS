@@ -42,20 +42,24 @@ class ComponentRegistry {
 public:
     static ComponentRegistry& instance();
 
-    UiComponentID                     add(Pid process, Component_t* component);
-    Component_t*                      get(UiComponentID id);
-    std::list<Window_t*>              getWindowsComponents();
-    map<UiComponentID, Component_t*>* getProcessMap(Pid pid);
+    UiComponentID        add(Pid process, Component_t* component);
+    Component_t*         get(UiComponentID id);
+    std::list<Window_t*> getWindowsComponents();
 
-    bool removeComponent(Pid pid, UiComponentID id);
-    void removeProcessMap(Pid pid);
+    void removeComponent(Pid pid, UiComponentID id);
+    void cleanup_process(Pid pid);
 
 private:
     ComponentRegistry() = default;
 
+    void remove_process_components(Pid                      pid,
+                                   Component_t*             component,
+                                   std::list<Component_t*>& removed_components);
+
     map<UiComponentID, Component_t*>           m_registry{};
-    map<Pid, map<UiComponentID, Component_t*>> componentsByProcess{};
-    UiComponentID                              nextID{ 1 };
+    map<Pid, map<UiComponentID, Component_t*>> m_components_by_process{};
+    UiComponentID                              m_next_id{ 1 };
+    Tasking::Lock                              m_lock;
 };
 
 #endif

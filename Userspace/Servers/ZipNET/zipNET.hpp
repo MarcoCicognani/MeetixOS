@@ -93,10 +93,6 @@ public:
      */
     void triggerRender();
 
-    /**
-     *
-     */
-    bool cleanup(Pid process);
 };
 
 #endif
