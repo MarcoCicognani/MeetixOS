@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <cairo/cairo.h>
 #include <components/component.hpp>
+#include <ranges>
 #include <components/window.hpp>
 #include <events/KeyEvent.hpp>
 #include <events/locatable.hpp>
@@ -181,8 +182,8 @@ void Component_t::removeChild(Component_t* comp) {
  */
 Component_t* Component_t::getComponentAt(Graphics::Metrics::Point p) {
     m_children_lock.lock();
-    for ( auto it = children.rbegin(); it != children.rend(); ) {
-        auto child = (*it).m_component;
+    for (auto& it : std::ranges::reverse_view(children)) {
+        auto child = it.m_component;
         if ( child->isVisible() && child->bounds.contains(p) ) {
             m_children_lock.unlock();
             return child->getComponentAt(

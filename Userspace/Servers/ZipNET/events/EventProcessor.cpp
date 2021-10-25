@@ -81,7 +81,7 @@ void EventProcessor::process() {
 
     Tasking::LockGuard lock_guard{ m_buffer_lock };
     // process command messages
-    while ( commandMessageBuffer.size() > 0 ) {
+    while ( !commandMessageBuffer.empty() ) {
         // take next message from buffer
         void* requestBuffer = commandMessageBuffer.back();
         commandMessageBuffer.pop_back();

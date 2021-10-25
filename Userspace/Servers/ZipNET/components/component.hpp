@@ -276,7 +276,7 @@ public:
      */
     virtual Window_t* getWindow();
 
-    virtual bool isWindow() const {
+    [[nodiscard]] virtual bool isWindow() const {
         return false;
     }
 
