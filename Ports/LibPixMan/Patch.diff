@@ -1,12 +1,12 @@
-diff -Nur pixman-0.32.6/config.sub pixman-0.32.6-meetix/config.sub
---- pixman-0.32.6/config.sub	2013-01-12 12:26:18.000000000 +0100
-+++ pixman-0.32.6-meetix/config.sub	2014-11-10 13:08:15.788935200 +0100
-@@ -1342,7 +1342,7 @@
- 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
- 	      | -sym* | -kopensolaris* \
- 	      | -amigaos* | -amigados* | -msdos* | -newsos* | -unicos* | -aof* \
--	      | -aos* | -aros* \
-+	      | -aos* | -aros* | -meetix* \
- 	      | -nindy* | -vxsim* | -vxworks* | -ebmon* | -hms* | -mvs* \
- 	      | -clix* | -riscos* | -uniplus* | -iris* | -rtu* | -xenix* \
- 	      | -hiux* | -386bsd* | -knetbsd* | -mirbsd* | -netbsd* \
+diff -Nur pixman-0.40.0/config.sub pixman-0.40.0-meetix/config.sub
+--- pixman-0.40.0/config.sub	2020-04-19 23:53:21.000000000 +0200
++++ pixman-0.40.0-meetix/config.sub	2021-10-22 17:24:08.612546487 +0200
+@@ -1362,7 +1362,7 @@
+ 	gnu* | bsd* | mach* | minix* | genix* | ultrix* | irix* \
+ 	     | *vms* | esix* | aix* | cnk* | sunos | sunos[34]*\
+ 	     | hpux* | unos* | osf* | luna* | dgux* | auroraux* | solaris* \
+-	     | sym* | kopensolaris* | plan9* \
++	     | sym* | kopensolaris* | plan9* | meetix* \
+ 	     | amigaos* | amigados* | msdos* | newsos* | unicos* | aof* \
+ 	     | aos* | aros* | cloudabi* | sortix* | twizzler* \
+ 	     | nindy* | vxsim* | vxworks* | ebmon* | hms* | mvs* \

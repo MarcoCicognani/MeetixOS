@@ -1,6 +1,6 @@
-REMOTE_ARCHIVE=https://www.meetixos.org/libs/ports/cairo-1.12.18.tar.xz
-UNPACKED_DIR=cairo-1.12.18
-ARCHIVE=cairo-1.12.18.tar.xz
+REMOTE_ARCHIVE=https://www.meetixos.org/Repository/Ports/cairo-1.16.0.tar.xz
+UNPACKED_DIR=cairo-1.16.0
+ARCHIVE=cairo-1.16.0.tar.xz
 
 port_unpack() {
     tar -xf ${ARCHIVE}

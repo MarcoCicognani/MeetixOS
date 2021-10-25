@@ -1,12 +1,12 @@
-diff -rupN freetype-2.5.3/builds/unix/config.sub freetype-2.5.3-meetix/builds/unix/config.sub
---- freetype-2.5.3/builds/unix/config.sub	2014-03-06 23:13:51.060164300 +0100
-+++ freetype-2.5.3-meetix/builds/unix/config.sub	2014-09-03 15:02:31.014256000 +0200
-@@ -1356,7 +1356,7 @@ case $os in
- 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
- 	      | -sym* | -kopensolaris* | -plan9* \
- 	      | -amigaos* | -amigados* | -msdos* | -newsos* | -unicos* | -aof* \
--	      | -aos* | -aros* \
-+	      | -aos* | -aros* | -meetix* \
- 	      | -nindy* | -vxsim* | -vxworks* | -ebmon* | -hms* | -mvs* \
- 	      | -clix* | -riscos* | -uniplus* | -iris* | -rtu* | -xenix* \
- 	      | -hiux* | -386bsd* | -knetbsd* | -mirbsd* | -netbsd* \
+diff -Nur freetype-2.11.0/builds/unix/config.sub freetype-2.11.0-meetix/builds/unix/config.sub
+--- freetype-2.11.0/builds/unix/config.sub	2021-07-19 18:08:21.000000000 +0200
++++ freetype-2.11.0-meetix/builds/unix/config.sub	2021-10-22 17:22:11.252288762 +0200
+@@ -1713,7 +1713,7 @@
+ 	     | hpux* | unos* | osf* | luna* | dgux* | auroraux* | solaris* \
+ 	     | sym* |  plan9* | psp* | sim* | xray* | os68k* | v88r* \
+ 	     | hiux* | abug | nacl* | netware* | windows* \
+-	     | os9* | macos* | osx* | ios* \
++	     | os9* | macos* | osx* | ios* | meetix* \
+ 	     | mpw* | magic* | mmixware* | mon960* | lnews* \
+ 	     | amigaos* | amigados* | msdos* | newsos* | unicos* | aof* \
+ 	     | aos* | aros* | cloudabi* | sortix* | twizzler* \

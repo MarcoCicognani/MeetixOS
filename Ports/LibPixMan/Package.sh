@@ -1,6 +1,6 @@
-REMOTE_ARCHIVE=https://www.meetixos.org/libs/ports/pixman-0.32.6.tar.gz
-UNPACKED_DIR=pixman-0.32.6
-ARCHIVE=pixman-0.32.6.tar.gz
+REMOTE_ARCHIVE=https://www.meetixos.org/Repository/Ports/pixman-0.40.0.tar.gz
+UNPACKED_DIR=pixman-0.40.0
+ARCHIVE=pixman-0.40.0.tar.gz
 
 port_unpack() {
     tar -xf $ARCHIVE

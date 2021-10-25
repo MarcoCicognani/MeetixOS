@@ -1,12 +1,12 @@
-diff -Naur libpng-1.6.18/config.sub libpng-1.6.18-meetix/config.sub
---- libpng-1.6.18/config.sub	2015-02-21 19:26:44.000000000 +0100
-+++ libpng-1.6.18-meetix/config.sub	2015-07-29 22:47:56.000000000 +0200
-@@ -1373,7 +1373,7 @@
+diff -Nur libpng-1.6.37/config.sub libpng-1.6.37-meetix/config.sub
+--- libpng-1.6.37/config.sub	2019-04-14 20:10:32.000000000 +0200
++++ libpng-1.6.37-meetix/config.sub	2021-10-22 17:18:37.155948027 +0200
+@@ -1366,7 +1366,7 @@
+ 	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* \
+ 	      | -*vms* | -sco* | -esix* | -isc* | -aix* | -cnk* | -sunos | -sunos[34]*\
  	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
- 	      | -sym* | -kopensolaris* | -plan9* \
+-	      | -sym* | -kopensolaris* | -plan9* \
++	      | -sym* | -kopensolaris* | -plan9* | -meetix* \
  	      | -amigaos* | -amigados* | -msdos* | -newsos* | -unicos* | -aof* \
--	      | -aos* | -aros* \
-+	      | -aos* | -aros* | -meetix* \
+ 	      | -aos* | -aros* | -cloudabi* | -sortix* \
  	      | -nindy* | -vxsim* | -vxworks* | -ebmon* | -hms* | -mvs* \
- 	      | -clix* | -riscos* | -uniplus* | -iris* | -rtu* | -xenix* \
- 	      | -hiux* | -386bsd* | -knetbsd* | -mirbsd* | -netbsd* \

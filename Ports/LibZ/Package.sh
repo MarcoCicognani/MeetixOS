@@ -1,6 +1,6 @@
-REMOTE_ARCHIVE=https://www.meetixos.org/libs/ports/zlib-1.2.8.tar.gz
-UNPACKED_DIR=zlib-1.2.8
-ARCHIVE=zlib-1.2.8.tar.gz
+REMOTE_ARCHIVE=https://www.meetixos.org/Repository/Ports/zlib-1.2.11.tar.gz
+UNPACKED_DIR=zlib-1.2.11
+ARCHIVE=zlib-1.2.11.tar.gz
 BUILD_IN_SOURCE_DIR=1
 
 port_unpack() {

@@ -1,6 +1,6 @@
-REMOTE_ARCHIVE=https://www.meetixos.org/libs/ports/libpng-1.6.18.tar.gz
-UNPACKED_DIR=libpng-1.6.18
-ARCHIVE=libpng-1.6.18.tar.gz
+REMOTE_ARCHIVE=https://www.meetixos.org/Repository/Ports/libpng-1.6.37.tar.gz
+UNPACKED_DIR=libpng-1.6.37
+ARCHIVE=libpng-1.6.37.tar.gz
 
 port_unpack() {
     tar -xf ${ARCHIVE}

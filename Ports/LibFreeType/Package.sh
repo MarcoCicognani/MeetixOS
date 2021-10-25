@@ -1,6 +1,6 @@
-REMOTE_ARCHIVE=https://www.meetixos.org/libs/ports/freetype-2.5.3.tar.gz
-UNPACKED_DIR=freetype-2.5.3
-ARCHIVE=freetype-2.5.3.tar.gz
+REMOTE_ARCHIVE=https://www.meetixos.org/Repository/Ports/freetype-2.11.0.tar.gz
+UNPACKED_DIR=freetype-2.11.0
+ARCHIVE=freetype-2.11.0.tar.gz
 
 port_unpack() {
     tar -xf ${ARCHIVE}
