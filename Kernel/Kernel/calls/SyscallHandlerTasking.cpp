@@ -106,10 +106,12 @@ SYSCALL_HANDLER(getThreadName) {
  * Returns the process id for a task id.
  */
 SYSCALL_HANDLER(getPidForTid) {
-    SyscallGetPidForTid* data       = (SyscallGetPidForTid*)SYSCALL_DATA(currentThread->cpuState);
-    Thread*              targetTask = Tasking::getTaskById(data->m_thread_id);
-    data->m_proc_id                 = targetTask->process->main->id;
-
+    auto data   = (SyscallGetPidForTid*)SYSCALL_DATA(currentThread->cpuState);
+    auto thread = Tasking::getTaskById(data->m_thread_id);
+    if ( thread )
+        data->m_proc_id = thread->process->main->id;
+    else
+        data->m_proc_id = -1;
     return currentThread;
 }
 

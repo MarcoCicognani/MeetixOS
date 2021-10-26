@@ -25,7 +25,9 @@ void Thread::execute_run(Thread* thread) {
 }
 
 Tid Thread::start() {
-    return (m_thread_id = s_create_thread_d(reinterpret_cast<void*>(execute_run), this));
+    m_thread_id
+        = s_create_thread_dn(reinterpret_cast<void*>(execute_run), this, m_thread_name.c_str());
+    return m_thread_id;
 }
 
 } /* namespace Tasking */

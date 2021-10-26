@@ -41,7 +41,9 @@ public:
      *
      */
     ApplicationExitCleanupThread(Pid pid, CommandMessageReceiverThread* commandReceiver)
-        : pid(pid), commandReceiver(commandReceiver) {
+        : Tasking::Thread{}
+        , pid(pid)
+        , commandReceiver(commandReceiver) {
     }
 
     /**

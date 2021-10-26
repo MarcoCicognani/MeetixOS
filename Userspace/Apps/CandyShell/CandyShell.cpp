@@ -194,7 +194,7 @@ CandyShell::CandyShell() : inactive(false) {
     if ( headless )
         screen = new HeadlessScreen();
     else
-        screen = new GuiScreen();
+        screen = new GUIScreen();
 }
 
 /**

@@ -47,7 +47,7 @@ using namespace std;
 /**
  *
  */
-class GuiScreen : public Screen {
+class GUIScreen : public Screen {
 private:
     Window* window;
     Canvas* canvas;
@@ -69,8 +69,8 @@ private:
     static void blinkCursorThread();
 
 public:
-    GuiScreen();
-    ~GuiScreen();
+    GUIScreen();
+    ~GUIScreen();
 
     static void paintEntry();
     void        paint();

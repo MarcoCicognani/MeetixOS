@@ -13,6 +13,7 @@
 #pragma once
 
 #include <Api.h>
+#include <string>
 
 namespace Tasking {
 
@@ -24,6 +25,11 @@ namespace Tasking {
 class Thread {
 public:
     Thread() = default;
+    Thread(const std::string& thread_name)
+        : m_thread_id{ -1 }
+        , m_thread_name{ thread_name } {
+    }
+
     virtual ~Thread();
 
     /**
@@ -45,7 +51,8 @@ protected:
     virtual void run() = 0;
 
 protected:
-    Tid m_thread_id{ -1 };
+    Tid         m_thread_id{ -1 };
+    std::string m_thread_name{};
 
 private:
     static void execute_run(Thread* thread);

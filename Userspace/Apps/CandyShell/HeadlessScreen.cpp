@@ -37,10 +37,10 @@ static uint32_t screenIdCounter   = 0;
 HeadlessScreen::HeadlessScreen() {
     id            = screenIdCounter++;
     outputBuffer  = new uint8_t[SCREEN_WIDTH * SCREEN_HEIGHT * 2];
-    outputCurrent = outputBuffer;
+    m_output_current = outputBuffer;
 
-    offset          = 0;
-    activeProcessId = 0;
+    m_offset        = 0;
+    m_active_proc_id = 0;
     lock            = false;
     clean();
 }
@@ -54,7 +54,7 @@ void HeadlessScreen::clean() {
         outputBuffer[off]     = ' ';
         outputBuffer[off + 1] = (uint8_t)Graphics::Color::as_rgb(0, 0, 0);
     }
-    offset = 0;
+    m_offset = 0;
     lock   = false;
 }
 
@@ -64,7 +64,7 @@ void HeadlessScreen::clean() {
 void HeadlessScreen::activate() {
     s_atomic_lock(&lock);
     memcpy((uint8_t*)VIDEO_MEMORY, outputBuffer, SCREEN_HEIGHT * SCREEN_WIDTH * 2);
-    outputCurrent = outputVideoDirect;
+    m_output_current = outputVideoDirect;
     lock          = false;
 }
 
@@ -73,7 +73,7 @@ void HeadlessScreen::activate() {
  */
 void HeadlessScreen::close() {
     delete outputBuffer;
-    delete outputCurrent;
+    delete m_output_current;
 
     delete this;
 }
@@ -91,7 +91,7 @@ bool HeadlessScreen::setColor(std::string color) {
 void HeadlessScreen::deactivate() {
     s_atomic_lock(&lock);
     memcpy(outputBuffer, (uint8_t*)VIDEO_MEMORY, SCREEN_HEIGHT * SCREEN_WIDTH * 2);
-    outputCurrent = outputBuffer;
+    m_output_current = outputBuffer;
     lock          = false;
 }
 
@@ -113,7 +113,7 @@ void HeadlessScreen::moveCursor(uint16_t x, uint16_t y) {
  *
  */
 void HeadlessScreen::updateCursor() {
-    moveCursor((offset % (SCREEN_WIDTH * 2)) / 2, offset / (SCREEN_WIDTH * 2));
+    moveCursor((m_offset % (SCREEN_WIDTH * 2)) / 2, m_offset / (SCREEN_WIDTH * 2));
 }
 
 /**
@@ -121,13 +121,13 @@ void HeadlessScreen::updateCursor() {
  */
 void HeadlessScreen::writeChar(char c, Graphics::Color::ArgbGradient color) {
     if ( c == '\n' ) {
-        offset = offset + SCREEN_WIDTH * 2;
-        offset = offset - offset % (SCREEN_WIDTH * 2);
+        m_offset = m_offset + SCREEN_WIDTH * 2;
+        m_offset = m_offset - m_offset % (SCREEN_WIDTH * 2);
     }
 
     else {
-        outputCurrent[offset++] = c;
-        outputCurrent[offset++] = (uint8_t)color;
+        m_output_current[m_offset++] = c;
+        m_output_current[m_offset++] = (uint8_t)color;
     }
 
     normalize();
@@ -138,10 +138,10 @@ void HeadlessScreen::writeChar(char c, Graphics::Color::ArgbGradient color) {
  */
 void HeadlessScreen::backspace() {
     s_atomic_lock(&lock);
-    offset                  = offset - 2;
-    outputCurrent[offset++] = ' ';
-    ++offset; // keep color
-    offset = offset - 2;
+    m_offset                     = m_offset - 2;
+    m_output_current[m_offset++] = ' ';
+    ++m_offset; // keep color
+    m_offset = m_offset - 2;
     lock   = false;
 }
 
@@ -178,17 +178,17 @@ void HeadlessScreen::write(std::string message, Graphics::Color::ArgbGradient co
  *
  */
 void HeadlessScreen::normalize() {
-    if ( offset >= SCREEN_WIDTH * SCREEN_HEIGHT * 2 ) {
-        offset = offset - SCREEN_WIDTH * 2;
+    if ( m_offset >= SCREEN_WIDTH * SCREEN_HEIGHT * 2 ) {
+        m_offset = m_offset - SCREEN_WIDTH * 2;
 
         uint32_t lineBytes  = SCREEN_WIDTH * 2;
         uint32_t screenSize = SCREEN_HEIGHT * lineBytes;
 
-        memcpy(outputCurrent, &outputCurrent[SCREEN_WIDTH * 2], screenSize - lineBytes);
+        memcpy(m_output_current, &m_output_current[SCREEN_WIDTH * 2], screenSize - lineBytes);
 
         for ( uint32_t i = 0; i < SCREEN_WIDTH * 2; i += 2 ) {
-            outputCurrent[screenSize - lineBytes + i] = ' ';
-            outputCurrent[screenSize - lineBytes + i + 1]
+            m_output_current[screenSize - lineBytes + i] = ' ';
+            m_output_current[screenSize - lineBytes + i + 1]
                 = (uint8_t)Graphics::Color::as_rgb(0, 0, 0);
         }
     }

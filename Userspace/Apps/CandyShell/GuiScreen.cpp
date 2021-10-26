@@ -41,7 +41,7 @@ list<IO::Keyboard::Info> waitingInput;
 bool                     noInputAvailable = true;
 Tasking::Lock            waitingInputLock;
 
-GuiScreen* instance;
+GUIScreen* instance;
 
 vector<Graphics::Color::ArgbGradient> colors;
 string                                output;
@@ -99,12 +99,12 @@ public:
 /**
  *
  */
-GuiScreen::GuiScreen() {
+GUIScreen::GUIScreen() {
     instance = this;
     initialize();
 }
 
-GuiScreen::~GuiScreen() {
+GUIScreen::~GUIScreen() {
     UI::close();
 }
 
@@ -118,7 +118,7 @@ void exitEntry() {
 /**
  *
  */
-void GuiScreen::initialize() {
+void GUIScreen::initialize() {
     window = Window::create();
     window->set_title("CandyShell");
     window->on_close([] { UI::close(); });
@@ -154,11 +154,11 @@ void GuiScreen::initialize() {
 /**
  *
  */
-void GuiScreen::paintEntry() {
+void GUIScreen::paintEntry() {
     instance->paint();
 }
 
-void GuiScreen::blinkCursorThread() {
+void GUIScreen::blinkCursorThread() {
     while ( true ) {
         cursorBlink  = !cursorBlink;
         paintIsFresh = false;
@@ -169,7 +169,7 @@ void GuiScreen::blinkCursorThread() {
 /**
  *
  */
-void GuiScreen::paint() {
+void GUIScreen::paint() {
     int                          padding = 5;
     Graphics::Metrics::Rectangle windowBounds;
     cairo_t*                     cr;
@@ -261,7 +261,7 @@ void GuiScreen::paint() {
 /**
  *
  */
-cairo_t* GuiScreen::getGraphics() {
+cairo_t* GUIScreen::getGraphics() {
     // get buffer
     CanvasBufferInfo bufferInfo = canvas->buffer_info();
     if ( bufferInfo.buffer == 0 )
@@ -298,7 +298,7 @@ bool charIsUtf8(char c) {
 /**
  *
  */
-void GuiScreen::clean() {
+void GUIScreen::clean() {
     output = "";
     colors.clear();
     paintIsFresh = false;
@@ -307,20 +307,20 @@ void GuiScreen::clean() {
 /**
  *
  */
-void GuiScreen::activate() {
+void GUIScreen::activate() {
 }
 
 /*
  *
  */
-void GuiScreen::close() {
+void GUIScreen::close() {
     delete instance;
 }
 
 /**
  *
  */
-bool GuiScreen::setColor(string color) {
+bool GUIScreen::setColor(string color) {
     if ( color == "red" ) {
         backgroundColor = Graphics::Color::as_rgb(255, 0, 0);
         fontColor       = Graphics::Color::as_rgb(0, 0, 0);
@@ -356,19 +356,19 @@ bool GuiScreen::setColor(string color) {
 /**
  *
  */
-void GuiScreen::deactivate() {
+void GUIScreen::deactivate() {
 }
 
 /**
  *
  */
-void GuiScreen::updateCursor() {
+void GUIScreen::updateCursor() {
 }
 
 /**
  *
  */
-void GuiScreen::writeChar(char c, Graphics::Color::ArgbGradient color) {
+void GUIScreen::writeChar(char c, Graphics::Color::ArgbGradient color) {
     if ( charIsUtf8(c) ) {
         output = output + c;
         if ( c != '\n' )
@@ -381,7 +381,7 @@ void GuiScreen::writeChar(char c, Graphics::Color::ArgbGradient color) {
 /**
  *
  */
-void GuiScreen::backspace() {
+void GUIScreen::backspace() {
     output = output.substr(0, output.length() - 1);
     colors.pop_back();
     paintIsFresh = false;
@@ -390,7 +390,7 @@ void GuiScreen::backspace() {
 /**
  *
  */
-void GuiScreen::cleanLine(int lineLength) {
+void GUIScreen::cleanLine(int lineLength) {
     output = output.substr(0, output.length() - lineLength);
     colors.clear();
     paintIsFresh = false;
@@ -399,7 +399,7 @@ void GuiScreen::cleanLine(int lineLength) {
 /**
  *
  */
-void GuiScreen::write(string message, Graphics::Color::ArgbGradient color, bool visible) {
+void GUIScreen::write(string message, Graphics::Color::ArgbGradient color, bool visible) {
     for ( char c : message )
         writeChar(c, color);
 }
@@ -407,7 +407,7 @@ void GuiScreen::write(string message, Graphics::Color::ArgbGradient color, bool 
 /**
  *
  */
-IO::Keyboard::Info GuiScreen::readInput(bool* cancelCondition) {
+IO::Keyboard::Info GUIScreen::readInput(bool* cancelCondition) {
     if ( waitingInput.size() == 0 ) {
         if ( cancelCondition )
             s_atomic_block_dual(&noInputAvailable, cancelCondition);
@@ -431,6 +431,6 @@ IO::Keyboard::Info GuiScreen::readInput(bool* cancelCondition) {
 /**
  *
  */
-void GuiScreen::workingDirectoryChanged(string str) {
+void GUIScreen::workingDirectoryChanged(string str) {
     window->set_title("CandyShell - " + str);
 }

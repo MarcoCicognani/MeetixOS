@@ -16,7 +16,7 @@ add_executable(ZipNET.sv
         components/ActionComponent.cpp
         components/geoshape.cpp
         components/window.cpp
-        components/screen.cpp
+        components/Screen.cpp
         components/checkbox.cpp
         components/BoundsEventComponent.cpp
         components/canvas.cpp

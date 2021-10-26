@@ -190,6 +190,10 @@ bool handleBuiltin(std::string cwd, ProgramCall* call) {
         return true;
     }
 
+    if ( call->program == "exit" ) {
+        exit(EXIT_SUCCESS);
+    }
+
     return false;
 }
 

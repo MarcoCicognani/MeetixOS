@@ -32,11 +32,11 @@ private:
     uint32_t id;
 
     uint8_t* outputBuffer;
-    uint8_t* outputCurrent;
+    uint8_t* m_output_current;
 
-    uint32_t offset;
+    uint32_t m_offset;
 
-    uint32_t activeProcessId;
+    uint32_t m_active_proc_id;
     bool     lock;
     void     normalize();
     void     moveCursor(uint16_t x, uint16_t y);

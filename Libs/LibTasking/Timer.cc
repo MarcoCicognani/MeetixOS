@@ -19,7 +19,9 @@ namespace Tasking {
 class TimerThread final : public Tasking::Thread {
 public:
     TimerThread(const Utils::TimeSpan& time_span, std::function<void()>& function)
-        : m_time_span{ time_span }, m_function{ function } {
+        : Tasking::Thread{}
+        , m_time_span{ time_span }
+        , m_function{ function } {
     }
 
     virtual ~TimerThread() = default;

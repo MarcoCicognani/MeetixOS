@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "screen.hpp"
+#include "Screen.hh"
 
 #include <cairo/cairo.h>
 #include <Graphics/Text/Font.hh>
@@ -55,7 +55,7 @@ struct CharLayout {
 /**
  *
  */
-class GuiScreen : public Screen {
+class GUIScreen : public Screen {
 private:
     /**
      * UI related properties
@@ -108,13 +108,13 @@ private:
      * @param screen
      * 		instance of the screen
      */
-    static void blinkCursorEntry(GuiScreen* screen);
+    static void blinkCursorEntry(GUIScreen* screen);
     void        blinkCursor();
 
     /**
      * paint routine
      */
-    static void       paintEntry(GuiScreen* screen);
+    static void       paintEntry(GUIScreen* screen);
     [[noreturn]] void paint();
 
     /**
@@ -123,8 +123,8 @@ private:
     CharLayout* getCharLayout(cairo_scaled_font_t* scaledFace, char c);
 
 public:
-    GuiScreen();
-    ~GuiScreen();
+    GUIScreen();
+    ~GUIScreen();
 
     /**
      * Initializes the UI components for the screen.
@@ -133,12 +133,12 @@ public:
      */
     bool initialize();
 
-    IO::Keyboard::Info readInput();
+    IO::Keyboard::Info read_input();
     void               clean();
-    void               writeChar(char c);
-    void               moveCursor(int x, int y);
-    int                getCursorX();
-    int                getCursorY();
+    void               write_char(char c);
+    void               move_cursor(int x, int y);
+    int                cursor_x();
+    int                cursor_y();
     void               backspace();
 
     void bufferInput(const IO::Keyboard::Info& info);
@@ -147,12 +147,12 @@ public:
 
     void updateVisibleBufferSize();
 
-    virtual int getWidth();
-    virtual int getHeight();
+    virtual int width();
+    virtual int height();
 
-    void setScrollAreaScreen();
-    void setScrollArea(int start, int end);
+    void set_scroll_area_screen();
+    void set_scroll_area(int start, int end);
     void scroll(int value);
 
-    void setCursorVisible(bool visible);
+    void set_cursor_visible(bool visible);
 };

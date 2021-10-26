@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "GuiScreen.hpp"
+#include "GUIScreen.hh"
 
 #include <Api.h>
 #include <IO/Keyboard.hh>
@@ -30,16 +30,16 @@
 #include <string.h>
 #include <Tasking/Lock.hh>
 
-GuiScreen* instance;
+GUIScreen* instance;
 
 /**
  *
  */
 class CanvasResizeBoundsListener_t : public BoundsListener {
 public:
-    GuiScreen* screen;
+    GUIScreen* screen;
 
-    CanvasResizeBoundsListener_t(GuiScreen* screen) : screen(screen) {
+    CanvasResizeBoundsListener_t(GUIScreen* screen) : screen(screen) {
     }
 
     virtual void handle_bounds_changed(Graphics::Metrics::Rectangle bounds) {
@@ -52,13 +52,13 @@ public:
  */
 class InputKeyListener_t : public KeyListener {
 private:
-    GuiScreen* screen;
+    GUIScreen* screen;
 
 public:
     /**
      *
      */
-    InputKeyListener_t(GuiScreen* screen) : screen(screen) {
+    InputKeyListener_t(GUIScreen* screen) : screen(screen) {
     }
 
     /**
@@ -74,13 +74,13 @@ public:
  */
 class CanvasBufferListener_t : public CanvasBufferListener {
 private:
-    GuiScreen* screen;
+    GUIScreen* screen;
 
 public:
     /**
      *
      */
-    CanvasBufferListener_t(GuiScreen* screen) : screen(screen) {
+    CanvasBufferListener_t(GUIScreen* screen) : screen(screen) {
     }
 
     /**
@@ -97,13 +97,13 @@ public:
  */
 class TerminalFocusListener_t : public FocusListener {
 private:
-    GuiScreen* screen;
+    GUIScreen* screen;
 
 public:
     /**
      *
      */
-    TerminalFocusListener_t(GuiScreen* screen) : screen(screen) {
+    TerminalFocusListener_t(GUIScreen* screen) : screen(screen) {
     }
 
     /**
@@ -125,14 +125,14 @@ static void exitTerminalEntry() {
 /*
  *
  */
-GuiScreen::GuiScreen() {
+GUIScreen::GUIScreen() {
     instance = this;
 }
 
 /*
  *
  */
-GuiScreen::~GuiScreen() {
+GUIScreen::~GUIScreen() {
     if ( existingContext )
         cairo_destroy(existingContext);
     // delete existingSurfaceBuffer;
@@ -145,7 +145,7 @@ GuiScreen::~GuiScreen() {
 /**
  *
  */
-bool GuiScreen::initialize() {
+bool GUIScreen::initialize() {
     // initialize user interface
     auto status = UI::open();
     if ( status != UI_OPEN_STATUS_SUCCESSFUL ) {
@@ -184,7 +184,7 @@ bool GuiScreen::initialize() {
 /**
  *
  */
-void GuiScreen::blinkCursorEntry(GuiScreen* screen) {
+void GUIScreen::blinkCursorEntry(GUIScreen* screen) {
     while ( true ) {
         screen->blinkCursor();
         s_sleep(500);
@@ -194,7 +194,7 @@ void GuiScreen::blinkCursorEntry(GuiScreen* screen) {
 /**
  *
  */
-void GuiScreen::blinkCursor() {
+void GUIScreen::blinkCursor() {
     cursorBlink = !cursorBlink;
     repaint();
 }
@@ -202,14 +202,14 @@ void GuiScreen::blinkCursor() {
 /**
  *
  */
-void GuiScreen::paintEntry(GuiScreen* screen) {
+void GUIScreen::paintEntry(GUIScreen* screen) {
     screen->paint();
 }
 
 /**
  *
  */
-CharLayout* GuiScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
+CharLayout* GUIScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
     // Take char from layout cache
     auto entry = charLayoutCache.find(c);
     if ( entry != charLayoutCache.end() ) {
@@ -244,7 +244,7 @@ CharLayout* GuiScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
 /**
  *
  */
-[[noreturn]] void GuiScreen::paint() {
+[[noreturn]] void GUIScreen::paint() {
     int padding = 0;
     while ( true ) {
         auto windowBounds = window->bounds();
@@ -330,7 +330,7 @@ CharLayout* GuiScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
 /**
  *
  */
-cairo_t* GuiScreen::getGraphics() {
+cairo_t* GUIScreen::getGraphics() {
     // get buffer
     auto bufferInfo = canvas->buffer_info();
     if ( !bufferInfo.buffer )
@@ -369,7 +369,7 @@ bool charIsUtf8(char c) {
 /**
  *
  */
-void GuiScreen::clean() {
+void GUIScreen::clean() {
     rasterLock.lock();
     memset(rasterBuffer, 0, rasterSize.height() * rasterSize.width());
     rasterLock.unlock();
@@ -379,26 +379,26 @@ void GuiScreen::clean() {
 /**
  *
  */
-void GuiScreen::backspace() {
-    moveCursor(cursorX - 1, cursorY);
-    writeChar(' ');
-    moveCursor(cursorX - 1, cursorY);
+void GUIScreen::backspace() {
+    move_cursor(cursorX - 1, cursorY);
+    write_char(' ');
+    move_cursor(cursorX - 1, cursorY);
     repaint();
 }
 
 /**
  *
  */
-void GuiScreen::writeChar(char c) {
+void GUIScreen::write_char(char c) {
     if ( charIsUtf8(c) ) {
         if ( rasterBuffer ) {
             if ( c == '\n' )
-                moveCursor(0, cursorY + 1);
+                move_cursor(0, cursorY + 1);
             else {
                 rasterLock.lock();
                 rasterBuffer[cursorY * rasterSize.width() + cursorX] = c;
                 rasterLock.unlock();
-                moveCursor(cursorX + 1, cursorY);
+                move_cursor(cursorX + 1, cursorY);
             }
         }
 
@@ -409,7 +409,7 @@ void GuiScreen::writeChar(char c) {
 /**
  *
  */
-IO::Keyboard::Info GuiScreen::readInput() {
+IO::Keyboard::Info GUIScreen::read_input() {
     if ( !inputBuffer.size() )
         s_atomic_block(&inputBufferEmpty);
 
@@ -428,7 +428,7 @@ IO::Keyboard::Info GuiScreen::readInput() {
 /**
  *
  */
-void GuiScreen::moveCursor(int x, int y) {
+void GUIScreen::move_cursor(int x, int y) {
     rasterLock.lock();
     cursorX = x;
     cursorY = y;
@@ -464,21 +464,21 @@ void GuiScreen::moveCursor(int x, int y) {
 /**
  *
  */
-int GuiScreen::getCursorX() {
+int GUIScreen::cursor_x() {
     return cursorX;
 }
 
 /**
  *
  */
-int GuiScreen::getCursorY() {
+int GUIScreen::cursor_y() {
     return cursorY;
 }
 
 /**
  *
  */
-void GuiScreen::bufferInput(const IO::Keyboard::Info& info) {
+void GUIScreen::bufferInput(const IO::Keyboard::Info& info) {
     inputBufferLock.lock();
     inputBuffer.push_back(info);
     lastInputTime    = s_millis();
@@ -489,14 +489,14 @@ void GuiScreen::bufferInput(const IO::Keyboard::Info& info) {
 /**
  *
  */
-void GuiScreen::repaint() {
+void GUIScreen::repaint() {
     paintUpToDate = false;
 }
 
 /**
  *
  */
-void GuiScreen::setFocused(bool _focused) {
+void GUIScreen::setFocused(bool _focused) {
     lastInputTime = s_millis();
     focused       = _focused;
 }
@@ -504,7 +504,7 @@ void GuiScreen::setFocused(bool _focused) {
 /**
  *
  */
-void GuiScreen::updateVisibleBufferSize() {
+void GUIScreen::updateVisibleBufferSize() {
     auto canvasBounds   = canvas->bounds();
     int  requiredWidth  = canvasBounds.width() / charWidth;
     int  requiredHeight = canvasBounds.height() / charHeight;
@@ -551,37 +551,37 @@ void GuiScreen::updateVisibleBufferSize() {
 /**
  *
  */
-void GuiScreen::setScrollAreaScreen() { /* TODO */
+void GUIScreen::set_scroll_area_screen() { /* TODO */
 }
 
 /**
  *
  */
-void GuiScreen::setScrollArea(int start, int end) { /* TODO */
+void GUIScreen::set_scroll_area(int start, int end) { /* TODO */
 }
 
 /**
  *
  */
-void GuiScreen::scroll(int value) { /* TODO */
+void GUIScreen::scroll(int value) { /* TODO */
 }
 
 /**
  *
  */
-void GuiScreen::setCursorVisible(bool visible) { /* TODO */
+void GUIScreen::set_cursor_visible(bool visible) { /* TODO */
 }
 
 /**
  *
  */
-int GuiScreen::getWidth() {
+int GUIScreen::width() {
     return rasterSize.width();
 }
 
 /**
  *
  */
-int GuiScreen::getHeight() {
+int GUIScreen::height() {
     return rasterSize.height();
 }
