@@ -233,7 +233,7 @@ const option* OptionsParser::lookup_long_option(const char* raw_option) const {
 
         /* check for the name. use start_with to handle option=value */
         auto name_view = std::string_view{ long_option.name };
-        if ( !name_view.starts_with(arg_view) )
+        if ( !arg_view.starts_with(name_view) )
             continue;
 
         /* write-out the index of the option */
