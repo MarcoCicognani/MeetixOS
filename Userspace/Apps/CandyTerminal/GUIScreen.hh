@@ -46,10 +46,10 @@
  * Used to cache information about the layout of a specific character.
  */
 struct CharLayout {
-    cairo_glyph_t*        glyphBuffer = nullptr;
-    int                   glyphCount;
-    cairo_text_cluster_t* clusterBuffer = nullptr;
-    int                   clusterCount;
+    cairo_glyph_t*        glyphBuffer{ nullptr };
+    int                   glyphCount{};
+    cairo_text_cluster_t* clusterBuffer{ nullptr };
+    int                   clusterCount{};
 };
 
 /**
@@ -131,7 +131,7 @@ public:
      *
      * @return whether initialization was successful
      */
-    bool initialize();
+    bool init();
 
     IO::Keyboard::Info read_input();
     void               clean();

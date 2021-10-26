@@ -57,11 +57,11 @@ public:
     virtual void backspace()               = 0;
     virtual void write_char(char c)        = 0;
     virtual void move_cursor(int x, int y) = 0;
-    virtual int  cursor_x()                = 0;
-    virtual int  cursor_y()                = 0;
 
-    virtual int width()  = 0;
-    virtual int height() = 0;
+    virtual int cursor_x() = 0;
+    virtual int cursor_y() = 0;
+    virtual int width()    = 0;
+    virtual int height()   = 0;
 
     virtual void set_scroll_area_screen()            = 0;
     virtual void set_scroll_area(int start, int end) = 0;

@@ -13,6 +13,7 @@
 #include "CandyTerminal.hh"
 
 #include "GUIScreen.hh"
+#include "HeadlessGuiScreen.hh"
 #include "HeadlessScreen.hh"
 
 #include <csignal>
@@ -67,7 +68,7 @@ int CandyTerminal::execute() {
     /* initialize the screen */
     init_screen();
     if ( !m_screen ) {
-        Utils::log("Terminal: Failed to initialize screen");
+        Utils::log("Terminal: Failed to init screen");
         return EXIT_FAILURE;
     }
     m_screen->clean();
@@ -100,11 +101,11 @@ int CandyTerminal::execute() {
 
 void CandyTerminal::init_screen() {
     if ( m_headless_mode == HeadLessMode::None ) {
-        auto gui_screen = new GUIScreen();
-        if ( gui_screen->initialize() )
+        auto gui_screen = new GUIScreen{};
+        if ( gui_screen->init() )
             m_screen = gui_screen;
         else
-            Utils::log("Terminal: Failed to initialize the graphical screen");
+            Utils::log("Terminal: Failed to init the graphical screen");
     } else {
         /* check for other executing instances */
         auto proc_id = s_task_get_id("Terminal");
@@ -116,9 +117,13 @@ void CandyTerminal::init_screen() {
 
         /* initialize the screen */
         if ( m_headless_mode == HeadLessMode::Gui ) {
-            /* TODO */
+            auto gui_screen = new HeadlessGUIScreen{};
+            if ( gui_screen->init() )
+                m_screen = gui_screen;
+            else
+                Utils::log("Terminal: Failed to init the graphical screen");
         } else {
-            m_screen = new HeadlessScreen();
+            m_screen = new HeadlessScreen{};
         }
     }
 }
@@ -342,8 +347,7 @@ void CandyTerminal::process_term_sequence(StreamControlStatus& status) {
         case 'i': {
             /* screen info */
             std::stringstream ss;
-            ss << SHELLKEY_ESC << "{" << m_screen->width() << ";" << m_screen->height()
-               << "i";
+            ss << SHELLKEY_ESC << "{" << m_screen->width() << ";" << m_screen->height() << "i";
             write_string_to_shell(ss.str());
             break;
         }

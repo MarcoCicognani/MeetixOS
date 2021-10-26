@@ -14,16 +14,13 @@
 
 #include "Screen.hh"
 
-#include <Tasking/Lock.hh>
+#include <Graphics/Vbe.hh>
 
-#define SCREEN_WIDTH  80
-#define SCREEN_HEIGHT 25
-#define VIDEO_MEMORY  0xB8000
-
-class HeadlessScreen : public Screen {
+class HeadlessGUIScreen : public Screen {
 public:
-    HeadlessScreen()           = default;
-    ~HeadlessScreen() override = default;
+    ~HeadlessGUIScreen() override = default;
+
+    bool init();
 
     IO::Keyboard::Info read_input() override;
 
@@ -42,17 +39,12 @@ public:
     void scroll(int value) override;
 
     void set_cursor_visible(bool visible) override;
+    int  color_foreground() override;
+    void set_color_foreground(int c) override;
+    int  color_background() override;
+
+    void set_color_background(int c) override;
 
 private:
-    void normalize();
-    void update_visual_cursor();
-
-private:
-    Tasking::Lock m_lock{};
-    u8*           m_output_current{ reinterpret_cast<u8*>(VIDEO_MEMORY) };
-    u32           m_offset{ 0 };
-    bool          m_is_cursor_visible{ true };
-    bool          m_is_scroll_area_screen{ true };
-    u32           m_scroll_area_start{ 0 };
-    u32           m_scroll_area_end{ 0 };
+    Graphics::Vbe::ModeInfo m_mode_info;
 };

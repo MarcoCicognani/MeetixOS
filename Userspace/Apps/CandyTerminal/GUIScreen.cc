@@ -145,11 +145,11 @@ GUIScreen::~GUIScreen() {
 /**
  *
  */
-bool GUIScreen::initialize() {
+bool GUIScreen::init() {
     // initialize user interface
     auto status = UI::open();
     if ( status != UI_OPEN_STATUS_SUCCESSFUL ) {
-        klog("Terminal : Failed to initialize gui with status %i", status);
+        klog("Terminal : Failed to init gui with status %i", status);
         return false;
     }
 

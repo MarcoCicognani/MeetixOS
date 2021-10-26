@@ -16,10 +16,6 @@
 #include <Tasking/LockGuard.hh>
 #include <Utils/Utils.hh>
 
-HeadlessScreen::HeadlessScreen() {
-    clean();
-}
-
 IO::Keyboard::Info HeadlessScreen::read_input() {
     return IO::Keyboard::instance().read();
 }
