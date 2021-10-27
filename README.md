@@ -1,13 +1,15 @@
 # MeetiX OS
 
-**MeetiX OS** is an operating system for the intel x86 platform. The kernel of the system is mostly derived from the **
-Ghost Kernel** of **Max Schlüssel**, in fact, most of the features (at kernel level) are the same at the moment. I
-called my derivation of the Ghost kernel "**EvangelionNG**"; this bizarre name is a composite word, where Evangelion (**
-not the anime :-)**) means **Good News**
-and the appendix **NG** means **New Generation**, the resultant means of the name is ***New Generation of Good News***.
-The reasons of this name date back to the birth of the project, when taken by the enthusiasm, I decided to call "**
-MeetiX**" my own OS because it had to become something mythical for the eyes of those who used it (I was about 14 years
-old at the time), the kernel, instaed, must have been something superb too and bring new things to the already crowded
+**MeetiX OS** is an operating system for the intel x86 platform. The kernel of the system is mostly derived from the
+**Ghost Kernel** of **Max Schlüssel**, in fact, most of the features (at kernel level) are the same at the moment. I
+called my derivation of the Ghost kernel "**EvangelionNG**"; this bizarre name is a composite word,
+where Evangelion (**not the anime :-)**) means **Good News**
+and the appendix **NG** means **New Generation**,
+the resultant means of the name is ***New Generation of Good News***.
+The reasons of this name date back to the birth of the project, when taken by the enthusiasm, I decided to call
+"**MeetiX**" my own OS because it had to become something mythical for the eyes of those who used it
+(I was about 14 years old at the time),
+the kernel, instead, must have been something superb too and bring new things to the already crowded
 and consolidated world of kernels. The kernel is written in **C++**/**C**/**Assembly** like most of the userspace
 applications, commands, servers and libraries. I started this project four years ago as a joke, but now is a real
 research project for me and my IT culture. The sources are released under the **GPL3 licence**.
@@ -46,8 +48,8 @@ research project for me and my IT culture. The sources are released under the **
 
 On MeetiX OS the userspace executables are divided by
 
-**Applications**: applications are all the graphical programs avaible on the system, they are contained into the **
-/app/** directory.
+**Applications**: applications are all the graphical programs avaible on the system, they are contained into the
+**/app/** directory.
 
 **Commands**: commands are all the command line programs avaible on the system, they are contained into the **/cmd/**
 directory.
