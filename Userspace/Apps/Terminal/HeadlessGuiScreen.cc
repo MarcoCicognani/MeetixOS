@@ -188,8 +188,6 @@ void HeadlessGUIScreen::set_cursor_visible(bool visible) {
                     if ( !raster_cell )
                         continue;
 
-                    Utils::log("Writing char '%c'", raster_cell.m_char);
-
                     /* obtain the character glyph to draw */
                     auto char_layout = cached_char_layout(cairo_scaled_font, raster_cell.m_char);
                     if ( char_layout ) {
