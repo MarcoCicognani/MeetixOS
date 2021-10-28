@@ -45,10 +45,8 @@ IO::Keyboard::Info HeadlessGUIScreen::read_input() {
 void HeadlessGUIScreen::clean() {
     Tasking::LockGuard lock_guard{ m_raster_buffer_lock };
 
-    delete[] m_raster_buffer;
-    m_raster_buffer = new RasterCell[width() * height()];
-    //    for ( auto i = 0; i < width() * height(); ++i )
-    //        m_raster_buffer[i] = RasterCell{};
+    for ( auto i = 0; i < width() * height(); ++i )
+        m_raster_buffer[i] = RasterCell{};
     repaint();
 }
 
