@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include "CandyTerminal.hh"
+#include "Terminal.hh"
 
 #include "GUIScreen.hh"
 #include "HeadlessGuiScreen.hh"
@@ -37,34 +37,33 @@ int main(int argc, const char** argv) {
     args_parser.parse(argc, argv);
 
     /* execute the terminal */
-    CandyTerminal terminal{ headless_mode };
+    Terminal terminal{ headless_mode };
     return terminal.execute();
 }
 
-void CandyTerminal::OutputRoutineThread::run() {
+void Terminal::OutputRoutineThread::run() {
     StreamControlStatus status;
 
-    auto buffer_len  = 1024;
-    auto buffer      = new char[buffer_len];
-    auto output_pipe = m_is_error ? m_terminal.m_shell_err : m_terminal.m_shell_out;
+    FsReadStatus read_status;
+    auto         buffer_len  = 1024;
+    auto         buffer      = new char[buffer_len];
+    auto         output_pipe = m_is_error ? m_terminal->m_shell_err : m_terminal->m_shell_out;
     while ( true ) {
-        FsReadStatus read_status;
-        auto         read_bytes = s_read_s(output_pipe, buffer, buffer_len, &read_status);
+        /* read from the  */
+        auto read_bytes = s_read_s(output_pipe, buffer, buffer_len, &read_status);
         if ( read_status == FS_READ_SUCCESSFUL ) {
-            for ( int i = 0; i < read_bytes; i++ ) {
-                char c = buffer[i];
+            Tasking::LockGuard lock_guard{ m_terminal->m_screen_lock };
 
-                /* process the character */
-                Tasking::LockGuard lock_guard{ m_terminal.m_screen_lock };
-                m_terminal.process_output_character(status, m_is_error, c);
-            }
+            /* write the output */
+            for ( auto i = 0; i < read_bytes; i++ )
+                m_terminal->process_output_character(status, m_is_error, buffer[i]);
         } else
             break;
     }
     __builtin_unreachable();
 }
 
-int CandyTerminal::execute() {
+int Terminal::execute() {
     /* initialize the screen */
     init_screen();
     if ( !m_screen ) {
@@ -89,17 +88,17 @@ int CandyTerminal::execute() {
         return EXIT_FAILURE;
 
     /* start output routines */
-    m_std_out_thread = new OutputRoutineThread{ false, *this };
+    m_std_out_thread = new OutputRoutineThread{ false, this };
     m_std_out_thread->start();
 
-    m_err_out_thread = new OutputRoutineThread{ true, *this };
+    m_err_out_thread = new OutputRoutineThread{ true, this };
     m_err_out_thread->start();
 
     /* use the main thread for the input routine */
     return input_routine();
 }
 
-void CandyTerminal::init_screen() {
+void Terminal::init_screen() {
     if ( m_headless_mode == HeadLessMode::None ) {
         auto gui_screen = new GUIScreen{};
         if ( gui_screen->init() )
@@ -108,12 +107,12 @@ void CandyTerminal::init_screen() {
             Utils::log("Terminal: Failed to init the graphical screen");
     } else {
         /* check for other executing instances */
-        auto proc_id = s_task_get_id("Terminal");
-        if ( proc_id != -1 ) {
+        auto this_proc_id     = s_get_pid();
+        auto terminal_proc_id = s_task_get_id("Terminal");
+        if ( this_proc_id != terminal_proc_id ) {
             Utils::log("Terminal: Can only be executed once when in headless mode");
             return;
         }
-        s_task_register_id("Terminal");
 
         /* initialize the screen */
         if ( m_headless_mode == HeadLessMode::Gui ) {
@@ -128,7 +127,7 @@ void CandyTerminal::init_screen() {
     }
 }
 
-void CandyTerminal::start_shell() {
+void Terminal::start_shell() {
     /* create the input pipe for the shell */
     FsPipeStatus shell_in_status;
     FileHandle   shell_in_write, shell_in_read;
@@ -177,7 +176,7 @@ void CandyTerminal::start_shell() {
     m_shell_err = shell_err_read;
 }
 
-void CandyTerminal::write_string_to_shell(const std::string& line) const {
+void Terminal::write_string_to_shell(const std::string& line) const {
     auto line_content = line.c_str();
     auto line_len     = line.length();
 
@@ -191,16 +190,14 @@ void CandyTerminal::write_string_to_shell(const std::string& line) const {
     }
 }
 
-void CandyTerminal::write_shellkey_to_shell(int shell_key) const {
+void Terminal::write_shellkey_to_shell(int shell_key) const {
     char buf[3] = { SHELLKEY_SUB,
                     static_cast<char>(shell_key & 0xFF),
                     static_cast<char>((shell_key >> 8) & 0xFF) };
     write(m_shell_in, &buf, 3);
 }
 
-void CandyTerminal::process_output_character(StreamControlStatus& status,
-                                             bool                 is_err_stream,
-                                             char                 c) {
+void Terminal::process_output_character(StreamControlStatus& status, bool is_err_stream, char c) {
     if ( status.m_stream_status == TerminalStreamStatus::Text ) {
         /* simple textual output */
         if ( c == '\r' )
@@ -265,7 +262,7 @@ void CandyTerminal::process_output_character(StreamControlStatus& status,
     }
 }
 
-void CandyTerminal::process_vt100_sequence(StreamControlStatus& status) {
+void Terminal::process_vt100_sequence(StreamControlStatus& status) {
     switch ( status.m_control_character ) {
         case 'A':
             /* cursor up */
@@ -331,10 +328,14 @@ void CandyTerminal::process_vt100_sequence(StreamControlStatus& status) {
             /* scroll region down */
             m_screen->scroll(-status.m_parameters[0]);
             break;
+        case 'H':
+            /* clear the entire screen */
+            m_screen->clean();
+            break;
     }
 }
 
-void CandyTerminal::process_term_sequence(StreamControlStatus& status) {
+void Terminal::process_term_sequence(StreamControlStatus& status) {
     switch ( status.m_control_character ) {
         case 'm':
             /* change mode */
@@ -362,7 +363,7 @@ void CandyTerminal::process_term_sequence(StreamControlStatus& status) {
     }
 }
 
-ScreenColor CandyTerminal::convert_vt100_to_screen_color(int color) {
+ScreenColor Terminal::convert_vt100_to_screen_color(int color) {
     switch ( color ) {
         case VT100_COLOR_BLACK:
             return SC_BLACK;
@@ -385,11 +386,11 @@ ScreenColor CandyTerminal::convert_vt100_to_screen_color(int color) {
     }
 }
 
-bool CandyTerminal::shell_is_alive() const {
+bool Terminal::shell_is_alive() const {
     return s_get_pid_for_tid(m_shell_proc_id) == m_shell_proc_id;
 }
 
-int CandyTerminal::input_routine() {
+int Terminal::input_routine() {
     std::string buffer;
     while ( shell_is_alive() ) {
         auto read_input = m_screen->read_input();

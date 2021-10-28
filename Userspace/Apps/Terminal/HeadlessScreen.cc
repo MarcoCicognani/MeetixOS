@@ -135,8 +135,6 @@ void HeadlessScreen::set_cursor_visible(bool visible) {
 }
 
 void HeadlessScreen::normalize() {
-    Tasking::LockGuard lock_guard{ m_lock };
-
     if ( m_offset >= SCREEN_WIDTH * SCREEN_HEIGHT * 2 ) {
         m_offset = m_offset - SCREEN_WIDTH * 2;
 
@@ -154,16 +152,14 @@ void HeadlessScreen::normalize() {
     }
 }
 
-void HeadlessScreen::update_visual_cursor() {
-    Tasking::LockGuard lock_guard{ m_lock };
-
+void HeadlessScreen::update_visual_cursor() const {
     auto x = (m_offset % (SCREEN_WIDTH * 2)) / 2;
     auto y = m_offset / (SCREEN_WIDTH * 2);
 
     auto position = (y * SCREEN_WIDTH) + x;
 
     Utils::PortIO::write_u8(0x3D4, 0x0F);
-    Utils::PortIO::write_u8(0x3D5, (u8)(position & 0xFF));
+    Utils::PortIO::write_u8(0x3D5, static_cast<u8>(position & 0xFF));
     Utils::PortIO::write_u8(0x3D4, 0x0E);
-    Utils::PortIO::write_u8(0x3D5, (u8)((position >> 8) & 0xFF));
+    Utils::PortIO::write_u8(0x3D5, static_cast<u8>((position >> 8) & 0xFF));
 }

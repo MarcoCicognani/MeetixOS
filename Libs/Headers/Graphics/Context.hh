@@ -31,12 +31,12 @@ public:
     /**
      * @brief Constructor
      */
-    Context(int width = 0, int height = 0);
+    Context(u32 width = 0, u32 height = 0);
 
     /**
      * @brief Resizes the context's surface to the given dimension
      */
-    void resize(int width, int height);
+    void resize(u32 width, u32 height);
 
     /**
      * @brief Blit this context into the given context
@@ -62,20 +62,20 @@ public:
     /**
      * @brief Returns the width of the context's surface
      */
-    [[nodiscard]] int width() const {
+    [[nodiscard]] u32 width() const {
         return m_width;
     }
 
     /**
      * @brief Returns the height of the context's surface
      */
-    [[nodiscard]] int height() const {
+    [[nodiscard]] u32 height() const {
         return m_height;
     }
 
 private:
-    int              m_width{ 0 };
-    int              m_height{ 0 };
+    u32              m_width{ 0 };
+    u32              m_height{ 0 };
     cairo_t*         m_context{ nullptr };
     cairo_surface_t* m_surface{ nullptr };
 };

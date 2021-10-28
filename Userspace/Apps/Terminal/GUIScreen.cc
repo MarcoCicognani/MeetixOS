@@ -244,7 +244,7 @@ CharLayout* GUIScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
 /**
  *
  */
-[[noreturn]] void GUIScreen::paint() {
+[[noreturn]] [[noreturn]] void GUIScreen::paint() {
     int padding = 0;
     while ( true ) {
         auto windowBounds = window->bounds();
@@ -334,7 +334,7 @@ cairo_t* GUIScreen::getGraphics() {
     // get buffer
     auto bufferInfo = canvas->buffer_info();
     if ( !bufferInfo.buffer )
-        return 0;
+        return nullptr;
 
     bufferSize.set_width(bufferInfo.width);
     bufferSize.set_height(bufferInfo.height);
@@ -402,7 +402,7 @@ void GUIScreen::write_char(char c) {
             }
         }
 
-        paintUpToDate = false;
+        repaint();
     }
 }
 

@@ -45,7 +45,7 @@ public:
 
 private:
     void normalize();
-    void update_visual_cursor();
+    void update_visual_cursor() const;
 
 private:
     Tasking::Lock m_lock{};

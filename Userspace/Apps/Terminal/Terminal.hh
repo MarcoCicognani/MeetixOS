@@ -21,7 +21,7 @@
 #include <Tasking/Lock.hh>
 #include <Tasking/Thread.hh>
 
-class CandyTerminal {
+class Terminal {
     enum class HeadLessMode
     {
         Gui,
@@ -42,8 +42,8 @@ class CandyTerminal {
 
     class OutputRoutineThread : public Tasking::Thread {
     public:
-        OutputRoutineThread(bool is_error, CandyTerminal& terminal)
-            : Tasking::Thread{ is_error ? "Terminal::ErrOutput" : "Terminal::StdOutput" }
+        OutputRoutineThread(bool is_error, Terminal* terminal)
+            : Tasking::Thread{ is_error ? "ErrOutput" : "StdOutput" }
             , m_is_error{ is_error }
             , m_terminal{ terminal } {
         }
@@ -53,17 +53,17 @@ class CandyTerminal {
 
     private:
         bool           m_is_error;
-        CandyTerminal& m_terminal;
+        Terminal* m_terminal;
     };
 
 public:
     /**
      * @brief Constructor
      */
-    CandyTerminal(const std::string& headless_mode)
+    Terminal(const std::string& headless_mode)
         : m_headless_mode{ (from_string(headless_mode)) } {
     }
-    ~CandyTerminal() {
+    ~Terminal() {
         delete m_std_out_thread;
         delete m_err_out_thread;
         delete m_screen;

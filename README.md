@@ -62,7 +62,7 @@ The system doesn't have many applications or drivers yet, but something to try t
 - **calculator**: basic graphical calculator.
 - **CandyNote**: an incomplete text editor.
 - **CandyShell**: the default system terminal, includes a basic shell.
-- **CandyTerminal**: a nearly complete terminal that use **mx** as shell.
+- **Terminal**: a nearly complete terminal that use **mx** as shell.
 - **exec**: basic interface to start commands from the gui.
 - **Gurf**: basic game inspired by Simon game.
 - **MXLogin**: the gui login client.

@@ -73,7 +73,7 @@ public:
     ~GUIScreen();
 
     static void paintEntry();
-    void        paint();
+    [[noreturn]] void        paint();
 
     void clean();
     void deactivate();

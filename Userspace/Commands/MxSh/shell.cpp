@@ -179,6 +179,7 @@ bool handleBuiltin(std::string cwd, ProgramCall* call) {
         IO::Shell::instance().clear();
         IO::Shell::CursorPosition pos;
         IO::Shell::instance().set_cursor(pos);
+        std::cout << SHELLKEY_ESC << "[H" << std::flush;
         return true;
     }
 

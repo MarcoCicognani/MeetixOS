@@ -69,17 +69,17 @@ public:
 
     virtual void set_cursor_visible(bool visible) = 0;
 
-    virtual int color_foreground() {
+    [[nodiscard]] ScreenColor color_foreground() const {
         return m_color_foreground;
     }
-    virtual void set_color_foreground(int c) {
+    void set_color_foreground(int c) {
         m_color_foreground = c;
     }
 
-    virtual int color_background() {
+    [[nodiscard]] ScreenColor color_background() const {
         return m_color_background;
     }
-    virtual void set_color_background(int c) {
+    void set_color_background(int c) {
         m_color_background = c;
     }
 

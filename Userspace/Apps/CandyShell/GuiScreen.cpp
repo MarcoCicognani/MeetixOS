@@ -169,7 +169,7 @@ void GUIScreen::blinkCursorThread() {
 /**
  *
  */
-void GUIScreen::paint() {
+[[noreturn]] void GUIScreen::paint() {
     int                          padding = 5;
     Graphics::Metrics::Rectangle windowBounds;
     cairo_t*                     cr;

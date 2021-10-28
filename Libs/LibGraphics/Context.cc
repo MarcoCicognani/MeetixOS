@@ -14,12 +14,14 @@
 
 namespace Graphics {
 
-Context::Context(int width, int height) : m_width{ width }, m_height{ height } {
+Context::Context(u32 width, u32 height)
+    : m_width{ width }
+    , m_height{ height } {
     resize(width, height);
 }
 
-void Context::resize(int width, int height) {
-    if ( width < 0 || height < 0 )
+void Context::resize(u32 width, u32 height) {
+    if ( !width || !height )
         return;
 
     /* release the old surfaces */
@@ -31,7 +33,9 @@ void Context::resize(int width, int height) {
     /* set the new values and re-create the surface */
     m_width   = width;
     m_height  = height;
-    m_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
+    m_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
+                                           static_cast<i32>(width),
+                                           static_cast<i32>(height));
     m_context = cairo_create(m_surface);
 }
 
