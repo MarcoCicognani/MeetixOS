@@ -18,7 +18,7 @@
 #define VT100_RED     "\033[31m"
 #define VT100_GREEN   "\033[32m"
 #define VT100_MAGENTA "\033[35m"
-#define VT100_LGREEN  "\033[40m"
+#define VT100_LGREEN  "\033[38m"
 #define VT100_RESET   "\033[0m"
 
 Directory::Entry::Entry(const std::string& path, FsDirectoryEntry* entry)
@@ -140,6 +140,9 @@ bool Directory::collect_entries() {
         m_directory_entries.push_back(entry);
     }
 
+    /* sort the entries */
+    sort_entries();
+
     /* close the directory iterator */
     s_close_directory(directory_it);
     return true;
@@ -148,4 +151,21 @@ bool Directory::collect_entries() {
 void Directory::for_each(const std::function<void(const Entry&)>& call_back) const {
     for ( auto& entry : m_directory_entries )
         call_back(entry);
+}
+
+void Directory::sort_entries() {
+    auto sort_by_name = [](const Entry& a, const Entry& b) { return b.m_name < a.m_name; };
+    auto sort_by_type = [](const Entry& a, const Entry& b) {
+        return a.m_node_type == FS_NODE_TYPE_ROOT || a.m_node_type == FS_NODE_TYPE_MOUNTPOINT
+            || a.m_node_type == FS_NODE_TYPE_FOLDER;
+    };
+
+    if ( m_sort_order == SortOrder::ByName )
+        std::sort(m_directory_entries.begin(), m_directory_entries.end(), sort_by_name);
+    else if ( m_sort_order == SortOrder::ByType )
+        std::sort(m_directory_entries.begin(), m_directory_entries.end(), sort_by_type);
+    else {
+        std::sort(m_directory_entries.begin(), m_directory_entries.end(), sort_by_name);
+        std::sort(m_directory_entries.begin(), m_directory_entries.end(), sort_by_type);
+    }
 }

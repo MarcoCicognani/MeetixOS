@@ -26,22 +26,22 @@
 
 class Directory {
 public:
-    enum class Order
+    enum class SortOrder
     {
         ByName,
         ByType,
         ByTypeAndName
     };
 
-    static Order from_string(std::string value) {
+    static SortOrder from_string(std::string value) {
         std::transform(value.begin(), value.end(), value.begin(), ::tolower);
 
         if ( value == "name" )
-            return Order::ByName;
+            return SortOrder::ByName;
         else if ( value == "Type" )
-            return Order::ByType;
+            return SortOrder::ByType;
         else
-            return Order::ByTypeAndName;
+            return SortOrder::ByTypeAndName;
     }
 
     struct Entry {
@@ -75,7 +75,7 @@ public:
      */
     Directory(const std::string& path, const std::string& order)
         : m_path{ path }
-        , m_order{ from_string(order) } {
+        , m_sort_order{ from_string(order) } {
     }
 
     /**
@@ -89,7 +89,10 @@ public:
     void for_each(const std::function<void(const Entry&)>& call_back) const;
 
 private:
+    void sort_entries();
+
+private:
     std::string        m_path{};
     std::vector<Entry> m_directory_entries{};
-    Order              m_order{};
+    SortOrder          m_sort_order{};
 };

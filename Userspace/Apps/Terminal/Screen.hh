@@ -45,6 +45,7 @@ typedef u8 ScreenColor;
 #define VT100_COLOR_MAGENTA 5
 #define VT100_COLOR_CYAN    6
 #define VT100_COLOR_WHITE   7
+#define VT100_COLOR_LGREEN  8
 
 class Screen {
 public:

@@ -381,6 +381,8 @@ ScreenColor Terminal::convert_vt100_to_screen_color(int color) {
             return SC_WHITE;
         case VT100_COLOR_YELLOW:
             return SC_YELLOW;
+        case VT100_COLOR_LGREEN:
+            return SC_LGREEN;
         default:
             return SC_WHITE;
     }
