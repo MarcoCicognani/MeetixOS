@@ -39,7 +39,8 @@ class CanvasResizeBoundsListener_t : public BoundsListener {
 public:
     GUIScreen* screen;
 
-    CanvasResizeBoundsListener_t(GUIScreen* screen) : screen(screen) {
+    CanvasResizeBoundsListener_t(GUIScreen* screen)
+        : screen(screen) {
     }
 
     virtual void handle_bounds_changed(Graphics::Metrics::Rectangle bounds) {
@@ -58,7 +59,8 @@ public:
     /**
      *
      */
-    InputKeyListener_t(GUIScreen* screen) : screen(screen) {
+    InputKeyListener_t(GUIScreen* screen)
+        : screen(screen) {
     }
 
     /**
@@ -80,7 +82,8 @@ public:
     /**
      *
      */
-    CanvasBufferListener_t(GUIScreen* screen) : screen(screen) {
+    CanvasBufferListener_t(GUIScreen* screen)
+        : screen(screen) {
     }
 
     /**
@@ -103,7 +106,8 @@ public:
     /**
      *
      */
-    TerminalFocusListener_t(GUIScreen* screen) : screen(screen) {
+    TerminalFocusListener_t(GUIScreen* screen)
+        : screen(screen) {
     }
 
     /**

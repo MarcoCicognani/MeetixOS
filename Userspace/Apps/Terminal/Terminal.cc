@@ -13,7 +13,7 @@
 #include "Terminal.hh"
 
 #include "GUIScreen.hh"
-#include "HeadlessGuiScreen.hh"
+#include "HeadlessGUIScreen.hh"
 #include "HeadlessScreen.hh"
 
 #include <csignal>

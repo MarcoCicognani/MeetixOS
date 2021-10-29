@@ -98,6 +98,9 @@ private:
     void blit_to_screen();
     void repaint();
 
+    void move_cursor_unlocked(int x, int y);
+    void write_char_unlocked(char c);
+
     CharLayout* cached_char_layout(cairo_scaled_font_t* font, char c);
 
     static bool                          char_is_utf8(char c);

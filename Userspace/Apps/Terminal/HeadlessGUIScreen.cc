@@ -10,18 +10,17 @@
  * GNU General Public License version 3
  */
 
-#include "HeadlessGuiScreen.hh"
+#include "HeadlessGUIScreen.hh"
 
 #include <cstring>
 #include <Graphics/Color.hh>
 #include <Graphics/Text/FontLoader.hh>
 #include <Graphics/Vbe.hh>
 #include <Tasking/LockGuard.hh>
-#include <Utils/Utils.hh>
 
 bool HeadlessGUIScreen::init() {
-    auto res = Graphics::Vbe::set_mode(1024, 768, 32, m_vbe_mode_info);
-    if ( res ) {
+    auto mode_is_set = Graphics::Vbe::set_mode(1024, 768, 32, m_vbe_mode_info);
+    if ( mode_is_set ) {
         /* allocate the raster buffer */
         m_raster_buffer = new RasterCell[width() * height()];
         m_back_context.resize(m_vbe_mode_info.m_width, m_vbe_mode_info.m_height);
@@ -51,9 +50,11 @@ void HeadlessGUIScreen::clean() {
 }
 
 void HeadlessGUIScreen::backspace() {
-    move_cursor(m_cursor_position.x() - 1, m_cursor_position.y());
-    write_char(' ');
-    move_cursor(m_cursor_position.x() - 1, m_cursor_position.y());
+    Tasking::LockGuard lock_guard{ m_raster_buffer_lock };
+
+    move_cursor_unlocked(m_cursor_position.x() - 1, m_cursor_position.y());
+    write_char_unlocked(' ');
+    move_cursor_unlocked(m_cursor_position.x() - 1, m_cursor_position.y());
     repaint();
 }
 
@@ -61,54 +62,14 @@ void HeadlessGUIScreen::write_char(char c) {
     if ( !char_is_utf8(c) )
         return;
 
-    if ( c == '\n' )
-        move_cursor(0, m_cursor_position.y() + 1);
-    else {
-        {
-            /* append the new character to the buffer */
-            Tasking::LockGuard lock_guard{ m_raster_buffer_lock };
-
-            auto raster_buffer_pos = m_cursor_position.y() * width() + m_cursor_position.x();
-            m_raster_buffer[raster_buffer_pos]
-                = RasterCell{ c, color_background(), color_foreground() };
-            m_last_input_ts = s_millis();
-        }
-
-        /* advance the cursor */
-        move_cursor(m_cursor_position.x() + 1, m_cursor_position.y());
-    }
-
+    write_char_unlocked(c);
     repaint();
 }
 
 void HeadlessGUIScreen::move_cursor(int x, int y) {
     Tasking::LockGuard lock_guard{ m_raster_buffer_lock };
 
-    m_cursor_position = Graphics::Metrics::Point{ x, y };
-
-    /* check for screen bounds */
-    if ( m_cursor_position.x() >= width() )
-        m_cursor_position = Graphics::Metrics::Point{ 0, y + 1 };
-    if ( m_cursor_position.x() < 0 )
-        m_cursor_position = Graphics::Metrics::Point{ width() - 1, y - 1 };
-
-    /* scroll screen if required */
-    if ( m_cursor_position.y() >= height() ) {
-        auto buffer_width = width();
-        auto buffer_bytes = buffer_width * height();
-
-        /* move all one line up */
-        std::memcpy(m_raster_buffer, &m_raster_buffer[buffer_width], buffer_bytes - buffer_width);
-
-        /* clean the last line */
-        for ( auto i = 0; i < width(); ++i )
-            m_raster_buffer[buffer_bytes - buffer_width + i]
-                = RasterCell{ ' ', color_background(), color_foreground() };
-
-        /* back the cursor */
-        m_cursor_position.set_y(m_cursor_position.y() - 1);
-    }
-
+    move_cursor_unlocked(x, y);
     repaint();
 }
 
@@ -170,7 +131,7 @@ void HeadlessGUIScreen::set_cursor_visible(bool visible) {
                 cairo_rectangle(cr,
                                 m_cursor_position.x() * m_font_dimension.width(),
                                 m_cursor_position.y() * m_font_dimension.height() + 1,
-                                m_font_dimension.width(),
+                                2,
                                 m_font_dimension.height() + 1);
                 cairo_fill(cr);
                 cairo_restore(cr);
@@ -236,6 +197,48 @@ void HeadlessGUIScreen::blit_to_screen() {
 
 void HeadlessGUIScreen::repaint() {
     m_render_lock.unlock();
+}
+
+void HeadlessGUIScreen::move_cursor_unlocked(int x, int y) {
+    m_cursor_position = Graphics::Metrics::Point{ x, y };
+
+    /* check for screen bounds */
+    if ( m_cursor_position.x() >= width() )
+        m_cursor_position = Graphics::Metrics::Point{ 0, y + 1 };
+    if ( m_cursor_position.x() < 0 )
+        m_cursor_position = Graphics::Metrics::Point{ width() - 1, y - 1 };
+
+    /* scroll screen if required */
+    if ( m_cursor_position.y() >= height() ) {
+        auto buffer_width = width();
+        auto buffer_bytes = buffer_width * height() * sizeof(RasterCell);
+
+        /* move all one line up */
+        std::memmove(m_raster_buffer, &m_raster_buffer[buffer_width], buffer_bytes - buffer_width);
+
+        /* clean the last line */
+        for ( auto i = 0; i < width(); ++i )
+            m_raster_buffer[buffer_bytes - buffer_width + i]
+                = RasterCell{ '\0', color_background(), color_foreground() };
+
+        /* back the cursor */
+        m_cursor_position.set_y(m_cursor_position.y() - 1);
+    }
+}
+
+void HeadlessGUIScreen::write_char_unlocked(char c) {
+    if ( c == '\n' )
+        move_cursor_unlocked(0, m_cursor_position.y() + 1);
+    else {
+        /* append the new character to the buffer */
+        auto raster_buffer_pos = m_cursor_position.y() * width() + m_cursor_position.x();
+        m_raster_buffer[raster_buffer_pos]
+            = RasterCell{ c, color_background(), color_foreground() };
+        m_last_input_ts = s_millis();
+
+        /* advance the cursor */
+        move_cursor_unlocked(m_cursor_position.x() + 1, m_cursor_position.y());
+    }
 }
 
 HeadlessGUIScreen::CharLayout* HeadlessGUIScreen::cached_char_layout(cairo_scaled_font_t* font,

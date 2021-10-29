@@ -31,7 +31,8 @@
 /**
  *
  */
-Parser::Parser(std::string input) : input(std::move(input)) {
+Parser::Parser(std::string input)
+    : input(std::move(input)) {
     position = 0;
     current  = -1;
     step();
@@ -60,6 +61,9 @@ void Parser::skipWhitespace() {
  */
 bool Parser::pipeExpression(PipeExpression** out) {
     Local<PipeExpression> expr(new PipeExpression());
+
+    if ( input.empty() || std::all_of(input.begin(), input.end(), ::isblank) )
+        return false;
 
     while ( true ) {
         skipWhitespace();
@@ -135,7 +139,7 @@ bool Parser::argument(std::string& out) {
         return false;
 
     // parse content
-    std::string arg ;
+    std::string arg;
 
     bool instr   = false;
     bool escaped = false;

@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "GuiScreen.hpp"
+#include "GUIScreen.hpp"
 
 #include "CandyShell.hpp"
 
@@ -66,7 +66,8 @@ class CanvasResizeBoundsListener : public BoundsListener {
 public:
     Canvas* localCanvas;
 
-    CanvasResizeBoundsListener(Canvas* canvas) : localCanvas(canvas) {
+    CanvasResizeBoundsListener(Canvas* canvas)
+        : localCanvas(canvas) {
     }
 
     virtual void handle_bounds_changed(Graphics::Metrics::Rectangle bounds) {

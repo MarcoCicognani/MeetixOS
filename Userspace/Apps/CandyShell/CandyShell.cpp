@@ -24,7 +24,7 @@
 
 #include "CandyShell.hpp"
 
-#include "GuiScreen.hpp"
+#include "GUIScreen.hpp"
 #include "HeadlessScreen.hpp"
 
 #include <Api.h>
@@ -190,7 +190,8 @@ void CandyShell::shellStartRoutine(CreateShellInfo* inf) {
 /**
  *
  */
-CandyShell::CandyShell() : inactive(false) {
+CandyShell::CandyShell()
+    : inactive(false) {
     if ( headless )
         screen = new HeadlessScreen();
     else
