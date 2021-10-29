@@ -29,15 +29,18 @@ class Terminal {
         None
     };
 
-    static HeadLessMode from_string(const std::string& headless_mode) {
-        if ( headless_mode.empty() )
-            return HeadLessMode::None;
-        else if ( std::equal(headless_mode.begin(), headless_mode.end(), "gui", [](char a, char b) {
-                      return std::tolower(a) == std::tolower(b);
-                  }) )
+    static HeadLessMode from_string(std::string headless_mode) {
+        std::transform(headless_mode.begin(),
+                       headless_mode.end(),
+                       headless_mode.begin(),
+                       ::tolower);
+
+        if ( headless_mode == "gui" )
             return HeadLessMode::Gui;
-        else
+        else if ( headless_mode == "text" )
             return HeadLessMode::Text;
+        else
+            return HeadLessMode::None;
     }
 
     class OutputRoutineThread : public Tasking::Thread {
@@ -52,7 +55,7 @@ class Terminal {
         [[noreturn]] void run() override;
 
     private:
-        bool           m_is_error;
+        bool      m_is_error;
         Terminal* m_terminal;
     };
 
