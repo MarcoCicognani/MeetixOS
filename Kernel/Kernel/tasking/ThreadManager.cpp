@@ -784,7 +784,7 @@ uint32_t ThreadManager::getProcessHeapSize(Thread* task) {
  * @return the size of the process on memory kb
  */
 uint32_t ThreadManager::getProcessImageSize(Thread* task) {
-    return (((task->process->imageEnd - task->process->imageStart) * PAGE_SIZE) / 1024);
+    return ((task->process->imageEnd - task->process->imageStart) / 1024);
 }
 
 /**

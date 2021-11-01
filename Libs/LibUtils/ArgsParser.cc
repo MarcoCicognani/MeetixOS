@@ -12,6 +12,7 @@
 
 #include <cstdlib>
 #include <getopt.h>
+#include <iomanip>
 #include <iostream>
 #include <map>
 #include <Utils/ArgsParser.hh>
@@ -135,38 +136,43 @@ void ArgsParser::print_usage(std::ostream& stream, const char* argv0) {
     if ( !m_options.empty() )
         stream << "\nOptions:\n";
     for ( auto& option : m_options ) {
+        std::stringstream ss;
+
         auto print_argument = [&]() {
             if ( !option.m_value_name.empty() ) {
                 if ( option.m_requires_argument )
-                    stream << option.m_value_name;
+                    ss << ' ' << option.m_value_name;
                 else
-                    stream << '[' << option.m_value_name << ']';
+                    ss << " [" << option.m_value_name << ']';
             }
         };
 
-        stream << '\t';
+        /* buffer the option modes inside a stringstream to use alignment */
+        ss << '\t';
         if ( option.m_short_name ) {
-            stream << '-' << option.m_short_name;
+            ss << '-' << option.m_short_name;
             print_argument();
         }
         if ( option.m_short_name && !option.m_long_name.empty() )
-            stream << ", ";
+            ss << ", ";
         if ( !option.m_long_name.empty() ) {
-            stream << "--" << option.m_long_name;
+            ss << "--" << option.m_long_name;
             print_argument();
         }
 
+        /* write the buffered content out to the stream */
+        stream << std::setw(35) << std::setfill(' ') << std::left << ss.str();
         if ( !option.m_help_message.empty() )
-            stream << '\t' << option.m_help_message << std::endl;
+            stream << std::right << option.m_help_message << std::endl;
     }
 
     /* as last construct the list of the arguments */
     if ( !m_positional_args.empty() )
         stream << "\nArguments:\n";
     for ( auto& positional_arg : m_positional_args ) {
-        stream << positional_arg.m_name;
+        stream << '\t' << std::setw(35) << std::setfill(' ') << std::left << positional_arg.m_name;
         if ( !positional_arg.m_help_message.empty() )
-            stream << '\t' << positional_arg.m_help_message;
+            stream << std::right << positional_arg.m_help_message;
         stream << '\n';
     }
 
@@ -174,7 +180,7 @@ void ArgsParser::print_usage(std::ostream& stream, const char* argv0) {
 }
 
 void ArgsParser::print_version(std::ostream& stream) {
-    stream << 'v' << m_program_version << std::endl;
+    stream << m_program_version << std::endl;
 }
 
 void ArgsParser::add_option(ArgsParser::Option&& option) {
