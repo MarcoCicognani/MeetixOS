@@ -19,4 +19,4 @@ for CMD_ARG in "$@"; do
 done
 
 # run the iso image
-qemu-system-i386 -enable-kvm -m 512M -serial stdio -cdrom "$ISO_DIR/MeetixOS.iso" || exit 1
+qemu-system-i386 -enable-kvm -m 512M -cpu host -smp 4 -serial stdio -cdrom "$ISO_DIR/MeetixOS.iso" || exit 1
