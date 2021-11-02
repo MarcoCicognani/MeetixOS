@@ -49,7 +49,7 @@ void set(const std::string& key, const std::string& value) {
     auto spawn_status
         = s_spawn(SHELL_PATH, ss.str().c_str(), work_dir(), SECURITY_LEVEL_APPLICATION);
     if ( spawn_status != SPAWN_STATUS_SUCCESSFUL )
-        log("setEnvVar: failed to s_spawn mx process");
+        log("setEnvVar: failed to spawn Shell process");
 }
 
 std::string logged_user() {
