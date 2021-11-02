@@ -22,31 +22,44 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "Ps2.hpp"
+#include "Input.hpp"
 
 #include <Api.h>
+#include <Tasking/Lock.hh>
 #include <Utils/Utils.hh>
 
-#if DRIVER_OPERATION_MODE == DRIVER_OPERATION_MODE_IRQ_TRIGGERED
+#if DRIVER_OPERATION_MODE == DRIVER_OPERATION_MODE_POLLING
 
 /**
  *
  */
 void registerOperationMode() {
-    Utils::log("registering irq handlers");
-    s_register_irq_handler(1, irqHandler);
-    s_register_irq_handler(12, irqHandler);
+    Utils::log("starting poll thread");
+    CreateThread((void*)pollingThread);
 }
 
 /**
  *
  */
-void irqHandler(uint8_t irq) {
+void pollingThread() {
+    while ( true ) {
+        poll();
+    }
+}
+
+/**
+ *
+ */
+void poll() {
+    static Lock pollLock;
+    pollLock.lock();
+
     uint8_t status;
-    while ( ((status = Utils::PortIO::read_u8(0x64)) & 1) != 0 ) {
-        uint8_t value = Utils::PortIO::read_u8(0x60);
+    while ( ((status = Utils::PortIO::inportByte(0x64)) & 1) != 0 ) {
+        uint8_t value = Utils::PortIO::inportByte(0x60);
 
         bool fromKeyboard = ((status & (1 << 5)) == 0);
+
         if ( fromKeyboard )
             handleKeyboardData(value);
         else
@@ -54,6 +67,8 @@ void irqHandler(uint8_t irq) {
 
         ++packetsCount;
     }
+
+    pollLock.unlock();
 }
 
 #endif

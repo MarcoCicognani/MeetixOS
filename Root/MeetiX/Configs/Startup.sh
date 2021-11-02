@@ -1,8 +1,8 @@
 log:"Starting Input Driver"
-spawn_driver:"/MeetiX/Kernel/Servers/Ps2.sv"
+spawn_driver:"/MeetiX/Kernel/Servers/Input.sv"
 
 log:"Starting Video Driver"
-spawn_driver:"/MeetiX/Kernel/Servers/VBE.sv"
+spawn_driver:"/MeetiX/Kernel/Servers/Video.sv"
 wait_for_id:"vbe"
 
 log:"Starting MeetiX Terminal"

@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include "Ps2.hpp"
+#include "Input.hpp"
 
 #include <Api.h>
 #include <IO/Ps2.hh>
