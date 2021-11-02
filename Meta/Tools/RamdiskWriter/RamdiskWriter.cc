@@ -119,7 +119,9 @@ void RamdiskWriter::write_recursive(const std::string& base_path,
             auto find_res = path.find(part);
 
             if ( find_res != std::string::npos && find_res == path.length() - part.length() ) {
+#ifdef _DEBUG
                 std::cout << "-- Skipping: " << path << std::endl;
+#endif
                 return;
             }
         }
@@ -130,7 +132,9 @@ void RamdiskWriter::write_recursive(const std::string& base_path,
             auto abs_path_part = base_path + "/" + part;
 
             if ( !path.find(abs_path_part) ) {
+#ifdef _DEBUG
                 std::cout << "-- Skipping: " << path << std::endl;
+#endif
                 return;
             }
         }
@@ -138,7 +142,9 @@ void RamdiskWriter::write_recursive(const std::string& base_path,
         /* full path ignore */
         auto abs_path = base_path + "/" + ignore;
         if ( abs_path == path ) {
+#ifdef _DEBUG
             std::cout << "-- Skipping: " << path << std::endl;
+#endif
             return;
         }
     }
