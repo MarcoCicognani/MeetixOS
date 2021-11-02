@@ -1,4 +1,4 @@
-HOSTNAME="MeetiX_OS"
-VERSION="0.7.2"
-PATH="/Bins/"
-THEME="Green"
+HOSTNAME=MeetiX_OS
+VERSION=0.8dev
+PATH=/Bins/
+THEME=Green
