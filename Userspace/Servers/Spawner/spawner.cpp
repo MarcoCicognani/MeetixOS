@@ -62,8 +62,8 @@ void init() {
     Pid         sh_pid;
     FileHandle  out_stdio;
     SpawnStatus stat = spawn("/Bins/MxSh",
-                             "-s Start.sh",
-                             "/MeetiX/Configs/Startup/Minimal",
+                             "-s Startup.sh",
+                             "/MeetiX/Configs",
                              SECURITY_LEVEL_KERNEL,
                              0,
                              &sh_pid,
