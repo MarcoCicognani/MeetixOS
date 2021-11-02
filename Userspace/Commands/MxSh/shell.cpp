@@ -166,10 +166,8 @@ bool handleBuiltin(std::string cwd, ProgramCall* call) {
     if ( call->program == "cd" ) {
         if ( call->arguments.size() == 1 ) {
             auto set_work_dir_status = s_set_working_directory(call->arguments.at(0).c_str());
-            if ( set_work_dir_status != SET_WORKING_DIRECTORY_SUCCESSFUL ) {
+            if ( set_work_dir_status != SET_WORKING_DIRECTORY_SUCCESSFUL )
                 std::cerr << "cd: Failed to set working directory" << std::endl;
-                return false;
-            }
         } else
             std::cerr << "Usage:\tcd /path/to/target" << std::endl;
         return true;
