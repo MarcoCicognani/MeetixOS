@@ -57,49 +57,6 @@ int main(int argc, char* argv[]) {
     receiveRequests();
 }
 
-/**
- *	create environment file
- */
-void createOsEnvironmentFile(const char* dir, const char* fileName) {
-    // open directory etc
-    s_set_working_directory(dir);
-
-    // define first variables
-    const char base_env[]
-        = { "HOSTNAME=MeetiX_OS\nVERSION=0.7.1\nSYSTEM_LEVEL=basic\nPATH=/Bins/:/Apps/"
-            ":/MeetiX/Kernel/Servers/\nTHEME=Green" };
-    auto base_env_len = strlen(base_env);
-
-    // create the environment file
-    auto env_fd = s_open_f(fileName, O_READ | O_WRITE);
-    if ( env_fd == FD_NONE ) {
-        env_fd = s_open_f(fileName, O_CREAT | O_READ | O_WRITE);
-
-        // write variables on file and close it
-        s_write(env_fd, base_env, base_env_len);
-    }
-
-    s_close(env_fd);
-}
-
-/**
- *	create s_log file
- */
-void createOsLogFile(const char* dir, const char* fileName) {
-    // open directory etc
-    s_set_working_directory(dir);
-
-    const char loginput[] = { "[0] s_log file created\n" };
-    int        length     = strlen(loginput);
-
-    // create the log file
-    // File_t logfile = OpenF(fileName, O_CREAT | O_READ | O_WRITE);
-
-    // write variables on file and close it
-    // Write(logfile, loginput, length);
-    // Close(logfile);
-}
-
 void init() {
     // let the spawner load shell
     Pid         sh_pid;
@@ -117,14 +74,9 @@ void init() {
                              FD_NONE,
                              FD_NONE);
 
-    if ( stat == SPAWN_STATUS_SUCCESSFUL ) {
+    if ( stat == SPAWN_STATUS_SUCCESSFUL )
         klog("MxSh executed in process %d", sh_pid);
-        klog("Creating environment variables file");
-        createOsEnvironmentFile("/MeetiX/Configs/Env/", "Global");
-
-        klog("Creating log file");
-        createOsLogFile("/MeetiX/", "log");
-    } else
+    else
         klog("failed to load mx shell from '/Bins/MxSh' with code %d", stat);
 }
 
