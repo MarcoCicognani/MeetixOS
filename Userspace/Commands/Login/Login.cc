@@ -91,6 +91,8 @@ int main(int argc, const char** argv) {
 
             /* set the username to the environment */
             Utils::Environment::set("USER", ss.str());
+            std::cout << "\nWelcome in " << ss.str() << "!\n" << std::endl;
+
             return EXIT_SUCCESS;
         } else {
             std::cout << "\033[31mIncorrect username or password!\033[0m\n";
