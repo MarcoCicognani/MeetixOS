@@ -30,14 +30,11 @@
 #include <IO/Shell.hh>
 #include <iostream>
 #include <string>
-#include <Utils/Utils.hh>
 
-// copy of environment object
-Environment* g_shell_env;
+Environment*                       g_shell_env;
+std::vector<std::string>           g_shell_history{};
+std::vector<std::string>::iterator g_shell_history_it{};
 
-/**
- *
- */
 bool read_input_line(std::string& line) {
     IO::Shell::instance().set_mode(IO::Shell::MODE_RAW);
     IO::Shell::instance().set_echo(false);
@@ -87,6 +84,7 @@ bool read_input_line(std::string& line) {
             IO::Shell::instance().set_cursor(pos);
         } else if ( c == SHELLKEY_ENTER ) {
             std::cout << '\n';
+            g_shell_history.push_back(line);
             break;
         } else if ( c == SHELLKEY_LEFT ) {
             if ( caret > 0 ) {
@@ -107,6 +105,11 @@ bool read_input_line(std::string& line) {
                 else
                     IO::Shell::instance().move_cursor_forward(1);
             }
+        } else if ( c == SHELLKEY_UP ) {
+            if ( g_shell_history_it == g_shell_history.end() )
+                g_shell_history_it = g_shell_history.begin();
+
+            line = *g_shell_history_it++;
         } else if ( c < 0x100 ) {
             auto pos = IO::Shell::instance().cursor();
             std::cout << (char)c;
