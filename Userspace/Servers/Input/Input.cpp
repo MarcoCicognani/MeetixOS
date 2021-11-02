@@ -60,8 +60,8 @@ IO::Ps2::SharedArea* sharedArea;
  */
 int main() {
     // register
-    if ( !s_register_as_server(PS2_DRIVER_IDENTIFIER, SECURITY_LEVEL_DRIVER) ) {
-        klog("Ps2Driver: failed to register as %s", PS2_DRIVER_IDENTIFIER);
+    if ( !s_register_as_server(INPUT_DRIVER_IDENTIFIER, SECURITY_LEVEL_DRIVER) ) {
+        klog("Ps2Driver: failed to register as %s", INPUT_DRIVER_IDENTIFIER);
         return 1;
     }
 

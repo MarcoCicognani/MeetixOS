@@ -18,7 +18,7 @@ namespace Graphics::Vbe {
 
 bool set_mode(u16 width, u16 height, u8 bpp, ModeInfo& mode_info) {
     /* find the thread-id of the driver */
-    auto driver_id = s_task_get_id(VBE_DRIVER_IDENTIFIER);
+    auto driver_id = s_task_get_id(VIDEO_DRIVER_IDENTIFIER);
     if ( driver_id < 0 ) {
         Utils::log("VBE driver registration failed: failed to identify VBE driver instance");
         return false;

@@ -15,7 +15,7 @@
 #include <cstdint>
 #include <Tasking/Lock.hh>
 
-#define PS2_DRIVER_IDENTIFIER "ps2"
+#define INPUT_DRIVER_IDENTIFIER "Input"
 
 namespace IO {
 

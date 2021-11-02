@@ -32,7 +32,7 @@ bool Ps2::register_self() {
         return true;
 
     /* find the thread-id of the driver */
-    auto driver_id = s_task_get_id(PS2_DRIVER_IDENTIFIER);
+    auto driver_id = s_task_get_id(INPUT_DRIVER_IDENTIFIER);
     if ( driver_id < 0 ) {
         Utils::log("PS/2 driver registration failed: failed to identify PS/2 driver instance");
         return false;

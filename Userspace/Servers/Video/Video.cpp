@@ -226,8 +226,8 @@ bool setVideoMode(uint32_t       wantedWidth,
  *
  */
 int main() {
-    if ( !s_register_as_server(VBE_DRIVER_IDENTIFIER, SECURITY_LEVEL_DRIVER) ) {
-        klog("video driver: could not register with task identifier: %s", VBE_DRIVER_IDENTIFIER);
+    if ( !s_register_as_server(VIDEO_DRIVER_IDENTIFIER, SECURITY_LEVEL_DRIVER) ) {
+        klog("video driver: could not register with task identifier: %s", VIDEO_DRIVER_IDENTIFIER);
         return -1;
     }
 

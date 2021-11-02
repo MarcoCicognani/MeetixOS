@@ -14,7 +14,7 @@
 
 #include <cstdint>
 
-#define VBE_DRIVER_IDENTIFIER "vbe"
+#define VIDEO_DRIVER_IDENTIFIER "Video"
 
 namespace Graphics::Vbe {
 
@@ -55,8 +55,11 @@ public:
              u16   bit_per_pixel,
              u16   bytes_per_scanline,
              usize linear_framebuffer)
-        : m_width{ width }, m_height{ height }, m_bit_per_pixel{ bit_per_pixel },
-          m_bytes_per_scanline{ bytes_per_scanline }, m_linear_framebuffer{ linear_framebuffer } {
+        : m_width{ width }
+        , m_height{ height }
+        , m_bit_per_pixel{ bit_per_pixel }
+        , m_bytes_per_scanline{ bytes_per_scanline }
+        , m_linear_framebuffer{ linear_framebuffer } {
     }
 } A_PACKED;
 
@@ -71,7 +74,8 @@ public:
      * @brief Constructors
      */
     RequestHeader() = default;
-    RequestHeader(Command command) : m_command{ command } {
+    RequestHeader(Command command)
+        : m_command{ command } {
     }
 } A_PACKED;
 
@@ -90,9 +94,10 @@ public:
      */
     SetModeRequest() = default;
     SetModeRequest(Command command, u16 width, u16 height, u8 bit_per_pixel)
-        : m_request_header{ command }, m_width{ width }, m_height{ height }, m_bit_per_pixel{
-              bit_per_pixel
-          } {
+        : m_request_header{ command }
+        , m_width{ width }
+        , m_height{ height }
+        , m_bit_per_pixel{ bit_per_pixel } {
     }
 } A_PACKED;
 
