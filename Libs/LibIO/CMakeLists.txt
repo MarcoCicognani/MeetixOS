@@ -3,4 +3,4 @@ add_library(LibIO
         Shell.cc
         Mouse.cc
         Keyboard.cc
-        Ps2.cc)
+        Input.cc)

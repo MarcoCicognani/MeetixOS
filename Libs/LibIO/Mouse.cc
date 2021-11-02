@@ -11,8 +11,8 @@
  */
 
 #include <Api.h>
+#include <IO/Input.hh>
 #include <IO/Mouse.hh>
-#include <IO/Ps2.hh>
 
 namespace IO {
 
@@ -25,12 +25,12 @@ Mouse& Mouse::instance() {
 
 Mouse::Info Mouse::read() {
     /* register to the PS/2 driver */
-    if ( !Ps2::instance().is_registered() ) {
-        if ( !Ps2::instance().register_self() )
+    if ( !Input::instance().is_registered() ) {
+        if ( !Input::instance().register_self() )
             return {};
     }
 
-    auto& ps2_shared_area = Ps2::instance().shared_area();
+    auto& ps2_shared_area = Input::instance().shared_area();
 
     /* wait until incoming data is here (and the driver unsets the atom) */
     s_atomic_block(&ps2_shared_area.m_mouse.m_atom_nothing_queued);

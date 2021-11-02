@@ -28,7 +28,7 @@
  *
  */
 bool VbeVideoOutput_t::initializeWithSettings(uint32_t width, uint32_t height, uint32_t bits) {
-    return Graphics::Vbe::set_mode(width, height, bits, videoModeInformation);
+    return Graphics::Video::set_mode(width, height, bits, videoModeInformation);
 }
 
 /**

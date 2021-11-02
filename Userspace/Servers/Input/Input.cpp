@@ -25,7 +25,7 @@
 #include "Input.hpp"
 
 #include <Api.h>
-#include <IO/Ps2.hh>
+#include <IO/Input.hh>
 #include <math.h>
 #include <sstream>
 #include <stdio.h>
@@ -52,8 +52,8 @@ uint32_t keyboardReceiverTransaction;
 /**
  *
  */
-uint64_t             packetsCount = 0;
-IO::Ps2::SharedArea* sharedArea;
+uint64_t               packetsCount = 0;
+IO::Input::SharedArea* sharedArea;
 
 /**
  *
@@ -66,7 +66,7 @@ int main() {
     }
 
     // set up shared memory
-    sharedArea = (IO::Ps2::SharedArea*)s_alloc_mem(sizeof(IO::Ps2::SharedArea));
+    sharedArea = (IO::Input::SharedArea*)s_alloc_mem(sizeof(IO::Input::SharedArea));
     if ( !sharedArea ) {
         Utils::log("failed to allocate transfer memory area");
         return 1;
@@ -85,7 +85,7 @@ int main() {
     registerOperationMode();
 
     // wait for control requests
-    size_t   buflen = sizeof(MessageHeader) + sizeof(IO::Ps2::RegisterRequest);
+    size_t   buflen = sizeof(MessageHeader) + sizeof(IO::Input::RegisterRequest);
     uint8_t* buf    = new uint8_t[buflen];
     Tid      tid    = s_get_tid();
     while ( true ) {
@@ -93,21 +93,21 @@ int main() {
 
         if ( stat == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
             auto mes = (MessageHeader*)buf;
-            auto req = (IO::Ps2::RegisterRequest*)MESSAGE_CONTENT(buf);
+            auto req = (IO::Input::RegisterRequest*)MESSAGE_CONTENT(buf);
 
             // share area with requester
-            Pid                  requesterPid = s_get_pid_for_tid(mes->m_sender_tid);
-            IO::Ps2::SharedArea* sharedInTarget
-                = (IO::Ps2::SharedArea*)s_share_mem((void*)sharedArea,
-                                                    sizeof(IO::Ps2::SharedArea),
-                                                    requesterPid);
+            Pid                    requesterPid = s_get_pid_for_tid(mes->m_sender_tid);
+            IO::Input::SharedArea* sharedInTarget
+                = (IO::Input::SharedArea*)s_share_mem((void*)sharedArea,
+                                                      sizeof(IO::Input::SharedArea),
+                                                      requesterPid);
 
             // send response
-            IO::Ps2::RegisterResponse response;
+            IO::Input::RegisterResponse response;
             response.m_shared_area = sharedInTarget;
             s_send_message_t(mes->m_sender_tid,
                              &response,
-                             sizeof(IO::Ps2::RegisterResponse),
+                             sizeof(IO::Input::RegisterResponse),
                              mes->m_transaction);
         }
     }

@@ -24,7 +24,7 @@ namespace IO {
 /**
  * @brief Singleton interface to communicate with PS/2 driver
  */
-class Ps2 {
+class Input {
 public:
     /**
      * @brief Shared memory area used for PS/2 data transferring
@@ -78,7 +78,7 @@ public:
     /**
      * @brief Returns the global instance of the singleton
      */
-    static Ps2& instance();
+    static Input& instance();
 
     /**
      * @brief Registers this process as client of the PS/2 driver
@@ -100,7 +100,7 @@ public:
     }
 
 private:
-    Ps2() = default;
+    Input() = default;
 
 private:
     Tasking::Lock m_lock;

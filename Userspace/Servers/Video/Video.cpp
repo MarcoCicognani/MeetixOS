@@ -24,7 +24,7 @@
 
 #include "Video.hpp"
 
-#include <Graphics/Vbe.hh>
+#include <Graphics/Video.hh>
 #include <sstream>
 #include <stdint.h>
 #include <stdio.h>
@@ -233,7 +233,7 @@ int main() {
 
     Utils::log("vesa initialized");
 
-    size_t  buflen = sizeof(MessageHeader) + sizeof(Graphics::Vbe::SetModeRequest);
+    size_t  buflen = sizeof(MessageHeader) + sizeof(Graphics::Video::SetModeRequest);
     uint8_t buf[buflen];
 
     while ( true ) {
@@ -243,15 +243,15 @@ int main() {
             continue;
 
         auto     header    = (MessageHeader*)buf;
-        auto     vbeheader = (Graphics::Vbe::RequestHeader*)MESSAGE_CONTENT(buf);
+        auto     vbeheader = (Graphics::Video::RequestHeader*)MESSAGE_CONTENT(buf);
         uint32_t requester = header->m_sender_tid;
 
         // handle command
-        if ( vbeheader->m_command == Graphics::Vbe::COMMAND_SET_MODE ) {
-            auto request = (Graphics::Vbe::SetModeRequest*)MESSAGE_CONTENT(buf);
+        if ( vbeheader->m_command == Graphics::Video::COMMAND_SET_MODE ) {
+            auto request = (Graphics::Video::SetModeRequest*)MESSAGE_CONTENT(buf);
 
             // create response
-            Graphics::Vbe::SetModeResponse response;
+            Graphics::Video::SetModeResponse response;
 
             // switch video mode
             VesaVideoInfo result;
@@ -265,7 +265,7 @@ int main() {
                 uint32_t lfbSize                  = result.bytesPerScanline * result.resolutionY;
                 void*    addressInRequestersSpace = s_share_mem(result.lfb, lfbSize, requester);
 
-                response.m_mode_status                    = Graphics::Vbe::SET_MODE_STATUS_SUCCESS;
+                response.m_mode_status = Graphics::Video::SET_MODE_STATUS_SUCCESS;
                 response.m_mode_info.m_linear_framebuffer = (uint32_t)addressInRequestersSpace;
                 response.m_mode_info.m_width              = result.resolutionX;
                 response.m_mode_info.m_height             = result.resolutionY;
@@ -276,13 +276,13 @@ int main() {
 
             else {
                 Utils::log("unable to switch to video resolution " + resX + 'x' + resY + 'x' + bpp);
-                response.m_mode_status = Graphics::Vbe::SET_MODE_STATUS_FAILED;
+                response.m_mode_status = Graphics::Video::SET_MODE_STATUS_FAILED;
             }
 
             // send response
             s_send_message_t(header->m_sender_tid,
                              &response,
-                             sizeof(Graphics::Vbe::SetModeResponse),
+                             sizeof(Graphics::Video::SetModeResponse),
                              header->m_transaction);
         }
 

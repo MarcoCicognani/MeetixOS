@@ -18,7 +18,7 @@
 #include <Graphics/Color.hh>
 #include <Graphics/Context.hh>
 #include <Graphics/Text/Font.hh>
-#include <Graphics/Vbe.hh>
+#include <Graphics/Video.hh>
 #include <Tasking/Lock.hh>
 #include <Tasking/Thread.hh>
 #include <Utils/Utils.hh>
@@ -108,7 +108,7 @@ private:
     static Graphics::Color::ArgbGradient screen_color_to_argb(ScreenColor screen_color);
 
 private:
-    Graphics::Vbe::ModeInfo      m_vbe_mode_info{};
+    Graphics::Video::ModeInfo    m_vbe_mode_info{};
     Graphics::Context            m_back_context{};
     Graphics::Metrics::Point     m_cursor_position{ 0, 0 };
     Graphics::Metrics::Dimension m_font_dimension{ 8, 12 };

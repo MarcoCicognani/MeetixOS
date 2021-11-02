@@ -11,10 +11,10 @@
  */
 
 #include <Api.h>
-#include <Graphics/Vbe.hh>
+#include <Graphics/Video.hh>
 #include <Utils/Utils.hh>
 
-namespace Graphics::Vbe {
+namespace Graphics::Video {
 
 bool set_mode(u16 width, u16 height, u8 bpp, ModeInfo& mode_info) {
     /* find the thread-id of the driver */
@@ -56,4 +56,4 @@ bool set_mode(u16 width, u16 height, u8 bpp, ModeInfo& mode_info) {
     return true;
 }
 
-} /* namespace Graphics::Vbe */
+} /* namespace Graphics::Video */

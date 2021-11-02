@@ -27,14 +27,14 @@
 
 #include "ConfigurationBasedVideoOutput.hpp"
 
-#include <Graphics/Vbe.hh>
+#include <Graphics/Video.hh>
 
 /**
  *
  */
 class VbeVideoOutput_t : public ConfigurationBasedVideoOutput_t {
 private:
-    Graphics::Vbe::ModeInfo videoModeInformation;
+    Graphics::Video::ModeInfo videoModeInformation;
 
 public:
     /**

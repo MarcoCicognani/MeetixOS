@@ -11,20 +11,20 @@
  */
 
 #include <Api.h>
-#include <IO/Ps2.hh>
+#include <IO/Input.hh>
 #include <Tasking/LockGuard.hh>
 #include <Utils/Utils.hh>
 
 namespace IO {
 
-Ps2& Ps2::instance() {
-    static Ps2* s_instance = nullptr;
+Input& Input::instance() {
+    static Input* s_instance = nullptr;
     if ( !s_instance )
-        s_instance = new Ps2{};
+        s_instance = new Input{};
     return *s_instance;
 }
 
-bool Ps2::register_self() {
+bool Input::register_self() {
     Tasking::LockGuard guard{ m_lock };
 
     /* if already registered return */

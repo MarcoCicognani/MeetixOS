@@ -16,7 +16,7 @@
 
 #define VIDEO_DRIVER_IDENTIFIER "Video"
 
-namespace Graphics::Vbe {
+namespace Graphics::Video {
 
 /* ------------------------------------ C++ Type Definitions ------------------------------------ */
 
@@ -121,4 +121,4 @@ struct SetModeResponse {
  */
 bool set_mode(u16 width, u16 height, u8 bpp, ModeInfo& mode_info);
 
-} /* namespace Graphics::Vbe */
+} /* namespace Graphics::Video */

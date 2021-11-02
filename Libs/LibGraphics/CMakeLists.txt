@@ -1,6 +1,6 @@
 add_library(LibGraphics
         STATIC
-        Vbe.cc
+        Video.cc
         Text/Layouter.cc
         Text/FontManager.cc
         Text/Font.cc

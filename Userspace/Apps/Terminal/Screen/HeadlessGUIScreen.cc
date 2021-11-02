@@ -15,11 +15,11 @@
 #include <cstring>
 #include <Graphics/Color.hh>
 #include <Graphics/Text/FontLoader.hh>
-#include <Graphics/Vbe.hh>
+#include <Graphics/Video.hh>
 #include <Tasking/LockGuard.hh>
 
 bool HeadlessGUIScreen::init() {
-    auto mode_is_set = Graphics::Vbe::set_mode(1024, 768, 32, m_vbe_mode_info);
+    auto mode_is_set = Graphics::Video::set_mode(1024, 768, 32, m_vbe_mode_info);
     if ( mode_is_set ) {
         /* allocate the raster buffer */
         m_raster_buffer = new RasterCell[width() * height()]{};
