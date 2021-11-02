@@ -22,7 +22,7 @@ bool HeadlessGUIScreen::init() {
     auto mode_is_set = Graphics::Vbe::set_mode(1024, 768, 32, m_vbe_mode_info);
     if ( mode_is_set ) {
         /* allocate the raster buffer */
-        m_raster_buffer = new RasterCell[width() * height()];
+        m_raster_buffer = new RasterCell[width() * height()]{};
         m_back_context.resize(m_vbe_mode_info.m_width, m_vbe_mode_info.m_height);
 
         /* load the font for the rendering */
@@ -146,6 +146,17 @@ void HeadlessGUIScreen::set_cursor_visible(bool visible) {
             for ( auto y = 0; y < height(); ++y ) {
                 for ( auto x = 0; x < width(); ++x ) {
                     auto raster_cell = m_raster_buffer[y * width() + x];
+
+                    cairo_save(cr);
+                    cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(raster_cell.m_background));
+                    cairo_rectangle(cr,
+                                    x * m_font_dimension.width(),
+                                    (y + 1) * m_font_dimension.height(),
+                                    m_font_dimension.width(),
+                                    m_font_dimension.height());
+                    cairo_fill(cr);
+                    cairo_restore(cr);
+
                     if ( !raster_cell )
                         continue;
 

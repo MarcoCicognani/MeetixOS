@@ -75,7 +75,7 @@ public:
     /**
      * @brief Executes the terminal mainloop
      */
-    int execute();
+    int run();
 
 private:
     void init_screen();

@@ -28,7 +28,7 @@
 #define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    std::string headless_mode;
+    std::string headless_mode{};
 
     Utils::ArgsParser args_parser{ "Terminal", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_option(headless_mode, "Headless mode: GUI/Text", "headless", 'l', "Mode");
@@ -38,7 +38,7 @@ int main(int argc, const char** argv) {
 
     /* execute the terminal */
     Terminal terminal{ headless_mode };
-    return terminal.execute();
+    return terminal.run();
 }
 
 void Terminal::OutputRoutineThread::run() {
@@ -63,7 +63,7 @@ void Terminal::OutputRoutineThread::run() {
     __builtin_unreachable();
 }
 
-int Terminal::execute() {
+int Terminal::run() {
     /* initialize the screen */
     init_screen();
     if ( !m_screen ) {
@@ -73,7 +73,7 @@ int Terminal::execute() {
     m_screen->clean();
 
     /* load keyboard layout */
-    std::string kb_layout = "it-EU";
+    std::string kb_layout{ "en-US" };
     if ( !IO::Keyboard::instance().load_layout(kb_layout) ) {
         Utils::log("Terminal: Failed to load keyboard layout: '%s'", kb_layout.c_str());
         return EXIT_FAILURE;
@@ -129,8 +129,8 @@ void Terminal::init_screen() {
 
 void Terminal::start_shell() {
     /* create the input pipe for the shell */
-    FsPipeStatus shell_in_status;
-    FileHandle   shell_in_write, shell_in_read;
+    FsPipeStatus shell_in_status{};
+    FileHandle   shell_in_write{}, shell_in_read{};
     s_pipe_s(&shell_in_write, &shell_in_read, &shell_in_status);
     if ( shell_in_status != FS_PIPE_SUCCESSFUL ) {
         Utils::log("Terminal: Failed to setup stdin pipe for shell");
@@ -138,8 +138,8 @@ void Terminal::start_shell() {
     }
 
     /* create the output pipe for the shell */
-    FsPipeStatus shell_out_status;
-    FileHandle   shell_out_write, shell_out_read;
+    FsPipeStatus shell_out_status{};
+    FileHandle   shell_out_write{}, shell_out_read{};
     s_pipe_s(&shell_out_write, &shell_out_read, &shell_out_status);
     if ( shell_out_status != FS_PIPE_SUCCESSFUL ) {
         Utils::log("Terminal: Failed to setup stdout pipe for shell");
@@ -147,8 +147,8 @@ void Terminal::start_shell() {
     }
 
     /* create the error output for the shell */
-    FsPipeStatus shell_err_status;
-    FileHandle   shell_err_write, shell_err_read;
+    FsPipeStatus shell_err_status{};
+    FileHandle   shell_err_write{}, shell_err_read{};
     s_pipe_s(&shell_err_write, &shell_err_read, &shell_err_status);
     if ( shell_err_status != FS_PIPE_SUCCESSFUL ) {
         Utils::log("CandyTerminal: Failed to setup stderr pipe for shell");
@@ -156,8 +156,8 @@ void Terminal::start_shell() {
     }
 
     /* span the shell binary */
-    FileHandle stdio_target[3];
-    FileHandle stdio_in[3]  = { shell_in_read, shell_out_write, shell_err_write };
+    FileHandle stdio_target[3]{};
+    FileHandle stdio_in[3]{ shell_in_read, shell_out_write, shell_err_write };
     auto       spawn_status = s_spawn_poi("/Bins/MxSh",
                                           "-sh",
                                           "/",
@@ -191,9 +191,9 @@ void Terminal::write_string_to_shell(const std::string& line) const {
 }
 
 void Terminal::write_shellkey_to_shell(int shell_key) const {
-    char buf[3] = { SHELLKEY_SUB,
-                    static_cast<char>(shell_key & 0xFF),
-                    static_cast<char>((shell_key >> 8) & 0xFF) };
+    char buf[3]{ SHELLKEY_SUB,
+                 static_cast<char>(shell_key & 0xFF),
+                 static_cast<char>((shell_key >> 8) & 0xFF) };
     write(m_shell_in, &buf, 3);
 }
 
@@ -286,10 +286,10 @@ void Terminal::process_vt100_sequence(StreamControlStatus& status) {
             break;
         case 'm':
             /* mode setting */
-            for ( int i = 0; i < status.m_parameter_count; ++i ) {
+            for ( auto i = 0; i < status.m_parameter_count; ++i ) {
                 auto param = status.m_parameters[i];
 
-                if ( param == 0 ) {
+                if ( !param ) {
                     m_screen->set_color_background(SC_BLACK);
                     m_screen->set_color_foreground(SC_WHITE);
                 } else if ( param >= 30 && param < 40 )

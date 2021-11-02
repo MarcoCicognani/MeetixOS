@@ -21,6 +21,7 @@
 #include <Graphics/Vbe.hh>
 #include <Tasking/Lock.hh>
 #include <Tasking/Thread.hh>
+#include <Utils/Utils.hh>
 
 class HeadlessGUIScreen : public Screen {
     class PainterThread : public Tasking::Thread {
@@ -51,8 +52,8 @@ class HeadlessGUIScreen : public Screen {
     struct RasterCell {
     public:
         char                          m_char{ '\0' };
-        Graphics::Color::ArgbGradient m_background{};
-        Graphics::Color::ArgbGradient m_foreground{};
+        Graphics::Color::ArgbGradient m_background{ screen_color_to_argb(SC_BLACK) };
+        Graphics::Color::ArgbGradient m_foreground{ screen_color_to_argb(SC_WHITE) };
 
         RasterCell() = default;
         RasterCell(char c, ScreenColor background, ScreenColor foreground)
