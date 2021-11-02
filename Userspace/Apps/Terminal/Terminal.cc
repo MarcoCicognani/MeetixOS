@@ -119,8 +119,10 @@ void Terminal::init_screen() {
             auto gui_screen = new HeadlessGUIScreen{};
             if ( gui_screen->init() )
                 m_screen = gui_screen;
-            else
-                Utils::log("Terminal: Failed to init the graphical screen");
+            else {
+                delete gui_screen;
+                m_screen = new HeadlessScreen{};
+            }
         } else {
             m_screen = new HeadlessScreen{};
         }
