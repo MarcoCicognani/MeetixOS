@@ -17,13 +17,14 @@
 #include <filesystem>
 #include <iomanip>
 #include <iostream>
+#include <string_view>
 
 /**
  * @brief Creates a custom format ramdisk with the MeetiX kernel is able to read and write
  */
 int main(int argc, char** argv) {
     if ( argc == 2 ) {
-        if ( strcmp(argv[1], "--help") == 0 ) {
+        if ( std::string_view{ argv[1] } == "--help" ) {
             std::cout << "Ramdisk Writer Tool\n\n";
             std::cout << "DESCRIPTION\n";
             std::cout << "\tGenerates a ramdisk image from a given source folder.\n\n";
@@ -32,14 +33,15 @@ int main(int argc, char** argv) {
         } else {
             std::cerr << "error: unrecognized command line option '" << argv[1] << std::endl;
         }
-        return 1;
+        return EXIT_FAILURE;
     } else if ( argc == 3 ) {
-        RamdiskWriter ramdisk_writer;
+        RamdiskWriter ramdisk_writer{};
         ramdisk_writer.create(argv[1], argv[2]);
-        return 0;
+
+        return EXIT_SUCCESS;
     } else {
-        std::cerr << "usage: " << argv[0] << " path/to/source path/to/target" << std::endl;
-        return 1;
+        std::cerr << "usage: RamdiskWriter Path/To/SourceDir Path/To/TargetFileName" << std::endl;
+        return EXIT_FAILURE;
     }
 }
 
@@ -55,19 +57,19 @@ std::string trim(std::string& str) {
 
 void RamdiskWriter::create(const std::string& source_path, const std::string& target_path) {
     /* check whether the directory contains a .read_ignore, then safe the content */
-    auto read_ignore_path   = source_path + "/.read_ignore";
-    auto read_ignore_stream = std::ifstream{ read_ignore_path };
+    std::string   read_ignore_path{ source_path + "/.read_ignore" };
+    std::ifstream read_ignore_stream{ read_ignore_path };
 
     if ( read_ignore_stream.is_open() ) {
         /* put into m_ignores the path to the file itself */
         m_ignores.push_back(read_ignore_path);
 
         /* collect all the other ignores */
-        std::string line;
-        while ( getline(read_ignore_stream, line) )
-            if ( line.length() > 0 ) {
+        std::string line{};
+        while ( getline(read_ignore_stream, line) ) {
+            if ( !line.empty() )
                 m_ignores.push_back(trim(line));
-            }
+        }
     }
 
     /* try the writing recursive */
@@ -145,8 +147,10 @@ void RamdiskWriter::write_recursive(const std::string& base_path,
     auto       buffer_ptr  = new char[BUFFER_SIZE];
     auto       entry_id    = m_next_id++;
 
+#ifdef _DEBUG
     std::cout << "-- Packing: " << (is_file ? "File" : "Dir ") << " with ID: " << std::setfill('0')
               << std::setw(3) << entry_id << ": '" << path << std::endl;
+#endif
 
     /* skip root entry */
     if ( entry_id > 0 ) {
