@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "Screen.hh"
+#include "Screen/Screen.hh"
 #include "StreamStatus.hh"
 
 #include <algorithm>
@@ -50,6 +50,7 @@ class Terminal {
             , m_is_error{ is_error }
             , m_terminal{ terminal } {
         }
+        ~OutputRoutineThread() override = default;
 
     protected:
         [[noreturn]] void run() override;

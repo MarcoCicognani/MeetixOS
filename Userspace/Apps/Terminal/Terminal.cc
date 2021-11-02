@@ -12,9 +12,9 @@
 
 #include "Terminal.hh"
 
-#include "GUIScreen.hh"
-#include "HeadlessGUIScreen.hh"
-#include "HeadlessScreen.hh"
+#include "Screen/GUIScreen.hh"
+#include "Screen/HeadlessGUIScreen.hh"
+#include "Screen/HeadlessScreen.hh"
 
 #include <csignal>
 #include <IO/Shell.hh>
