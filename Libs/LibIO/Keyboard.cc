@@ -30,7 +30,7 @@ Keyboard& Keyboard::instance() {
 }
 
 Keyboard::Info Keyboard::read(bool* breakCondition) {
-    /* register to the PS/2 driver */
+    /* register to the Input driver */
     if ( !Input::instance().is_registered() ) {
         if ( !Input::instance().register_self() )
             return {};

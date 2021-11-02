@@ -34,7 +34,7 @@ bool Input::register_self() {
     /* find the thread-id of the driver */
     auto driver_id = s_task_get_id(INPUT_DRIVER_IDENTIFIER);
     if ( driver_id < 0 ) {
-        Utils::log("PS/2 driver registration failed: failed to identify PS/2 driver instance");
+        Utils::log("Input driver registration failed: failed to identify Input driver instance");
         return false;
     }
 
@@ -45,7 +45,7 @@ bool Input::register_self() {
     RegisterRequest request;
     auto send_status = s_send_message_t(driver_id, &request, sizeof(RegisterRequest), message_tx);
     if ( send_status != MESSAGE_SEND_STATUS_SUCCESSFUL ) {
-        Utils::log("PS/2 driver registration error: failed to send registration request message");
+        Utils::log("Input driver registration error: failed to send registration request message");
         return false;
     }
 
@@ -55,14 +55,14 @@ bool Input::register_self() {
     auto recv_status = s_receive_message_t(buffer, buffer_len, message_tx);
     if ( recv_status != MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         Utils::log(
-            "PS/2 driver registration error: failed to receive registration response message");
+            "Input driver registration error: failed to receive registration response message");
         return false;
     }
 
     /* extract the content */
     auto response = reinterpret_cast<RegisterResponse*>(MESSAGE_CONTENT(buffer));
     if ( !response->m_shared_area ) {
-        Utils::log("PS/2 driver registration error: shared memory was nullptr");
+        Utils::log("Input driver registration error: shared memory was nullptr");
         return false;
     }
 

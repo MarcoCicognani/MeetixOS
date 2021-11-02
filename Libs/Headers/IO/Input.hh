@@ -22,12 +22,12 @@ namespace IO {
 /* ------------------------------------------ C++ types ----------------------------------------- */
 
 /**
- * @brief Singleton interface to communicate with PS/2 driver
+ * @brief Singleton interface to communicate with Input driver
  */
 class Input {
 public:
     /**
-     * @brief Shared memory area used for PS/2 data transferring
+     * @brief Shared memory area used for Input data transferring
      */
     struct SharedArea {
         struct {
@@ -60,7 +60,7 @@ public:
 
     /**
      * Request sent to register the sender thread as the
-     * PS/2 data handler.
+     * Input data handler.
      */
     struct RegisterRequest {
         u8 m_unused_byte{ 0 };
@@ -81,7 +81,7 @@ public:
     static Input& instance();
 
     /**
-     * @brief Registers this process as client of the PS/2 driver
+     * @brief Registers this process as client of the Input driver
      */
     bool register_self();
 
@@ -93,7 +93,7 @@ public:
     }
 
     /**
-     * @brief Returns the reference to the shared memory area with the PS/2 driver
+     * @brief Returns the reference to the shared memory area with the Input driver
      */
     [[nodiscard]] SharedArea& shared_area() {
         return *m_shared_area;
