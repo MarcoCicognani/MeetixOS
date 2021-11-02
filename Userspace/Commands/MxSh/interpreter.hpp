@@ -44,10 +44,10 @@ public:
     void interpret(LsDocument* script);
 
     // intrinsic function, script
-    void print(LsStatement* stat);
-    void exec(LsStatement* stat);
-    void driver(LsStatement* stat);
-    void wait(LsStatement* stat);
+    void log(LsStatement* stat);
+    void spawn_app(LsStatement* stat);
+    void spawn_driver(LsStatement* stat);
+    void wait_for_id(LsStatement* stat);
     void sleep(LsStatement* stat);
 
     // intrisic function, line

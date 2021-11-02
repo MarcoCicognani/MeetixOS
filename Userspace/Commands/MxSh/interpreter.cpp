@@ -31,14 +31,14 @@ void MXinterpreter::interpret(LsDocument* script) {
     for ( LsStatement* stat : script->statements ) {
         string command = stat->pairs[0]->key;
 
-        if ( command == "printf" )
-            print(stat);
-        else if ( command == "driver" )
-            driver(stat);
-        else if ( command == "exec" )
-            exec(stat);
-        else if ( command == "wait" )
-            wait(stat);
+        if ( command == "log" )
+            log(stat);
+        else if ( command == "spawn_driver" )
+            spawn_driver(stat);
+        else if ( command == "spawn_app" )
+            spawn_app(stat);
+        else if ( command == "wait_for_id" )
+            wait_for_id(stat);
         else if ( command == "sleep" )
             sleep(stat);
         else if ( command == "if" )
@@ -55,33 +55,33 @@ void MXinterpreter::interpret(LsDocument* script) {
 }
 
 /**
- *	print instruction, print on COM1 and std_out
+ *	print instruction, log on COM1 and std_out
  */
-void MXinterpreter::print(LsStatement* stat) {
+void MXinterpreter::log(LsStatement* stat) {
     cout << stat->pairs[0]->value << endl;
     Utils::log(stat->pairs[0]->value.c_str());
 }
 
 /**
- *	exec application with driver security level
+ *	spawn_app application with spawn_driver security level
  */
-void MXinterpreter::driver(LsStatement* stat) {
+void MXinterpreter::spawn_driver(LsStatement* stat) {
     string path = stat->pairs[0]->value;
     string args = findParam(stat, "args", "");
     execWithSpawner(path, args, SECURITY_LEVEL_DRIVER);
 }
 
 /**
- *	script exec
+ *	script spawn_app
  */
-void MXinterpreter::exec(LsStatement* stat) {
+void MXinterpreter::spawn_app(LsStatement* stat) {
     string path = stat->pairs[0]->value;
     string args = findParam(stat, "args", "");
     execWithSpawner(path, args, SECURITY_LEVEL_APPLICATION);
 }
 
 /**
- *	line exec
+ *	line spawn_app
  */
 void MXinterpreter::exec(string path, string args) {
     string pp = variables->getVariable("PATH") + path;
@@ -90,9 +90,9 @@ void MXinterpreter::exec(string path, string args) {
 }
 
 /**
- *	wait while task registering
+ *	wait_for_id while task registering
  */
-void MXinterpreter::wait(LsStatement* stat) {
+void MXinterpreter::wait_for_id(LsStatement* stat) {
     string identifier = stat->pairs[0]->value;
     Utils::log("Waiting for task which register '%s'", identifier.c_str());
 
@@ -172,7 +172,7 @@ string MXinterpreter::findParam(LsStatement* stat, string key, string def) {
 }
 
 /**
- *	exec application with provided security level
+ *	spawn_app application with provided security level
  */
 Pid MXinterpreter::execWithSpawner(string path, string args, SecurityLevel slvl) {
     auto pid          = -1;

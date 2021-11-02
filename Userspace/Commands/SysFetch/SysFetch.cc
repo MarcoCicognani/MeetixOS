@@ -48,12 +48,12 @@ int main(int argc, const char** argv) {
     s_system_info(&sys_info);
 
     std::cout << "\033[32m";
-    std::cout << "  __  __           _   ___   __\n";
-    std::cout << " |  \\/  |         | | (_) \\ / /\n";
-    std::cout << " | \\  / | ___  ___| |_ _ \\ V / \n";
-    std::cout << " | |\\/| |/ _ \\/ _ \\ __| | > <  \n";
-    std::cout << " | |  | |  __/  __/ |_| |/ . \\ \n";
-    std::cout << " |_|  |_|\\___|\\___|\\__|_/_/ \\_\\\n";
+    std::cout << R"(  __  __           _   ___   __)" << '\n';
+    std::cout << R"( |  \/  |         | | (_) \ / /)" << '\n';
+    std::cout << R"( | \  / | ___  ___| |_ _ \ V / )" << '\n';
+    std::cout << R"( | |\/| |/ _ \/ _ \ __| | > <  )" << '\n';
+    std::cout << R"( | |  | |  __/  __/ |_| |/ . \ )" << '\n';
+    std::cout << R"( |_|  |_|\___|\___|\__|_/_/ \_\)" << '\n';
     std::cout << "\033[0m";
 
     IO::Shell::instance().move_cursor_up(6);

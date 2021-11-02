@@ -25,6 +25,7 @@
 #include "mx.hpp"
 #include "parser.hpp"
 
+#include <Api/utils/local.hpp>
 #include <cstdio>
 #include <IO/Shell.hh>
 #include <iostream>
@@ -37,7 +38,7 @@ Environment* g_shell_env;
 /**
  *
  */
-bool readInputLine(std::string& line) {
+bool read_input_line(std::string& line) {
     IO::Shell::instance().set_mode(IO::Shell::MODE_RAW);
     IO::Shell::instance().set_echo(false);
 
@@ -140,9 +141,10 @@ bool fileExists(const std::string& path) {
 /**
  *
  */
-std::string findProgram(std::string cwd, std::string name) {
+std::string findProgram(const std::string_view& cwd, const std::string& name) {
     // check for match with cwd
-    std::string path = cwd + "/" + name;
+    std::string path{ cwd };
+    path += "/" + name;
     if ( fileExists(path) )
         return path;
 
@@ -162,7 +164,7 @@ std::string findProgram(std::string cwd, std::string name) {
 /**
  *
  */
-bool handleBuiltin(std::string cwd, ProgramCall* call) {
+bool handleBuiltin(const std::string_view& cwd, ProgramCall* call) {
     if ( call->program == "cd" ) {
         if ( call->arguments.size() == 1 ) {
             auto set_work_dir_status = s_set_working_directory(call->arguments.at(0).c_str());
@@ -196,161 +198,170 @@ bool handleBuiltin(std::string cwd, ProgramCall* call) {
     return false;
 }
 
+void run_command(const std::string& line, const std::string_view& cwd) {
+    Parser          cmd_parser{ line };
+    PipeExpression* pipe_expression;
+    if ( !cmd_parser.pipeExpression(&pipe_expression) )
+        return;
+
+    // perform spawning
+    FileHandle previousOutPipeR = -1;
+    Pid        firstProcessID   = -1;
+    Pid        lastProcessID    = -1;
+    bool       success          = false;
+
+    auto numCalls = pipe_expression->calls.size();
+    for ( int c = 0; c < numCalls; c++ ) {
+        auto call = pipe_expression->calls[c];
+
+        // builtin calls (only allowed as single call)
+        if ( numCalls == 1 && c == 0 && handleBuiltin(cwd, call) )
+            break;
+
+        // concatenate arguments to one argument string
+        std::stringstream args_ss;
+        bool              is_first_arg = true;
+        for ( auto& arg : call->arguments ) {
+            if ( is_first_arg )
+                is_first_arg = false;
+            else
+                args_ss << " ";
+            // args_ss << (char)CLIARGS_SEPARATOR;
+
+            args_ss << arg;
+        }
+
+        // create out pipe if necessary
+        FileHandle outPipeW;
+        FileHandle outPipeR;
+        if ( numCalls > 1 && c < numCalls - 1 ) {
+            FsPipeStatus pipeStat;
+            s_pipe_s(&outPipeW, &outPipeR, &pipeStat);
+
+            if ( pipeStat != FS_PIPE_SUCCESSFUL ) {
+                std::cerr << "failed to create output pipe when spawning '" << call->program << "'"
+                          << std::endl;
+                // TODO clean up pipes?
+                success = false;
+                break;
+            }
+        }
+        // decide how to set in/out/err file descriptors
+        FileHandle inStdio[3];
+
+        // stderr is always the same
+        inStdio[2] = STDERR_FILENO;
+
+        // stdin must be chosen
+        if ( c == 0 )
+            inStdio[0] = STDIN_FILENO;
+        else
+            inStdio[0] = previousOutPipeR;
+
+        // IDstdout must be chosen
+        if ( (numCalls == 1 && c == 0) || c == numCalls - 1 )
+            inStdio[1] = STDOUT_FILENO;
+        else
+            inStdio[1] = outPipeW;
+
+        // do spawning
+        Pid         outPid;
+        FileHandle  outStdio[3];
+        SpawnStatus status = s_spawn_poi(findProgram(cwd, call->program).c_str(),
+                                         args_ss.str().c_str(),
+                                         cwd.data(),
+                                         SECURITY_LEVEL_APPLICATION,
+                                         &outPid,
+                                         outStdio,
+                                         inStdio);
+
+        // check result
+        if ( status == SPAWN_STATUS_SUCCESSFUL ) {
+            if ( firstProcessID == -1 )
+                firstProcessID = outPid;
+            lastProcessID = outPid;
+            success       = true;
+
+            // close write end in this process
+            s_close(outPipeW);
+
+            if ( previousOutPipeR != -1 ) {
+                // close read end of previous pipe in this process
+                s_close(previousOutPipeR);
+            }
+
+            // remember for next process
+            previousOutPipeR = outPipeR;
+        } else {
+            success = false;
+            // error during one spawn
+            // TODO clean up pipes
+            std::cout << (char)27 << "[31m";
+            if ( status == SPAWN_STATUS_FORMAT_ERROR )
+                std::cout << call->program << ": invalid binary format" << std::endl;
+            else if ( status == SPAWN_STATUS_IO_ERROR )
+                std::cout << call->program << ": command not found" << std::endl;
+            else
+                std::cout << call->program << ": unknown error during program execution"
+                          << std::endl;
+            std::cout << (char)27 << "[0m";
+            std::flush(std::cout);
+            break;
+        }
+    }
+
+    if ( success ) {
+        // join into the last process
+        IO::Shell::instance().set_control_process(lastProcessID);
+        s_join(lastProcessID);
+        IO::Shell::instance().set_control_process(0);
+    }
+}
+
 /**
  *
  */
 void MXShell::shellMode(Environment* env) {
-    IO::Shell::instance().set_cursor(IO::Shell::CursorPosition(0, 0));
-    char* cwdbuf = new char[PATH_MAX];
-
     g_shell_env = env;
-    g_shell_env->setVariable("USER", "Admin");
-    std::string user = g_shell_env->getVariable("USER");
-    std::string host = g_shell_env->getVariable("HOSTNAME");
-    std::string dir  = "/Users/" + user;
+
+    IO::Shell::instance().set_cursor(IO::Shell::CursorPosition(0, 0));
+    IO::Shell::instance().set_mode(IO::Shell::MODE_DEFAULT);
+    IO::Shell::instance().set_echo(true);
+
+    /* run the login */
+    run_command({ "/Bins/Login" }, { "/" });
+
+    /* reload the environment */
+    s_sleep(3000);
+    g_shell_env->load();
+    auto user = g_shell_env->getVariable("USER");
+    auto dir  = "/Users/" + g_shell_env->getVariable("USER");
     s_set_working_directory(dir.c_str());
 
+    Local<char> work_dir_buffer{ new char[PATH_MAX] };
     while ( true ) {
         // print host, user and cwd
-        std::cout << (char)27 << "[31m" << host << (char)27 << "[0m";
-        std::cout << '@' << (char)27 << "[33m" << user << (char)27 << "[0m" << ':';
-        if ( s_get_working_directory(cwdbuf) == GET_WORKING_DIRECTORY_SUCCESSFUL )
-            std::cout << (char)27 << "[35m" << cwdbuf << (char)27 << "[0m";
+        std::cout << "\033[31m" << g_shell_env->getVariable("HOSTNAME") << "\033[0m";
+        std::cout << '@' << "\033[33m" << user << "\033[0m" << ':';
+        if ( s_get_working_directory(work_dir_buffer()) == GET_WORKING_DIRECTORY_SUCCESSFUL )
+            std::cout << "\033[35m" << work_dir_buffer() << "\033[0m";
         else
             std::cout << "?";
 
-        std::string cwd(cwdbuf);
+        std::string_view work_dir{ work_dir_buffer() };
         std::cout << '>';
-        std::cout << (char)27 << "[0m" << std::flush;
+        std::cout << "\033[0m" << std::flush;
 
         IO::Shell::instance().set_cursor(IO::Shell::instance().cursor());
 
         std::string line;
-        if ( !readInputLine(line) )
+        if ( !read_input_line(line) )
             break;
 
         // switch to normal input mode
         IO::Shell::instance().set_mode(IO::Shell::MODE_DEFAULT);
         IO::Shell::instance().set_echo(true);
 
-        Parser          cmd_parser{ line };
-        PipeExpression* pipe_expression;
-        if ( !cmd_parser.pipeExpression(&pipe_expression) )
-            continue;
-
-        // perform spawning
-        FileHandle previousOutPipeR = -1;
-        Pid        firstProcessID   = -1;
-        Pid        lastProcessID    = -1;
-        bool       success          = false;
-
-        auto numCalls = pipe_expression->calls.size();
-        for ( int c = 0; c < numCalls; c++ ) {
-            auto call = pipe_expression->calls[c];
-
-            // builtin calls (only allowed as single call)
-            if ( numCalls == 1 && c == 0 && handleBuiltin(cwd, call) )
-                break;
-
-            // concatenate arguments to one argument string
-            std::stringstream args_ss;
-            bool              is_first_arg = true;
-            for ( auto& arg : call->arguments ) {
-                if ( is_first_arg )
-                    is_first_arg = false;
-                else
-                    args_ss << " ";
-                // args_ss << (char)CLIARGS_SEPARATOR;
-
-                args_ss << arg;
-            }
-
-            // create out pipe if necessary
-            FileHandle outPipeW;
-            FileHandle outPipeR;
-            if ( numCalls > 1 && c < numCalls - 1 ) {
-                FsPipeStatus pipeStat;
-                s_pipe_s(&outPipeW, &outPipeR, &pipeStat);
-
-                if ( pipeStat != FS_PIPE_SUCCESSFUL ) {
-                    std::cerr << "failed to create output pipe when spawning '" << call->program
-                              << "'" << std::endl;
-                    // TODO clean up pipes?
-                    success = false;
-                    break;
-                }
-            }
-            // decide how to set in/out/err file descriptors
-            FileHandle inStdio[3];
-
-            // stderr is always the same
-            inStdio[2] = STDERR_FILENO;
-
-            // stdin must be chosen
-            if ( c == 0 )
-                inStdio[0] = STDIN_FILENO;
-            else
-                inStdio[0] = previousOutPipeR;
-
-            // IDstdout must be chosen
-            if ( (numCalls == 1 && c == 0) || c == numCalls - 1 )
-                inStdio[1] = STDOUT_FILENO;
-            else
-                inStdio[1] = outPipeW;
-
-            // do spawning
-            Pid         outPid;
-            FileHandle  outStdio[3];
-            SpawnStatus status = s_spawn_poi(findProgram(cwd, call->program).c_str(),
-                                             args_ss.str().c_str(),
-                                             cwdbuf,
-                                             SECURITY_LEVEL_APPLICATION,
-                                             &outPid,
-                                             outStdio,
-                                             inStdio);
-
-            // check result
-            if ( status == SPAWN_STATUS_SUCCESSFUL ) {
-                if ( firstProcessID == -1 )
-                    firstProcessID = outPid;
-                lastProcessID = outPid;
-                success       = true;
-
-                // close write end in this process
-                s_close(outPipeW);
-
-                if ( previousOutPipeR != -1 ) {
-                    // close read end of previous pipe in this process
-                    s_close(previousOutPipeR);
-                }
-
-                // remember for next process
-                previousOutPipeR = outPipeR;
-            } else {
-                success = false;
-                // error during one spawn
-                // TODO clean up pipes
-                std::cout << (char)27 << "[31m";
-                if ( status == SPAWN_STATUS_FORMAT_ERROR )
-                    std::cout << call->program << ": invalid binary format" << std::endl;
-                else if ( status == SPAWN_STATUS_IO_ERROR )
-                    std::cout << call->program << ": command not found" << std::endl;
-                else
-                    std::cout << call->program << ": unknown error during program execution"
-                              << std::endl;
-                std::cout << (char)27 << "[0m";
-                std::flush(std::cout);
-                break;
-            }
-        }
-
-        if ( success ) {
-            // join into the last process
-            IO::Shell::instance().set_control_process(lastProcessID);
-            s_join(lastProcessID);
-            IO::Shell::instance().set_control_process(0);
-        }
+        run_command(line, work_dir);
     }
-
-    delete[] cwdbuf;
 }
