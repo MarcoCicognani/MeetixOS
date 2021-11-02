@@ -21,13 +21,13 @@ namespace Graphics::Video {
 /* ------------------------------------ C++ Type Definitions ------------------------------------ */
 
 /**
- * @brief VBE driver commands
+ * @brief Video driver commands
  */
 enum Command
 { COMMAND_SET_MODE, };
 
 /**
- * @brief VBE driver requests statuses
+ * @brief Video driver requests statuses
  */
 enum SetModeStatus
 {
@@ -36,7 +36,7 @@ enum SetModeStatus
 };
 
 /**
- * @brief VBE Mode setting-information
+ * @brief Video Mode setting-information
  */
 struct ModeInfo {
 public:
@@ -64,7 +64,7 @@ public:
 } A_PACKED;
 
 /**
- * @brief VBE driver request header
+ * @brief Video driver request header
  */
 struct RequestHeader {
 public:
@@ -80,7 +80,7 @@ public:
 } A_PACKED;
 
 /**
- * @brief VBE driver set-mode request payload
+ * @brief Video driver set-mode request payload
  */
 struct SetModeRequest {
 public:
@@ -102,7 +102,7 @@ public:
 } A_PACKED;
 
 /**
- * @brief VBE driver set-mode response
+ * @brief Video driver set-mode response
  */
 struct SetModeResponse {
     SetModeStatus m_mode_status{};
@@ -117,7 +117,7 @@ struct SetModeResponse {
 /* ----------------------------------- C++ function prototypes ---------------------------------- */
 
 /**
- * @brief Requests to the VBE driver to set the given video-mode
+ * @brief Requests to the Video driver to set the given video-mode
  */
 bool set_mode(u16 width, u16 height, u8 bpp, ModeInfo& mode_info);
 
