@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18.4)
-project(MeetiXOS C CXX ASM)
+project(MeetixOS C CXX ASM)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
