@@ -27,12 +27,17 @@ int main(int argc, const char** argv) {
     bool                     show_as_hex{ false };
     bool                     show_header{ false };
     bool                     no_errors{ true };
+    bool                     show_line_num{ false };
     std::vector<std::string> files_paths{};
 
     Utils::ArgsParser args_parser{ "Read Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_option(show_as_hex, "Shows the content as hexadecimal", "hex", 'x');
     args_parser.add_option(show_header, "Shows An header before each file", "header", 'd');
     args_parser.add_option(no_errors, "Silent errors", "no-errors", 'n');
+    args_parser.add_option(show_line_num,
+                           "In non-hex mode shows the line number",
+                           "line-number",
+                           'l');
     args_parser.add_positional_argument(files_paths, "Files to read & print", "FileToRead");
 
     /* parse the arguments */
@@ -81,17 +86,27 @@ int main(int argc, const char** argv) {
             int line_counter{ 0 };
             for ( auto c : ss.str() ) {
                 std::cout << std::setfill('0') << std::setw(2) << std::hex << int{ c };
-                if ( ++line_counter > shell_width / 4 ) {
+
+                /* put the space or the newline */
+                if ( ++line_counter > shell_width / 6 ) {
                     std::cout << '\n';
                     line_counter = 0;
                 } else
                     std::cout << ' ';
             }
-        } else
-            std::cout << file_stream.rdbuf();
+        } else {
+            std::string line{};
+            usize       line_num{ 0 };
+            while ( std::getline(file_stream, line) ) {
+                if ( show_line_num )
+                    std::cout << std::setfill(' ') << std::setw(3) << line_num++ << ' ';
+
+                std::cout << line << '\n';
+            }
+        }
 
         /* flush the buffer of cout */
-        std::cout << std::endl;
+        std::cout << std::flush;
     }
     return EXIT_SUCCESS;
 }
