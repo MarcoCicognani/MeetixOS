@@ -161,7 +161,9 @@ public:
         int m_x{ 0 };
 
         CursorPosition() = default;
-        CursorPosition(int x, int y) : m_x{ x }, m_y{ y } {
+        CursorPosition(int x, int y)
+            : m_x{ x }
+            , m_y{ y } {
         }
     };
 
@@ -174,7 +176,9 @@ public:
         int m_height{ 0 };
 
         Dimension() = default;
-        Dimension(int width, int height) : m_width{ width }, m_height{ height } {
+        Dimension(int width, int height)
+            : m_width{ width }
+            , m_height{ height } {
         }
     };
 
@@ -265,9 +269,9 @@ public:
     CursorPosition cursor();
 
     /**
-     * @brief Returns the shell screen size
+     * @brief Returns the shell screen dimension
      */
-    Dimension size();
+    Dimension dimension();
 
 private:
     int  read_unbuffered();

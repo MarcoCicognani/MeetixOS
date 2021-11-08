@@ -12,6 +12,8 @@
 
 #include <Api/utils/local.hpp>
 #include <fstream>
+#include <IO/Shell.hh>
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <Utils/ArgsParser.hh>
@@ -22,12 +24,12 @@
 #define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    auto show_as_hex = false;
-    auto show_header = false;
-    auto no_errors   = true;
-    auto files_paths = std::vector<std::string>{};
+    bool                     show_as_hex{ false };
+    bool                     show_header{ false };
+    bool                     no_errors{ true };
+    std::vector<std::string> files_paths{};
 
-    auto args_parser = Utils::ArgsParser{ "Read Utility", V_MAJOR, V_MINOR, V_PATCH };
+    Utils::ArgsParser args_parser{ "Read Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_option(show_as_hex, "Shows the content as hexadecimal", "hex", 'x');
     args_parser.add_option(show_header, "Shows An header before each file", "header", 'd');
     args_parser.add_option(no_errors, "Silent errors", "no-errors", 'n');
@@ -37,9 +39,10 @@ int main(int argc, const char** argv) {
     args_parser.parse(argc, argv);
 
     /* obtain the current working directory */
-    auto work_dir = std::string{};
+    std::string work_dir{};
     {
-        auto work_dir_buffer = Local{ new char[PATH_MAX] };
+        Local work_dir_buffer{ new char[PATH_MAX] };
+
         auto work_dir_status = s_get_working_directory(work_dir_buffer());
         if ( work_dir_status != GET_WORKING_DIRECTORY_SUCCESSFUL ) {
             if ( show_header && !no_errors ) {
@@ -54,7 +57,7 @@ int main(int argc, const char** argv) {
     /* read all the files */
     for ( auto& file_path : files_paths ) {
         /* open the file-stream */
-        auto file_stream = std::ifstream{ file_path };
+        std::ifstream file_stream{ file_path };
         if ( !file_stream.is_open() ) {
             if ( !no_errors )
                 std::cerr << file_path << ": File doesn't exists\n";
@@ -67,11 +70,28 @@ int main(int argc, const char** argv) {
                 std::cout << work_dir << '/';
             std::cout << file_path << "\n----------------------------------------";
         }
-        if ( show_as_hex )
-            std::cout << std::hex;
 
-        /* print out the file-content */
-        std::cout << file_stream.rdbuf();
+        if ( show_as_hex ) {
+            /* store the stream content into a string-stream */
+            std::stringstream ss{};
+            ss << file_stream.rdbuf();
+
+            auto shell_width = IO::Shell::instance().dimension().m_width;
+
+            int line_counter{ 0 };
+            for ( auto c : ss.str() ) {
+                std::cout << std::setfill('0') << std::setw(2) << std::hex << int{ c };
+                if ( ++line_counter > shell_width / 4 ) {
+                    std::cout << '\n';
+                    line_counter = 0;
+                } else
+                    std::cout << ' ';
+            }
+        } else
+            std::cout << file_stream.rdbuf();
+
+        /* flush the buffer of cout */
+        std::cout << std::endl;
     }
     return EXIT_SUCCESS;
 }

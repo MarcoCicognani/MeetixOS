@@ -120,7 +120,7 @@ Shell::CursorPosition Shell::cursor() {
     return { -1, -1 };
 }
 
-Shell::Dimension Shell::size() {
+Shell::Dimension Shell::dimension() {
     /* send the request to the shell */
     std::cout << SHELLKEY_ESC << "{i" << std::flush;
 
