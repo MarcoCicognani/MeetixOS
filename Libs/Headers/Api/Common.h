@@ -46,8 +46,9 @@
 /**
  * @brief Compiler attributes
  */
-#define A_PACKED   __attribute__((packed))
-#define A_WEAK     __attribute__((weak))
-#define A_UNUSED   __attribute__((unused))
-#define A_NOINLINE __attribute__((noinline))
-#define A_NORETURN __attribute__((noreturn))
+#define A_PACKED                       __attribute__((packed))
+#define A_WEAK                         __attribute__((weak))
+#define A_UNUSED                       __attribute__((unused))
+#define A_NOINLINE                     __attribute__((noinline))
+#define A_NORETURN                     __attribute__((noreturn))
+#define A_PRINTF(fmt_pos, va_list_pos) __attribute__((format(printf, fmt_pos, va_list_pos)))

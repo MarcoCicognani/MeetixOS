@@ -96,7 +96,7 @@ int   fputs(const char*, FILE*);
 int   ungetc(int, FILE*);
 int   fungetc(int, FILE*);
 usize fwrite(const void*, usize, usize, FILE*);
-int   fprintf(FILE*, const char*, ...);
+int   fprintf(FILE*, const char*, ...) A_PRINTF(2, 3);
 int   vfprintf(FILE*, const char*, va_list);
 
 /* FILE stream cursor position writers */
@@ -124,13 +124,13 @@ int  fclose(FILE*);
 
 /* Standard I/O write functions */
 
-int printf(const char*, ...);
-int println(const char*, ...);
+int printf(const char*, ...) A_PRINTF(1, 2);
+int println(const char*, ...) A_PRINTF(1, 2);
 int vprintf(const char*, va_list);
 int putchar(int);
 int puts(const char*);
 
-int cbprintf(void*, isize (*)(void*, const char*, usize), const char*, ...);
+int cbprintf(void*, isize (*)(void*, const char*, usize), const char*, ...) A_PRINTF(3, 4);
 int vcbprintf(void*, isize (*)(void*, const char*, usize), const char*, va_list);
 
 /* Standard I/O read functions */
@@ -140,9 +140,9 @@ int getchar();
 
 /* Standard I/O buffer write functions */
 
-int sprintf(char*, const char*, ...);
+int sprintf(char*, const char*, ...) A_PRINTF(2, 3);
 int vsprintf(char*, const char*, va_list);
-int snprintf(char*, usize, const char*, ...);
+int snprintf(char*, usize, const char*, ...) A_PRINTF(3, 4);
 int vsnprintf(char*, usize, const char*, va_list);
 
 /* Standard I/O buffer read functions */
@@ -153,7 +153,7 @@ int vsscanf(const char* s, const char*, va_list);
 
 /* Custom MeetiX functions to print formatted to s_log() */
 
-void klog(const char*, ...);
+void klog(const char*, ...) A_PRINTF(1, 2);
 void kvlog(const char*, va_list);
 
 /* Pipe interface through FILE stream */

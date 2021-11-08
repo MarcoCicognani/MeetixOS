@@ -28,7 +28,7 @@ std::string trim(const std::string& str);
  * @brief Prints a formatted log using the kernel s_log() interface
  */
 void log(const std::string& message, ...);
-void log(const char* message, ...);
+void log(const char* message, ...) A_PRINTF(1, 2);
 void log(const char* message, va_list l);
 
 namespace PortIO {
