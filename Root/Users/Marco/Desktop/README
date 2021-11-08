@@ -1,7 +1,15 @@
+# Hi Marco! Welcome in MeetixOS 0.8
 
-Welcome in MeetiX OS 0.7 Marco.
-In this version MeetiX is completely interactive.
-Explore menus and the interface.
-Try the new applications in the system environment.
+## What happened to the GUI?
+Since August 31, 2021 I've found interest again in C++ development,
+so I've decided to re-implement MeetiX using modern C++ and moving out to more Unix-like aspects;
+then for this version the GUI is disabled by default, because the system is under heavy refactor
+and many things doesn't work well anymore.
 
-Have fun! (MeetiX OS Project [Marco Cicognani])
+## Whats next?
+Next steps involve a homemade template library (the MxT [M]eeti[x][T]emplates),
+a complete refactor of the kernel (how it's written and how it works)
+and next a completely new GUI framework!!!
+
+Have fun!
+Marco Cicognani marco.cicognani@meetixos.org
