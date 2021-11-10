@@ -9,6 +9,7 @@ RESET=$(tput sgr0)
 
 # Make jobs to use
 BUILD_JOBS=$(nproc)
+SKIP_LAST_CLEAN=0
 
 # Target triplet
 TARGET=i686-pc-meetix
@@ -61,12 +62,21 @@ build_step() {
 # ---------------------------------- Script Code: Argument Parsing & Variables Init ---------------------------------- #
 
 for CMD_ARG in "$@"; do
-    if [[ "$CMD_ARG" == "--rebuild" ]]; then
-        build_step "Previous install cleaning..." rm -rf "$TOOLCHAIN_PREFIX" "$BUILD_DIR" ../Build
-    else
-        echo "${RED}Unknown parameter: $CMD_ARG${RESET}"
-        exit 1
-    fi
+    case "$CMD_ARG" in
+        --rebuild)
+            build_step "Previous install cleaning..." rm -rf "$TOOLCHAIN_PREFIX" "$BUILD_DIR" ../Build
+            ;;
+        --skip-last-clean)
+            SKIP_LAST_CLEAN=1
+            ;;
+        *)
+            echo "${RED}Unknown parameter: $CMD_ARG${RESET}"
+            echo "Valid parameters are:"
+            echo "    --rebuild:         Clean previous installation"
+            echo "    --skip-last-clean: Keep toolchain build files for debug"
+            exit 1
+            ;;
+    esac
 done
 
 echo "${GREEN}Building Toolchains with $BUILD_JOBS jobs${RESET}"
@@ -185,5 +195,9 @@ dir_pop
 
 # -------------------------------------------- Script Code: Last Cleaning -------------------------------------------- #
 
-echo "Last Cleaning"
-rm -rf $BUILD_DIR || exit 1
+if [[ $SKIP_LAST_CLEAN -ne 1 ]]; then
+    echo "Last Cleaning"
+    rm -rf $BUILD_DIR || exit 1
+else
+    echo "Skipping Last Cleaning"
+fi
