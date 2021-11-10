@@ -57,3 +57,6 @@ add_custom_target(run
         COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Run.sh --iso-dir=${CMAKE_BINARY_DIR}
         DEPENDS repack
         USES_TERMINAL)
+add_custom_target(just_run
+        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Run.sh --iso-dir=${CMAKE_BINARY_DIR}
+        USES_TERMINAL)
