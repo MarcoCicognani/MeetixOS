@@ -20,11 +20,7 @@ fail() {
 }
 
 # Use the amount of CPUs as JOB_COUNT
-if [ -f /proc/cpuinfo ]; then
-    BUILD_JOBS=$(grep -c '^processor[[:space:]]*:' </proc/cpuinfo)
-else
-    BUILD_JOBS=1
-fi
+BUILD_JOBS=$(nproc)
 
 # Check for null parameter
 if [ -z "$PACKAGE" ]; then
