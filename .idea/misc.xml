@@ -9,6 +9,7 @@
       <file path="$PROJECT_DIR$/Libs/Headers/cairo" />
       <file path="$PROJECT_DIR$/Libs/Headers/freetype2" />
       <file path="$PROJECT_DIR$/Libs/Headers/pixman-1" />
+      <file path="$PROJECT_DIR$/Toolchain/Build" />
       <file path="$PROJECT_DIR$/Toolchain/Local" />
       <file path="$PROJECT_DIR$/Toolchain/NewLocal" />
       <file path="$PROJECT_DIR$/Toolchain/Tarballs" />
