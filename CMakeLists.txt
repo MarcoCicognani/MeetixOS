@@ -43,7 +43,7 @@ add_subdirectory(Kernel)
 add_subdirectory(Libs)
 add_subdirectory(Userspace)
 
-# Custom targets for build ISO and run it
+# Custom target for build ISO
 add_custom_target(repack
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Meta/Boot ${ISO_IMAGE_INSTALL_ROOT}/boot/grub
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Root ${RD_IMAGE_INSTALL_ROOT}
@@ -53,10 +53,21 @@ add_custom_target(repack
         --ramdisk-root=${RD_IMAGE_INSTALL_ROOT}
         DEPENDS install
         USES_TERMINAL)
+
+# Run and run-debug with build
 add_custom_target(run
         COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Run.sh --iso-dir=${CMAKE_BINARY_DIR}
         DEPENDS repack
         USES_TERMINAL)
+add_custom_target(run_debug
+        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Run.sh --iso-dir=${CMAKE_BINARY_DIR} --debug
+        DEPENDS repack
+        USES_TERMINAL)
+
+# Run and run-debug without build
 add_custom_target(just_run
         COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Run.sh --iso-dir=${CMAKE_BINARY_DIR}
+        USES_TERMINAL)
+add_custom_target(just_run_debug
+        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Run.sh --iso-dir=${CMAKE_BINARY_DIR} --debug
         USES_TERMINAL)
