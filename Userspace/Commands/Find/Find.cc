@@ -20,10 +20,10 @@
 #define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    auto start_dir = std::string{};
-    auto file_name = std::string{};
+    std::string start_dir{};
+    std::string file_name{};
 
-    auto args_parser = Utils::ArgsParser{ "Find Utility", V_MAJOR, V_MINOR, V_PATCH };
+    Utils::ArgsParser args_parser{ "Find Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_positional_argument(start_dir,
                                         "Initial directory where start search",
                                         "SourceDir",
@@ -37,10 +37,10 @@ int main(int argc, const char** argv) {
     args_parser.parse(argc, argv);
 
     for ( auto& entry : std::filesystem::recursive_directory_iterator(start_dir) ) {
-        if ( entry.path().string().ends_with(file_name) ) {
-            std::cout << "Found: " << entry.path() << std::endl;
-            return EXIT_SUCCESS;
-        }
+        auto path_str = entry.path().string();
+
+        if ( path_str.ends_with(file_name) )
+            std::cout << entry.path() << std::endl;
     }
 
     return EXIT_FAILURE;

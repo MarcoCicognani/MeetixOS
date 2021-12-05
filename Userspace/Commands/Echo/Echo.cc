@@ -20,22 +20,25 @@
 #define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    auto values     = std::vector<std::string>{};
-    auto no_newline = false;
+    std::vector<std::string> args_to_echo{};
+    bool                     no_newline = false;
 
-    auto args_parser = Utils::ArgsParser{ "Echo Utility", V_MAJOR, V_MINOR, V_PATCH };
+    Utils::ArgsParser args_parser{ "Echo Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_option(no_newline, "Avoid print newline at last", "no-newline", 'n');
-    args_parser.add_positional_argument(values, "Values to print on screen", "ValueToPrint", false);
+    args_parser.add_positional_argument(args_to_echo,
+                                        "Values to print on screen",
+                                        "ValueToPrint",
+                                        false);
 
     /* parse the arguments */
     args_parser.parse(argc, argv);
 
-    if ( values.empty() ) {
-        char c;
+    if ( args_to_echo.empty() ) {
+        char c = '\0';
         while ( std::cin.read(&c, 1) )
             std::cout << c;
     } else {
-        for ( auto& value : values )
+        for ( auto& value : args_to_echo )
             std::cout << value << " ";
 
         if ( !no_newline )

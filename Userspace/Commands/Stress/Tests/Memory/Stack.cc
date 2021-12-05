@@ -10,9 +10,20 @@
  * GNU General Public License version 3
  */
 
-#include "ShellInspector.hh"
+#include "Tests/Memory/Stack.hh"
 
-std::string ShellInspector::inspection() {
-    /* TODO when shell language will be supported check syntax here */
-    return { "MeetiX Shell script file\n" };
+namespace Memory {
+
+Memory::Stack::Stack(bool is_verbose)
+    : Test{ is_verbose } {
 }
+
+bool Stack::run() {
+    return false;
+}
+
+const char* Stack::name() const {
+    return nullptr;
+}
+
+} /* namespace Memory */

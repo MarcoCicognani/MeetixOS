@@ -19,9 +19,9 @@
 #define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    u32  sleep_time{ 0 };
-    bool reboot_system{ false };
-    bool shutdown_system{ false };
+    u32  sleep_time      = 0;
+    bool reboot_system   = false;
+    bool shutdown_system = false;
 
     Utils::ArgsParser args_parser{ "Power Management Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_option(sleep_time, "Sleep time", "sleep", 'l', "SleepTime");

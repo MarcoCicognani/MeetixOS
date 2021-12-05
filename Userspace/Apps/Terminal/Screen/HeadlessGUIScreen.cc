@@ -12,6 +12,7 @@
 
 #include "HeadlessGUIScreen.hh"
 
+#include <cassert>
 #include <cstring>
 #include <Graphics/Color.hh>
 #include <Graphics/Text/FontLoader.hh>
@@ -145,8 +146,9 @@ void HeadlessGUIScreen::set_cursor_visible(bool visible) {
             auto cairo_scaled_font = cairo_get_scaled_font(cr);
             for ( auto y = 0; y < height(); ++y ) {
                 for ( auto x = 0; x < width(); ++x ) {
-                    auto raster_cell = m_raster_buffer[y * width() + x];
+                    auto& raster_cell = m_raster_buffer[y * width() + x];
 
+                    /* draw cell background */
                     cairo_save(cr);
                     cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(raster_cell.m_background));
                     cairo_rectangle(cr,
@@ -157,23 +159,24 @@ void HeadlessGUIScreen::set_cursor_visible(bool visible) {
                     cairo_fill(cr);
                     cairo_restore(cr);
 
+                    /* skip cells with un-printable character */
                     if ( !raster_cell )
                         continue;
 
                     /* obtain the character glyph to draw */
                     auto char_layout = cached_char_layout(cairo_scaled_font, raster_cell.m_char);
-                    if ( char_layout ) {
-                        cairo_save(cr);
-                        cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(raster_cell.m_foreground));
-                        cairo_translate(cr,
-                                        x * m_font_dimension.width(),
-                                        (y + 1) * m_font_dimension.height());
-                        cairo_glyph_path(cr,
-                                         char_layout->m_cairo_glyph,
-                                         char_layout->m_text_cluster[0].num_glyphs);
-                        cairo_fill(cr);
-                        cairo_restore(cr);
-                    }
+
+                    /* draw the glyph */
+                    cairo_save(cr);
+                    cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(raster_cell.m_foreground));
+                    cairo_translate(cr,
+                                    x * m_font_dimension.width(),
+                                    (y + 1) * m_font_dimension.height());
+                    cairo_glyph_path(cr,
+                                     char_layout.m_cairo_glyph,
+                                     char_layout.m_text_cluster[0].num_glyphs);
+                    cairo_fill(cr);
+                    cairo_restore(cr);
                 }
             }
         }
@@ -241,43 +244,45 @@ void HeadlessGUIScreen::write_char_unlocked(char c) {
     if ( c == '\n' )
         move_cursor_unlocked(0, m_cursor_position.y() + 1);
     else {
+        RasterCell raster_cell{ c, color_background(), color_foreground() };
+        int        raster_buffer_pos{ m_cursor_position.y() * width() + m_cursor_position.x() };
+
         /* append the new character to the buffer */
-        auto raster_buffer_pos = m_cursor_position.y() * width() + m_cursor_position.x();
-        m_raster_buffer[raster_buffer_pos]
-            = RasterCell{ c, color_background(), color_foreground() };
-        m_last_input_ts = s_millis();
+        m_raster_buffer[raster_buffer_pos] = raster_cell;
+        m_last_input_ts                    = s_millis();
 
         /* advance the cursor */
         move_cursor_unlocked(m_cursor_position.x() + 1, m_cursor_position.y());
     }
 }
 
-HeadlessGUIScreen::CharLayout* HeadlessGUIScreen::cached_char_layout(cairo_scaled_font_t* font,
+HeadlessGUIScreen::CharLayout& HeadlessGUIScreen::cached_char_layout(cairo_scaled_font_t* font,
                                                                      char                 c) {
     auto cache_entry = m_char_layout_cache.find(c);
     if ( cache_entry != m_char_layout_cache.end() )
         return cache_entry->second;
     else {
-        char char_buffer[] = { c, '\0' };
-        auto char_layout   = new CharLayout{};
+        CharLayout                 char_layout{};
+        char                       char_buffer[]{ c, '\0' };
+        cairo_text_cluster_flags_t text_cluster_flags{};
 
-        cairo_text_cluster_flags_t text_cluster_flags;
-
+        /* extract from the font the given character */
         auto cairo_status = cairo_scaled_font_text_to_glyphs(font,
                                                              0,
                                                              0,
                                                              char_buffer,
                                                              1,
-                                                             &char_layout->m_cairo_glyph,
-                                                             &char_layout->m_glyph_count,
-                                                             &char_layout->m_text_cluster,
-                                                             &char_layout->m_cluster_count,
+                                                             &char_layout.m_cairo_glyph,
+                                                             &char_layout.m_glyph_count,
+                                                             &char_layout.m_text_cluster,
+                                                             &char_layout.m_cluster_count,
                                                              &text_cluster_flags);
-        if ( cairo_status == CAIRO_STATUS_SUCCESS ) {
-            m_char_layout_cache[c] = char_layout;
-            return char_layout;
-        } else
-            return nullptr;
+        assert(cairo_status == CAIRO_STATUS_SUCCESS);
+
+        /* put the layout into the cache, then return it */
+        auto& layout_cache_entry = m_char_layout_cache[c];
+        layout_cache_entry       = char_layout;
+        return layout_cache_entry;
     }
 }
 

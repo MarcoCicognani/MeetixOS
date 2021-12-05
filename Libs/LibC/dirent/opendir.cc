@@ -15,13 +15,14 @@
 #include <dirent.h>
 
 extern "C" DIR* opendir(const char* path) {
-    FsOpenDirectoryStatus stat;
-    auto                  iter = s_open_directory_s(path, &stat);
-    if ( stat == FS_OPEN_DIRECTORY_SUCCESSFUL )
-        return new DIR{ iter, new dirent{} };
-    else if ( stat == FS_OPEN_DIRECTORY_NOT_FOUND )
+    FsOpenDirectoryStatus open_status{};
+
+    auto dir_it = s_open_directory_s(path, &open_status);
+    if ( open_status == FS_OPEN_DIRECTORY_SUCCESSFUL )
+        return new DIR{ dir_it, new dirent{} };
+    else if ( open_status == FS_OPEN_DIRECTORY_NOT_FOUND )
         errno = ENOTDIR;
-    else if ( stat == FS_OPEN_DIRECTORY_ERROR )
+    else if ( open_status == FS_OPEN_DIRECTORY_ERROR )
         errno = EIO;
 
     return nullptr;

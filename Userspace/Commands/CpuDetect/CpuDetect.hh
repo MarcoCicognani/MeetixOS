@@ -14,12 +14,6 @@
 
 #include <cstdint>
 
-/**
- * @brief Executes the cpuid instruction
- */
 #define CPU_ID(in, a, b, c, d) asm volatile("cpuid" : "=a"(a), "=b"(b), "=c"(c), "=d"(d) : "a"(in))
 
-/**
- * @brief Prints the string inside the given registers
- */
 void print_regs(usize eax, usize ebx, usize ecx, usize edx);

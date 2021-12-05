@@ -39,19 +39,18 @@ bool check_login_credentials(const std::string& username, const std::string& pas
     if ( !users_stream.is_open() )
         return false;
 
-    /* parse the file */
     Utils::PropertyFileParser file_parser{ users_stream };
-    auto                      users_map = file_parser.properties();
 
-    /* find the pair */
+    /* parse the file then find the pair */
+    auto users_map = file_parser.properties();
     return std::any_of(users_map.begin(), users_map.end(), [&](const auto& item) {
         return username == item.first && password == item.second;
     });
 }
 
 int main(int argc, const char** argv) {
-    bool hide_welcome{ false };
-    bool one_shoot_auth{ false };
+    bool hide_welcome   = false;
+    bool one_shoot_auth = false;
 
     Utils::ArgsParser args_parser{ "Login Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_option(hide_welcome, "Hides the welcome message", "hide-welcome", 'w');

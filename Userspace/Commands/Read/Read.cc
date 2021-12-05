@@ -24,10 +24,11 @@
 #define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    bool                     show_as_hex{ false };
-    bool                     show_header{ false };
-    bool                     no_errors{ true };
-    bool                     show_line_num{ false };
+    bool show_as_hex   = false;
+    bool show_header   = false;
+    bool no_errors     = true;
+    bool show_line_num = false;
+
     std::vector<std::string> files_paths{};
 
     Utils::ArgsParser args_parser{ "Read Utility", V_MAJOR, V_MINOR, V_PATCH };
@@ -83,7 +84,7 @@ int main(int argc, const char** argv) {
 
             auto shell_width = IO::Shell::instance().dimension().m_width;
 
-            int line_counter{ 0 };
+            int line_counter = 0;
             for ( auto c : ss.str() ) {
                 std::cout << std::setfill('0') << std::setw(2) << std::hex << int{ c };
 
@@ -96,7 +97,7 @@ int main(int argc, const char** argv) {
             }
         } else {
             std::string line{};
-            usize       line_num{ 0 };
+            usize       line_num = 0;
             while ( std::getline(file_stream, line) ) {
                 if ( show_line_num )
                     std::cout << std::setfill(' ') << std::setw(3) << line_num++ << ' ';

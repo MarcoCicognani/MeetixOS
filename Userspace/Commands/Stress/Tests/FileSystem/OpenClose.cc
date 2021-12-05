@@ -10,9 +10,20 @@
  * GNU General Public License version 3
  */
 
-#include "ShellInspector.hh"
+#include "Tests/FileSystem/OpenClose.hh"
 
-std::string ShellInspector::inspection() {
-    /* TODO when shell language will be supported check syntax here */
-    return { "MeetiX Shell script file\n" };
+namespace FileSystem {
+
+OpenClose::OpenClose(bool is_verbose)
+    : Test{ is_verbose } {
 }
+
+bool OpenClose::run() {
+    return false;
+}
+
+const char* OpenClose::name() const {
+    return nullptr;
+}
+
+} /* namespace FileSystem */

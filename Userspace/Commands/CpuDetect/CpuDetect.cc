@@ -17,9 +17,8 @@
 
 #include <iostream>
 
-int main(int argc, char** argv) {
-    usize ebx;
-    usize dummy;
+int main(int argc, const char** argv) {
+    usize ebx, dummy;
     CPU_ID(0, dummy, ebx, dummy, dummy);
 
     switch ( ebx ) {
@@ -34,7 +33,7 @@ int main(int argc, char** argv) {
 }
 
 void print_regs(usize eax, usize ebx, usize ecx, usize edx) {
-    char content_buf[17] = { '\0' };
+    char content_buf[17]{ '\0' };
     for ( auto i = 0; i < 4; ++i ) {
         content_buf[i]      = static_cast<char>(eax >> (8 * i));
         content_buf[i + 4]  = static_cast<char>(ebx >> (8 * i));

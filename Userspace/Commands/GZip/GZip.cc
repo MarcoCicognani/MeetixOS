@@ -21,9 +21,9 @@
 #define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    auto archives = std::vector<std::string>{};
+    std::vector<std::string> archives{};
 
-    auto args_parser = Utils::ArgsParser{ "GNU Zip Utility", V_MAJOR, V_MINOR, V_PATCH };
+    Utils::ArgsParser args_parser{ "GNU Zip Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_positional_argument(archives, "Archives to extract", "Archive", true);
 
     /* parse the arguments */
@@ -43,9 +43,11 @@ int main(int argc, const char** argv) {
             continue;
         }
 
+        /* extract the destination path */
+        auto dest_path = archive.substr(0, archive.length() - 3);
+
         /* open the output stream */
-        auto dest_path   = archive.substr(0, archive.length() - 3);
-        auto dest_stream = std::ofstream{ dest_path };
+        std::ofstream dest_stream{ dest_path };
         if ( !dest_stream.is_open() ) {
             std::cerr << dest_path << ": Unable to open/create\n";
             gzclose(gz_file);
@@ -55,13 +57,12 @@ int main(int argc, const char** argv) {
         /* extract from the archive */
         while ( !gzeof(gz_file) ) {
             /* read the extracted content */
-            char buffer[4096];
+            char buffer[4096]{ '\0' };
             auto read_bytes = gzread(gz_file, &buffer, 4096);
 
             /* write-out to the file */
             dest_stream.write(reinterpret_cast<const char*>(&buffer), read_bytes);
         }
-
         gzclose(gz_file);
     }
     return EXIT_SUCCESS;

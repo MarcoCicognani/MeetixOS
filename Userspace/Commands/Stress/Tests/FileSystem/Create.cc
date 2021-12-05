@@ -10,9 +10,20 @@
  * GNU General Public License version 3
  */
 
-#include "ShellInspector.hh"
+#include "Tests/FileSystem/Create.hh"
 
-std::string ShellInspector::inspection() {
-    /* TODO when shell language will be supported check syntax here */
-    return { "MeetiX Shell script file\n" };
+namespace FileSystem {
+
+Create::Create(bool is_verbose)
+    : Test{ is_verbose } {
 }
+
+bool Create::run() {
+    return false;
+}
+
+const char* Create::name() const {
+    return nullptr;
+}
+
+} /* namespace FileSystem */

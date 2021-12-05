@@ -15,14 +15,14 @@
 #include <sstream>
 
 std::string TextInspector::inspection() {
-    std::stringstream ss;
+    std::stringstream ss{};
     ss << m_stream.rdbuf();
     auto str = ss.str();
 
     if ( std::any_of(str.begin(), str.end(), [](int c) {
              return c == 0x09 || c == 0x0A || c == 0x0D || (0x20 <= c && c <= 0x7E);
          }) )
-        return { "UTF-8 Encoded text file" };
+        return { "UTF-8 Encoded text file\n" };
     else
-        return { "ASCII text file" };
+        return { "ASCII text file\n" };
 }

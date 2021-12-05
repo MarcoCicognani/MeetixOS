@@ -16,7 +16,7 @@
 #include <unistd.h>
 
 extern "C" off_t lseek(int fd, off_t offset, int whence) {
-    FsSeekMode mode;
+    FsSeekMode mode{};
     if ( whence == SEEK_SET )
         mode = FS_SEEK_SET;
     else if ( whence == SEEK_CUR )

@@ -67,23 +67,22 @@ static const char* g_intel_extended_list[] = { "Reserved",
                                                "Reserved",
                                                "Reserved" };
 
-int inspect_intel(int argc, char* argv[]) {
-    usize eax, ebx, ecx, edx, max_eax, signature, unused;
-    usize model, family, type, brand, stepping, reserved, extended_family;
-
+int inspect_intel(int argc, const char** argv) {
+    usize eax, ebx, ecx, edx, max_eax, unused, extended_family;
     CPU_ID(1, eax, ebx, unused, unused);
 
-    model     = (eax >> 4) & 0xf;
-    family    = (eax >> 8) & 0xf;
-    type      = (eax >> 12) & 0x3;
-    brand     = ebx & 0xff;
-    stepping  = eax & 0xf;
-    reserved  = eax >> 14;
-    signature = eax;
+    usize model     = (eax >> 4) & 0xf;
+    usize family    = (eax >> 8) & 0xf;
+    usize type      = (eax >> 12) & 0x3;
+    usize brand     = ebx & 0xff;
+    usize stepping  = eax & 0xf;
+    usize reserved  = eax >> 14;
+    usize signature = eax;
 
     if ( argc > 1 ) {
         if ( std::string_view{ argv[0] } == std::string_view{ "--brand" } ) {
             CPU_ID(0x80000000, max_eax, unused, unused, unused);
+
             /* Quok said: If the max extended eax value is high enough to support the processor
              * brand string (values 0x80000002 to 0x80000004), then we'll use that information to
              * return the brand information. Otherwise, we'll refer back to the brand tables above

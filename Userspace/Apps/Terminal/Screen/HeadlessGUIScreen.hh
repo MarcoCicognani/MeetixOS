@@ -102,7 +102,7 @@ private:
     void move_cursor_unlocked(int x, int y);
     void write_char_unlocked(char c);
 
-    CharLayout* cached_char_layout(cairo_scaled_font_t* font, char c);
+    CharLayout& cached_char_layout(cairo_scaled_font_t* font, char c);
 
     static bool                          char_is_utf8(char c);
     static Graphics::Color::ArgbGradient screen_color_to_argb(ScreenColor screen_color);
@@ -117,6 +117,6 @@ private:
     Tasking::Lock                m_render_lock{};
     RasterCell*                  m_raster_buffer{ nullptr };
     PainterThread*               m_painter_thread{ nullptr };
-    std::map<char, CharLayout*>  m_char_layout_cache{};
+    std::map<char, CharLayout>   m_char_layout_cache{};
     u64                          m_last_input_ts{ 0 };
 };

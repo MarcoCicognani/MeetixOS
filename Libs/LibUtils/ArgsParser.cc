@@ -27,7 +27,7 @@ ArgsParser::ArgsParser(const std::string_view& description,
     add_option(m_show_help, "Shows this help", "help", '?');
     add_option(m_show_version, "Shows program version", "version", 'v');
 
-    std::stringstream ss;
+    std::stringstream ss{};
     ss << version_major << '.' << version_minor << '.' << version_patch;
     ss >> m_program_version;
 }
@@ -47,8 +47,8 @@ bool ArgsParser::parse(int argc, const char** argv, FailureBehavior failure_beha
     optreset = 1;
 
     /* construct getopt options parameters */
-    auto short_options = std::string{};
-    auto long_options  = std::vector<option>{};
+    std::string         short_options{};
+    std::vector<option> long_options{};
     construct_getopt_options(short_options, long_options);
 
     /* parse the options */
@@ -136,7 +136,7 @@ void ArgsParser::print_usage(std::ostream& stream, const char* argv0) {
     if ( !m_options.empty() )
         stream << "\nOptions:\n";
     for ( auto& option : m_options ) {
-        std::stringstream ss;
+        std::stringstream ss{};
 
         auto print_argument = [&]() {
             if ( !option.m_value_name.empty() ) {
@@ -191,15 +191,15 @@ void ArgsParser::add_option(bool&       value,
                             const char* help_message,
                             const char* long_name,
                             char        short_name) {
-    auto option = Option{ false,
-                          std::string_view{ help_message },
-                          std::string_view{ long_name },
-                          short_name,
-                          std::string_view{},
-                          [&value](const char* raw_str) {
-                              value= !raw_str;
-                              return value;
-                          } };
+    Option option{ false,
+                   std::string_view{ help_message },
+                   std::string_view{ long_name },
+                   short_name,
+                   std::string_view{},
+                   [&value](const char* raw_str) {
+                       value = !raw_str;
+                       return value;
+                   } };
     add_option(std::move(option));
 }
 
@@ -208,15 +208,15 @@ void ArgsParser::add_option(std::string& value,
                             const char*  long_name,
                             char         short_name,
                             const char*  value_name) {
-    auto option = Option{ true,
-                          std::string_view{ help_message },
-                          std::string_view{ long_name },
-                          short_name,
-                          std::string_view{ value_name },
-                          [&value](const char* raw_str) {
-                              value= raw_str;
-                              return true;
-                          } };
+    Option option{ true,
+                   std::string_view{ help_message },
+                   std::string_view{ long_name },
+                   short_name,
+                   std::string_view{ value_name },
+                   [&value](const char* raw_str) {
+                       value = raw_str;
+                       return true;
+                   } };
     add_option(std::move(option));
 }
 
@@ -225,15 +225,15 @@ void ArgsParser::add_option(u32&        value,
                             const char* long_name,
                             char        short_name,
                             const char* value_name) {
-    auto option = Option{ true,
-                          std::string_view{ help_message },
-                          std::string_view{ long_name },
-                          short_name,
-                          std::string_view{ value_name },
-                          [&value](const char* raw_str) {
-                              value= static_cast<u32>(std::strtol(raw_str, nullptr, 10));
-                              return true;
-                          } };
+    Option option{ true,
+                   std::string_view{ help_message },
+                   std::string_view{ long_name },
+                   short_name,
+                   std::string_view{ value_name },
+                   [&value](const char* raw_str) {
+                       value = static_cast<u32>(std::strtol(raw_str, nullptr, 10));
+                       return true;
+                   } };
     add_option(std::move(option));
 }
 
@@ -242,15 +242,15 @@ void ArgsParser::add_option(i32&        value,
                             const char* long_name,
                             char        short_name,
                             const char* value_name) {
-    auto option = Option{ true,
-                          std::string_view{ help_message },
-                          std::string_view{ long_name },
-                          short_name,
-                          std::string_view{ value_name },
-                          [&value](const char* raw_str) {
-                              value= static_cast<i32>(std::strtol(raw_str, nullptr, 10));
-                              return true;
-                          } };
+    Option option{ true,
+                   std::string_view{ help_message },
+                   std::string_view{ long_name },
+                   short_name,
+                   std::string_view{ value_name },
+                   [&value](const char* raw_str) {
+                       value = static_cast<i32>(std::strtol(raw_str, nullptr, 10));
+                       return true;
+                   } };
     add_option(std::move(option));
 }
 
@@ -262,14 +262,14 @@ void ArgsParser::add_positional_argument(std::string& value,
                                          const char*  help_message,
                                          const char*  name,
                                          bool         is_required) {
-    auto positional_arg = PositionalArgument{ std::string_view{ help_message },
-                                              std::string_view{ name },
-                                              static_cast<u32>(is_required ? 1 : 0),
-                                              1,
-                                              [&value](const char* raw_str) {
-                                                  value= raw_str;
-                                                  return true;
-                                              } };
+    PositionalArgument positional_arg{ std::string_view{ help_message },
+                                       std::string_view{ name },
+                                       static_cast<u32>(is_required ? 1 : 0),
+                                       1,
+                                       [&value](const char* raw_str) {
+                                           value = raw_str;
+                                           return true;
+                                       } };
     add_positional_argument(std::move(positional_arg));
 }
 
@@ -277,15 +277,15 @@ void ArgsParser::add_positional_argument(u32&        value,
                                          const char* help_message,
                                          const char* name,
                                          bool        is_required) {
-    auto positional_arg
-        = PositionalArgument{ std::string_view{ help_message },
-                              std::string_view{ name },
-                              static_cast<u32>(is_required ? 1 : 0),
-                              1,
-                              [&value](const char* raw_str) {
-                                  value = static_cast<u32>(std::strtol(raw_str, nullptr, 10));
-                                  return true;
-                              } };
+    PositionalArgument positional_arg{ std::string_view{ help_message },
+                                       std::string_view{ name },
+                                       static_cast<u32>(is_required ? 1 : 0),
+                                       1,
+                                       [&value](const char* raw_str) {
+                                           value = static_cast<u32>(
+                                               std::strtol(raw_str, nullptr, 10));
+                                           return true;
+                                       } };
     add_positional_argument(std::move(positional_arg));
 }
 
@@ -293,15 +293,15 @@ void ArgsParser::add_positional_argument(i32&        value,
                                          const char* help_message,
                                          const char* name,
                                          bool        is_required) {
-    auto positional_arg
-        = PositionalArgument{ std::string_view{ help_message },
-                              std::string_view{ name },
-                              static_cast<u32>(is_required ? 1 : 0),
-                              1,
-                              [&value](const char* raw_str) {
-                                  value = static_cast<i32>(std::strtol(raw_str, nullptr, 10));
-                                  return true;
-                              } };
+    PositionalArgument positional_arg{ std::string_view{ help_message },
+                                       std::string_view{ name },
+                                       static_cast<u32>(is_required ? 1 : 0),
+                                       1,
+                                       [&value](const char* raw_str) {
+                                           value = static_cast<i32>(
+                                               std::strtol(raw_str, nullptr, 10));
+                                           return true;
+                                       } };
     add_positional_argument(std::move(positional_arg));
 }
 
@@ -309,31 +309,34 @@ void ArgsParser::add_positional_argument(std::vector<std::string>& value,
                                          const char*               help_message,
                                          const char*               name,
                                          bool                      is_required) {
-    auto positional_arg = PositionalArgument{ std::string_view{ help_message },
-                                              std::string_view{ name },
-                                              static_cast<u32>(is_required ? 1 : 0),
-                                              INT32_MAX,
-                                              [&value](const char* raw_str) {
-                                                  value.emplace_back(raw_str);
-                                                  return true;
-                                              } };
+    PositionalArgument positional_arg{ std::string_view{ help_message },
+                                       std::string_view{ name },
+                                       static_cast<u32>(is_required ? 1 : 0),
+                                       INT32_MAX,
+                                       [&value](const char* raw_str) {
+                                           value.emplace_back(raw_str);
+                                           return true;
+                                       } };
     add_positional_argument(std::move(positional_arg));
 }
 
 void ArgsParser::construct_getopt_options(std::string&         short_options,
                                           std::vector<option>& long_options) {
+    static const option null_longopt{ nullptr, 0, nullptr, 0 };
+
     if ( m_stop_on_first_non_option )
         short_options += '+';
 
     /* construct the short and long options for the getopt */
-    auto index = 0;
+    int index = 0;
     for ( auto& opt : m_options ) {
         /* construct the long option */
         if ( !opt.m_long_name.empty() ) {
-            long_options.push_back({ opt.m_long_name.data(),
-                                     opt.m_requires_argument ? required_argument : no_argument,
-                                     &m_long_option_index,
-                                     index++ });
+            option custom_longopt{ opt.m_long_name.data(),
+                                   opt.m_requires_argument ? required_argument : no_argument,
+                                   &m_long_option_index,
+                                   index++ };
+            long_options.push_back(custom_longopt);
         }
 
         /* construct the short option */
@@ -343,7 +346,7 @@ void ArgsParser::construct_getopt_options(std::string&         short_options,
                 short_options += ':';
         }
     }
-    long_options.push_back({ nullptr, 0, nullptr, 0 });
+    long_options.push_back(null_longopt);
 }
 
 bool ArgsParser::parse_options(int                  argc,
@@ -388,7 +391,7 @@ bool ArgsParser::parse_options(int                  argc,
 bool ArgsParser::count_cli_positional_arguments(int argc, u32 values_count_for_arg[]) {
     /* parse positional arguments */
     auto cli_args_left         = argc - optind;
-    auto total_values_required = 0U;
+    u32  total_values_required = 0;
     for ( auto i = 0; i < m_positional_args.size(); ++i ) {
         auto& positional_arg = m_positional_args[i];
 

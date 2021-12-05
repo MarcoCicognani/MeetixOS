@@ -25,13 +25,13 @@ Directory::Entry::Entry(const std::string& path, FsDirectoryEntry* entry)
     : m_node_id{ entry->m_node_id }
     , m_node_type{ entry->m_node_type }
     , m_name{ entry->m_name } {
-    std::stringstream ss;
+    std::stringstream ss{};
     ss << path << '/' << m_name;
     m_full_path = ss.str();
 }
 
 std::string Directory::Entry::as_string() const {
-    std::stringstream ss;
+    std::stringstream ss{};
 
     /* print type */
     ss << std::setw(WIDTH_TYPE) << std::setfill(' ') << type_str_by_type() << ' ';
@@ -62,11 +62,11 @@ void Directory::Entry::compose_size(std::stringstream& ss) const {
     ss << ' ' << std::setw(WIDTH_SIZE) << std::setfill(' ');
 
     /* open the file */
-    FsOpenStatus open_status;
+    FsOpenStatus open_status{};
     auto         file_handle = s_open_fs(m_full_path.c_str(), FILE_FLAG_MODE_READ, &open_status);
     if ( open_status == FS_OPEN_SUCCESSFUL ) {
         /* obtain the length in bytes of the file */
-        FsLengthStatus len_status;
+        FsLengthStatus len_status{};
         auto           file_len = s_length_s(file_handle, &len_status);
         if ( len_status == FS_LENGTH_SUCCESSFUL ) {
             /* print out the value formatted */

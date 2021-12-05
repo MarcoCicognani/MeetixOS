@@ -20,10 +20,10 @@
 #define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    auto src_path = std::string{};
-    auto dst_path = std::string{};
+    std::string src_path{};
+    std::string dst_path{};
 
-    auto args_parser = Utils::ArgsParser{ "Copy Utility", V_MAJOR, V_MINOR, V_PATCH };
+    Utils::ArgsParser args_parser{ "Copy Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_positional_argument(src_path, "Source file to copy", "SourcePath");
     args_parser.add_positional_argument(dst_path, "Destination file", "DestinationPath");
 
@@ -31,14 +31,14 @@ int main(int argc, const char** argv) {
     args_parser.parse(argc, argv);
 
     /* open the source file to copy */
-    auto src_stream = std::ifstream{ src_path };
+    std::ifstream src_stream{ src_path };
     if ( !src_stream.is_open() ) {
         std::cerr << "Failed to open '" << src_path << "'" << std::endl;
         return EXIT_FAILURE;
     }
 
     /* open or create the destination file */
-    auto dst_stream = std::ofstream{ dst_path };
+    std::ofstream dst_stream{ dst_path };
     if ( !dst_stream.is_open() ) {
         std::cerr << "Failed to open '" << dst_path << "'" << std::endl;
         return EXIT_FAILURE;

@@ -42,21 +42,22 @@ int main(int argc, const char** argv) {
 }
 
 void Terminal::OutputRoutineThread::run() {
+    constexpr usize BUFFER_LEN = 1024;
+
     StreamControlStatus status;
 
     FsReadStatus read_status;
-    auto         buffer_len  = 1024;
-    auto         buffer      = new char[buffer_len];
+    Local        buffer{ new char[BUFFER_LEN] };
     auto         output_pipe = m_is_error ? m_terminal->m_shell_err : m_terminal->m_shell_out;
     while ( true ) {
         /* read from the  */
-        auto read_bytes = s_read_s(output_pipe, buffer, buffer_len, &read_status);
+        auto read_bytes = s_read_s(output_pipe, buffer(), BUFFER_LEN, &read_status);
         if ( read_status == FS_READ_SUCCESSFUL ) {
             Tasking::LockGuard lock_guard{ m_terminal->m_screen_lock };
 
             /* write the output */
             for ( auto i = 0; i < read_bytes; i++ )
-                m_terminal->process_output_character(status, m_is_error, buffer[i]);
+                m_terminal->process_output_character(status, m_is_error, buffer()[i]);
         } else
             break;
     }
@@ -395,7 +396,7 @@ bool Terminal::shell_is_alive() const {
 }
 
 int Terminal::input_routine() {
-    std::string buffer;
+    std::string buffer{};
     while ( shell_is_alive() ) {
         auto read_input = m_screen->read_input();
 

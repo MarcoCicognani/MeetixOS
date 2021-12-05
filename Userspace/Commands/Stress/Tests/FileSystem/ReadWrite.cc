@@ -10,9 +10,20 @@
  * GNU General Public License version 3
  */
 
-#include "ShellInspector.hh"
+#include "Tests/FileSystem/ReadWrite.hh"
 
-std::string ShellInspector::inspection() {
-    /* TODO when shell language will be supported check syntax here */
-    return { "MeetiX Shell script file\n" };
+namespace FileSystem {
+
+ReadWrite::ReadWrite(bool is_verbose)
+    : Test{ is_verbose } {
 }
+
+bool ReadWrite::run() {
+    return false;
+}
+
+const char* ReadWrite::name() const {
+    return nullptr;
+}
+
+} /* namespace FileSystem */

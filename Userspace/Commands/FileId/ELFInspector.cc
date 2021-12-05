@@ -16,11 +16,11 @@
 #include <sstream>
 
 std::string ELFInspector::inspection() {
-    Elf32Ehdr elf_hdr;
+    Elf32Ehdr elf_hdr{};
     m_stream.seekg(0, std::ifstream::beg);
     m_stream.read(reinterpret_cast<char*>(&elf_hdr), sizeof(Elf32Ehdr));
 
-    std::stringstream ss;
+    std::stringstream ss{};
     ss << "ELF Object\n";
     ss << "\tType: ";
     switch ( elf_hdr.e_type ) {

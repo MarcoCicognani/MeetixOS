@@ -19,7 +19,7 @@
 #include <cstring>
 
 Inspector* Inspector::inspector_for_file(std::ifstream& stream) {
-    char header[10];
+    char header[10]{ '\0' };
     stream.read(header, 10);
 
     auto text_checker = [](auto value) {

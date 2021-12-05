@@ -17,16 +17,16 @@
 #include <iostream>
 #include <string_view>
 
-int inspect_amd(int argc, char** argv) {
+int inspect_amd(int argc, const char** argv) {
     std::cout << "AMD Specific Features:";
 
-    usize extended, eax, ebx, ecx, edx, unused, family, model, stepping, reserved;
+    usize extended, eax, ebx, ecx, edx, unused;
     CPU_ID(1, eax, unused, unused, unused);
 
-    model    = (eax >> 4) & 0xf;
-    family   = (eax >> 8) & 0xf;
-    stepping = eax & 0xf;
-    reserved = eax >> 12;
+    usize model    = (eax >> 4) & 0xf;
+    usize family   = (eax >> 8) & 0xf;
+    usize stepping = eax & 0xf;
+    usize reserved = eax >> 12;
 
     std::cout << "Family " << family << " Model: " << model << " [";
     switch ( family ) {

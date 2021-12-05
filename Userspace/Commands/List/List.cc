@@ -53,8 +53,9 @@ int main(int argc, const char** argv) {
     /* read the current working directory */
     std::string work_dir{};
     {
-        Local<char> work_dir_buffer{ new char[PATH_MAX] };
-        auto        work_dir_status = s_get_working_directory(work_dir_buffer());
+        Local work_dir_buffer{ new char[PATH_MAX] };
+
+        auto work_dir_status = s_get_working_directory(work_dir_buffer());
         if ( work_dir_status != GET_WORKING_DIRECTORY_SUCCESSFUL ) {
             std::cerr << "Failed to obtain current working directory\n";
             return EXIT_FAILURE;
@@ -73,7 +74,7 @@ int main(int argc, const char** argv) {
         /* absolute the path to list */
         std::string dir_to_list{};
         if ( !dir.starts_with('/') ) {
-            std::stringstream ss;
+            std::stringstream ss{};
             ss << work_dir << '/' << dir;
             dir_to_list = ss.str();
         } else

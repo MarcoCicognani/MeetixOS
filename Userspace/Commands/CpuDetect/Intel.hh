@@ -14,7 +14,4 @@
 
 #define INTEL_MAGIC_CODE 0x756e6547
 
-/**
- * @brief Inspects the INTEL architecture and prints on stdout many information
- */
-int inspect_intel(int argc, char** argv);
+int inspect_intel(int argc, const char** argv);

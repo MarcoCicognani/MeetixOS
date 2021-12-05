@@ -28,7 +28,7 @@
 #define WIDTH_PATH  40
 
 int main(int argc, const char** argv) {
-    bool hide_mem_usage_bar{ false };
+    bool hide_mem_usage_bar = false;
 
     Utils::ArgsParser args_parser{ "List Executing Processes Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_option(hide_mem_usage_bar,
@@ -52,17 +52,17 @@ int main(int argc, const char** argv) {
     std::cout << '\n';
 
     auto size_value = [](usize value) {
-        char mult{ 'K' };
+        char multiplier = 'K';
         if ( value >= 1024 * 1024 ) {
-            value = value / 1024 / 1024;
-            mult  = 'G';
+            value      = value / 1024 / 1024;
+            multiplier = 'G';
         } else if ( value >= 1024 ) {
-            value = value / 1024;
-            mult  = 'M';
+            value      = value / 1024;
+            multiplier = 'M';
         }
 
-        std::stringstream ss;
-        ss << value << mult;
+        std::stringstream ss{};
+        ss << value << multiplier;
         return ss.str();
     };
 

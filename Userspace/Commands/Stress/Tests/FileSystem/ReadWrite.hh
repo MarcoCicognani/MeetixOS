@@ -10,9 +10,20 @@
  * GNU General Public License version 3
  */
 
-#include "ShellInspector.hh"
+#pragma once
 
-std::string ShellInspector::inspection() {
-    /* TODO when shell language will be supported check syntax here */
-    return { "MeetiX Shell script file\n" };
-}
+#include "Tests/Test.hh"
+
+namespace FileSystem {
+
+class ReadWrite : public Test {
+public:
+    explicit ReadWrite(bool is_verbose);
+
+protected:
+    bool run() override;
+
+    [[nodiscard]] const char* name() const override;
+};
+
+} /* namespace FileSystem */

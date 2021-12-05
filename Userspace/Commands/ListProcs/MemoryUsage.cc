@@ -25,7 +25,7 @@ std::string memory_usage_bar() {
     SystemInfo system_info{};
     s_system_info(&system_info);
 
-    std::stringstream ss;
+    std::stringstream ss{};
     ss << MEMORY_USAGE_HEADER;
 
     /* calculate the available shell width for the bar */
@@ -44,8 +44,8 @@ std::string memory_usage_bar() {
     }
 
     /* divide the sizes to the nearest multiplier */
-    char  multiplier{ 'K' };
-    usize total_mem{ system_info.m_memory_total_amount };
+    char  multiplier = 'K';
+    usize total_mem  = system_info.m_memory_total_amount;
     if ( used_mem >= 1024 * 1024 ) {
         used_mem   = used_mem / 1024 / 1024;
         total_mem  = total_mem / 1024 / 1024;

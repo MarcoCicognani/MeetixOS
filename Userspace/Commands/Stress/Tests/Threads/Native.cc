@@ -10,9 +10,20 @@
  * GNU General Public License version 3
  */
 
-#include "ShellInspector.hh"
+#include "Tests/Threads/Native.hh"
 
-std::string ShellInspector::inspection() {
-    /* TODO when shell language will be supported check syntax here */
-    return { "MeetiX Shell script file\n" };
+namespace Threads {
+
+Native::Native(bool is_verbose)
+    : Test{ is_verbose } {
 }
+
+bool Native::run() {
+    return false;
+}
+
+const char* Native::name() const {
+    return nullptr;
+}
+
+} /* namespace Threads */

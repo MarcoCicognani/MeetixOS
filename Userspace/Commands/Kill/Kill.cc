@@ -21,22 +21,22 @@
 #define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    auto target_thread_id = Tid{ -1 };
+    Tid              target_thread_id = -1;
+    std::string_view task_type{ "Thread" };
 
-    auto args_parser = Utils::ArgsParser{ "Kill Utility", V_MAJOR, V_MINOR, V_PATCH };
+    Utils::ArgsParser args_parser{ "Kill Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_positional_argument(target_thread_id, "Thread/Process ID", "TargetID");
 
     /* parse the arguments */
     args_parser.parse(argc, argv);
 
     /* obtain the pid of the process */
-    auto task_type      = std::string_view{ "Thread" };
     auto target_proc_id = s_get_pid_for_tid(target_thread_id);
     if ( target_proc_id == target_thread_id )
-        task_type = std::string_view{ "Process" };
+        task_type = "Process";
 
     /* obtain the task name */
-    auto task_name = Local{ new char[STRING_IDENTIFIER_MAX_LENGTH] };
+    Local task_name{ new char[STRING_IDENTIFIER_MAX_LENGTH] };
     s_get_task_identifier(target_thread_id, task_name());
 
     std::cout << task_type << " '" << task_name() << "':" << target_thread_id << ": ";

@@ -21,10 +21,10 @@
 #define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    auto msg_title   = std::string{};
-    auto msg_content = std::string{};
+    std::string msg_title{};
+    std::string msg_content{};
 
-    auto args_parser = Utils::ArgsParser{ "GUI Notificator Utility", V_MAJOR, V_MINOR, V_PATCH };
+    Utils::ArgsParser args_parser{ "GUI Notificator Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_positional_argument(msg_title, "Title of the message", "Title", true);
     args_parser.add_positional_argument(msg_content, "Content of the message", "Message", true);
 

@@ -10,9 +10,20 @@
  * GNU General Public License version 3
  */
 
-#include "ShellInspector.hh"
+#include "Tests/Memory/Heap.hh"
 
-std::string ShellInspector::inspection() {
-    /* TODO when shell language will be supported check syntax here */
-    return { "MeetiX Shell script file\n" };
+namespace Memory {
+
+Heap::Heap(bool is_verbose)
+    : Test{ is_verbose } {
 }
+
+bool Heap::run() {
+    return false;
+}
+
+const char* Heap::name() const {
+    return nullptr;
+}
+
+} /* namespace Memory */

@@ -14,7 +14,4 @@
 
 #define AMD_MAGIC_CODE 0x68747541
 
-/**
- * @brief Inspects the AMD architecture and prints on stdout many information
- */
-int inspect_amd(int argc, char** argv);
+int inspect_amd(int argc, const char** argv);

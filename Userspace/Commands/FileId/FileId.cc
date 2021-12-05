@@ -22,9 +22,9 @@
 #define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    auto files_paths = std::vector<std::string>{};
+    std::vector<std::string> files_paths{};
 
-    auto args_parser = Utils::ArgsParser{ "File Classifier Utility", V_MAJOR, V_MINOR, V_PATCH };
+    Utils::ArgsParser args_parser{ "File Classifier Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_positional_argument(files_paths,
                                         "Files to inspect and classify",
                                         "FileToInspect",
@@ -37,7 +37,7 @@ int main(int argc, const char** argv) {
         std::cout << file_path << ": ";
 
         /* open the file-stream */
-        auto file_stream = std::ifstream{ file_path };
+        std::ifstream file_stream{ file_path };
         if ( !file_stream.is_open() ) {
             std::cerr << "Error: file '" << file_path << "' does not exists\n";
             continue;
