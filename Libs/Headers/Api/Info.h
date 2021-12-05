@@ -67,7 +67,7 @@ typedef struct {
     u8  m_class_code;
     u8  m_subclass_code;
     u8  m_program;
-} A_PACKED PciDeviceHeader;
+} A_PACKED PCIDeviceHeader;
 
 /**
  * @brief Get process count data

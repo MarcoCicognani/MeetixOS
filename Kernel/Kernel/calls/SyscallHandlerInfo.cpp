@@ -90,7 +90,7 @@ SYSCALL_HANDLER(getPciDeviceCount) {
  * Returns the pci device descriptor by the id provided
  */
 SYSCALL_HANDLER(getPciDevice) {
-    PciDeviceHeader* data      = (PciDeviceHeader*)SYSCALL_DATA(currentThread->cpuState);
+    PCIDeviceHeader* data      = (PCIDeviceHeader*)SYSCALL_DATA(currentThread->cpuState);
     PciHeader*       pciHeader = Pci::getDeviceAt(data->m_list_pos);
     data->m_is_valid           = false;
 

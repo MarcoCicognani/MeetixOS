@@ -1028,7 +1028,7 @@ usize s_get_pci_device_count();
  * @param header:		a pointer to a valid {PciDeviceHeader} header
  * @return whether the operation success
  */
-bool s_get_pci_device(usize position, PciDeviceHeader* header);
+bool s_get_pci_device(usize position, PCIDeviceHeader* header);
 
 /**
  * @brief Fills the given <DateTime> with the current date-time

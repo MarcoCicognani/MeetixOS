@@ -10,14 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <Api/User.h>
+#pragma once
 
-bool s_get_pci_device(usize position, PCIDeviceHeader* header) {
-    if ( header ) {
-        header->m_list_pos = position;
-        do_syscall(SYSCALL_GET_PCI_DEVICE, (usize)header);
+#include <cstdint>
 
-        return header->m_is_valid;
-    }
-    return false;
-}
+int list_pci_devices();

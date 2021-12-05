@@ -1,36 +1,36 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * *
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                                    *
- *                                                                                     *
- *         DERIVED FROM THE GHOST OPERATING SYSTEM                                     *
- *         This software is derived from the Ghost operating system project,           *
- *         written by Max Schlüssel <lokoxe@gmail.com>. Copyright 2012-2017            *
- *         https://ghostkernel.org/                                                    *
- *         https://github.com/maxdev1/ghost                                            *
- *                                                                                     *
- * This program is free software; you can redistribute it and/or                       *
- * modify it under the terms of the GNU General Public License                         *
- * as published by the Free Software Foundation; either version 2                      *
- * of the License, or (char *argumentat your option) any later version.                *
- *                                                                                     *
- * This program is distributed in the hope that it will be useful,                     *
- * but WITHout ANY WARRANTY; without even the implied warranty of                      *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                       *
- * GNU General Public License for more details.                                        *
- *                                                                                     *
- * You should have received a copy of the GNU General Public License                   *
- * along with this program; if not, write to the Free Software                         *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
-#include "list.h"
+#include "List.hh"
 
 #include <Api/Info.h>
-#include <stdio.h>
+#include <iomanip>
+#include <iostream>
 
-/**
- * Table of definitions
- */
-PCIClassMapping PCI_CLASSCODE_MAPPINGS[] = {
+#define WIDTH_BUS       6
+#define WIDTH_SLOT      6
+#define WIDTH_FUNC      6
+#define WIDTH_VENDOR    5
+#define WIDTH_DEV_ID    5
+#define WIDTH_CLASS     28
+#define WIDTH_SUB_CLASS 28
+
+static constexpr struct PCIClassMapping {
+    u8          m_class_code;
+    u8          m_subclass_code;
+    u8          m_program_if;
+    const char* m_class_name;
+    const char* m_subclass_name;
+} PCI_CLASS_CODE_MAPPINGS[] = {
     { 0x00, 0x00, 0x00, "Other pre-2.0 device", "Other" },
     { 0x00, 0x01, 0x00, "Other pre-2.0 device", "VGA Compatible" },
 
@@ -203,122 +203,71 @@ PCIClassMapping PCI_CLASSCODE_MAPPINGS[] = {
     { 0xFF, 0x00, 0x00, "Unknown", "Unknown device" }
 };
 
-/**
- *
- */
-int pciList() {
-    // read how many devices there are
-    uint32_t count = s_get_pci_device_count();
-    if ( !count ) {
-        fprintf(stderr, "failed to query the kernel for the number of PCI devices");
-        return 1;
+int list_pci_devices() {
+    /* obtain devices count */
+    auto dev_count = s_get_pci_device_count();
+    if ( !dev_count ) {
+        std::cerr << "Failed to query the kernel for the number of PCI devices\n";
+        return EXIT_FAILURE;
     }
 
-    // list devices
-    printf("Found %i PCI devices\n", count);
+    /* list the devices */
+    std::cout << "Found " << dev_count << " PCI devices\n";
+    std::cout << std::setw(WIDTH_BUS) << std::left << "B.";
+    std::cout << std::setw(WIDTH_SLOT) << std::left << "S.";
+    std::cout << std::setw(WIDTH_FUNC) << std::left << "F.";
+    std::cout << std::setw(WIDTH_VENDOR) << std::left << "Ven.";
+    std::cout << std::setw(WIDTH_DEV_ID) << std::left << "Dev.";
+    std::cout << std::setw(WIDTH_CLASS) << std::left << "Class";
+    std::cout << std::setw(WIDTH_SUB_CLASS) << std::left << "SubClass";
+    std::cout << '\n';
 
-    // tables top line
-    printf("\xDA");
-    printf("\xC4\xC4\xC4\xC4");
-    printf("\xC2");
-    printf("\xC4\xC4\xC4\xC4");
-    printf("\xC2");
-    printf("\xC4\xC4\xC4\xC4");
-    printf("\xC2");
-    printf("\xC4\xC4\xC4\xC4\xC4\xC4");
-    printf("\xC2");
-    printf("\xC4\xC4\xC4\xC4\xC4\xC4");
-    printf("\xC2");
-    printf("\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4"
-           "\xC4\xC4\xC4");
-    printf("\xC2");
-    printf("\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4"
-           "\xC4\xC4\xC4");
-    printf("\xBF");
-
-    printf("\xB3 B. \xB3 S. \xB3 F. \xB3 Ven. \xB3 Dev. \xB3 Class                  \xB3 Subclass  "
-           "             \xB3");
-
-    printf("\xC3");
-    printf("\xC4\xC4\xC4\xC4");
-    printf("\xC5");
-    printf("\xC4\xC4\xC4\xC4");
-    printf("\xC5");
-    printf("\xC4\xC4\xC4\xC4");
-    printf("\xC5");
-    printf("\xC4\xC4\xC4\xC4\xC4\xC4");
-    printf("\xC5");
-    printf("\xC4\xC4\xC4\xC4\xC4\xC4");
-    printf("\xC5");
-    printf("\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4"
-           "\xC4\xC4\xC4");
-    printf("\xC5");
-    printf("\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4"
-           "\xC4\xC4\xC4");
-    printf("\xB4");
-
-    for ( uint32_t pos = 0; pos < count; pos++ ) {
-        PciDeviceHeader hdr;
-        if ( !s_get_pci_device(pos, &hdr) ) {
-            fprintf(stderr, "failed to query the kernel for PCI devices %i", pos);
-            return 1;
+    for ( auto pos = 0; pos < dev_count; ++pos ) {
+        /* obtain the next PciDeviceHeader */
+        PCIDeviceHeader pci_device_header{};
+        auto            pci_device_status = s_get_pci_device(pos, &pci_device_header);
+        if ( !pci_device_status ) {
+            std::cerr << "Failed to query the kernel for PCI device n" << pos;
+            return EXIT_FAILURE;
         }
 
-        // find the matching entry
-        PCIClassMapping* matchingEntry         = 0;
-        PCIClassMapping* matchingNoProgifEntry = 0;
-        for ( int i = 0; i < sizeof(PCI_CLASSCODE_MAPPINGS) / sizeof(PCIClassMapping); i++ ) {
-            PCIClassMapping* table = &PCI_CLASSCODE_MAPPINGS[i];
-            if ( table->classCode == hdr.m_class_code && table->subclassCode == hdr.m_subclass_code
-                 && table->progIf == hdr.m_program ) {
-                matchingEntry = table;
+        /* find the matching entry */
+        PCIClassMapping* matching_entry           = nullptr;
+        PCIClassMapping* matching_no_progif_entry = nullptr;
+        for ( auto& class_mapping : PCI_CLASS_CODE_MAPPINGS ) {
+            if ( class_mapping.m_class_code == pci_device_header.m_class_code
+                 && class_mapping.m_subclass_code == pci_device_header.m_subclass_code
+                 && class_mapping.m_program_if == pci_device_header.m_program ) {
+                matching_entry = const_cast<PCIClassMapping*>(&class_mapping);
                 break;
-
-            } else if ( table->classCode == hdr.m_class_code
-                        && table->subclassCode == hdr.m_subclass_code ) {
-                matchingNoProgifEntry = table;
+            } else if ( class_mapping.m_class_code == pci_device_header.m_class_code
+                        && class_mapping.m_subclass_code == pci_device_header.m_subclass_code ) {
+                matching_no_progif_entry = const_cast<PCIClassMapping*>(&class_mapping);
                 break;
             }
         }
 
-        const char* className    = "?";
-        const char* subclassName = "?";
-        if ( matchingEntry != 0 ) {
-            className    = matchingEntry->className;
-            subclassName = matchingEntry->subclassName;
-
+        std::string_view class_name{ "Unknown" };
+        std::string_view subclass_name{ "Unknown" };
+        if ( matching_entry ) {
+            class_name    = matching_entry->m_class_name;
+            subclass_name = matching_entry->m_subclass_name;
+        } else if ( matching_no_progif_entry ) {
+            class_name    = matching_no_progif_entry->m_class_name;
+            subclass_name = matching_no_progif_entry->m_subclass_name;
         }
 
-        else if ( matchingNoProgifEntry ) {
-            className    = matchingNoProgifEntry->className;
-            subclassName = matchingNoProgifEntry->subclassName;
-        }
-        printf("\xB3 %02x \xB3 %02x \xB3 %02x \xB3 %04x \xB3 %04x \xB3 %.22s \xB3 %.22s \xB3",
-               hdr.m_dev_bus,
-               hdr.m_dev_slot,
-               hdr.m_dev_function,
-               hdr.m_vendor_id,
-               hdr.m_device_id,
-               className,
-               subclassName);
+        std::cout << std::setfill(' ');
+        std::cout << std::hex << std::setw(WIDTH_BUS) << std::left << pci_device_header.m_dev_bus;
+        std::cout << std::hex << std::setw(WIDTH_SLOT) << std::left << pci_device_header.m_dev_slot;
+        std::cout << std::hex << std::setw(WIDTH_FUNC) << std::left
+                  << pci_device_header.m_dev_function;
+        std::cout << std::hex << std::setw(WIDTH_VENDOR) << std::left
+                  << pci_device_header.m_vendor_id;
+        std::cout << std::hex << std::setw(WIDTH_DEV_ID) << std::left
+                  << pci_device_header.m_device_id;
+        std::cout << std::setw(WIDTH_CLASS) << class_name;
+        std::cout << std::setw(WIDTH_SUB_CLASS) << subclass_name << std::endl;
     }
-
-    // bottom line
-    printf("\xC0");
-    printf("\xC4\xC4\xC4\xC4");
-    printf("\xC1");
-    printf("\xC4\xC4\xC4\xC4");
-    printf("\xC1");
-    printf("\xC4\xC4\xC4\xC4");
-    printf("\xC1");
-    printf("\xC4\xC4\xC4\xC4\xC4\xC4");
-    printf("\xC1");
-    printf("\xC4\xC4\xC4\xC4\xC4\xC4");
-    printf("\xC1");
-    printf("\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4"
-           "\xC4\xC4\xC4");
-    printf("\xC1");
-    printf("\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4"
-           "\xC4\xC4\xC4");
-    printf("\xD9");
+    return EXIT_SUCCESS;
 }
