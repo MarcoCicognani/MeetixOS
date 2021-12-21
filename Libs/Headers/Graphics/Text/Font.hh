@@ -30,8 +30,7 @@ public:
     /**
      * @brief Font styles
      */
-    enum class Style : u8
-    {
+    enum class Style : u8 {
         NORMAL,
         ITALIC,
         BOLD
@@ -71,13 +70,13 @@ public:
     }
 
 private:
-    u8*                m_data;
-    std::string        m_name;
-    Style              m_font_style;
-    FT_Face            m_freetype_face;
-    cairo_font_face_t* m_cairo_font_face;
-    usize              m_active_size;
-    bool               m_is_loaded;
+    u8*                m_data{ nullptr };
+    std::string        m_name{};
+    Style              m_font_style{ Style::NORMAL };
+    FT_Face            m_freetype_face{};
+    cairo_font_face_t* m_cairo_font_face{ nullptr };
+    usize              m_active_size{ 0 };
+    bool               m_is_loaded{ false };
 };
 
 } /* namespace Graphics::Text */

@@ -47,41 +47,56 @@ int main(int argc, const char** argv) {
     SystemInfo sys_info{};
     s_system_info(&sys_info);
 
-    std::cout << "\033[32m";
-    std::cout << R"(  __  __           _   ___   __)" << '\n';
-    std::cout << R"( |  \/  |         | | (_) \ / /)" << '\n';
-    std::cout << R"( | \  / | ___  ___| |_ _ \ V / )" << '\n';
-    std::cout << R"( | |\/| |/ _ \/ _ \ __| | > <  )" << '\n';
-    std::cout << R"( | |  | |  __/  __/ |_| |/ . \ )" << '\n';
-    std::cout << R"( |_|  |_|\___|\___|\__|_/_/ \_\)" << '\n';
+    std::cout << "\033[32m\n";
+    std::cout << "                           *************" << '\n';
+    std::cout << "                 ***********************" << '\n';
+    std::cout << "          ******************************" << '\n';
+    std::cout << "     *\033[0m@@@@@\033[32m******\033[0m@@@@\033[32m*******************" << '\n';
+    std::cout << "  ****\033[0m@@@*\033[0m@@\033[32m****\033[0m@@@@@\033[32m******\033[0m@@@@@@@@@\033[32m****" << '\n';
+    std::cout << " *****\033[0m@@@\033[32m**\033[0m@@\033[32m**\033[0m@@\033[32m*\033[0m@@@\033[32m****\033[0m@@@\033["
+                 "32m*******\033[0m@@@\033[32m**"
+              << '\n';
+    std::cout << "******\033[0m@@@\033[32m***\033[0m@@@@\033[32m**\033[0m@@@\033[32m****\033[0m@@@@"
+                 "@@@@@@@@@\033[32m**"
+              << '\n';
+    std::cout << " *****\033[0m@@@\033[32m****\033[0m@@\033[32m***\033[0m@@@\033[32m****\033[0m@@"
+                 "\033[32m*************"
+              << '\n';
+    std::cout << "    "
+                 "**\033[0m@@@\033[32m*********\033[0m@@@\033[32m****\033[0m@@@\033[32m*******\033[0m@@@\033[32m**"
+              << '\n';
+    std::cout << "     *\033[0m@@@\033[32m*********\033[0m@@@\033[32m******\033[0m@@@@@@@@@\033[32m****" << '\n';
+    std::cout << "          ******************************" << '\n';
+    std::cout << "                 ***********************" << '\n';
+    std::cout << "                           *************" << '\n';
     std::cout << "\033[0m";
 
-    IO::Shell::instance().move_cursor_up(6);
+    IO::Shell::instance().move_cursor_up(12);
 
     /* print out user@hostname vVERSION */
-    IO::Shell::instance().move_cursor_forward(32);
+    IO::Shell::instance().move_cursor_forward(45);
     std::cout << "\033[32m" << Utils::Environment::logged_user() << "\033[0m@\033[31m";
     std::cout << Utils::Environment::hostname() << "\033[0m v";
     std::cout << Utils::Environment::version() << '\n';
 
     /* print out a separator */
-    IO::Shell::instance().move_cursor_forward(32);
+    IO::Shell::instance().move_cursor_forward(45);
     std::cout << "--------------------------------------\n";
 
     /* print out system name */
-    IO::Shell::instance().move_cursor_forward(32);
+    IO::Shell::instance().move_cursor_forward(45);
     std::cout << "\033[32mOS\033[0m: MeetiX OS\n";
 
     /* print out shell */
-    IO::Shell::instance().move_cursor_forward(32);
+    IO::Shell::instance().move_cursor_forward(45);
     std::cout << "\033[32mShell\033[0m: MxSh (/Bins/MxSh)\n";
 
     /* print out terminal */
-    IO::Shell::instance().move_cursor_forward(32);
+    IO::Shell::instance().move_cursor_forward(45);
     std::cout << "\033[32mTerminal\033[0m: Terminal (/Apps/Terminal/Bin/Terminal)\n";
 
     /* print out loader */
-    IO::Shell::instance().move_cursor_forward(32);
+    IO::Shell::instance().move_cursor_forward(45);
     std::cout << "\033[32mLoader\033[0m: ";
     std::cout << kern_name.m_loader_name << " v";
     std::cout << kern_name.m_loader_major << '.';
@@ -89,7 +104,7 @@ int main(int argc, const char** argv) {
     std::cout << kern_name.m_loader_patch << '\n';
 
     /* print out kernel */
-    IO::Shell::instance().move_cursor_forward(32);
+    IO::Shell::instance().move_cursor_forward(45);
     std::cout << "\033[32mKernel\033[0m: ";
     std::cout << kern_name.m_kernel_name << " v";
     std::cout << kern_name.m_kernel_major << '.';
@@ -98,22 +113,22 @@ int main(int argc, const char** argv) {
     std::cout << kern_name.m_kernel_patch << '\n';
 
     /* print out memory */
-    IO::Shell::instance().move_cursor_forward(32);
+    IO::Shell::instance().move_cursor_forward(45);
     std::cout << "\033[32mMemory\033[0m: ";
     std::cout << size_value(sys_info.m_memory_total_amount - sys_info.m_memory_free_amount) << '/';
     std::cout << size_value(sys_info.m_memory_total_amount) << '\n';
 
     /* print out CPU name */
-    IO::Shell::instance().move_cursor_forward(32);
+    IO::Shell::instance().move_cursor_forward(45);
     std::cout << "\033[32mCPU\033[0m: " << sys_info.m_cpu_vendor << '\n';
 
     /* print out CPU cores count */
-    IO::Shell::instance().move_cursor_forward(32);
+    IO::Shell::instance().move_cursor_forward(45);
     std::cout << "\033[32mCPU Cores\033[0m: " << sys_info.m_cpu_count << '\n';
 
     /* print out colors */
-    IO::Shell::instance().move_cursor_forward(32);
+    IO::Shell::instance().move_cursor_forward(45);
     std::cout << "\033[40m  \033[41m  \033[42m  \033[43m  \033[44m  \033[45m  \033[46m  \033[47m  ";
-    std::cout << "\033[0m\n\n";
+    std::cout << "\033[0m\n\n\n";
     return EXIT_SUCCESS;
 }

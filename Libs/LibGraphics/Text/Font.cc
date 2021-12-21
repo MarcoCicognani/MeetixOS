@@ -21,17 +21,16 @@
 namespace Graphics::Text {
 
 Font::Font(const std::string& name, u8* source, usize len, Style font_style)
-    : m_name{ name }, m_data{ nullptr }, m_freetype_face{ nullptr }, m_is_loaded{ false },
-      m_font_style{ font_style }, m_active_size{ 0 } {
-    /* copy the font source-data into the local data */
-    m_data = source;
-
+    : m_data{ source }
+    , m_name{ name }
+    , m_font_style{ font_style } {
     /* load the freetype2 font-face */
-    auto ft_status = FT_New_Memory_Face(FontManager::instance().freetype_library(),
-                                        m_data,
-                                        static_cast<FT_Long>(len),
-                                        0,
-                                        &m_freetype_face);
+    FT_Error ft_status;
+    ft_status = FT_New_Memory_Face(FontManager::instance().freetype_library(),
+                                   m_data,
+                                   static_cast<FT_Long>(len),
+                                   0,
+                                   &m_freetype_face);
     if ( ft_status ) {
         Utils::log("freetype2 failed at FT_New_Memory_Face with error code %i", ft_status);
         delete m_data;
