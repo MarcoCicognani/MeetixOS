@@ -48,7 +48,7 @@ add_custom_target(repack
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Meta/Boot ${ISO_IMAGE_INSTALL_ROOT}/boot/grub
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Root ${RD_IMAGE_INSTALL_ROOT}
         COMMAND ${CMAKE_COMMAND} -E env TOOLCHAIN_BIN=${TOOLCHAIN_BIN}
-        ${CMAKE_SOURCE_DIR}/Meta/Scripts/Repack.sh --out-dir=${CMAKE_BINARY_DIR}
+        ${CMAKE_SOURCE_DIR}/Meta/Repack.sh --out-dir=${CMAKE_BINARY_DIR}
         --iso-root=${ISO_IMAGE_INSTALL_ROOT}
         --ramdisk-root=${RD_IMAGE_INSTALL_ROOT}
         DEPENDS install
@@ -56,18 +56,18 @@ add_custom_target(repack
 
 # Run and run-debug with build
 add_custom_target(run
-        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Run.sh --iso-dir=${CMAKE_BINARY_DIR}
+        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Run.sh --iso-dir=${CMAKE_BINARY_DIR}
         DEPENDS repack
         USES_TERMINAL)
 add_custom_target(run_debug
-        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Run.sh --iso-dir=${CMAKE_BINARY_DIR} --debug
+        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Run.sh --iso-dir=${CMAKE_BINARY_DIR} --debug
         DEPENDS repack
         USES_TERMINAL)
 
 # Run and run-debug without build
 add_custom_target(just_run
-        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Run.sh --iso-dir=${CMAKE_BINARY_DIR}
+        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Run.sh --iso-dir=${CMAKE_BINARY_DIR}
         USES_TERMINAL)
 add_custom_target(just_run_debug
-        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Scripts/Run.sh --iso-dir=${CMAKE_BINARY_DIR} --debug
+        COMMAND ${CMAKE_SOURCE_DIR}/Meta/Run.sh --iso-dir=${CMAKE_BINARY_DIR} --debug
         USES_TERMINAL)
