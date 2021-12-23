@@ -14,16 +14,18 @@
 
 #include "Tests/Test.hh"
 
-namespace Threads {
+namespace Tests::Threads {
 
 class Native : public Test {
 public:
-    explicit Native(bool is_verbose);
+    Native()           = default;
+    ~Native() override = default;
+
+    [[nodiscard]] const char* category() const override;
+    [[nodiscard]] const char* name() const override;
 
 protected:
     bool run() override;
-
-    [[nodiscard]] const char* name() const override;
 };
 
-} /* namespace Threads */
+} /* namespace Tests::Threads */

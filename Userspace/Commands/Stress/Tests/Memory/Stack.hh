@@ -14,16 +14,18 @@
 
 #include "Tests/Test.hh"
 
-namespace Memory {
+namespace Tests::Memory {
 
 class Stack : public Test {
 public:
-    explicit Stack(bool is_verbose);
+    Stack()           = default;
+    ~Stack() override = default;
+
+    [[nodiscard]] const char* category() const override;
+    [[nodiscard]] const char* name() const override;
 
 protected:
     bool run() override;
-
-    [[nodiscard]] const char* name() const override;
 };
 
-} /* namespace Memory */
+} /* namespace Tests::Memory */

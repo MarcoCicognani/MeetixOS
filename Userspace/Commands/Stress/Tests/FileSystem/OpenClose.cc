@@ -12,18 +12,50 @@
 
 #include "Tests/FileSystem/OpenClose.hh"
 
-namespace FileSystem {
+#include <fcntl.h>
+#include <vector>
 
-OpenClose::OpenClose(bool is_verbose)
-    : Test{ is_verbose } {
-}
+namespace Tests::FileSystem {
 
-bool OpenClose::run() {
-    return false;
+const char* OpenClose::category() const {
+    return "FileSystem";
 }
 
 const char* OpenClose::name() const {
-    return nullptr;
+    return "OpenClose";
 }
 
-} /* namespace FileSystem */
+bool OpenClose::run() {
+    static constexpr auto C_MAX_OPEN_CLOSE = 500;
+
+    std::vector<std::string> all_paths{ tests_home() + "/TestFile_1.txt",
+                                        tests_home() + "/TestFile_2.txt",
+                                        tests_home() + "/Sub/TestFile_1.txt",
+                                        tests_home() + "/Sub/TestFile_2.txt" };
+
+    /* initialize the random generator */
+    std::srand(s_millis());
+
+    FsOpenStatus open_status{};
+    FileHandle   file_handle{};
+    for ( auto i = 0; i < C_MAX_OPEN_CLOSE; ++i ) {
+        auto const& path = all_paths[std::rand() % all_paths.size()];
+
+        /* open the selected path */
+        file_handle = s_open_fms(path.c_str(), O_RDWR, 0, &open_status);
+        if ( open_status != FS_OPEN_SUCCESSFUL ) {
+            logger() << "Failed to open '" << path << "' at try " << i << '\n';
+            return false;
+        } else {
+            /* close the previously open handle */
+            auto close_status = s_close(file_handle);
+            if ( close_status != FS_CLOSE_SUCCESSFUL ) {
+                logger() << "Failed to close '" << path << "'\n";
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+} /* namespace Tests::FileSystem */

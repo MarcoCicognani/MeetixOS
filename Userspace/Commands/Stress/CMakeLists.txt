@@ -7,7 +7,7 @@ add_executable(Stress
         Tests/Memory/Heap.cc
         Tests/Memory/Stack.cc
         Tests/Threads/Native.cc
-        Tests/Threads/POSIX.cc)
+        Tests/Threads/POSIX.cc Tests/Manager.cc)
 target_include_directories(Stress PRIVATE .)
 target_link_libraries(Stress LibApi LibC LibUtils)
 install(TARGETS Stress DESTINATION ${RD_IMAGE_INSTALL_BINS})

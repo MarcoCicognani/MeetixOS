@@ -14,16 +14,18 @@
 
 #include "Tests/Test.hh"
 
-namespace FileSystem {
+namespace Tests::FileSystem {
 
 class Create : public Test {
 public:
-    explicit Create(bool is_verbose);
+    Create()           = default;
+    ~Create() override = default;
+
+    [[nodiscard]] const char* category() const override;
+    [[nodiscard]] const char* name() const override;
 
 protected:
     bool run() override;
-
-    [[nodiscard]] const char* name() const override;
 };
 
-} /* namespace FileSystem */
+} /* namespace Tests::FileSystem */

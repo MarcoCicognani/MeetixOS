@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include "Tests/Tests.hh"
+#include "Tests/Manager.hh"
 
 #include <iostream>
 #include <string>
@@ -21,44 +21,28 @@
 #define V_PATCH 1
 
 int main(int argc, const char** argv) {
-    bool        verbose             = false;
-    bool        test_all            = false;
-    bool        test_heap_memory    = false;
-    bool        test_stack_memory   = false;
-    bool        test_native_threads = false;
-    bool        test_posix_threads  = false;
-    bool        test_filesystem     = false;
-    std::string test_name{};
+    bool                     list_all_tests   = false;
+    bool                     enable_verbosity = false;
+    std::vector<std::string> test_names{};
 
-    Utils::ArgsParser args_parser{ "Stress Utility", V_MAJOR, V_MINOR, V_PATCH };
-    args_parser.add_positional_argument(test_name, "Test name to run", "TestName", false);
-
-    args_parser.add_option(verbose, "All the tests have verbosity enabled", "verbose", 'v');
-    args_parser.add_option(test_all, "Executes all the available stress tests", "all", 'a');
-    args_parser.add_option(test_heap_memory, "Executes the heap stress tests", "heap", 'h');
-    args_parser.add_option(test_stack_memory, "Executes the stack stress tests", "stack", 's');
-    args_parser.add_option(test_native_threads,
-                           "Executes native thread stress tests",
-                           "native-threads",
-                           'n');
-    args_parser.add_option(test_posix_threads,
-                           "Executes POSIX thread stress tests",
-                           "posix-threads",
-                           'p');
-    args_parser.add_option(test_filesystem,
-                           "Executes filesystem stress tests",
-                           "posix-threads",
-                           'p');
+    Utils::ArgsParser args_parser{ "Stress Tests Utility", V_MAJOR, V_MINOR, V_PATCH };
+    args_parser.add_option(list_all_tests, "Lists all the available stress tests", "names", 'n');
+    args_parser.add_option(enable_verbosity, "Enable extra verbosity for each test", "verbose", 'e');
+    args_parser.add_positional_argument(test_names, "Tests to run", "TestName", false);
 
     /* parse the arguments */
     args_parser.parse(argc, argv);
 
+    /* register all the tests */
+    Tests::Manager::inst().register_all();
+
     /* need at least one option set */
-    if ( !test_all || !test_heap_memory || !test_stack_memory || !test_native_threads
-         || !test_posix_threads || !test_filesystem ) {
-        args_parser.print_usage(std::cout, argv[0]);
+    if ( list_all_tests )
+        return Tests::Manager::inst().list_to_stdout();
+    else if ( !test_names.empty() )
+        return Tests::Manager::inst().run_tests(test_names, enable_verbosity);
+    else {
+        std::cerr << "No tests selected" << std::endl;
         return EXIT_FAILURE;
     }
-
-    return EXIT_SUCCESS;
 }

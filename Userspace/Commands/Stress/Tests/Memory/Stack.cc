@@ -12,18 +12,18 @@
 
 #include "Tests/Memory/Stack.hh"
 
-namespace Memory {
+namespace Tests::Memory {
 
-Memory::Stack::Stack(bool is_verbose)
-    : Test{ is_verbose } {
+const char* Stack::category() const {
+    return "Memory";
+}
+
+const char* Stack::name() const {
+    return "Stack";
 }
 
 bool Stack::run() {
     return false;
 }
 
-const char* Stack::name() const {
-    return nullptr;
-}
-
-} /* namespace Memory */
+} /* namespace Tests::Memory */

@@ -12,21 +12,33 @@
 
 #pragma once
 
+#include <ostream>
+#include <string>
+
+namespace Tests {
+
 class Test {
 public:
-    explicit Test(bool is_verbose);
+    explicit Test() = default;
+    virtual ~Test() = default;
 
     bool execute();
+    void enable_verbose();
+
+    [[nodiscard]] virtual const char* category() const = 0;
+    [[nodiscard]] virtual const char* name() const     = 0;
+
+    [[nodiscard]] std::string full_name() const;
 
 protected:
     virtual bool run() = 0;
 
-    [[nodiscard]] virtual const char* name() const = 0;
-
-    [[nodiscard]] bool is_verbose() const {
-        return m_is_verbose;
-    }
+    [[nodiscard]] std::string   tests_home() const;
+    [[nodiscard]] std::ostream& logger();
 
 private:
-    bool m_is_verbose{ false };
+    bool         m_is_verbose{ false };
+    std::ostream m_null_logger{ nullptr };
 };
+
+} /* namespace Tests */

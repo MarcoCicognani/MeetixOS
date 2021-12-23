@@ -12,18 +12,18 @@
 
 #include "Tests/Threads/POSIX.hh"
 
-namespace Threads {
+namespace Tests::Threads {
 
-POSIX::POSIX(bool is_verbose)
-    : Test{ is_verbose } {
+const char* POSIX::category() const {
+    return "Threads";
+}
+
+const char* POSIX::name() const {
+    return "POSIX";
 }
 
 bool POSIX::run() {
     return false;
 }
 
-const char* POSIX::name() const {
-    return nullptr;
-}
-
-} /* namespace Threads */
+} /* namespace Tests::Threads */

@@ -14,16 +14,18 @@
 
 #include "Tests/Test.hh"
 
-namespace Memory {
+namespace Tests::Memory {
 
 class Heap : public Test {
 public:
-    explicit Heap(bool is_verbose);
+    Heap()           = default;
+    ~Heap() override = default;
+
+    [[nodiscard]] const char* category() const override;
+    [[nodiscard]] const char* name() const override;
 
 protected:
     bool run() override;
-
-    [[nodiscard]] const char* name() const override;
 };
 
-} /* namespace Memory */
+} /* namespace Tests::Memory */

@@ -13,13 +13,13 @@
 #include "Tests/Test.hh"
 
 #include <iostream>
+#include <sstream>
+#include <Utils/Environment.hh>
 
-Test::Test(bool is_verbose)
-    : m_is_verbose{ is_verbose } {
-}
+namespace Tests {
 
 bool Test::execute() {
-    std::cout << "Executing '" << name() << "' Test...\n";
+    std::cout << "Executing '" << full_name() << "' Test...\n";
 
     /* run this test */
     auto tick_begin   = s_millis();
@@ -27,10 +27,35 @@ bool Test::execute() {
     auto tick_end     = s_millis();
 
     if ( test_success )
-        std::cout << "\033[;32mSUCCESS\033[0m";
+        std::cout << "\t\033[;32mSUCCESS\033[0m";
     else
-        std::cout << "\033[;31mFAILED\033[0m";
+        std::cout << "\t\033[;31mFAILED\033[0m";
 
     std::cout << ": In " << (tick_end - tick_begin) << " milliseconds" << std::endl;
     return test_success;
 }
+
+std::string Test::full_name() const {
+    std::stringstream ss{};
+    ss << category() << '/' << name();
+    return ss.str();
+}
+
+void Test::enable_verbose() {
+    m_is_verbose = true;
+}
+
+std::string Test::tests_home() const {
+    std::stringstream ss{};
+    ss << "/Users/" << Utils::Environment::logged_user() << "/Tests";
+    return ss.str();
+}
+
+std::ostream& Test::logger() {
+    if ( m_is_verbose )
+        return std::cout << "\t[" << s_millis() << "ms] " << std::flush;
+    else
+        return m_null_logger; /* no sense to write */
+}
+
+} /* namespace Tests */

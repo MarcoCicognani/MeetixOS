@@ -12,18 +12,18 @@
 
 #include "Tests/Threads/Native.hh"
 
-namespace Threads {
+namespace Tests::Threads {
 
-Native::Native(bool is_verbose)
-    : Test{ is_verbose } {
+const char* Native::category() const {
+    return "Threads";
+}
+
+const char* Native::name() const {
+    return "Native";
 }
 
 bool Native::run() {
     return false;
 }
 
-const char* Native::name() const {
-    return nullptr;
-}
-
-} /* namespace Threads */
+} /* namespace Tests::Threads */
