@@ -25,15 +25,12 @@ int main(int argc, const char** argv) {
     std::vector<std::string> files_paths{};
 
     Utils::ArgsParser args_parser{ "File Classifier Utility", V_MAJOR, V_MINOR, V_PATCH };
-    args_parser.add_positional_argument(files_paths,
-                                        "Files to inspect and classify",
-                                        "FileToInspect",
-                                        true);
+    args_parser.add_positional_argument(files_paths, "Files to inspect and classify", "FileToInspect", true);
 
     /* parse the arguments */
     args_parser.parse(argc, argv);
 
-    for ( auto& file_path : files_paths ) {
+    for ( auto const& file_path : files_paths ) {
         std::cout << file_path << ": ";
 
         /* open the file-stream */

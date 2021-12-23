@@ -48,7 +48,7 @@ int main(int argc, const char** argv) {
 
     /* the dirs_to_list are not required */
     if ( dirs_to_list.empty() )
-        dirs_to_list.emplace_back(std::string{ "." });
+        dirs_to_list.emplace_back(".");
 
     /* read the current working directory */
     std::string work_dir{};
@@ -70,7 +70,7 @@ int main(int argc, const char** argv) {
         print_header();
 
     /* list each directory requested */
-    for ( auto& dir : dirs_to_list ) {
+    for ( auto const& dir : dirs_to_list ) {
         /* absolute the path to list */
         std::string dir_to_list{};
         if ( !dir.starts_with('/') ) {
@@ -89,7 +89,7 @@ int main(int argc, const char** argv) {
             std::cerr << "Failed to open: '" << dir_to_list << "'\n";
 
         /* print all the entries */
-        directory.for_each([&](const Directory::Entry& entry) {
+        directory.for_each([show_hidden](const Directory::Entry& entry) {
             if ( entry.m_name.starts_with('.') && !show_hidden )
                 return;
 

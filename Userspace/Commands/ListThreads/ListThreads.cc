@@ -55,13 +55,12 @@ int main(int argc, const char** argv) {
     };
 
     /* list the threads */
-    for ( auto& thread : Tasking::list_threads() ) {
+    for ( auto const& thread : Tasking::list_threads() ) {
         std::cout << std::setw(WIDTH_TID) << std::setfill(' ') << thread.m_tid;
         std::cout << std::setw(WIDTH_NAME) << std::setfill(' ') << thread.m_identifier;
         std::cout << std::setw(WIDTH_EXE_TIME) << std::setfill(' ') << thread.m_execution_time;
         std::cout << std::setw(WIDTH_SCHED_COUNT) << std::setfill(' ') << thread.m_scheduled_times;
-        std::cout << std::setw(WIDTH_STACK) << std::setfill(' ')
-                  << size_value(thread.m_thread_user_stack_size);
+        std::cout << std::setw(WIDTH_STACK) << std::setfill(' ') << size_value(thread.m_thread_user_stack_size);
         std::cout << std::endl;
     }
     return EXIT_SUCCESS;

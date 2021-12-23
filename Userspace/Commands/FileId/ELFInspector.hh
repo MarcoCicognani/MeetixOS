@@ -16,8 +16,10 @@
 
 class ELFInspector : public Inspector {
 public:
-    explicit ELFInspector(std::ifstream& stream) : Inspector{ stream } {
+    explicit ELFInspector(std::ifstream& stream)
+        : Inspector{ stream } {
     }
+    ~ELFInspector() override = default;
 
     std::string inspection() override;
 };

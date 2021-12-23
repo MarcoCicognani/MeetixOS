@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <Api/FileSystem.h>
 #include <functional>
 #include <string>
@@ -26,15 +27,14 @@
 
 class Directory {
 public:
-    enum class SortOrder
-    {
+    enum class SortOrder {
         ByName,
         ByType,
         ByTypeAndName
     };
 
     static SortOrder from_string(std::string value) {
-        std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+        std::ranges::transform(value, value.begin(), ::tolower);
 
         if ( value == "name" )
             return SortOrder::ByName;

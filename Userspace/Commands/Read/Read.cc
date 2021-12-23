@@ -35,10 +35,7 @@ int main(int argc, const char** argv) {
     args_parser.add_option(show_as_hex, "Shows the content as hexadecimal", "hex", 'x');
     args_parser.add_option(show_header, "Shows An header before each file", "header", 'd');
     args_parser.add_option(no_errors, "Silent errors", "no-errors", 'n');
-    args_parser.add_option(show_line_num,
-                           "In non-hex mode shows the line number",
-                           "line-number",
-                           'l');
+    args_parser.add_option(show_line_num, "In non-hex mode shows the line number", "line-number", 'l');
     args_parser.add_positional_argument(files_paths, "Files to read & print", "FileToRead");
 
     /* parse the arguments */
@@ -61,7 +58,7 @@ int main(int argc, const char** argv) {
     }
 
     /* read all the files */
-    for ( auto& file_path : files_paths ) {
+    for ( auto const& file_path : files_paths ) {
         /* open the file-stream */
         std::ifstream file_stream{ file_path };
         if ( !file_stream.is_open() ) {

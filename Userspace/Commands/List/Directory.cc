@@ -12,6 +12,7 @@
 
 #include "Directory.hh"
 
+#include <algorithm>
 #include <iomanip>
 #include <sstream>
 
@@ -131,7 +132,7 @@ bool Directory::collect_entries() {
     while ( true ) {
         /* read the next directory entry */
         FsReadDirectoryStatus read_directory_status{};
-        auto directory_entry = s_read_directory_s(directory_it, &read_directory_status);
+        auto                  directory_entry = s_read_directory_s(directory_it, &read_directory_status);
         if ( read_directory_status == FS_READ_DIRECTORY_EOD )
             break;
 
@@ -161,11 +162,11 @@ void Directory::sort_entries() {
     };
 
     if ( m_sort_order == SortOrder::ByName )
-        std::sort(m_directory_entries.begin(), m_directory_entries.end(), sort_by_name);
+        std::ranges::sort(m_directory_entries, sort_by_name);
     else if ( m_sort_order == SortOrder::ByType )
-        std::sort(m_directory_entries.begin(), m_directory_entries.end(), sort_by_type);
+        std::ranges::sort(m_directory_entries, sort_by_type);
     else {
-        std::sort(m_directory_entries.begin(), m_directory_entries.end(), sort_by_name);
-        std::sort(m_directory_entries.begin(), m_directory_entries.end(), sort_by_type);
+        std::ranges::sort(m_directory_entries, sort_by_name);
+        std::ranges::sort(m_directory_entries, sort_by_type);
     }
 }

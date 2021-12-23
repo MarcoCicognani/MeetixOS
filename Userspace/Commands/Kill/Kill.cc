@@ -53,6 +53,9 @@ int main(int argc, const char** argv) {
         case KILL_STATUS_FAILED:
             std::cout << "Failed" << std::endl;
             break;
+        default:
+            std::cout << "Received an unknown kill_status" << std::endl;
+            break;
     }
     return kill_status == KILL_STATUS_SUCCESSFUL ? EXIT_SUCCESS : EXIT_FAILURE;
 }

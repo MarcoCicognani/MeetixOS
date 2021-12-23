@@ -19,12 +19,11 @@
 #include <cstring>
 
 Inspector* Inspector::inspector_for_file(std::ifstream& stream) {
-    char header[10]{ '\0' };
-    stream.read(header, 10);
+    u8 header[10]{ '\0' };
+    stream.read(reinterpret_cast<char*>(header), 10);
 
     auto text_checker = [](auto value) {
-        return value == 0x09 || value == 0x0A || value == 0x0D || (0x20 <= value && value <= 0x7E)
-            || isascii(value);
+        return value == 0x09 || value == 0x0A || value == 0x0D || (0x20 <= value && value <= 0x7E) || isascii(value);
     };
 
     if ( !std::memcmp(header + 1, "ELF", 3) )

@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
+#include <algorithm>
 #include <fstream>
 #include <IO/Shell.hh>
-#include <iomanip>
 #include <iostream>
 #include <Utils/ArgsParser.hh>
 #include <Utils/Environment.hh>
@@ -43,9 +43,8 @@ bool check_login_credentials(const std::string& username, const std::string& pas
 
     /* parse the file then find the pair */
     auto users_map = file_parser.properties();
-    return std::any_of(users_map.begin(), users_map.end(), [&](const auto& item) {
-        return username == item.first && password == item.second;
-    });
+    return std::ranges::any_of(users_map,
+                               [&](const auto& item) { return username == item.first && password == item.second; });
 }
 
 int main(int argc, const char** argv) {

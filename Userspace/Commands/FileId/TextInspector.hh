@@ -16,8 +16,10 @@
 
 class TextInspector : public Inspector {
 public:
-    explicit TextInspector(std::ifstream& stream) : Inspector{ stream } {
+    explicit TextInspector(std::ifstream& stream)
+        : Inspector{ stream } {
     }
+    ~TextInspector() override = default;
 
     std::string inspection() override;
 };

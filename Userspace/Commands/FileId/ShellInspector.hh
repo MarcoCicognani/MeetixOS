@@ -16,8 +16,10 @@
 
 class ShellInspector : public Inspector {
 public:
-    explicit ShellInspector(std::ifstream& stream) : Inspector{ stream } {
+    explicit ShellInspector(std::ifstream& stream)
+        : Inspector{ stream } {
     }
+    ~ShellInspector() override = default;
 
     std::string inspection() override;
 };

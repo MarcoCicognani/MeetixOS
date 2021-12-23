@@ -84,6 +84,9 @@ std::string ELFInspector::inspection() {
         case ELFCLASS64:
             ss << "64 bits\n";
             break;
+        default:
+            ss << "Unknown\n";
+            break;
     }
 
     ss << "\tEndianness: ";
@@ -97,6 +100,9 @@ std::string ELFInspector::inspection() {
         case ELFDATA2MSB:
             ss << "Big\n";
             break;
+        default:
+            ss << "Unknown\n";
+            break;
     }
 
     ss << "\tVersion: ";
@@ -106,6 +112,9 @@ std::string ELFInspector::inspection() {
             break;
         case EV_CURRENT:
             ss << "Current\n";
+            break;
+        default:
+            ss << "Unknown\n";
             break;
     }
 

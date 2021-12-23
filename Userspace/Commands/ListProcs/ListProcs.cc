@@ -31,10 +31,7 @@ int main(int argc, const char** argv) {
     bool hide_mem_usage_bar = false;
 
     Utils::ArgsParser args_parser{ "List Executing Processes Utility", V_MAJOR, V_MINOR, V_PATCH };
-    args_parser.add_option(hide_mem_usage_bar,
-                           "Do not show the memory usage bar",
-                           "no-mem-usage",
-                           'n');
+    args_parser.add_option(hide_mem_usage_bar, "Do not show the memory usage bar", "no-mem-usage", 'n');
 
     /* parse the options */
     args_parser.parse(argc, argv);
@@ -67,7 +64,7 @@ int main(int argc, const char** argv) {
     };
 
     /* list the processes */
-    for ( auto& proc : Tasking::list_processes() ) {
+    for ( auto const& proc : Tasking::list_processes() ) {
         std::cout << std::setw(WIDTH_PID) << std::setfill(' ') << proc.m_main_thread.m_tid;
         std::cout << std::setw(WIDTH_HEAP) << std::setfill(' ') << size_value(proc.m_heap_size);
         std::cout << std::setw(WIDTH_IMAGE) << std::setfill(' ') << size_value(proc.m_image_size);

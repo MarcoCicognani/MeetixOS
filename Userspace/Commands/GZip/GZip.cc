@@ -29,7 +29,7 @@ int main(int argc, const char** argv) {
     /* parse the arguments */
     args_parser.parse(argc, argv);
 
-    for ( auto& archive : archives ) {
+    for ( auto const& archive : archives ) {
         /* check for right extension in filename */
         if ( !archive.ends_with(".gz") ) {
             std::cerr << archive << ": Not sure this file is gzipped\n";

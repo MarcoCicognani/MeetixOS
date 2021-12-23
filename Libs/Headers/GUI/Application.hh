@@ -23,7 +23,7 @@ class Canvas;
 /**
  *
  */
-typedef int        UiOpenStatus;
+using UiOpenStatus                                     = int;
 const UiOpenStatus UI_OPEN_STATUS_SUCCESSFUL           = 0;
 const UiOpenStatus UI_OPEN_STATUS_COMMUNICATION_FAILED = 1;
 const UiOpenStatus UI_OPEN_STATUS_FAILED               = 2;
@@ -32,7 +32,7 @@ const UiOpenStatus UI_OPEN_STATUS_EXISTING             = 3;
 /*
  *
  */
-typedef int         UiCloseStatus;
+using UiCloseStatus                            = int;
 const UiCloseStatus UI_CLOSE_STATUS_SUCCESSFUL = 0;
 const UiCloseStatus UI_CLOSE_STATUS_FAILED     = 1;
 const UiCloseStatus UI_CLOSE_ALREADY_CLOSED    = 2;
@@ -54,7 +54,6 @@ extern Tid UiEventDispatcherTid;
  * Declared in the UI unit
  */
 extern bool UiInitialized;
-
 
 /**
  *

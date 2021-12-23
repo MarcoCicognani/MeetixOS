@@ -25,10 +25,7 @@ int main(int argc, const char** argv) {
 
     Utils::ArgsParser args_parser{ "Echo Utility", V_MAJOR, V_MINOR, V_PATCH };
     args_parser.add_option(no_newline, "Avoid print newline at last", "no-newline", 'n');
-    args_parser.add_positional_argument(args_to_echo,
-                                        "Values to print on screen",
-                                        "ValueToPrint",
-                                        false);
+    args_parser.add_positional_argument(args_to_echo, "Values to print on screen", "ValueToPrint", false);
 
     /* parse the arguments */
     args_parser.parse(argc, argv);
@@ -38,7 +35,7 @@ int main(int argc, const char** argv) {
         while ( std::cin.read(&c, 1) )
             std::cout << c;
     } else {
-        for ( auto& value : args_to_echo )
+        for ( auto const& value : args_to_echo )
             std::cout << value << " ";
 
         if ( !no_newline )
