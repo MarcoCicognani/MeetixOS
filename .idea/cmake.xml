@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CMakeSharedSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug" ENABLED="true" GENERATION_DIR="Build/Debug" CONFIG_NAME="Debug" GENERATION_OPTIONS="-GNinja" />
-      <configuration PROFILE_NAME="Release" ENABLED="true" GENERATION_DIR="Build/Release" CONFIG_NAME="Release" GENERATION_OPTIONS="-GNinja" />
+      <configuration PROFILE_NAME="Debug" ENABLED="true" GENERATION_DIR="Build/Debug" CONFIG_NAME="Debug" GENERATION_OPTIONS="-GNinja -DCMAKE_TOOLCHAIN_FILE=$CMakeProjectDir$/Build/CMakeToolchains.txt" />
+      <configuration PROFILE_NAME="Release" ENABLED="true" GENERATION_DIR="Build/Release" CONFIG_NAME="Release" GENERATION_OPTIONS="-GNinja -DCMAKE_TOOLCHAIN_FILE=$CMakeProjectDir$/Build/CMakeToolchains.txt" />
     </configurations>
   </component>
 </project>
