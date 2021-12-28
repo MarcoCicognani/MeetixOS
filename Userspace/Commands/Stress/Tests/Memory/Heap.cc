@@ -36,7 +36,10 @@ bool Heap::run() {
             /* allocate the region  */
             auto region_size  = C_REGION_BASE_SIZE * i;
             auto region_begin = new char[region_size];
-            if ( region_begin == nullptr ) {
+            if ( region_begin != nullptr ) {
+                logger() << "Successfully allocated a region which starts at 0x" << std::hex
+                         << std::bit_cast<usize>(region_begin) << std::dec << " with size of " << region_size << '\n';
+            } else {
                 logger() << "Failed to allocate region of size " << region_size << " at iteration " << i << '\n';
                 return false;
             }
@@ -62,6 +65,17 @@ bool Heap::run() {
     }
 
     logger() << "Destroyed all the memory\n";
+
+    static constexpr auto C_BIG_REGION_SIZE = 64 * 1024 * 1024; /* 64 MiB */
+
+    auto big_region_ptr = malloc(C_BIG_REGION_SIZE);
+    if ( big_region_ptr != nullptr ) {
+        logger() << "Successfully allocated a big region which starts at 0x" << std::hex
+                 << std::bit_cast<usize>(big_region_ptr) << std::dec << " with size of " << C_BIG_REGION_SIZE << '\n';
+    } else {
+        logger() << "Failed to allocate big region of size " << C_BIG_REGION_SIZE << '\n';
+        return false;
+    }
 
     return true;
 }
