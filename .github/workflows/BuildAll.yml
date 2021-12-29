@@ -23,23 +23,25 @@ jobs:
       - name: CMake Config
         run: |
           mkdir -p Build/{Debug,Release}
+
           pushd Build/Debug
-          cmake -DCMAKE_BUILD_TYPE=Debug -GNinja -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchains.txt ../..
+          cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchains.txt ../..
           popd
+
           pushd Build/Release
-          cmake -DCMAKE_BUILD_TYPE=Release -GNinja -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchains.txt ../..
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchains.txt ../..
           popd
 
       - name: Build MeetiX Debug
         run: |
           pushd Build/Debug
-          ninja repack
+          make repack
           popd
 
       - name: Build MeetiX Release
         run: |
           pushd Build/Release
-          ninja repack
+          make repack
           popd
 
       - name: Uploading image as artefact
