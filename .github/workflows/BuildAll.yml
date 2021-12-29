@@ -24,10 +24,10 @@ jobs:
         run: |
           mkdir -p Build/{Debug,Release}
           pushd Build/Debug
-          cmake -DCMAKE_BUILD_TYPE=Debug -GNinja -DCMAKE_TOOLCHAIN_FILE=$(pwd)/../CMakeToolchains.txt ../..
+          cmake -DCMAKE_BUILD_TYPE=Debug -GNinja -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchains.txt ../..
           popd
           pushd Build/Release
-          cmake -DCMAKE_BUILD_TYPE=Release -GNinja -DCMAKE_TOOLCHAIN_FILE=$(pwd)../CMakeToolchains.txt ../..
+          cmake -DCMAKE_BUILD_TYPE=Release -GNinja -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchains.txt ../..
           popd
 
       - name: Build MeetiX Debug
