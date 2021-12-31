@@ -25,11 +25,11 @@ jobs:
           mkdir -p Build/{Debug,Release}
 
           pushd Build/Debug
-          cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=/home/runner/work/MeetixOS/MeetixOS/Build/CMakeToolchains.txt ../..
+          cmake ../.. -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchains.txt -DCMAKE_BUILD_TYPE=Debug -GNinja
           popd
 
           pushd Build/Release
-          cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/home/runner/work/MeetixOS/MeetixOS/Build/CMakeToolchains.txt ../..
+          cmake ../.. -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchains.txt -DCMAKE_BUILD_TYPE=Release -GNinja
           popd
 
       - name: Build MeetiX Debug
