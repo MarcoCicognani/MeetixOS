@@ -25,11 +25,11 @@ jobs:
           mkdir -p Build/{Debug,Release}
 
           pushd Build/Debug
-          cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchains.txt ../..
+          cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=/home/runner/work/MeetixOS/MeetixOS/Build/CMakeToolchains.txt ../..
           popd
 
           pushd Build/Release
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchains.txt ../..
+          cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/home/runner/work/MeetixOS/MeetixOS/Build/CMakeToolchains.txt ../..
           popd
 
       - name: Build MeetiX Debug
@@ -44,8 +44,8 @@ jobs:
           make repack
           popd
 
-      - name: Uploading image as artefact
+      - name: Uploading image as artifact
         uses: actions/upload-artifact@v2
         with:
-          name: MeetiX
+          name: MeetixOS.iso
           path: Build/Release/MeetixOS.iso
