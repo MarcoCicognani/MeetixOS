@@ -26,6 +26,9 @@ public:
 
 protected:
     bool run() override;
+
+private:
+    bool sub_run();
 };
 
 } /* namespace Tests::Memory */
