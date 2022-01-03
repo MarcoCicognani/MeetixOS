@@ -3,6 +3,7 @@
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
   <component name="CidrRootsConfiguration">
     <excludeRoots>
+      <file path="$PROJECT_DIR$/Build" />
       <file path="$PROJECT_DIR$/Build/Ports" />
       <file path="$PROJECT_DIR$/Build/Release" />
       <file path="$PROJECT_DIR$/Libs/Headers/cairo" />

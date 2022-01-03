@@ -174,10 +174,20 @@ dir_push $BUILD_GCC
     build_step "LibStdC++/Install" make $MAKE_JOBS install-target-libstdc++-v3 || exit 1
 dir_pop
 
+# ------------------------------------ Scrip Code: CMake Toolchains Configuration ------------------------------------ #
+
+dir_push ../Meta
+    build_step "CMake/Toolchains" ConfigureCMakeToolchain.sh || exit 1
+dir_pop
+
 # ----------------------------------- Script Code: Internal Fundamental Libs Build ----------------------------------- #
 
 dir_push ../Build/Release
-    build_step "Libs/Configure" cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../.. || exit 1
+    build_step "Libs/Configure"                               \
+        cmake -GNinja                                         \
+              -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchain.txt \
+              -DCMAKE_BUILD_TYPE=Release                      \
+              ../.. || exit 1
     build_step "Libs/CRTs"      ninja crt0 crti crtn || exit 1
     build_step "Libs/LibApi"    ninja LibApi         || exit 1
     build_step "Libs/LibC"      ninja LibC           || exit 1

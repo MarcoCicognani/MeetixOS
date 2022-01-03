@@ -1,8 +1,7 @@
 /Toolchain/Tarballs
 /Toolchain/Local
 /Toolchain/Build
-/Build/Debug
-/Build/Release
+/Build
 /Libs/Headers/freetype2
 /Libs/Headers/pixman-1
 /Libs/Headers/cairo
