@@ -8,5 +8,4 @@ add_custom_command(
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_OBJECTS:SMPStart.ko> ${CMAKE_CURRENT_BINARY_DIR}/SMPStart.ko
 )
-message($ {CMAKE_INSTALL_PREFIX})
 install(TARGETS SMPStart.ko DESTINATION MeetiX/Kernel/Modules)

@@ -1,1 +1,5 @@
+set(CMAKE_STAGING_PREFIX "${CMAKE_BINARY_DIR}/Image/Root")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Image/Root")
+set(CMAKE_INSTALL_DATAROOTDIR "${CMAKE_BINARY_DIR}/Image/Root")
+
 include(Platform/UnixPaths)
