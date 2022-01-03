@@ -35,13 +35,13 @@ jobs:
       - name: Build MeetiX Debug
         run: |
           pushd Build/Debug
-          make repack
+          ninja repack
           popd
 
       - name: Build MeetiX Release
         run: |
           pushd Build/Release
-          make repack
+          ninja repack
           popd
 
       - name: Uploading image as artifact
