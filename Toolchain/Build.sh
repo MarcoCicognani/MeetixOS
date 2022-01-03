@@ -177,7 +177,7 @@ dir_pop
 # ------------------------------------ Scrip Code: CMake Toolchains Configuration ------------------------------------ #
 
 dir_push ../Meta
-    build_step "CMake/Toolchains" BuildCMakeToolchain.sh || exit 1
+    build_step "CMake/Toolchain" bash BuildCMakeToolchain.sh || exit 1
 dir_pop
 
 # ----------------------------------- Script Code: Internal Fundamental Libs Build ----------------------------------- #
