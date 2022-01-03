@@ -31,4 +31,4 @@ add_executable(ZipNET.sv
         events/EventProcessor.cpp)
 target_include_directories(ZipNET.sv PRIVATE . ${TOOLCHAIN_INCLUDE}/freetype2)
 target_link_libraries(ZipNET.sv LibApi LibC LibGraphics LibGUI LibIO LibUtils LibTasking LibCairo LibFreeType LibPixman LibPNG LibZ)
-install(TARGETS ZipNET.sv DESTINATION ${RD_IMAGE_INSTALL_SERVERS})
+install(TARGETS ZipNET.sv DESTINATION MeetiX/Kernel/Servers)

@@ -83,4 +83,4 @@ target_include_directories(Kernel PRIVATE . ../Shared)
 target_link_libraries(Kernel Shared)
 target_link_options(Kernel PRIVATE LINKER:-T ${CMAKE_CURRENT_SOURCE_DIR}/LinkScript.ld -nostdlib -nostartfiles)
 
-install(TARGETS Kernel DESTINATION ${ISO_IMAGE_INSTALL_ROOT}/boot)
+install(TARGETS Kernel DESTINATION ../ISO/boot)

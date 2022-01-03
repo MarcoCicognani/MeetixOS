@@ -17,4 +17,4 @@ target_include_directories(Loader PRIVATE . ../Shared)
 target_link_libraries(Loader Shared)
 target_link_options(Loader PRIVATE LINKER:-T ${CMAKE_CURRENT_SOURCE_DIR}/LinkScript.ld -nostdlib -nostartfiles)
 
-install(TARGETS Loader DESTINATION ${ISO_IMAGE_INSTALL_ROOT}/boot)
+install(TARGETS Loader DESTINATION ../ISO/boot)

@@ -1,3 +1,3 @@
 add_executable(GZip GZip.cc)
 target_link_libraries(GZip LibApi LibC LibUtils LibZ)
-install(TARGETS GZip DESTINATION ${RD_IMAGE_INSTALL_BINS})
+install(TARGETS GZip DESTINATION Bins)

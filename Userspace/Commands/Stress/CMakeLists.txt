@@ -10,4 +10,4 @@ add_executable(Stress
         Tests/Threads/POSIX.cc Tests/Manager.cc)
 target_include_directories(Stress PRIVATE .)
 target_link_libraries(Stress LibApi LibC LibUtils)
-install(TARGETS Stress DESTINATION ${RD_IMAGE_INSTALL_BINS})
+install(TARGETS Stress DESTINATION Bins)

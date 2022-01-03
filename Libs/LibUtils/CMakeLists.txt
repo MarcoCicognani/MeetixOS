@@ -4,4 +4,5 @@ add_library(LibUtils
         PropertyFileParser.cc
         SHA2.cc
         Environment.cc
-        Utils.cc File.cc ArgsParser.cc ../Headers/Utils/ArgsParser.hh)
+        Utils.cc File.cc
+        ArgsParser.cc)

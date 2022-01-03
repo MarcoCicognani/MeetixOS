@@ -15,7 +15,4 @@ port_build() {
         ../$UNPACKED_DIR/configure --static --prefix="$TOOLCHAIN_ROOT" || exit 1
 
     make -j$BUILD_JOBS TEST_LDFLAGS="$TEST_LDFLAGS" install || exit 1
-
-    ln -fs "$TOOLCHAIN_ROOT/include/zconf.h" "$SOURCE_DIR/Libs/Headers/zconf.h"
-    ln -fs "$TOOLCHAIN_ROOT/include/zlib.h" "$SOURCE_DIR/Libs/Headers/zlib.h"
 }

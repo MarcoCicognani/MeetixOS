@@ -573,7 +573,7 @@ add_library(LibC
         pthread/pthread_kill.cc
         pthread/pthread_exit.cc ctype/ctype.cc ctype/toascii.cc sys/stat/fchmod.cc)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-narrowing")
+target_compile_options(LibC PRIVATE -Wno-narrowing)
 
 target_include_directories(LibC PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/musl)
 add_custom_command(
