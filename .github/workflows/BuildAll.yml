@@ -22,6 +22,9 @@ jobs:
 
       - name: CMake Config
         run: |
+          CFLAGS=""
+          CXXFLAGS=""
+
           mkdir -p Build/{Debug,Release}
 
           pushd Build/Debug
@@ -47,5 +50,5 @@ jobs:
       - name: Uploading image as artifact
         uses: actions/upload-artifact@v2
         with:
-          name: MeetixOS.iso
+          name: MeetixOS
           path: Build/Release/MeetixOS.iso
