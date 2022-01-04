@@ -96,7 +96,7 @@ public:
 private:
     [[noreturn]] void paint();
 
-    void blit_to_screen();
+    void blit_to_screen() const;
     void repaint();
 
     void move_cursor_unlocked(int x, int y);

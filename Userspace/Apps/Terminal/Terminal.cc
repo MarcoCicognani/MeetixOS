@@ -161,13 +161,8 @@ void Terminal::start_shell() {
     /* span the shell binary */
     FileHandle stdio_target[3]{};
     FileHandle stdio_in[3]{ shell_in_read, shell_out_write, shell_err_write };
-    auto       spawn_status = s_spawn_poi("/Bins/MxSh",
-                                          "-sh",
-                                          "/",
-                                          SECURITY_LEVEL_APPLICATION,
-                                          &m_shell_proc_id,
-                                          stdio_target,
-                                          stdio_in);
+    auto       spawn_status
+        = s_spawn_poi("/Bins/MxSh", "-sh", "/", SECURITY_LEVEL_APPLICATION, &m_shell_proc_id, stdio_target, stdio_in);
     if ( spawn_status != SPAWN_STATUS_SUCCESSFUL ) {
         Utils::log("Terminal: Failed to spawn MeetiX shell process");
         return;
@@ -194,9 +189,7 @@ void Terminal::write_string_to_shell(const std::string& line) const {
 }
 
 void Terminal::write_shellkey_to_shell(int shell_key) const {
-    char buf[3]{ SHELLKEY_SUB,
-                 static_cast<char>(shell_key & 0xFF),
-                 static_cast<char>((shell_key >> 8) & 0xFF) };
+    char buf[3]{ SHELLKEY_SUB, static_cast<char>(shell_key & 0xFF), static_cast<char>((shell_key >> 8) & 0xFF) };
     write(m_shell_in, &buf, 3);
 }
 
@@ -269,23 +262,19 @@ void Terminal::process_vt100_sequence(StreamControlStatus& status) {
     switch ( status.m_control_character ) {
         case 'A':
             /* cursor up */
-            m_screen->move_cursor(m_screen->cursor_x(),
-                                  m_screen->cursor_y() - status.m_parameters[0]);
+            m_screen->move_cursor(m_screen->cursor_x(), m_screen->cursor_y() - status.m_parameters[0]);
             break;
         case 'B':
             /* cursor down */
-            m_screen->move_cursor(m_screen->cursor_x(),
-                                  m_screen->cursor_y() + status.m_parameters[0]);
+            m_screen->move_cursor(m_screen->cursor_x(), m_screen->cursor_y() + status.m_parameters[0]);
             break;
         case 'C':
             /* cursor forward */
-            m_screen->move_cursor(m_screen->cursor_x() + status.m_parameters[0],
-                                  m_screen->cursor_y());
+            m_screen->move_cursor(m_screen->cursor_x() + status.m_parameters[0], m_screen->cursor_y());
             break;
         case 'D':
             /* cursor back */
-            m_screen->move_cursor(m_screen->cursor_x() - status.m_parameters[0],
-                                  m_screen->cursor_y());
+            m_screen->move_cursor(m_screen->cursor_x() - status.m_parameters[0], m_screen->cursor_y());
             break;
         case 'm':
             /* mode setting */
@@ -309,8 +298,7 @@ void Terminal::process_vt100_sequence(StreamControlStatus& status) {
             /* Cursor queries */
             if ( status.m_parameters[0] == 6 ) {
                 std::stringstream ss;
-                ss << SHELLKEY_ESC << "[" << m_screen->cursor_y() << ";" << m_screen->cursor_x()
-                   << "R";
+                ss << SHELLKEY_ESC << "[" << m_screen->cursor_y() << ";" << m_screen->cursor_x() << "R";
 
                 /* write out the response */
                 write_string_to_shell(ss.str());
@@ -414,13 +402,18 @@ int Terminal::input_routine() {
 
                 /* clear the buffer */
                 buffer.clear();
-            } else if ( (read_input.m_ctrl && read_input.m_key == "KEY_C")
-                        || (read_input.m_key == "KEY_ESC") ) {
+            } else if ( (read_input.m_ctrl && read_input.m_key == "KEY_C") || (read_input.m_key == "KEY_ESC") ) {
                 if ( m_current_proc_id )
                     s_raise_signal(m_current_proc_id, SIGINT);
             } else if ( read_input.m_key == "KEY_BACKSPACE" && read_input.m_is_pressed ) {
-                buffer = !buffer.empty() ? buffer.substr(0, buffer.size() - 1) : buffer;
-                m_screen->backspace();
+                if ( !buffer.empty() ) {
+                    buffer = buffer.substr(0, buffer.size() - 1);
+
+                    if ( m_do_echo ) {
+                        Tasking::LockGuard lock_guard{ m_screen_lock };
+                        m_screen->backspace();
+                    }
+                }
             } else {
                 auto c = IO::Keyboard::instance().char_for_key(read_input);
                 if ( c != -1 ) {

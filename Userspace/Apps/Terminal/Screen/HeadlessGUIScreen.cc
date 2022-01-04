@@ -146,7 +146,7 @@ void HeadlessGUIScreen::set_cursor_visible(bool visible) {
             auto cairo_scaled_font = cairo_get_scaled_font(cr);
             for ( auto y = 0; y < height(); ++y ) {
                 for ( auto x = 0; x < width(); ++x ) {
-                    auto& raster_cell = m_raster_buffer[y * width() + x];
+                    auto const& raster_cell = m_raster_buffer[y * width() + x];
 
                     /* draw cell background */
                     cairo_save(cr);
@@ -155,7 +155,7 @@ void HeadlessGUIScreen::set_cursor_visible(bool visible) {
                                     x * m_font_dimension.width(),
                                     (y + 1) * m_font_dimension.height(),
                                     m_font_dimension.width(),
-                                    m_font_dimension.height());
+                                    m_font_dimension.height() + 2);
                     cairo_fill(cr);
                     cairo_restore(cr);
 
@@ -164,17 +164,13 @@ void HeadlessGUIScreen::set_cursor_visible(bool visible) {
                         continue;
 
                     /* obtain the character glyph to draw */
-                    auto char_layout = cached_char_layout(cairo_scaled_font, raster_cell.m_char);
+                    auto const& char_layout = cached_char_layout(cairo_scaled_font, raster_cell.m_char);
 
                     /* draw the glyph */
                     cairo_save(cr);
                     cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(raster_cell.m_foreground));
-                    cairo_translate(cr,
-                                    x * m_font_dimension.width(),
-                                    (y + 1) * m_font_dimension.height());
-                    cairo_glyph_path(cr,
-                                     char_layout.m_cairo_glyph,
-                                     char_layout.m_text_cluster[0].num_glyphs);
+                    cairo_translate(cr, x * m_font_dimension.width(), (y + 1) * m_font_dimension.height());
+                    cairo_glyph_path(cr, char_layout.m_cairo_glyph, char_layout.m_text_cluster[0].num_glyphs);
                     cairo_fill(cr);
                     cairo_restore(cr);
                 }
@@ -194,7 +190,7 @@ void HeadlessGUIScreen::set_cursor_visible(bool visible) {
     }
 }
 
-void HeadlessGUIScreen::blit_to_screen() {
+void HeadlessGUIScreen::blit_to_screen() const {
     auto video_buffer  = reinterpret_cast<u8*>(m_vbe_mode_info.m_linear_framebuffer);
     auto source_buffer = reinterpret_cast<Graphics::Color::ArgbGradient*>(
         cairo_image_surface_get_data(m_back_context.cairo_surface()));
@@ -256,8 +252,7 @@ void HeadlessGUIScreen::write_char_unlocked(char c) {
     }
 }
 
-HeadlessGUIScreen::CharLayout& HeadlessGUIScreen::cached_char_layout(cairo_scaled_font_t* font,
-                                                                     char                 c) {
+HeadlessGUIScreen::CharLayout& HeadlessGUIScreen::cached_char_layout(cairo_scaled_font_t* font, char c) {
     auto cache_entry = m_char_layout_cache.find(c);
     if ( cache_entry != m_char_layout_cache.end() )
         return cache_entry->second;
