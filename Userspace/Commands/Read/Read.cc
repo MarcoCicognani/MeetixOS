@@ -15,6 +15,7 @@
 #include <IO/Shell.hh>
 #include <iomanip>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <Utils/ArgsParser.hh>
 #include <vector>
@@ -22,6 +23,19 @@
 #define V_MAJOR 0
 #define V_MINOR 0
 #define V_PATCH 1
+
+std::optional<std::string> get_working_directory(bool show_header, bool no_errors) {
+    Local work_dir_buffer{ new char[PATH_MAX] };
+
+    auto work_dir_status = s_get_working_directory(work_dir_buffer());
+    if ( work_dir_status != GET_WORKING_DIRECTORY_SUCCESSFUL ) {
+        if ( show_header && !no_errors ) {
+            std::cerr << "Failed to obtain current working directory\n";
+            return {};
+        }
+    } else
+        return { std::string{ work_dir_buffer() } };
+}
 
 int main(int argc, const char** argv) {
     bool show_as_hex   = false;
@@ -42,20 +56,9 @@ int main(int argc, const char** argv) {
     args_parser.parse(argc, argv);
 
     /* obtain the current working directory */
-    std::string work_dir{};
-    {
-        Local work_dir_buffer{ new char[PATH_MAX] };
-
-        auto work_dir_status = s_get_working_directory(work_dir_buffer());
-        if ( work_dir_status != GET_WORKING_DIRECTORY_SUCCESSFUL ) {
-            if ( show_header && !no_errors ) {
-                std::cerr << "Failed to obtain current working directory\n";
-                return EXIT_FAILURE;
-            }
-        }
-
-        work_dir = work_dir_buffer();
-    }
+    auto work_dir = get_working_directory(show_header, no_errors);
+    if ( !work_dir.has_value() )
+        return EXIT_FAILURE;
 
     /* read all the files */
     for ( auto const& file_path : files_paths ) {
@@ -70,7 +73,7 @@ int main(int argc, const char** argv) {
         if ( show_header ) {
             std::cout << "File: ";
             if ( !file_path.starts_with('/') )
-                std::cout << work_dir << '/';
+                std::cout << work_dir.value() << '/';
             std::cout << file_path << "\n----------------------------------------";
         }
 
