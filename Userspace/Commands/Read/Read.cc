@@ -29,12 +29,12 @@ std::optional<std::string> get_working_directory(bool show_header, bool no_error
 
     auto work_dir_status = s_get_working_directory(work_dir_buffer());
     if ( work_dir_status != GET_WORKING_DIRECTORY_SUCCESSFUL ) {
-        if ( show_header && !no_errors ) {
+        if ( show_header && !no_errors )
             std::cerr << "Failed to obtain current working directory\n";
-            return {};
-        }
     } else
         return { std::string{ work_dir_buffer() } };
+
+    return {};
 }
 
 int main(int argc, const char** argv) {
