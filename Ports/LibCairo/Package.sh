@@ -20,6 +20,4 @@ port_build() {
                                    --enable-xlib=no || exit 1
 
     make -j$BUILD_JOBS install || exit 1
-
-    #ln -fs "$TOOLCHAIN_ROOT/include/cairo" "$SOURCE_DIR/Libs/Headers/cairo"
 }
