@@ -22,9 +22,6 @@ jobs:
 
       - name: CMake Config
         run: |
-          CFLAGS=""
-          CXXFLAGS=""
-
           mkdir -p Build/{Debug,Release}
 
           pushd Build/Debug

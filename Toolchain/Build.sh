@@ -174,6 +174,11 @@ dir_push $BUILD_GCC
     build_step "LibStdC++/Install" make $MAKE_JOBS install-target-libstdc++-v3 || exit 1
 dir_pop
 
+# ---------------------------------------- Scrip Code: Reset Compilation Flags --------------------------------------- #
+
+export CFLAGS=""
+export CXXFLAGS=""
+
 # ------------------------------------ Scrip Code: CMake Toolchains Configuration ------------------------------------ #
 
 dir_push ../Meta
