@@ -22,7 +22,6 @@ extern "C" {
 
 /* ------------------------------------------- C types ------------------------------------------ */
 
-struct DIR;
 typedef struct DIR;
 
 #ifdef __cplusplus
