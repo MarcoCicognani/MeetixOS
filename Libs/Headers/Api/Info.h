@@ -16,7 +16,9 @@
 #include <Api/Kernel.h>
 #include <Api/System.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief Kernel name info
@@ -132,4 +134,6 @@ typedef struct {
     usize            m_image_size;
 } A_PACKED ProcessDescriptor;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

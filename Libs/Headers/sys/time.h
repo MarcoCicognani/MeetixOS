@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <time.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------- C types ------------------------------------------ */
 
@@ -33,4 +35,6 @@ struct timezone {
 
 int gettimeofday(struct timeval*, struct timezone*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

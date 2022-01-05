@@ -16,7 +16,9 @@
 #include <Api/Kernel.h>
 #include <stdbool.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief s_open system call data
@@ -221,4 +223,6 @@ typedef struct {
     FsDirectoryIterator* m_directory_iterator;
 } A_PACKED SyscallFsCloseDirectory;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

@@ -14,7 +14,9 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief Paging page size
@@ -26,8 +28,7 @@ __BEGIN_C
  * @brief Page alignment macros
  */
 #define PAGE_ALIGN_DOWN(value) ((value) & ~(PAGE_SIZE - 1))
-#define PAGE_ALIGN_UP(value)                                                                       \
-    (((value) & (PAGE_SIZE - 1)) ? (PAGE_ALIGN_DOWN((value)) + PAGE_SIZE) : (value))
+#define PAGE_ALIGN_UP(value)   (((value) & (PAGE_SIZE - 1)) ? (PAGE_ALIGN_DOWN((value)) + PAGE_SIZE) : (value))
 
 /**
  * @brief Recursive paging macros
@@ -35,4 +36,6 @@ __BEGIN_C
 #define TABLE_IN_DIRECTORY_INDEX(address) ((usize)(((address) / PAGE_SIZE) / 1024))
 #define PAGE_IN_TABLE_INDEX(address)      ((usize)(((address) / PAGE_SIZE) % 1024))
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

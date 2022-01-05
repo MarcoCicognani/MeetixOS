@@ -14,7 +14,9 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -82,4 +84,6 @@ int __flt_rounds(void);
 #    error "architecture not supported"
 #endif
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

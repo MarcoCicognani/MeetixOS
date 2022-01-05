@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <stddef.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------- C types ------------------------------------------ */
 
@@ -42,4 +44,6 @@ wint_t    towupper(wint_t);
 wint_t    towctrans(wint_t, wctrans_t);
 wctrans_t wctrans(const char*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

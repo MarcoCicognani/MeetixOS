@@ -17,7 +17,9 @@
 #include <stdarg.h>
 #include <stddef.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief Opaque pointer used by the kernel and the spawner to create new processes
@@ -33,8 +35,7 @@ typedef Tid Pid;
 /**
  * @brief Process security levels
  */
-typedef enum
-{
+typedef enum {
     SECURITY_LEVEL_KERNEL,
     SECURITY_LEVEL_DRIVER,
     SECURITY_LEVEL_SERVER,
@@ -51,8 +52,7 @@ typedef struct UserThread {
 /**
  * @brief VM86 call statuses
  */
-typedef enum
-{
+typedef enum {
     VM86_CALL_STATUS_SUCCESSFUL,
     VM86_CALL_STATUS_FAILED_NOT_PERMITTED
 } Vm86CallStatus;
@@ -82,8 +82,7 @@ static const ThreadType THREAD_TYPE_VM86 = 4;
 /**
  * @brief Thread priorities
  */
-typedef enum
-{
+typedef enum {
     THREAD_PRIORITY_NORMAL,
     THREAD_PRIORITY_IDLE
 } ThreadPriority;
@@ -98,4 +97,6 @@ typedef enum
  */
 #define PIPE_DEFAULT_CAPACITY 0x400
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

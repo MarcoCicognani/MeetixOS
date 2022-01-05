@@ -14,7 +14,9 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -100,4 +102,6 @@ extern __thread int g_errno;
 #define EWOULDBLOCK     81 /* operation would block (maybe the same value as [EAGAIN]) */
 #define EXDEV           82 /* cross-device link */
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

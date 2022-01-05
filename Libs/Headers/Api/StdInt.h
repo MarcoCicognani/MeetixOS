@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <stddef.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief Exact-width integer types
@@ -189,4 +191,6 @@ typedef long signed int isize;
 typedef signed int   isize;
 #endif
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

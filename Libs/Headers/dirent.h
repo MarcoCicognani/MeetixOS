@@ -17,7 +17,9 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -48,4 +50,6 @@ dirent* readdir(DIR*);
 int     closedir(DIR*);
 void    rewinddir(DIR*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

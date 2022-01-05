@@ -14,7 +14,9 @@
 
 #include <Api.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief Called by the library thread entry-point
@@ -57,4 +59,6 @@ void* memory_copy(void* dest, const void* src, usize len);
  */
 usize string_len(const char* str);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

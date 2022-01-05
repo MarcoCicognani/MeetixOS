@@ -14,11 +14,15 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
 #define alignas _Alignas
 #define __alignas_is_defined 1
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

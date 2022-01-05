@@ -15,7 +15,9 @@
 #include <Api/FileSystem.h>
 #include <Api/StdInt.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -48,4 +50,6 @@ typedef i32 mode_t;
 
 int open(const char*, int, ...);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

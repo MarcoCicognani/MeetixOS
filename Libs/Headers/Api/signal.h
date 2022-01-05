@@ -15,7 +15,9 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // standard signals
 #define SIGABRT 0
@@ -28,6 +30,8 @@ __BEGIN_C
 // number of defined signals
 #define SIG_COUNT 32
 
-__END_C
+#ifdef __cplusplus
+}
+#endif
 
 #endif

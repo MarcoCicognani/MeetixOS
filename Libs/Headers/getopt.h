@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <stdint.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 #define no_argument       0
@@ -51,4 +53,6 @@ struct option {
 int getopt(int, const char**, const char*);
 int getopt_long(int, const char**, const char*, struct option*, int*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

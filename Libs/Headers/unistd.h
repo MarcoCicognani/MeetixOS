@@ -16,7 +16,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -53,4 +55,6 @@ int   fcntl(int, int, ...);
 int   rmdir(const char*);
 int   symlink(const char*, const char*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

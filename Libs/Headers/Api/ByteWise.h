@@ -14,29 +14,33 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief Little endian conversion of 4-byte value <value>
  */
-#define BW_PUT_LE_4(array, value)                                                                  \
-    {                                                                                              \
-        array[0] = (value >> 24) & 0xFF;                                                           \
-        array[1] = (value >> 16) & 0xFF;                                                           \
-        array[2] = (value >> 8) & 0xFF;                                                            \
-        array[3] = value & 0xFF;                                                                   \
+#define BW_PUT_LE_4(array, value)                                                                                      \
+    {                                                                                                                  \
+        array[0] = (value >> 24) & 0xFF;                                                                               \
+        array[1] = (value >> 16) & 0xFF;                                                                               \
+        array[2] = (value >> 8) & 0xFF;                                                                                \
+        array[3] = value & 0xFF;                                                                                       \
     };
 
 /**
  * @brief Little endian conversion of 4-byte value in array <arr>
  */
-#define BW_GET_LE_4(array, value)                                                                  \
-    {                                                                                              \
-        value = 0;                                                                                 \
-        value |= array[0] << 24;                                                                   \
-        value |= array[1] << 16;                                                                   \
-        value |= array[2] << 8;                                                                    \
-        value |= array[3];                                                                         \
+#define BW_GET_LE_4(array, value)                                                                                      \
+    {                                                                                                                  \
+        value = 0;                                                                                                     \
+        value |= array[0] << 24;                                                                                       \
+        value |= array[1] << 16;                                                                                       \
+        value |= array[2] << 8;                                                                                        \
+        value |= array[3];                                                                                             \
     };
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

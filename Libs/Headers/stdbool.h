@@ -14,7 +14,9 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -26,4 +28,6 @@ __BEGIN_C
 
 #define __bool_true_false_are_defined 1
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

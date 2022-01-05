@@ -16,7 +16,9 @@
 #include <file.h>
 #include <stdarg.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------  defines ----------------------------------------- */
 
@@ -97,4 +99,6 @@ usize    wcrtomb(char*, wchar_t, mbstate_t*);
 usize    mbsrtowcs(wchar_t*, const char**, usize, mbstate_t*);
 usize    wcsrtombs(char*, const wchar_t**, usize, mbstate_t*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

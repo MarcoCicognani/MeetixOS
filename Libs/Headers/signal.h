@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <Api/signal.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -33,4 +35,6 @@ typedef void (*sig_handler_t)(int);
 sig_handler_t signal(int, sig_handler_t);
 int           raise(int);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

@@ -14,7 +14,9 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -117,11 +119,11 @@ float       crealf(float complex);
 long double creall(long double complex);
 
 #ifndef __cplusplus
-#    define __CIMAG(x, t)                                                                          \
-        (+(union {                                                                                 \
-              _Complex t __z;                                                                      \
-              t          __xy[2];                                                                  \
-          }){ (_Complex t)(x) }                                                                    \
+#    define __CIMAG(x, t)                                                                                              \
+        (+(union {                                                                                                     \
+              _Complex t __z;                                                                                          \
+              t          __xy[2];                                                                                      \
+          }){ (_Complex t)(x) }                                                                                        \
               .__xy[1])
 
 #    define creal(x)  ((double)(x))
@@ -146,4 +148,6 @@ long double creall(long double complex);
 #    define CMPLXL(x, y) __CMPLX(x, y, long double)
 #endif
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

@@ -14,7 +14,9 @@
 
 #include <stdint.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -38,4 +40,6 @@ pthread_t* pthread_self(void);
 int        pthread_kill(pthread_t*, int);
 void       pthread_exit(void*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

@@ -23,13 +23,14 @@
 #include <Api/Syscalls/CallsTime.h>
 #include <Api/Syscalls/CallsVm86.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief System call numbers
  */
-enum SyscallNumber
-{
+enum SyscallNumber {
     /**
      * @brief Thread management system calls
      */
@@ -176,4 +177,6 @@ enum SyscallNumber
     SYSCALL_COUNT
 };
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

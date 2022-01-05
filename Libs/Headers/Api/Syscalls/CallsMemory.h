@@ -15,7 +15,9 @@
 #include <Api/Kernel.h>
 #include <Api/StdInt.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief s_alloc_mem system call data
@@ -75,4 +77,6 @@ typedef struct {
     bool  m_success;
 } A_PACKED SyscallSbrk;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

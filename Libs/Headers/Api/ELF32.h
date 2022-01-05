@@ -14,7 +14,9 @@
 
 #include <Api/StdInt.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief ELF Ident magics
@@ -119,4 +121,6 @@ typedef struct {
     u32 p_align;  /* Alignment information */
 } A_PACKED Elf32Phdr;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

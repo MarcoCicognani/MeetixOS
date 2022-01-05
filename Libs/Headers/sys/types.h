@@ -15,7 +15,9 @@
 #include <Api.h>
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------- C types ------------------------------------------ */
 
@@ -32,4 +34,6 @@ typedef int gid_t;
 typedef int blksize_t;
 typedef int blkcnt_t;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

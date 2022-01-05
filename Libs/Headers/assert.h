@@ -14,7 +14,9 @@
 
 #include <Api.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -34,11 +36,10 @@ __BEGIN_C
 #endif
 
 #ifndef NDEBUG
-#    define assert(expr)                                                                           \
-        ((expr) ? (void)0 : assert_failed(__FILE__, __LINE__, __assert_function, #expr))
+#    define assert(expr) ((expr) ? (void)0 : assert_failed(__FILE__, __LINE__, __assert_function, #    expr))
 #endif
 
-#if __HAS_STDC11
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 #    undef static_assert
 #    define static_assert _Static_assert
 #endif
@@ -47,4 +48,6 @@ __BEGIN_C
 
 void assert_failed(const char*, int, const char*, const char*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

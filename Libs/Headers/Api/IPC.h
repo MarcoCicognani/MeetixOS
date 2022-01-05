@@ -16,7 +16,9 @@
 #include <Api/Kernel.h>
 #include <Api/StdInt.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief Message transaction identifier
@@ -50,8 +52,7 @@ typedef struct MessageHeader {
 /**
  * @brief Message send modes
  */
-typedef enum
-{
+typedef enum {
     MESSAGE_SEND_MODE_BLOCKING,
     MESSAGE_SEND_MODE_NON_BLOCKING
 } MessageSendMode;
@@ -59,8 +60,7 @@ typedef enum
 /**
  * @brief Message receive modes
  */
-typedef enum
-{
+typedef enum {
     MESSAGE_RECEIVE_MODE_BLOCKING,
     MESSAGE_RECEIVE_MODE_NON_BLOCKING
 } MessageReceiveMode;
@@ -68,8 +68,7 @@ typedef enum
 /**
  * @brief Message send statuses
  */
-typedef enum
-{
+typedef enum {
     MESSAGE_SEND_STATUS_SUCCESSFUL,
     MESSAGE_SEND_STATUS_QUEUE_FULL,
     MESSAGE_SEND_STATUS_FAILED,
@@ -79,8 +78,7 @@ typedef enum
 /**
  * @brief Message receive statuses
  */
-typedef enum
-{
+typedef enum {
     MESSAGE_RECEIVE_STATUS_SUCCESSFUL,
     MESSAGE_RECEIVE_STATUS_QUEUE_EMPTY,
     MESSAGE_RECEIVE_STATUS_FAILED,
@@ -89,4 +87,6 @@ typedef enum
     MESSAGE_RECEIVE_STATUS_INTERRUPTED
 } MessageReceiveStatus;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

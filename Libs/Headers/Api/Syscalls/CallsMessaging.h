@@ -14,7 +14,9 @@
 
 #include <Api/IPC.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief s_send_message system call data
@@ -40,4 +42,6 @@ typedef struct {
     MessageReceiveStatus m_receive_status;
 } A_PACKED SyscallReceiveMessage;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

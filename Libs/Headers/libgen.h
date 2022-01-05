@@ -14,11 +14,15 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------ C function prototypes ----------------------------------- */
 
 char* basename(char*);
 char* dirname(char*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

@@ -14,7 +14,9 @@
 
 #include <stdbool.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief s_log system call data
@@ -30,4 +32,6 @@ typedef struct {
     bool m_enable;
 } A_PACKED SyscallSetVideoLog;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

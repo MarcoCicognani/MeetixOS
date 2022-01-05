@@ -15,7 +15,9 @@
 #include <Api/Kernel.h>
 #include <pthread.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------- C types ------------------------------------------ */
 
@@ -25,4 +27,6 @@ struct pthread_t {
     pthread_attr_t m_pthread_attr;
 };
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

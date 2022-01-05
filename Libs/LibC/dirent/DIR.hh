@@ -13,15 +13,10 @@
 #pragma once
 
 #include <Api/Common.h>
+#include <Api/FileSystem.h>
+#include <dirent.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* ------------------------------------ C function prototypes ----------------------------------- */
-
-char* getwd(char*);
-
-#ifdef __cplusplus
-}
-#endif
+typedef struct DIR {
+    FsDirectoryIterator* m_directory_iterator;
+    struct dirent*       m_entry_buffer;
+} DIR;

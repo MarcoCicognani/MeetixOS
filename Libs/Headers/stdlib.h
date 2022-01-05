@@ -15,7 +15,9 @@
 #include <Api.h>
 #include <malloc.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -97,4 +99,6 @@ usize wcstombs(char*, const wchar_t*, usize);
 
 char* mktemp(char*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

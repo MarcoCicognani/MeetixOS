@@ -15,11 +15,15 @@
 #include <Api/Common.h>
 #include <stdint.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------ C function prototypes ----------------------------------- */
 
 int strcasecmp(const char*, const char*);
 int strncasecmp(const char*, const char*, usize);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

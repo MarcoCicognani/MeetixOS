@@ -15,7 +15,9 @@
 #include <Api/Kernel.h>
 #include <Api/System.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief s_create_thread system call data
@@ -121,4 +123,6 @@ typedef struct {
     char* m_out_buffer;
 } A_PACKED SyscallCliArgsRelease;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

@@ -14,7 +14,9 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -28,4 +30,6 @@ int   dlclose(void*);
 void* dlsym(void*, const char*);
 char* dlerror(void);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

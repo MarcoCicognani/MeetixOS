@@ -14,7 +14,9 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 int main(int, char**);
 
@@ -22,4 +24,6 @@ void libc_main();
 void libc_init();
 void libc_fini();
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

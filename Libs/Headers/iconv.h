@@ -13,10 +13,12 @@
 #pragma once
 
 #include <Api/Common.h>
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------- C types ------------------------------------------ */
 
@@ -28,4 +30,6 @@ iconv_t iconv_open(const char*, const char*);
 usize   iconv(iconv_t, char**, size_t*, char**, usize*);
 int     iconv_close(iconv_t);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

@@ -16,7 +16,9 @@
 #include <Api/FileSystem.h>
 #include <Api/Kernel.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief Required to provide the <s_spawn> function. The spawning process shall register itself
@@ -35,8 +37,7 @@ __BEGIN_C
 /**
  * @brief Spawner response status codes
  */
-typedef enum
-{
+typedef enum {
     SPAWN_STATUS_SUCCESSFUL,
     SPAWN_STATUS_IO_ERROR,
     SPAWN_STATUS_MEMORY_ERROR,
@@ -90,8 +91,7 @@ typedef struct {
 /**
  * @brief IRQ handler return statuses
  */
-typedef enum
-{
+typedef enum {
     REGISTER_IRQ_HANDLER_STATUS_SUCCESSFUL,
     REGISTER_IRQ_HANDLER_STATUS_NOT_PERMITTED
 } RegisterIrqHandlerStatus;
@@ -99,8 +99,7 @@ typedef enum
 /**
  * @brief Signal handler return statuses
  */
-typedef enum
-{
+typedef enum {
     REGISTER_SIGNAL_HANDLER_STATUS_SUCCESSFUL,
     REGISTER_SIGNAL_HANDLER_STATUS_INVALID_SIGNAL
 } RegisterSignalHandlerStatus;
@@ -108,8 +107,7 @@ typedef enum
 /**
  * @brief Raise signal return statuses
  */
-typedef enum
-{
+typedef enum {
     RAISE_SIGNAL_STATUS_SUCCESSFUL,
     RAISE_SIGNAL_STATUS_INVALID_SIGNAL,
     RAISE_SIGNAL_STATUS_INVALID_TARGET
@@ -118,8 +116,7 @@ typedef enum
 /**
  * @brief s_kill return statuses
  */
-typedef enum
-{
+typedef enum {
     KILL_STATUS_SUCCESSFUL,
     KILL_STATUS_NOT_FOUND,
     KILL_STATUS_FAILED
@@ -128,8 +125,7 @@ typedef enum
 /**
  * @brief Create thread return status
  */
-typedef enum
-{
+typedef enum {
     CREATE_THREAD_STATUS_SUCCESSFUL,
     CREATE_THREAD_STATUS_FAILED
 } CreateThreadStatus;
@@ -168,4 +164,6 @@ typedef struct {
     ServerManageCommand command;
 } A_PACKED ServerManageBuffer;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

@@ -15,7 +15,9 @@
 #include <Api/Kernel.h>
 #include <Api/System.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * parameter struct used by {s_register_as_server} Syscall
@@ -43,4 +45,6 @@ typedef struct {
     ServerManageStatus status;
 } A_PACKED SyscallServerManage;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

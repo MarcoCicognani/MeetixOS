@@ -25,7 +25,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Performs an atomic wait. If the atom is true, the executing task must
@@ -84,13 +86,9 @@ void s_atomic_block_dual(bool* atom1, bool* atom2);
  *
  * @security-level APPLICATION
  */
+SpawnStatus s_spawn(const char* path, const char* args, const char* work_dir, SecurityLevel security_level);
 SpawnStatus
-s_spawn(const char* path, const char* args, const char* work_dir, SecurityLevel security_level);
-SpawnStatus s_spawn_p(const char*   path,
-                      const char*   args,
-                      const char*   work_dir,
-                      SecurityLevel security_level,
-                      Pid*          out_pid);
+s_spawn_p(const char* path, const char* args, const char* work_dir, SecurityLevel security_level, Pid* out_pid);
 SpawnStatus s_spawn_po(const char*   path,
                        const char*   args,
                        const char*   work_dir,
@@ -115,8 +113,7 @@ SpawnStatus s_spawn_poi(const char*   path,
  * @param security_level:				the new security level for the process
  * @return one of the {RegisterAsServerStatus} codes
  */
-RegisterAsServerStatus s_register_as_server(const char*   server_identifier,
-                                            SecurityLevel security_level);
+RegisterAsServerStatus s_register_as_server(const char* server_identifier, SecurityLevel security_level);
 
 /**
  * Provides a standard interface to communicate with servers,
@@ -131,10 +128,8 @@ RegisterAsServerStatus s_register_as_server(const char*   server_identifier,
  * @param data_len:					the length of the data buffer
  * @return one of the {ServerManageStatus} codes.
  */
-ServerManageStatus s_server_manage(const char*         server_identifier,
-                                   ServerManageCommand manage_command,
-                                   void*               data_ptr,
-                                   usize               data_len);
+ServerManageStatus
+s_server_manage(const char* server_identifier, ServerManageCommand manage_command, void* data_ptr, usize data_len);
 
 /**
  * call spawner to reboot the computer
@@ -246,8 +241,7 @@ FsDirectoryIterator* s_open_directory_s(const char* path, FsOpenDirectoryStatus*
  * @security-level APPLICATION
  */
 FsDirectoryEntry* s_read_directory(FsDirectoryIterator* iterator);
-FsDirectoryEntry* s_read_directory_s(FsDirectoryIterator*   iterator,
-                                     FsReadDirectoryStatus* out_status);
+FsDirectoryEntry* s_read_directory_s(FsDirectoryIterator* iterator, FsReadDirectoryStatus* out_status);
 
 /**
  * Closes a directory.
@@ -309,8 +303,7 @@ i64 s_tell_s(FileHandle fd, FsTellStatus* out_status);
  * @security-level APPLICATION if no process given, otherwise KERNEL
  */
 SetWorkingDirectoryStatus s_set_working_directory(const char* path);
-SetWorkingDirectoryStatus s_set_working_directory_p(const char*               path,
-                                                    ProcessCreationIdentifier process);
+SetWorkingDirectoryStatus s_set_working_directory_p(const char* path, ProcessCreationIdentifier process);
 
 /**
  * Retrieves the working directory for the current process.
@@ -481,10 +474,7 @@ Tid s_create_thread_d(void* func_ptr, void* data);
 Tid s_create_thread_n(void* func_ptr, const char* name);
 Tid s_create_thread_dn(void* func_ptr, void* data, const char* name);
 Tid s_create_thread_ds(void* func_ptr, void* data, CreateThreadStatus* out_status);
-Tid s_create_thread_dns(void*               func_ptr,
-                        void*               data,
-                        const char*         name,
-                        CreateThreadStatus* out_status);
+Tid s_create_thread_dns(void* func_ptr, void* data, const char* name, CreateThreadStatus* out_status);
 
 /**
  * Sends a message to the given task. This means that <len> bytes from the
@@ -508,15 +498,10 @@ Tid s_create_thread_dns(void*               func_ptr,
  * @security-level APPLICATION
  */
 MessageSendStatus s_send_message(Tid target, void* buffer, usize buffer_len);
+MessageSendStatus s_send_message_m(Tid target, void* buffer, usize buffer_len, MessageSendMode send_mode);
+MessageSendStatus s_send_message_t(Tid target, void* buffer, usize buffer_len, MessageTransaction tx);
 MessageSendStatus
-s_send_message_m(Tid target, void* buffer, usize buffer_len, MessageSendMode send_mode);
-MessageSendStatus
-s_send_message_t(Tid target, void* buffer, usize buffer_len, MessageTransaction tx);
-MessageSendStatus s_send_message_tm(Tid                target,
-                                    void*              buffer,
-                                    usize              buffer_len,
-                                    MessageTransaction tx,
-                                    MessageSendMode    send_mode);
+s_send_message_tm(Tid target, void* buffer, usize buffer_len, MessageTransaction tx, MessageSendMode send_mode);
 
 /**
  * Receives a message. At maximum <max> bytes will be attempted to be copied to
@@ -547,13 +532,10 @@ MessageSendStatus s_send_message_tm(Tid                target,
  * @security-level APPLICATION
  */
 MessageReceiveStatus s_receive_message(void* buffer, usize buffer_len);
-MessageReceiveStatus
-s_receive_message_m(void* buffer, usize buffer_len, MessageReceiveMode receive_mode);
+MessageReceiveStatus s_receive_message_m(void* buffer, usize buffer_len, MessageReceiveMode receive_mode);
 MessageReceiveStatus s_receive_message_t(void* buffer, usize buffer_len, MessageTransaction tx);
-MessageReceiveStatus s_receive_message_tm(void*              buffer,
-                                          usize              buffer_len,
-                                          MessageTransaction tx,
-                                          MessageReceiveMode receive_mode);
+MessageReceiveStatus
+s_receive_message_tm(void* buffer, usize buffer_len, MessageTransaction tx, MessageReceiveMode receive_mode);
 MessageReceiveStatus s_receive_message_tmb(void*              buffer,
                                            usize              buffer_len,
                                            MessageTransaction tx,
@@ -714,10 +696,7 @@ void s_join(Tid thread_id);
  * @security-level APPLICATION
  */
 FileHandle s_clone_fd(FileHandle source_fd, Pid source_proc_id, Pid target_proc_id);
-FileHandle s_clone_fd_s(FileHandle       source_fd,
-                        Pid              source_proc_id,
-                        Pid              target_proc_id,
-                        FsCloneFdStatus* out_status);
+FileHandle s_clone_fd_s(FileHandle source_fd, Pid source_proc_id, Pid target_proc_id, FsCloneFdStatus* out_status);
 
 /**
  * Clones a file descriptor in a process to another processes file descriptor value.
@@ -731,8 +710,7 @@ FileHandle s_clone_fd_s(FileHandle       source_fd,
  *
  * @security-level APPLICATION
  */
-FileHandle
-s_clone_fd_t(FileHandle source_fd, Pid source_proc_id, FileHandle target_fd, Pid target_proc_id);
+FileHandle s_clone_fd_t(FileHandle source_fd, Pid source_proc_id, FileHandle target_fd, Pid target_proc_id);
 FileHandle s_clone_fd_ts(FileHandle       source_fd,
                          Pid              source_proc_id,
                          FileHandle       target_fd,
@@ -803,9 +781,7 @@ void s_configure_process(ProcessCreationIdentifier process, ProcessConfiguration
  *
  * @security-level KERNEL
  */
-void* s_create_pages_in_spaces(ProcessCreationIdentifier process,
-                               Address                   virtual_address,
-                               usize                     pages_count);
+void* s_create_pages_in_spaces(ProcessCreationIdentifier process, Address virtual_address, usize pages_count);
 
 /**
  * Creates a thread-local-storage area for a process and copies/zeroes the given amount of bytes
@@ -893,11 +869,8 @@ void s_fs_set_transaction_status(FsTransactionID id, FsTransactionStatus status)
  *
  * @security-level DRIVER
  */
-FsCreateNodeStatus s_fs_create_node(usize       parent,
-                                    const char* name,
-                                    FsNodeType  type,
-                                    usize       fs_id,
-                                    usize*      out_created_id);
+FsCreateNodeStatus
+s_fs_create_node(usize parent, const char* name, FsNodeType type, usize fs_id, usize* out_created_id);
 
 /**
  * Registers the <handler> routine as the handler for the <irq>.
@@ -1035,4 +1008,6 @@ bool s_get_pci_device(usize position, PCIDeviceHeader* header);
  */
 bool s_get_date_time(DateTime* date_time);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

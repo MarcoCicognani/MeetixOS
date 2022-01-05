@@ -14,7 +14,9 @@
 
 #include <Api/Kernel.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief s_call_vm_86 system call data
@@ -26,4 +28,6 @@ typedef struct {
     Vm86CallStatus m_call_status;
 } A_PACKED SyscallCallVm86;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <Api/Time.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief s_time system call data
@@ -25,4 +27,6 @@ typedef struct {
     bool      m_result;
 } A_PACKED SyscallDateTime;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

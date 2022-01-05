@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <stddef.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -60,4 +62,6 @@ struct lconv {
 char*         setlocale(int, const char*);
 struct lconv* localeconv();
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

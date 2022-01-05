@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <stdint.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -96,4 +98,6 @@ static __inline u64 __bswap64(u64 x) {
 #    define letoh64(x) __bswap64(x)
 #endif
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

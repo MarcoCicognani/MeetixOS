@@ -16,13 +16,15 @@
 #include <Api/FileSystem.h>
 #include <dirent.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------- C types ------------------------------------------ */
 
-typedef struct DIR {
-    FsDirectoryIterator* m_directory_iterator;
-    struct dirent*       m_entry_buffer;
-} DIR;
+struct DIR;
+typedef struct DIR;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

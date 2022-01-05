@@ -14,7 +14,9 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -44,4 +46,6 @@ typedef __JMP_BUF_TYPE jmp_buf[__JMP_BUF_LENGTH];
 int  setjmp(jmp_buf);
 void longjmp(jmp_buf, int) A_NORETURN;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

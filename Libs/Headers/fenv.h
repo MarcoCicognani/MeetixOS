@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <Api/StdInt.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -74,4 +76,6 @@ int feholdexcept(fenv_t*);
 int fesetenv(const fenv_t*);
 int feupdateenv(const fenv_t*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

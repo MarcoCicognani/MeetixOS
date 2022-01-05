@@ -15,7 +15,9 @@
 #include <Api/Kernel.h>
 #include <Api/System.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief s_exit system call data
@@ -163,4 +165,6 @@ typedef struct {
     RaiseSignalStatus m_raise_status;
 } A_PACKED SyscallRaiseSignal;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

@@ -17,7 +17,9 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -59,4 +61,6 @@ typedef struct FILE {
     struct FILE* m_next_stream;
 } FILE;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

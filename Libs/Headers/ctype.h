@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <stdint.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -136,4 +138,6 @@ int toupper(int);
 #define tolower  __inline_tolower
 #define toupper  __inline_toupper
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

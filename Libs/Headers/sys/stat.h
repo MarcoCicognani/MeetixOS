@@ -18,7 +18,9 @@
 #include <sys/types.h>
 #include <time.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -68,4 +70,6 @@ int    fchmod(int, mode_t);
 mode_t umask(mode_t);
 int    mkdir(const char*, mode_t);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

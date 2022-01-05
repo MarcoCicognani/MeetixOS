@@ -16,7 +16,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -30,4 +32,6 @@ void* realloc(void*, size_t);
 void* aligned_alloc(size_t, size_t);
 void  free(void*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

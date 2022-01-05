@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <Api/StdInt.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief Address types
@@ -34,14 +36,12 @@ typedef usize   FarPtr;
 /**
  * @brief Far pointer conversion macros
  */
-#define SEGMENT_OFFSET_TO_LINEAR(segment, offset)                                                  \
-    ((void*)((((segment)&0xFFFF) << 4) + ((offset)&0xFFFF)))
-#define FAR_PTR_TO_LINEAR(far_ptr)                                                                 \
-    SEGMENT_OFFSET_TO_LINEAR(FAR_PTR_SEGMENT(far_ptr), FAR_PTR_OFFSET(far_ptr))
+#define SEGMENT_OFFSET_TO_LINEAR(segment, offset) ((void*)((((segment)&0xFFFF) << 4) + ((offset)&0xFFFF)))
+#define FAR_PTR_TO_LINEAR(far_ptr)                SEGMENT_OFFSET_TO_LINEAR(FAR_PTR_SEGMENT(far_ptr), FAR_PTR_OFFSET(far_ptr))
 
-#define SEGMENT_OFFSET_TO_FAR_PTR(segment, offset)                                                 \
-    ((FarPointer)((((segment)&0xFFFF) << 16) | ((offset)&0xFFFF)))
-#define LINEAR_TO_FAR_PTR(linear)                                                                  \
-    (((linear) > 0x100000) ? 0 : (((((linear) >> 4) & 0xFFFF) << 16) + ((linear)&0xFL)))
+#define SEGMENT_OFFSET_TO_FAR_PTR(segment, offset) ((FarPointer)((((segment)&0xFFFF) << 16) | ((offset)&0xFFFF)))
+#define LINEAR_TO_FAR_PTR(linear)                  (((linear) > 0x100000) ? 0 : (((((linear) >> 4) & 0xFFFF) << 16) + ((linear)&0xFL)))
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

@@ -18,7 +18,9 @@
 #include <stddef.h>
 #include <sys/types.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -162,4 +164,6 @@ FILE* popen(const char*, const char*);
 void  perror(const char*);
 int   pclose(FILE*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

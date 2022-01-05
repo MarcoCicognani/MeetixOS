@@ -14,13 +14,14 @@
 
 #include <Api/Common.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief Ramdisk s_spawn statuses
  */
-typedef enum
-{
+typedef enum {
     RAMDISK_SPAWN_STATUS_SUCCESSFUL,
     RAMDISK_SPAWN_STATUS_FAILED_NOT_FOUND,
     RAMDISK_SPAWN_STATUS_FAILED_NOT_VALID,
@@ -35,8 +36,7 @@ typedef enum
 /**
  * @brief Ramdisk entries types
  */
-typedef enum
-{
+typedef enum {
     RAMDISK_ENTRY_TYPE_UNKNOWN = -1,
     RAMDISK_ENTRY_TYPE_FOLDER,
     RAMDISK_ENTRY_TYPE_FILE
@@ -51,4 +51,6 @@ typedef struct {
     usize            m_name_len;
 } RamdiskEntryInfo;
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

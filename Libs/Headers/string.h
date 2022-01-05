@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <stdint.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------ C function prototypes ----------------------------------- */
 
@@ -44,4 +46,6 @@ usize strlen(const char*);
 char* strdup(const char*);
 char* strerror(int);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

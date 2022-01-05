@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <stdint.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -58,4 +60,6 @@ struct tm* localtime(const time_t*);
 char*      asctime(const struct tm*);
 char*      ctime(const time_t*);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif

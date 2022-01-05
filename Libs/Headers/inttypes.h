@@ -15,7 +15,9 @@
 #include <Api/Common.h>
 #include <stdint.h>
 
-__BEGIN_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ------------------------------------------ C defines ----------------------------------------- */
 
@@ -234,4 +236,6 @@ intmax_t  strtoumax(const char*, char**, int);
 intmax_t  wcstoimax(const wchar_t*, wchar_t**, int);
 uintmax_t wcstoumax(const wchar_t*, wchar_t**, int);
 
-__END_C
+#ifdef __cplusplus
+}
+#endif
