@@ -71,8 +71,8 @@ int main(int argc, const char** argv) {
         std::cout << "v" << Utils::Environment::version() << '\n';
         std::cout << '\n';
 
-        std::cout << "\033[35mAn hobby operating system under heavy development\n";
-        std::cout << "by \033[0mMarco Cicognani \033[32mmarco.cicognani@meetixos.org\033[0m\n\n";
+        std::cout << "\033[35mA hobby operating system written in modern C++ (under heavy development)\n";
+        std::cout << "Made by \033[0mMarco Cicognani \033[32mmarco.cicognani@meetixos.org\033[0m\n\n";
     }
 
     std::string username{};

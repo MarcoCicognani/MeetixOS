@@ -13,4 +13,4 @@ stuffs.
 The GUI is temporarily disabled since the old WindowServer is not stable enough, and because I want to develop a new
 Compositor system, which allow by default to draw via canvas to a shared buffer
 
-<img src="https://www.meetixos.org/images/Screenshotfrom2021-12-2419-10-09.png">
+<img src="https://www.meetixos.org/images/MeetixOS.png">
