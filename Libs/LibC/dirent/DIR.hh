@@ -10,14 +10,15 @@
  * GNU General Public License version 3
  */
 
-#include "DIR.hh"
+#pragma once
 
-#include <Api.h>
+#include <Api/Common.h>
+#include <Api/FileSystem.h>
 #include <dirent.h>
 
-extern "C" int closedir(DIR* dir) {
-    s_close_directory(dir->m_directory_iterator);
-    delete dir->m_entry_buffer;
-    delete dir;
-    return 0;
-}
+/* ------------------------------------------- C types ------------------------------------------ */
+
+struct DirStream {
+    FsDirectoryIterator* m_directory_iterator;
+    struct dirent*       m_entry_buffer;
+};

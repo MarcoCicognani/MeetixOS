@@ -24,14 +24,8 @@ int main(int argc, const char** argv) {
     std::string file_name{};
 
     Utils::ArgsParser args_parser{ "Find Utility", V_MAJOR, V_MINOR, V_PATCH };
-    args_parser.add_positional_argument(start_dir,
-                                        "Initial directory where start search",
-                                        "SourceDir",
-                                        true);
-    args_parser.add_positional_argument(file_name,
-                                        "Filename to search in each sub-directory",
-                                        "FileName",
-                                        true);
+    args_parser.add_positional_argument(start_dir, "Initial directory where start search", "SourceDir", true);
+    args_parser.add_positional_argument(file_name, "Filename to search in each sub-directory", "FileName", true);
 
     /* parse the arguments */
     args_parser.parse(argc, argv);
@@ -42,6 +36,5 @@ int main(int argc, const char** argv) {
         if ( path_str.ends_with(file_name) )
             std::cout << entry.path() << std::endl;
     }
-
-    return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }

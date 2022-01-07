@@ -14,7 +14,6 @@
 
 #include <Api/Common.h>
 #include <Api/FileSystem.h>
-#include <dirent.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,10 +21,8 @@ extern "C" {
 
 /* ------------------------------------------- C types ------------------------------------------ */
 
-typedef struct DIR {
-    FsDirectoryIterator* m_directory_iterator;
-    struct dirent*       m_entry_buffer;
-} DIR;
+struct DirStream;
+typedef struct DirStream DIR;
 
 #ifdef __cplusplus
 }
