@@ -10,8 +10,6 @@
  * GNU General Public License version 3
  */
 
-#include "DIR.hh"
-
 #include <Api.h>
 #include <dirent.h>
 

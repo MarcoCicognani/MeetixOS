@@ -22,7 +22,10 @@ extern "C" {
 
 /* ------------------------------------------- C types ------------------------------------------ */
 
-typedef struct DIR;
+typedef struct DIR {
+    FsDirectoryIterator* m_directory_iterator;
+    struct dirent*       m_entry_buffer;
+} DIR;
 
 #ifdef __cplusplus
 }
