@@ -13,6 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <TC/Prelude.hh>
 #include <Utils/ArgsParser.hh>
 
 #define V_MAJOR 0
