@@ -12,6 +12,10 @@
 
 #pragma once
 
+#include <TC/Tags/Adopt.hh>
+#include <TC/Tags/Copy.hh>
+#include <TC/Tags/None.hh>
+#include <TC/Tags/Wrap.hh>
 #include <TC/Traits/AddConst.hh>
 #include <TC/Traits/AddVolatile.hh>
 #include <TC/Traits/Conditional.hh>
