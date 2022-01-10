@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <Api/Types.h>
+#include <Api/StdInt.h>
 
 namespace std {
 
