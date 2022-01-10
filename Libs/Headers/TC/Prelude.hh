@@ -12,11 +12,12 @@
 
 #pragma once
 
-#include <TC/Collection/Vector.hh>
+#include <TC/Collections/Vector.hh>
 #include <TC/Std/Exchange.hh>
 #include <TC/Std/Forward.hh>
 #include <TC/Std/InitializerList.hh>
 #include <TC/Std/Move.hh>
+#include <TC/Std/New.hh>
 #include <TC/Std/NullPtr.hh>
 #include <TC/Std/Swap.hh>
 #include <TC/Tags/Adopt.hh>

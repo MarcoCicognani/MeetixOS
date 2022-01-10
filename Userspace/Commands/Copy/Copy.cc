@@ -10,10 +10,6 @@
  * GNU General Public License version 3
  */
 
-// clang-format off
-#include <TC/Prelude.hh>
-// clang-format on
-
 #include <fstream>
 #include <iostream>
 #include <string>

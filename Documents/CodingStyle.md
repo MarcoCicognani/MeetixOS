@@ -33,7 +33,7 @@ for ( auto i = /* init */; /* Condition */; /* Increment */  ) {
     /* Code */
 }
 
-for ( auto i : /* Collection */  ) {
+for ( auto i : /* Collections */  ) {
     /* Code */
 }
 ```

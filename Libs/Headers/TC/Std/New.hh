@@ -12,9 +12,12 @@
 
 #pragma once
 
-namespace TC::Collection {
+#include <Api/StdInt.h>
 
-template<typename T>
-class Vector {};
+inline void* operator new(size_t, void* ptr) {
+    return ptr;
+}
 
-} /* namespace TC::Collection */
+inline void* operator new[](size_t, void* ptr) {
+    return ptr;
+}
