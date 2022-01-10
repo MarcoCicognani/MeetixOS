@@ -10,10 +10,13 @@
  * GNU General Public License version 3
  */
 
+// clang-format off
+#include <TC/Prelude.hh>
+// clang-format on
+
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <TC/Prelude.hh>
 #include <Utils/ArgsParser.hh>
 
 #define V_MAJOR 0
