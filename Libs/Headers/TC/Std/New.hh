@@ -14,10 +14,10 @@
 
 #include <Api/StdInt.h>
 
-inline void* operator new(size_t, void* ptr) {
-    return ptr;
+inline void* operator new(usize, void* placement_memory) {
+    return placement_memory;
 }
 
-inline void* operator new[](size_t, void* ptr) {
-    return ptr;
+inline void* operator new[](usize, void* placement_memory) {
+    return placement_memory;
 }

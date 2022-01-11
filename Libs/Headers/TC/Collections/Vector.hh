@@ -225,7 +225,7 @@ template<typename T>
 Vector<T>::~Vector() {
     clear();
 
-    delete[] m_data_storage;
+    free(m_data_storage);
 }
 
 template<typename T>
@@ -343,15 +343,18 @@ T& Vector<T>::emplace(Args&&... args) {
     }
 
     /* insert the given value */
-    return *new (&m_data_storage[0]) T{ std::forward<Args>(args)... };
+    new (&m_data_storage[0]) T{ std::forward<Args>(args)... };
+    return m_data_storage[0];
 }
+
 template<typename T>
 template<typename... Args>
 T& Vector<T>::emplace_back(Args&&... args) {
     grow();
 
     /* insert the given value */
-    return *new (&m_data_storage[m_count - 1]) T{ std::forward<Args>(args)... };
+    new (&m_data_storage[m_count - 1]) T{ std::forward<Args>(args)... };
+    return m_data_storage[m_count - 1];
 }
 
 template<typename T>
@@ -488,7 +491,7 @@ void Vector<T>::ensure_capacity(usize capacity) {
     move_content_to(new_storage, m_count);
 
     /* update the fields */
-    delete[] m_data_storage;
+    free(m_data_storage);
     m_data_storage = new_storage;
     m_capacity     = capacity;
 }
@@ -502,7 +505,7 @@ void Vector<T>::grow() {
         move_content_to(new_storage, m_count);
 
         /* update the fields */
-        delete[] m_data_storage;
+        free(m_data_storage);
         m_data_storage = new_storage;
         m_capacity     = new_capacity;
     }
@@ -521,7 +524,7 @@ void Vector<T>::shrink() {
         move_content_to(new_storage, m_count);
 
         /* update the fields */
-        delete[] m_data_storage;
+        free(m_data_storage);
         m_data_storage = new_storage;
         m_capacity     = new_capacity;
     }
@@ -584,13 +587,8 @@ void Vector<T>::copy_content(T const* source, usize count) const {
 
 template<typename T>
 void Vector<T>::move_content_to(T* new_storage, usize count) {
-    for ( auto i = 0; i < count; ++i ) {
-        /* move to the new area the object */
+    for ( auto i = 0; i < count; ++i )
         new (&new_storage[i]) T{ std::move(m_data_storage[i]) };
-
-        /* destroy the old location */
-        m_data_storage[i].~T();
-    }
 }
 
 template<typename T>

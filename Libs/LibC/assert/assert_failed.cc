@@ -12,8 +12,11 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void assert_failed(const char* file, int line, const char* function, const char* expr) {
-    fprintf(stderr, "Assertion failed: %s:%d: %s: %s\n", file, line, function, expr);
-    klog("Assertion failed: %s:%d: %s: %s\n", file, line, function, expr);
+    fprintf(stderr, "PANIC: Assertion failed\n%s:%d\n\n%s {\n\t%s\n}\n", file, line, function, expr);
+    fflush(stderr);
+
+    exit(EXIT_FAILURE);
 }

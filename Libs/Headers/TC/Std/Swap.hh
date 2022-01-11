@@ -17,8 +17,8 @@
 namespace std {
 
 template<typename T>
-void swap(T& left, T& right) {
-    T tmp = std::move(left);
+void swap(T& left, T& right) noexcept {
+    T tmp{ std::move(left) };
     left  = std::move(right);
     right = std::move(tmp);
 }
