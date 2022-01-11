@@ -15,6 +15,7 @@
 #include <Api/StdInt.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <TC/Collections/CommonIterator.hh>
 #include <TC/Std/Exchange.hh>
 #include <TC/Std/Forward.hh>
 #include <TC/Std/InitializerList.hh>
@@ -27,6 +28,10 @@ namespace TC::Collections {
 
 template<typename T>
 class Vector {
+public:
+    using Iterator      = CommonIterator<Vector, T>;
+    using ConstIterator = CommonIterator<Vector const, T const>;
+
 public:
     /**
      * @brief Constructors
@@ -145,6 +150,15 @@ public:
     void ensure_capacity(usize capacity);
     void grow();
     void shrink();
+
+    /**
+     * @brief for-each support
+     */
+    Iterator begin();
+    Iterator end();
+
+    ConstIterator begin() const;
+    ConstIterator end() const;
 
     /**
      * @brief Returns whether this vector contains the given value
@@ -271,7 +285,7 @@ T& Vector<T>::insert(usize index, T&& value) {
 
 template<typename T>
 template<typename Comparator>
-void Vector<T>::insert_sorted(const T& value, Comparator comparator) {
+void Vector<T>::insert_sorted(T const& value, Comparator comparator) {
     /* find the insertion index */
     auto insert_index = 0;
     for ( auto i = 0; i < m_count; ++i ) {
@@ -286,7 +300,7 @@ void Vector<T>::insert_sorted(const T& value, Comparator comparator) {
 }
 
 template<typename T>
-void Vector<T>::insert_sorted(const T& value) {
+void Vector<T>::insert_sorted(T const& value) {
     return insert_sorted(value, [](T const& a, T const& b) { return a < b; });
 }
 
@@ -514,7 +528,27 @@ void Vector<T>::shrink() {
 }
 
 template<typename T>
-bool Vector<T>::contains(const T& value) const {
+typename Vector<T>::Iterator Vector<T>::begin() {
+    return Iterator::begin(*this);
+}
+
+template<typename T>
+typename Vector<T>::Iterator Vector<T>::end() {
+    return Iterator::end(*this);
+}
+
+template<typename T>
+typename Vector<T>::ConstIterator Vector<T>::begin() const {
+    return ConstIterator::begin(*this);
+}
+
+template<typename T>
+typename Vector<T>::ConstIterator Vector<T>::end() const {
+    return ConstIterator::end(*this);
+}
+
+template<typename T>
+bool Vector<T>::contains(T const& value) const {
     for ( auto i = 0; i < m_count; ++i ) {
         if ( m_data_storage[i] == value )
             return true;

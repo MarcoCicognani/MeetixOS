@@ -12,7 +12,9 @@
 
 #pragma once
 
+#include <TC/Collections/CommonIterator.hh>
 #include <TC/Collections/Vector.hh>
+#include <TC/Functional/Option.hh>
 #include <TC/Std/Exchange.hh>
 #include <TC/Std/Forward.hh>
 #include <TC/Std/InitializerList.hh>
