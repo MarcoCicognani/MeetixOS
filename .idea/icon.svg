@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="3840px"
+   height="2160px"
+   viewBox="0 0 3840 2160"
+   version="1.1"
+   id="SVGRoot"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   sodipodi:docname="Logo2.svg">
+  <defs
+     id="defs3847" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="864.65477"
+     inkscape:cy="898.8912"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="3840"
+     inkscape:window-height="2099"
+     inkscape:window-x="0"
+     inkscape:window-y="30"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata3850">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:917.45599365px;line-height:1.25;font-family:FreeMono;-inkscape-font-specification:FreeMono;fill:#000000;fill-opacity:1;stroke:none;stroke-width:22.93647957"
+       x="3080.6292"
+       y="1265.2985"
+       id="text16132"
+       transform="scale(0.9239445,1.0823161)"><tspan
+         sodipodi:role="line"
+         id="tspan16130"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:FreeMono;-inkscape-font-specification:'FreeMono Bold';stroke-width:22.93647957"
+         x="3080.6292"
+         y="1265.2985">OS</tspan></text>
+    <ellipse
+       style="fill:#21f100;fill-opacity:1;stroke-width:16.30345154;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path72368"
+       cx="1443.1553"
+       cy="1080"
+       rx="1425.0002"
+       ry="419.99997" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:714.33111572px;line-height:1.25;font-family:FreeMono;-inkscape-font-specification:FreeMono;fill:#000000;fill-opacity:1;stroke:none;stroke-width:17.83568573;stroke-miterlimit:4;stroke-dasharray:none"
+       x="107.7865"
+       y="1362.4841"
+       id="text2367"
+       transform="matrix(1.025566,2.7111306e-4,-0.00953339,0.97506881,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan2365"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono';fill:#ffffff;stroke-width:17.83568573;stroke-miterlimit:4;stroke-dasharray:none"
+         x="107.7865"
+         y="1362.4841">MeetiX</tspan></text>
+  </g>
+</svg>
