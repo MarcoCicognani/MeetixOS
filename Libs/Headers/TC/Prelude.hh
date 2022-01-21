@@ -12,12 +12,18 @@
 
 #pragma once
 
+#include <TC/Assertion.hh>
 #include <TC/Collections/CommonIterator.hh>
 #include <TC/Collections/Vector.hh>
+#include <TC/Functional/ErrorOr.hh>
+#include <TC/Functional/Must.hh>
 #include <TC/Functional/Option.hh>
+#include <TC/Functional/Result.hh>
+#include <TC/Functional/Try.hh>
+#include <TC/IntTypes.hh>
+#include <TC/RawMemory.hh>
 #include <TC/Std/Exchange.hh>
 #include <TC/Std/Forward.hh>
-#include <TC/Std/InitializerList.hh>
 #include <TC/Std/Move.hh>
 #include <TC/Std/New.hh>
 #include <TC/Std/NullPtr.hh>
@@ -57,3 +63,4 @@
 #include <TC/Traits/RemoveReference.hh>
 #include <TC/Traits/RemoveVolatile.hh>
 #include <TC/Traits/TrueType.hh>
+#include <TC/Traits/Type.hh>

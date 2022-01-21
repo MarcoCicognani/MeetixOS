@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <Api/StdInt.h>
 #include <TC/Functional/Option.hh>
+#include <TC/IntTypes.hh>
 
 namespace TC::Collections {
 

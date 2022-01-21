@@ -18,8 +18,6 @@
 namespace TC::Traits {
 
 template<typename T>
-struct IsVoid : IsSame<void, typename RemoveConstVolatile<T>::Type> {
-    /* Empty Body */
-};
+inline constexpr bool IsVoid = IsSame<void, RemoveConstVolatile<T>>;
 
 } /* namespace TC::Traits */

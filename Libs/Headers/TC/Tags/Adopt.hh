@@ -14,11 +14,11 @@
 
 namespace TC::Tags {
 
-enum class Adopt : bool { __Value };
+enum class Adopt : bool { Value };
 
 /**
  * @brief The object must take the ownership of the memory
  */
-constexpr auto C_ADOPT = Adopt::__Value;
+constexpr auto C_ADOPT = Adopt::Value;
 
 } /* namespace TC::Tags */

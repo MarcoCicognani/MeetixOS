@@ -12,19 +12,12 @@
 
 #pragma once
 
-#include <TC/Traits/FalseType.hh>
-#include <TC/Traits/TrueType.hh>
-
 namespace TC::Traits {
 
 template<typename T>
-struct IsRValue : FalseType {
-    /* Empty Body */
-};
+inline constexpr bool IsRValue = false;
 
 template<typename T>
-struct IsRValue<T&&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsRValue<T&&> = true;
 
 } /* namespace TC::Traits */

@@ -20,8 +20,6 @@
 namespace TC::Traits {
 
 template<typename ReferenceType, typename T>
-using CopyConst = typename Conditional<IsConst<ReferenceType>::value,
-                                       typename AddConst<T>::Type,
-                                       typename RemoveConst<T>::Type>::Type;
+using CopyConst = Conditional<IsConst<ReferenceType>, AddConst<T>, RemoveConst<T>>;
 
 } /* namespace TC::Traits */

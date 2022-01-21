@@ -17,6 +17,6 @@
 namespace TC::Traits {
 
 template<typename T, typename... Ts>
-concept In = (IsSame<T, Ts>::value || ...);
+concept In = (IsSame<T, Ts> || ...);
 
 } /* namespace TC::Traits */

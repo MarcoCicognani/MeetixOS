@@ -12,43 +12,45 @@
 
 #pragma once
 
-#include <Api/StdInt.h>
-#include <TC/Traits/FalseType.hh>
 #include <TC/Traits/MakeUnsigned.hh>
 #include <TC/Traits/RemoveConstVolatile.hh>
-#include <TC/Traits/TrueType.hh>
 
 namespace TC::Traits {
 namespace Details {
 
 template<typename T>
-struct IsIntegral : FalseType {
-    /* Empty Body */
-};
+inline constexpr bool IsIntegral = false;
 
 template<>
-struct IsIntegral<u8> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsIntegral<bool> = true;
 
 template<>
-struct IsIntegral<u16> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsIntegral<unsigned char> = true;
 
 template<>
-struct IsIntegral<u32> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsIntegral<char8_t> = true;
 
 template<>
-struct IsIntegral<u64> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsIntegral<char16_t> = true;
+
+template<>
+inline constexpr bool IsIntegral<char32_t> = true;
+
+template<>
+inline constexpr bool IsIntegral<unsigned short> = true;
+
+template<>
+inline constexpr bool IsIntegral<unsigned int> = true;
+
+template<>
+inline constexpr bool IsIntegral<unsigned long> = true;
+
+template<>
+inline constexpr bool IsIntegral<unsigned long long> = true;
 
 } /* namespace Details */
 
 template<typename T>
-using IsIntegral = Details::IsIntegral<typename MakeUnsigned<typename RemoveConstVolatile<T>::Type>::Type>;
+inline constexpr bool IsIntegral = Details::IsIntegral<MakeUnsigned<RemoveConstVolatile<T>>>;
 
 } /* namespace TC::Traits */

@@ -12,33 +12,26 @@
 
 #pragma once
 
-#include <Api/StdInt.h>
-#include <TC/Traits/FalseType.hh>
-#include <TC/Traits/MakeUnsigned.hh>
 #include <TC/Traits/RemoveConstVolatile.hh>
-#include <TC/Traits/TrueType.hh>
 
 namespace TC::Traits {
 namespace Details {
 
 template<typename T>
-struct IsFloatingPoint : FalseType {
-    /* Empty Body */
-};
+inline constexpr bool IsFloatingPoint = false;
 
 template<>
-struct IsFloatingPoint<float> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFloatingPoint<float> = true;
 
 template<>
-struct IsFloatingPoint<double> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFloatingPoint<double> = true;
+
+template<>
+inline constexpr bool IsFloatingPoint<long double> = true;
 
 } /* namespace Details */
 
 template<typename T>
-using IsFloatingPoint = Details::IsFloatingPoint<typename RemoveConstVolatile<T>::Type>;
+inline constexpr bool IsFloatingPoint = Details::IsFloatingPoint<RemoveConstVolatile<T>>;
 
 } /* namespace TC::Traits */

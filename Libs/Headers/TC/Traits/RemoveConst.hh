@@ -13,6 +13,7 @@
 #pragma once
 
 namespace TC::Traits {
+namespace Details {
 
 template<typename T>
 struct RemoveConst {
@@ -23,5 +24,10 @@ template<typename T>
 struct RemoveConst<const T> {
     using Type = T;
 };
+
+} /* namespace Details */
+
+template<typename T>
+using RemoveConst = typename Details::RemoveConst<T>::Type;
 
 } /* namespace TC::Traits */

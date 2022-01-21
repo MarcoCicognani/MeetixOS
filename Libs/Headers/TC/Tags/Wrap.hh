@@ -14,11 +14,11 @@
 
 namespace TC::Tags {
 
-enum class Wrap : bool { __Value };
+enum class Wrap : bool { Value };
 
 /**
  * @brief The object must wrap the memory without copying it nor taking the ownership
  */
-constexpr auto C_WRAP = Wrap::__Value;
+constexpr auto C_WRAP = Wrap::Value;
 
 } /* namespace TC::Tags */

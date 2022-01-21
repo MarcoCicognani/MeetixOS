@@ -12,9 +12,8 @@
 
 #pragma once
 
-#include <Api/StdInt.h>
-
 namespace TC::Traits {
+namespace Details {
 
 template<typename T>
 struct MakeUnsigned {
@@ -22,43 +21,58 @@ struct MakeUnsigned {
 };
 
 template<>
-struct MakeUnsigned<i8> {
-    using Type = u8;
+struct MakeUnsigned<signed char> {
+    using Type = unsigned char;
 };
 
 template<>
-struct MakeUnsigned<i16> {
-    using Type = u16;
+struct MakeUnsigned<signed short> {
+    using Type = unsigned short;
 };
 
 template<>
-struct MakeUnsigned<i32> {
-    using Type = u32;
+struct MakeUnsigned<signed int> {
+    using Type = unsigned int;
 };
 
 template<>
-struct MakeUnsigned<i64> {
-    using Type = u64;
+struct MakeUnsigned<signed long> {
+    using Type = unsigned long;
 };
 
 template<>
-struct MakeUnsigned<u8> {
-    using Type = u8;
+struct MakeUnsigned<signed long long> {
+    using Type = unsigned long long;
 };
 
 template<>
-struct MakeUnsigned<u16> {
-    using Type = u16;
+struct MakeUnsigned<unsigned char> {
+    using Type = unsigned char;
 };
 
 template<>
-struct MakeUnsigned<u32> {
-    using Type = u32;
+struct MakeUnsigned<unsigned short> {
+    using Type = unsigned short;
 };
 
 template<>
-struct MakeUnsigned<u64> {
-    using Type = u64;
+struct MakeUnsigned<unsigned int> {
+    using Type = unsigned int;
 };
+
+template<>
+struct MakeUnsigned<unsigned long> {
+    using Type = unsigned long;
+};
+
+template<>
+struct MakeUnsigned<unsigned long long> {
+    using Type = unsigned long long;
+};
+
+} /* namespace Details */
+
+template<typename T>
+using MakeUnsigned = typename Details::MakeUnsigned<T>::Type;
 
 } /* namespace TC::Traits */

@@ -12,28 +12,20 @@
 
 #pragma once
 
-#include <TC/Traits/FalseType.hh>
 #include <TC/Traits/RemoveConstVolatile.hh>
-#include <TC/Traits/TrueType.hh>
 
 namespace TC::Traits {
 namespace Details {
 
 template<typename T>
-struct IsPointer : FalseType {
-    /* Empty Body */
-};
+inline constexpr bool IsPointer = false;
 
 template<typename T>
-struct IsPointer<T*> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsPointer<T*> = true;
 
 } /* namespace Details */
 
 template<typename T>
-struct IsPointer : Details::IsPointer<typename RemoveConstVolatile<T>::Type> {
-    /* Empty Body */
-};
+inline constexpr bool IsPointer = Details::IsPointer<RemoveConstVolatile<T>>;
 
 } /* namespace TC::Traits */

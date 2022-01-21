@@ -15,8 +15,6 @@
 namespace TC::Traits {
 
 template<typename T>
-struct AddVolatile {
-    using Type = T volatile;
-};
+using AddVolatile = T volatile;
 
 } /* namespace TC::Traits */

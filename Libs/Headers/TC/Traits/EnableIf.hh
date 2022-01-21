@@ -13,6 +13,7 @@
 #pragma once
 
 namespace TC::Traits {
+namespace Details {
 
 template<bool B, typename T>
 struct EnableIf {
@@ -23,5 +24,10 @@ template<typename T>
 struct EnableIf<true, T> {
     using Type = T;
 };
+
+} /* namespace Details */
+
+template<bool B, typename T>
+using EnableIf = typename Details::EnableIf<B, T>::Type;
 
 } /* namespace TC::Traits */

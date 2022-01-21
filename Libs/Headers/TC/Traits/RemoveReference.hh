@@ -13,6 +13,7 @@
 #pragma once
 
 namespace TC::Traits {
+namespace Details {
 
 template<typename T>
 struct RemoveReference {
@@ -28,5 +29,10 @@ template<typename T>
 struct RemoveReference<T&&> {
     using Type = T;
 };
+
+} /* namespace Details */
+
+template<typename T>
+using RemoveReference = typename Details::RemoveReference<T>::Type;
 
 } /* namespace TC::Traits */

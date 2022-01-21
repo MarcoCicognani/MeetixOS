@@ -18,13 +18,9 @@
 namespace TC::Traits {
 
 template<typename T, typename U>
-struct IsSame : FalseType {
-    /* Empty Body */
-};
+inline constexpr bool IsSame = false;
 
 template<typename T>
-struct IsSame<T, T> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsSame<T, T> = true;
 
 } /* namespace TC::Traits */

@@ -17,8 +17,6 @@
 namespace TC::Traits {
 
 template<typename T>
-struct IsUnion : public Constant<bool, __is_union(T)> {
-    /* Empty Body */
-};
+inline constexpr bool IsUnion = __is_union(T);
 
 } /* namespace TC::Traits */

@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <Api/StdInt.h>
+#include <TC/IntTypes.hh>
 
 namespace TC::Traits {
 
@@ -23,12 +23,12 @@ struct Max {
 
 template<usize arg>
 struct Max<arg> {
-    static constexpr usize m_value = arg;
+    static constexpr usize value = arg;
 };
 
 template<usize a, usize b, usize... others>
 struct Max<a, b, others...> {
-    static constexpr usize m_value = a >= b ? Max<a, others...>::value : Max<b, others...>::value;
+    static constexpr usize value = a >= b ? Max<a, others...>::value : Max<b, others...>::value;
 };
 
 } /* namespace TC::Traits */

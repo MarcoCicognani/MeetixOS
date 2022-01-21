@@ -12,12 +12,10 @@
 
 #pragma once
 
-#include <Api/StdInt.h>
-
-inline void* operator new(usize, void* placement_memory) {
+inline void* operator new(long unsigned int, void* placement_memory) {
     return placement_memory;
 }
 
-inline void* operator new[](usize, void* placement_memory) {
+inline void* operator new[](long unsigned int, void* placement_memory) {
     return placement_memory;
 }

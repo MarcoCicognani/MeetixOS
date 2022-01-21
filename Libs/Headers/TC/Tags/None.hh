@@ -14,11 +14,11 @@
 
 namespace TC::Tags {
 
-enum class None : bool { __Value };
+enum class None : bool { Value };
 
 /**
  * @brief The object must be empty initialized
  */
-constexpr auto C_NONE = None::__Value;
+constexpr auto C_NONE = None::Value;
 
 } /* namespace TC::Tags */

@@ -49,6 +49,8 @@
 #include "video/ConsoleVideo.hpp"
 #include "video/PrettyBoot.hpp"
 
+#include <TC/Prelude.hh>
+
 // scoping of static internal kernel class properties
 AddressRangePool* EvaKernel::evaKernelRangePool;
 Ramdisk*          EvaKernel::ramdisk;
@@ -94,16 +96,14 @@ void EvaKernel::preSetup(SetupInformation* info) {
 
     // search from loaded modules the ramdisk file
     PRETTY_BOOT_STATUS("Searching ramdisk module", 30, GREEN);
-    MultibootModule* ramDiskModule
-        = MultibootUtils::findModule(info->multibootInformation, "/boot/Ramdisk.img");
+    MultibootModule* ramDiskModule = MultibootUtils::findModule(info->multibootInformation, "/boot/Ramdisk.img");
     if ( !ramDiskModule )
         panic("%! ramdisk MXfs.img does not exist", "Eva Kernel");
 
     // create the memory address ranges
     PRETTY_BOOT_STATUS("Initializing kernel range pool", 35, GREEN);
     EvaKernel::evaKernelRangePool = new AddressRangePool();
-    EvaKernel::evaKernelRangePool->initialize(CONST_KERNEL_VIRTUAL_RANGES_START,
-                                              CONST_KERNEL_VIRTUAL_RANGES_END);
+    EvaKernel::evaKernelRangePool->initialize(CONST_KERNEL_VIRTUAL_RANGES_START, CONST_KERNEL_VIRTUAL_RANGES_END);
 
     // load the ramdisk and get it's size
     PRETTY_BOOT_STATUS("Loading ramdisk", 40, GREEN);
@@ -158,8 +158,7 @@ void EvaKernel::printHeader(SetupInformation* info) {
  */
 uint32_t EvaKernel::loadRamdisk(MultibootModule* ramdiskModule) {
     // align the pages to get module size
-    int ramdiskPages
-        = PAGE_ALIGN_UP(ramdiskModule->moduleEnd - ramdiskModule->moduleStart) / PAGE_SIZE;
+    int ramdiskPages = PAGE_ALIGN_UP(ramdiskModule->moduleEnd - ramdiskModule->moduleStart) / PAGE_SIZE;
 
     // allocate memory to a new virtual address
     VirtAddr ramdiskNewLocation = EvaKernel::evaKernelRangePool->allocate(ramdiskPages);
@@ -176,8 +175,7 @@ uint32_t EvaKernel::loadRamdisk(MultibootModule* ramdiskModule) {
     }
 
     // adjust module range
-    ramdiskModule->moduleEnd
-        = ramdiskNewLocation + (ramdiskModule->moduleEnd - ramdiskModule->moduleStart);
+    ramdiskModule->moduleEnd   = ramdiskNewLocation + (ramdiskModule->moduleEnd - ramdiskModule->moduleStart);
     ramdiskModule->moduleStart = ramdiskNewLocation;
 
     // create the ramdisk and load the module
@@ -259,9 +257,7 @@ void EvaKernel::runBasicSystemPackage(PhysAddr initialPdPhysical) {
             loadSystemProcess("/Bins/Idle", THREAD_PRIORITY_IDLE, SECURITY_LEVEL_KERNEL);
 
             PRETTY_BOOT_STATUS("Load Init process", 99, GREEN);
-            loadSystemProcess("/MeetiX/Kernel/Servers/Spawner.sv",
-                              THREAD_PRIORITY_NORMAL,
-                              SECURITY_LEVEL_KERNEL);
+            loadSystemProcess("/MeetiX/Kernel/Servers/Spawner.sv", THREAD_PRIORITY_NORMAL, SECURITY_LEVEL_KERNEL);
         }
         PRETTY_BOOT_STATUS("Starting Userspace", 100, GREEN);
     }
@@ -331,16 +327,13 @@ void EvaKernel::runAdvancedSystemPackage() {
  * @param path:			the ramdisk path to the binary
  * @param priority:		the thread priority to assign
  */
-void EvaKernel::loadSystemProcess(const char*    binaryPath,
-                                  ThreadPriority priority,
-                                  SecurityLevel  security_level) {
+void EvaKernel::loadSystemProcess(const char* binaryPath, ThreadPriority priority, SecurityLevel security_level) {
     // lock, only once can spawn processes
     systemProcessSpawnLock.lock();
 
     // spawn the new process
     Thread*          systemProcess;
-    Elf32SpawnStatus status
-        = Elf32Loader::spawnFromRamdisk(binaryPath, security_level, &systemProcess, true, priority);
+    Elf32SpawnStatus status = Elf32Loader::spawnFromRamdisk(binaryPath, security_level, &systemProcess, true, priority);
     switch ( status ) {
         case Elf32SpawnStatus::SUCCESSFUL:
             logInfo("%! successful spawned \"%s\"", "sysproc", binaryPath);
@@ -352,9 +345,7 @@ void EvaKernel::loadSystemProcess(const char*    binaryPath,
             panic("%! \"%s\" is not a valid elf32 binary", "Eva Kernel", binaryPath);
             break;
         case Elf32SpawnStatus::PROCESS_CREATION_FAILED:
-            panic("%! \"%s\" could not be loaded, error creating process",
-                  "Eva Kernel",
-                  binaryPath);
+            panic("%! \"%s\" could not be loaded, error creating process", "Eva Kernel", binaryPath);
             break;
         default:
             panic("%! \"%s\" could not be loaded", "Eva Kernel", binaryPath);

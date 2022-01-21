@@ -15,8 +15,6 @@
 namespace TC::Traits {
 
 template<typename T>
-struct AddConst {
-    using Type = T const;
-};
+using AddConst = T const;
 
 } /* namespace TC::Traits */

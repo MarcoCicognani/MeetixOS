@@ -17,8 +17,8 @@
 namespace std {
 
 template<typename T>
-constexpr typename TC::Traits::RemoveReference<T>::Type&& move(T&& arg) noexcept {
-    return static_cast<typename TC::Traits::RemoveReference<T>::Type&&>(arg);
+constexpr TC::Traits::RemoveReference<T>&& move(T&& arg) noexcept {
+    return static_cast<TC::Traits::RemoveReference<T>&&>(arg);
 }
 
 } /* namespace std */

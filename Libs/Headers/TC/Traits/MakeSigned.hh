@@ -12,9 +12,8 @@
 
 #pragma once
 
-#include <Api/StdInt.h>
-
 namespace TC::Traits {
+namespace Details {
 
 template<typename T>
 struct MakeSigned {
@@ -22,43 +21,58 @@ struct MakeSigned {
 };
 
 template<>
-struct MakeSigned<u8> {
-    using Type = i8;
+struct MakeSigned<unsigned char> {
+    using Type = signed char;
 };
 
 template<>
-struct MakeSigned<u16> {
-    using Type = i16;
+struct MakeSigned<unsigned short> {
+    using Type = signed short;
 };
 
 template<>
-struct MakeSigned<u32> {
-    using Type = i32;
+struct MakeSigned<unsigned int> {
+    using Type = signed int;
 };
 
 template<>
-struct MakeSigned<u64> {
-    using Type = i64;
+struct MakeSigned<unsigned long> {
+    using Type = signed long;
 };
 
 template<>
-struct MakeSigned<i8> {
-    using Type = i8;
+struct MakeSigned<unsigned long long> {
+    using Type = signed long long;
 };
 
 template<>
-struct MakeSigned<i16> {
-    using Type = i16;
+struct MakeSigned<signed char> {
+    using Type = signed char;
 };
 
 template<>
-struct MakeSigned<i32> {
-    using Type = i32;
+struct MakeSigned<signed short> {
+    using Type = signed short;
 };
 
 template<>
-struct MakeSigned<i64> {
-    using Type = i64;
+struct MakeSigned<signed int> {
+    using Type = signed int;
 };
+
+template<>
+struct MakeSigned<signed long> {
+    using Type = signed long;
+};
+
+template<>
+struct MakeSigned<signed long long> {
+    using Type = signed long long;
+};
+
+} /* namespace Details */
+
+template<typename T>
+using MakeSigned = typename Details::MakeSigned<T>::Type;
 
 } /* namespace TC::Traits */

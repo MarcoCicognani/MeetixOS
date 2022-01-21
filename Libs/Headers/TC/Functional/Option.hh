@@ -12,10 +12,9 @@
 
 #pragma once
 
-#include <assert.h>
+#include <TC/Assertion.hh>
 #include <TC/Std/Move.hh>
 #include <TC/Std/New.hh>
-#include <TC/Tags/None.hh>
 
 namespace TC::Functional {
 
@@ -25,10 +24,9 @@ public:
     /**
      * @brief Constructors
      */
-    explicit Option() = default;
-    explicit Option(TC::Tags::None);
-    explicit Option(T const& value);
-    explicit Option(T&& value);
+    Option() = default;
+    Option(T const& value);
+    Option(T&& value);
     Option(Option const& rhs);
     Option(Option&& rhs) noexcept;
 
@@ -37,9 +35,9 @@ public:
     /**
      * @brief Returns a reference to the value from this option
      */
-    [[nodiscard]] T&       value();
-    [[nodiscard]] T const& value() const;
-    [[nodiscard]] T const& value_or(T const& default_value) const;
+    T&       value();
+    T const& value() const;
+    T const& value_or(T const& default_value) const;
 
     /**
      * @brief Returns the value of this option
@@ -59,14 +57,8 @@ public:
 
 private:
     bool m_is_present{ false };
-    union {
-        T m_data_storage;
-    };
+    alignas(T) u8 m_data_storage[sizeof(T)]{ 0 }; /* byte-array to avoid <m_data_storage> constructor call */
 };
-
-template<typename T>
-Option<T>::Option(TC::Tags::None) {
-}
 
 template<typename T>
 Option<T>::Option(T const& value)
@@ -104,16 +96,16 @@ Option<T>::~Option() {
 
 template<typename T>
 T& Option<T>::value() {
-    assert(is_present());
+    VERIFY(is_present());
 
-    return m_data_storage;
+    return *__builtin_launder(reinterpret_cast<T*>(&m_data_storage));
 }
 
 template<typename T>
 T const& Option<T>::value() const {
-    assert(is_present());
+    VERIFY(is_present());
 
-    return m_data_storage;
+    return *__builtin_launder(reinterpret_cast<T const*>(&m_data_storage));
 }
 
 template<typename T>
@@ -131,7 +123,7 @@ T Option<T>::unwrap() {
     return moved_value;
 }
 template<typename T>
-T Option<T>::unwrap_or(const T& default_value) const {
+T Option<T>::unwrap_or(T const& default_value) const {
     if ( is_present() )
         return unwrap();
     else
@@ -141,7 +133,7 @@ T Option<T>::unwrap_or(const T& default_value) const {
 template<typename T>
 void Option<T>::reset() {
     if ( is_present() ) {
-        m_data_storage.~T();
+        value().~T();
         m_is_present = false;
     }
 }

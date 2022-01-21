@@ -12,13 +12,9 @@
 
 #pragma once
 
-#include <TC/Traits/Constant.hh>
-
 namespace TC::Traits {
 
-template<typename Base, typename Derived>
-struct IsBaseOf : public Constant<bool, __is_base_of(Base, Derived)> {
-    /* Empty Body */
-};
+template<typename B, typename D>
+inline constexpr bool IsBaseOf = __is_base_of(B, D);
 
 } /* namespace TC::Traits */

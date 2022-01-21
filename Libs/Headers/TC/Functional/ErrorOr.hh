@@ -10,12 +10,14 @@
  * GNU General Public License version 3
  */
 
+#pragma once
+
 #include <errno.h>
+#include <TC/Functional/Result.hh>
 
-extern "C" {
-__thread OSError g_errno_value = ENOERR;
+namespace TC::Functional {
 
-int* errno_location() {
-    return reinterpret_cast<int*>(&g_errno_value);
-}
-}
+template<typename T>
+using ErrorOr = Result<T, OSError>;
+
+} /* namespace TC::Functional */

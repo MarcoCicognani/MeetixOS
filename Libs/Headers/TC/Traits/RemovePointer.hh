@@ -13,6 +13,7 @@
 #pragma once
 
 namespace TC::Traits {
+namespace Details {
 
 template<typename T>
 struct RemovePointer {
@@ -38,5 +39,10 @@ template<typename T>
 struct RemovePointer<T* const volatile> {
     using Type = T;
 };
+
+} /* namespace Details */
+
+template<typename T>
+using RemovePointer = typename Details::RemovePointer<T>::Type;
 
 } /* namespace TC::Traits */

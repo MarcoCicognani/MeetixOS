@@ -14,11 +14,11 @@
 
 namespace TC::Tags {
 
-enum class Copy : bool { __Value };
+enum class Copy : bool { Value };
 
 /**
  * @brief The object must make a copy of the memory
  */
-constexpr auto C_COPY = Copy::__Value;
+constexpr auto C_COPY = Copy::Value;
 
 } /* namespace TC::Tags */

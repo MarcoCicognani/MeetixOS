@@ -12,13 +12,9 @@
 
 #pragma once
 
-#include <TC/Traits/Constant.hh>
-
 namespace TC::Traits {
 
 template<typename T>
-struct IsClass : public Constant<bool, __is_class(T)> {
-    /* Empty Body */
-};
+inline constexpr bool IsClass = __is_class(T);
 
 } /* namespace TC::Traits */

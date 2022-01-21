@@ -1,6 +1,7 @@
 set(CMAKE_CXX_STANDARD 20)
 
 add_compile_definitions(_ARCH_X86_=1)
+add_compile_definitions(IN_KERNEL=1)
 add_compile_options(-Wall)
 add_compile_options(-Wno-address-of-packed-member)
 add_compile_options(-Wunused-variable)

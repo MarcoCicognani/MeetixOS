@@ -12,134 +12,81 @@
 
 #pragma once
 
-#include <TC/Traits/FalseType.hh>
-#include <TC/Traits/TrueType.hh>
-
 namespace TC::Traits {
 
 template<typename>
-struct IsFunction : FalseType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction = false;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args...)> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args...)> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args..., ...)> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args..., ...)> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args...) const> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args...) const> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args..., ...) const> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args..., ...) const> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args...) volatile> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args...) volatile> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args..., ...) volatile> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args..., ...) volatile> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args...) const volatile> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args...) const volatile> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args..., ...) const volatile> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args..., ...) const volatile> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args...)&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args...)&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args..., ...)&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args..., ...)&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args...) const&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args...) const&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args..., ...) const&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args..., ...) const&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args...) volatile&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args...) volatile&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args..., ...) volatile&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args..., ...) volatile&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args...) const volatile&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args...) const volatile&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args..., ...) const volatile&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args..., ...) const volatile&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args...) &&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args...) &&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args..., ...) &&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args..., ...) &&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args...) const&&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args...) const&&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args..., ...) const&&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args..., ...) const&&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args...) volatile&&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args...) volatile&&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args..., ...) volatile&&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args..., ...) volatile&&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args...) const volatile&&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args...) const volatile&&> = true;
 
 template<typename Ret, typename... Args>
-struct IsFunction<Ret(Args..., ...) const volatile&&> : TrueType {
-    /* Empty Body */
-};
+inline constexpr bool IsFunction<Ret(Args..., ...) const volatile&&> = true;
 
 } /* namespace TC::Traits */

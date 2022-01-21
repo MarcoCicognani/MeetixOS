@@ -16,10 +16,16 @@
 #include <TC/Traits/RemoveVolatile.hh>
 
 namespace TC::Traits {
+namespace Details {
 
 template<typename T>
 struct RemoveConstVolatile {
-    using Type = typename RemoveVolatile<typename RemoveConst<T>::Type>::Type;
+    using Type = RemoveVolatile<RemoveConst<T>>;
 };
+
+} /* namespace Details */
+
+template<typename T>
+using RemoveConstVolatile = typename Details::RemoveConstVolatile<T>::Type;
 
 } /* namespace TC::Traits */

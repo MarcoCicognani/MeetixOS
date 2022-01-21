@@ -14,19 +14,19 @@
 
 namespace TC::Traits {
 
-template<typename T, T value>
+template<typename T, T v>
 struct Constant {
     using ValueType = T;
     using Type      = Constant;
 
-    static constexpr T m_value = value;
+    static constexpr T value = v;
 
     constexpr explicit operator ValueType() const {
-        return m_value;
+        return value;
     }
 
     constexpr ValueType operator()() const {
-        return m_value;
+        return value;
     }
 };
 

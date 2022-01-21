@@ -17,12 +17,12 @@
 namespace std {
 
 template<typename T>
-constexpr T&& forward(typename TC::Traits::RemoveReference<T>::Type& param) noexcept {
+constexpr T&& forward(TC::Traits::RemoveReference<T>& param) noexcept {
     return static_cast<T&&>(param);
 }
 
 template<typename T>
-constexpr T&& forward(typename TC::Traits::RemoveReference<T>::Type&& param) noexcept {
+constexpr T&& forward(TC::Traits::RemoveReference<T>&& param) noexcept {
     return static_cast<T&&>(param);
 }
 

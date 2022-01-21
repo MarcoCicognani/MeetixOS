@@ -19,9 +19,9 @@ namespace std {
 
 template<typename T, typename U = T>
 constexpr T exchange(T& slot, U&& value) {
-    T old = move(slot);
-    slot  = forward<U>(value);
-    return old;
+    T old_value{ move(slot) };
+    slot = forward<U>(value);
+    return old_value;
 }
 
 } /* namespace std */

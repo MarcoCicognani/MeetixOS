@@ -13,6 +13,7 @@
 #pragma once
 
 namespace TC::Traits {
+namespace Details {
 
 template<bool condition, typename TrueType, typename FalseType>
 struct Conditional {
@@ -23,5 +24,10 @@ template<typename TrueType, typename FalseType>
 struct Conditional<false, TrueType, FalseType> {
     using Type = FalseType;
 };
+
+} /* namespace Details */
+
+template<bool condition, typename TrueType, typename FalseType>
+using Conditional = typename Details::Conditional<condition, TrueType, FalseType>::Type;
 
 } /* namespace TC::Traits */
