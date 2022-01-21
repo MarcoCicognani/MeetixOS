@@ -14,23 +14,23 @@
 
 #include <Api/StdInt.h>
 
-//#include <TC/Traits/Conditional.hh>
-//#include <TC/Traits/MakeSigned.hh>
+//#include <TC/Trait/Conditional.hh>
+//#include <TC/Trait/MakeSigned.hh>
 //
 // using u8    = __UINT8_TYPE__;
 // using u16   = __UINT16_TYPE__;
 // using u32   = __UINT32_TYPE__;
 // using u64   = __UINT64_TYPE__;
-// using usize = TC::Traits::Conditional<sizeof(void*) == 4, u32, u64>;
+// using usize = TC::Trait::Conditional<sizeof(void*) == 4, u32, u64>;
 //
 // using i8    = __INT8_TYPE__;
 // using i16   = __INT16_TYPE__;
 // using i32   = __INT32_TYPE__;
 // using i64   = __INT64_TYPE__;
-// using isize = TC::Traits::Conditional<sizeof(void*) == 4, i32, i64>;
+// using isize = TC::Trait::Conditional<sizeof(void*) == 4, i32, i64>;
 //
 // using size_t  = __SIZE_TYPE__;
-// using ssize_t = TC::Traits::MakeSigned<size_t>;
+// using ssize_t = TC::Trait::MakeSigned<size_t>;
 //
 // using ptrdiff_t = __PTRDIFF_TYPE__;
 //

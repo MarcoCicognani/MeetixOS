@@ -12,18 +12,20 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
+#include <TC/Trait/RemoveConst.hh>
+#include <TC/Trait/RemoveVolatile.hh>
 
-namespace std {
-
-template<typename T>
-constexpr T&& forward(TC::Trait::RemoveReference<T>& param) noexcept {
-    return static_cast<T&&>(param);
-}
+namespace TC::Trait {
+namespace Details {
 
 template<typename T>
-constexpr T&& forward(TC::Trait::RemoveReference<T>&& param) noexcept {
-    return static_cast<T&&>(param);
-}
+struct RemoveConstVolatile {
+    using Type = RemoveVolatile<RemoveConst<T>>;
+};
 
-} /* namespace std */
+} /* namespace Details */
+
+template<typename T>
+using RemoveConstVolatile = typename Details::RemoveConstVolatile<T>::Type;
+
+} /* namespace TC::Trait */

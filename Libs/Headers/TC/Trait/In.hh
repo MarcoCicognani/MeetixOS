@@ -12,13 +12,11 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
+#include <TC/Trait/IsSame.hh>
 
-namespace std {
+namespace TC::Trait {
 
-template<typename T>
-constexpr TC::Trait::RemoveReference<T>&& move(T&& arg) noexcept {
-    return static_cast<TC::Trait::RemoveReference<T>&&>(arg);
-}
+template<typename T, typename... Ts>
+concept In = (IsSame<T, Ts> || ...);
 
-} /* namespace std */
+} /* namespace TC::Trait */

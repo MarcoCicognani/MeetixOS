@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
+namespace TC::Tag {
 
-namespace std {
+enum class Wrap : bool { Value };
 
-template<typename T>
-constexpr TC::Trait::RemoveReference<T>&& move(T&& arg) noexcept {
-    return static_cast<TC::Trait::RemoveReference<T>&&>(arg);
-}
+/**
+ * @brief The object must wrap the memory without copying it nor taking the ownership
+ */
+constexpr auto C_WRAP = Wrap::Value;
 
-} /* namespace std */
+} /* namespace TC::Tag */

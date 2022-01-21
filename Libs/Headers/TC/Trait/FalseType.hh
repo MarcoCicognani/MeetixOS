@@ -12,13 +12,10 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
+#include <TC/Trait/Constant.hh>
 
-namespace std {
+namespace TC::Trait {
 
-template<typename T>
-constexpr TC::Trait::RemoveReference<T>&& move(T&& arg) noexcept {
-    return static_cast<TC::Trait::RemoveReference<T>&&>(arg);
-}
+using FalseType = Constant<bool, false>;
 
-} /* namespace std */
+} /* namespace TC::Trait */

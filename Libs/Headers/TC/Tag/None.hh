@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
+namespace TC::Tag {
 
-namespace std {
+enum class None : bool { Value };
 
-template<typename T>
-constexpr TC::Trait::RemoveReference<T>&& move(T&& arg) noexcept {
-    return static_cast<TC::Trait::RemoveReference<T>&&>(arg);
-}
+/**
+ * @brief The object must be empty initialized
+ */
+constexpr auto C_NONE = None::Value;
 
-} /* namespace std */
+} /* namespace TC::Tag */

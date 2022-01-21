@@ -12,13 +12,22 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
-
-namespace std {
+namespace TC::Trait {
+namespace Details {
 
 template<typename T>
-constexpr TC::Trait::RemoveReference<T>&& move(T&& arg) noexcept {
-    return static_cast<TC::Trait::RemoveReference<T>&&>(arg);
-}
+struct RemoveConst {
+    using Type = T;
+};
 
-} /* namespace std */
+template<typename T>
+struct RemoveConst<const T> {
+    using Type = T;
+};
+
+} /* namespace Details */
+
+template<typename T>
+using RemoveConst = typename Details::RemoveConst<T>::Type;
+
+} /* namespace TC::Trait */

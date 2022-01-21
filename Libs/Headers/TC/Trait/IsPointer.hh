@@ -12,18 +12,20 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
+#include <TC/Trait/RemoveConstVolatile.hh>
 
-namespace std {
-
-template<typename T>
-constexpr T&& forward(TC::Trait::RemoveReference<T>& param) noexcept {
-    return static_cast<T&&>(param);
-}
+namespace TC::Trait {
+namespace Details {
 
 template<typename T>
-constexpr T&& forward(TC::Trait::RemoveReference<T>&& param) noexcept {
-    return static_cast<T&&>(param);
-}
+inline constexpr bool IsPointer = false;
 
-} /* namespace std */
+template<typename T>
+inline constexpr bool IsPointer<T*> = true;
+
+} /* namespace Details */
+
+template<typename T>
+inline constexpr bool IsPointer = Details::IsPointer<RemoveConstVolatile<T>>;
+
+} /* namespace TC::Trait */

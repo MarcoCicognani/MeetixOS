@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
+namespace TC::Tag {
 
-namespace std {
+enum class Copy : bool { Value };
 
-template<typename T>
-constexpr TC::Trait::RemoveReference<T>&& move(T&& arg) noexcept {
-    return static_cast<TC::Trait::RemoveReference<T>&&>(arg);
-}
+/**
+ * @brief The object must make a copy of the memory
+ */
+constexpr auto C_COPY = Copy::Value;
 
-} /* namespace std */
+} /* namespace TC::Tag */

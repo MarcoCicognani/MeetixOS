@@ -12,13 +12,9 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
+namespace TC::Trait {
 
-namespace std {
+template<typename B, typename D>
+inline constexpr bool IsBaseOf = __is_base_of(B, D);
 
-template<typename T>
-constexpr TC::Trait::RemoveReference<T>&& move(T&& arg) noexcept {
-    return static_cast<TC::Trait::RemoveReference<T>&&>(arg);
-}
-
-} /* namespace std */
+} /* namespace TC::Trait */

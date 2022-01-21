@@ -12,18 +12,22 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
-
-namespace std {
-
-template<typename T>
-constexpr T&& forward(TC::Trait::RemoveReference<T>& param) noexcept {
-    return static_cast<T&&>(param);
-}
+namespace TC::Trait {
+namespace Details {
 
 template<typename T>
-constexpr T&& forward(TC::Trait::RemoveReference<T>&& param) noexcept {
-    return static_cast<T&&>(param);
-}
+struct RemoveVolatile {
+    using Type = T;
+};
 
-} /* namespace std */
+template<typename T>
+struct RemoveVolatile<T volatile> {
+    using Type = T;
+};
+
+} /* namespace Details */
+
+template<typename T>
+using RemoveVolatile = typename Details::RemoveVolatile<T>::Type;
+
+} /* namespace TC::Trait */

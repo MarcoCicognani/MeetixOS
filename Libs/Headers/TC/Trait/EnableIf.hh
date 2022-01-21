@@ -12,13 +12,22 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
+namespace TC::Trait {
+namespace Details {
 
-namespace std {
+template<bool B, typename T>
+struct EnableIf {
+    /* Base */
+};
 
 template<typename T>
-constexpr TC::Trait::RemoveReference<T>&& move(T&& arg) noexcept {
-    return static_cast<TC::Trait::RemoveReference<T>&&>(arg);
-}
+struct EnableIf<true, T> {
+    using Type = T;
+};
 
-} /* namespace std */
+} /* namespace Details */
+
+template<bool B, typename T>
+using EnableIf = typename Details::EnableIf<B, T>::Type;
+
+} /* namespace TC::Trait */

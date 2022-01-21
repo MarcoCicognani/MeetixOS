@@ -12,13 +12,15 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
+#include <TC/Trait/FalseType.hh>
+#include <TC/Trait/TrueType.hh>
 
-namespace std {
+namespace TC::Trait {
+
+template<typename T, typename U>
+inline constexpr bool IsSame = false;
 
 template<typename T>
-constexpr TC::Trait::RemoveReference<T>&& move(T&& arg) noexcept {
-    return static_cast<TC::Trait::RemoveReference<T>&&>(arg);
-}
+inline constexpr bool IsSame<T, T> = true;
 
-} /* namespace std */
+} /* namespace TC::Trait */

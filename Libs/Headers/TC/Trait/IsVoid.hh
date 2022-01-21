@@ -12,13 +12,12 @@
 
 #pragma once
 
-#include <TC/Trait/RemoveReference.hh>
+#include <TC/Trait/IsSame.hh>
+#include <TC/Trait/RemoveConstVolatile.hh>
 
-namespace std {
+namespace TC::Trait {
 
 template<typename T>
-constexpr TC::Trait::RemoveReference<T>&& move(T&& arg) noexcept {
-    return static_cast<TC::Trait::RemoveReference<T>&&>(arg);
-}
+inline constexpr bool IsVoid = IsSame<void, RemoveConstVolatile<T>>;
 
-} /* namespace std */
+} /* namespace TC::Trait */

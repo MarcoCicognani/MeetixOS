@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-using TC::Collections::Vector;
+using TC::Collection::Vector;
 using TC::Functional::ErrorOr;
 using TC::Functional::Option;
 using TC::Functional::Result;
