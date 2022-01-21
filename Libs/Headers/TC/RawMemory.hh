@@ -30,14 +30,14 @@ Functional::ErrorOr<T*> clean_alloc(usize object_count) {
     auto start_ptr = KernelHeap::allocate(sizeof(T) * object_count);
     if ( start_ptr != nullptr ) {
         __builtin_memset(start_ptr, sizeof(T), object_count);
-        return reinterpret_cast<T>(start_ptr);
+        return reinterpret_cast<T*>(start_ptr);
     } else
         return ENOMEM;
 }
 
 template<typename T>
 void free_sized(T* object_start, usize) {
-    KernelHeap::free(reinterpret_cast<T>(object_start));
+    KernelHeap::free(reinterpret_cast<void*>(object_start));
 }
 
 #else
