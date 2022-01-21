@@ -26,7 +26,7 @@
 #include <TC/Std/New.hh>
 #include <TC/Std/Swap.hh>
 #include <TC/Tag/Adopt.hh>
-#include <TC/Trait/Type.hh>
+#include <TC/Trait/TypeIntrinsics.hh>
 
 namespace TC::Collection {
 
@@ -279,7 +279,7 @@ Functional::ErrorOr<void> Vector<T>::try_insert_at(usize index, T&& value) {
     TRY(try_ensure_capacity(m_values_count + 1));
 
     /* move the values after the insertion one place forward */
-    if constexpr ( Trait::Type<T>::is_trivial() )
+    if constexpr ( Trait::TypeIntrinsics<T>::is_trivial() )
         __builtin_memmove(m_data_storage + index + 1, m_data_storage + index, m_values_count - index - 1);
     else {
         for ( usize i = m_values_count; i > index; --i ) {
@@ -389,7 +389,7 @@ Functional::ErrorOr<void> Vector<T>::try_emplace_first(Args&&... args) {
     TRY(try_ensure_capacity(m_values_count + 1));
 
     /* move the values after the insertion one place forward */
-    if constexpr ( Trait::Type<T>::is_trivial() )
+    if constexpr ( Trait::TypeIntrinsics<T>::is_trivial() )
         __builtin_memmove(m_data_storage + 1, m_data_storage, m_values_count - 1);
     else {
         for ( usize i = m_values_count; i > 0; --i ) {
@@ -551,7 +551,7 @@ Functional::ErrorOr<void> Vector<T>::try_ensure_capacity(usize capacity) {
 
     /* allocate new memory and move the content into it */
     auto new_data_storage = TRY(RawMemory::clean_alloc<T>(new_capacity));
-    if constexpr ( Trait::Type<T>::is_trivial() )
+    if constexpr ( Trait::TypeIntrinsics<T>::is_trivial() )
         __builtin_memmove(new_data_storage, m_data_storage, m_values_count * sizeof(T));
     else {
         for ( usize i = 0; i < m_values_count; ++i ) {

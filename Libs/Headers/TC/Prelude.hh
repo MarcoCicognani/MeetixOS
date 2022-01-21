@@ -21,6 +21,8 @@
 #include <TC/Functional/Option.hh>
 #include <TC/Functional/Result.hh>
 #include <TC/Functional/Try.hh>
+#include <TC/Hashing/Integer.hh>
+#include <TC/Hashing/Pointer.hh>
 #include <TC/IntTypes.hh>
 #include <TC/RawMemory.hh>
 #include <TC/Std/Exchange.hh>
@@ -64,4 +66,4 @@
 #include <TC/Trait/RemoveReference.hh>
 #include <TC/Trait/RemoveVolatile.hh>
 #include <TC/Trait/TrueType.hh>
-#include <TC/Trait/Type.hh>
+#include <TC/Trait/TypeIntrinsics.hh>

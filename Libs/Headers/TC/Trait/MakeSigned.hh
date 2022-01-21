@@ -17,7 +17,7 @@ namespace Details {
 
 template<typename T>
 struct MakeSigned {
-    /* Empty Body */
+    using Type = void;
 };
 
 template<>

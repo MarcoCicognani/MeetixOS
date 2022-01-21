@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <stdio.h>
 
+using TC::Collection::Map;
 using TC::Collection::Vector;
 using TC::Functional::ErrorOr;
 using TC::Functional::Option;
@@ -123,6 +124,8 @@ int main(int argc, char** argv) {
     }
     printf("\n");
     fflush(stdout);
+
+    Map<usize, Vector<int>> map{};
 
     return 0;
 }
