@@ -1,3 +1,15 @@
-add_executable(GuiNotify GuiNotify.cc)
-target_link_libraries(GuiNotify LibApi LibC LibGUI LibGraphics LibTasking LibUtils)
-install(TARGETS GuiNotify DESTINATION Bins)
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
+set(SOURCES GuiNotify.cc)
+add_command(GuiNotify)
+target_link_libraries(GuiNotify LibGUI LibGraphics LibTasking LibUtils)

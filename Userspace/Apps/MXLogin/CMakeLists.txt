@@ -1,4 +1,14 @@
-add_executable(MXLogin MXLogin.cpp)
-target_include_directories(MXLogin PRIVATE .)
-target_link_libraries(MXLogin LibApi LibC LibGUI LibGraphics LibTasking LibUtils)
-install(TARGETS MXLogin DESTINATION Apps/MXLogin/Bin)
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
+set(SOURCES MXLogin.cpp)
+add_application(MXLogin)

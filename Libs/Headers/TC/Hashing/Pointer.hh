@@ -12,12 +12,10 @@
 
 #pragma once
 
-#include <TC/Hashing/Integer.hh>
+#include <TC/IntTypes.hh>
 
 namespace TC::Hashing {
 
-usize pointer_hash(void const* value) {
-    return integer_hash(reinterpret_cast<u64>(value));
-}
+usize pointer_hash(void const* value);
 
 } /* namespace TC::Hashing */

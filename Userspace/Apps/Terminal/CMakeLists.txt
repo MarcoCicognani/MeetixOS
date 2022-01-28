@@ -1,4 +1,18 @@
-add_executable(Terminal Terminal.cc Screen/GUIScreen.cc Screen/HeadlessScreen.cc Screen/HeadlessGUIScreen.cc)
-target_include_directories(Terminal PRIVATE . ${TOOLCHAIN_INCLUDE}/freetype2)
-target_link_libraries(Terminal LibApi LibC LibGUI LibTasking LibGraphics LibIO LibUtils LibCairo LibFreeType LibPixman LibPNG LibZ)
-install(TARGETS Terminal DESTINATION Apps/Terminal/Bin)
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
+set(SOURCES
+        Terminal.cc
+        Screen/GUIScreen.cc
+        Screen/HeadlessScreen.cc
+        Screen/HeadlessGUIScreen.cc)
+add_application(Terminal)

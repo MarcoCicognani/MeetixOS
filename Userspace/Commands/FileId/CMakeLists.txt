@@ -1,3 +1,19 @@
-add_executable(FileId FileId.cc Inspector.cc ELFInspector.cc ShellInspector.cc TextInspector.cc)
-target_link_libraries(FileId LibApi LibC LibUtils)
-install(TARGETS FileId DESTINATION Bins)
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
+set(SOURCES
+        FileId.cc
+        Inspector.cc
+        ELFInspector.cc
+        ShellInspector.cc
+        TextInspector.cc)
+add_command(FileId)

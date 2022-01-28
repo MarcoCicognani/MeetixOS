@@ -1,3 +1,14 @@
-add_executable(UITweak UITweak.cpp)
-target_link_libraries(UITweak LibApi LibC LibGUI LibGraphics LibTasking LibUtils)
-install(TARGETS UITweak DESTINATION Apps/UITweak/Bin)
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
+set(SOURCES UITweak.cpp)
+add_application(UITweak)

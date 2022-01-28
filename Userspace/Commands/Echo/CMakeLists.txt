@@ -1,3 +1,14 @@
-add_executable(Echo Echo.cc)
-target_link_libraries(Echo LibApi LibC LibUtils)
-install(TARGETS Echo DESTINATION Bins)
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
+set(SOURCES Echo.cc)
+add_command(Echo)

@@ -1,4 +1,17 @@
-add_executable(CpuDetect CpuDetect.cc AMD.cc Intel.cc)
-target_include_directories(CpuDetect PRIVATE .)
-target_link_libraries(CpuDetect LibApi LibC)
-install(TARGETS CpuDetect DESTINATION Bins)
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
+set(SOURCES
+        CpuDetect.cc
+        AMD.cc
+        Intel.cc)
+add_command(CpuDetect)

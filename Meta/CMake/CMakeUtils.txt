@@ -1,0 +1,33 @@
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
+function(add_application APP_NAME)
+    add_executable(${APP_NAME} ${SOURCES})
+    target_include_directories(${APP_NAME} PRIVATE . ${TOOLCHAIN_INCLUDE}/freetype2)
+    target_include_directories(${APP_NAME} PRIVATE .)
+    target_link_libraries(${APP_NAME} LibApi LibC LibGUI LibTasking LibGraphics LibIO LibUtils LibCairo LibFreeType LibPixman LibPNG LibZ)
+    install(TARGETS ${APP_NAME} DESTINATION Apps/${APP_NAME}/Bin)
+endfunction()
+
+function(add_command COMMAND_NAME)
+    add_executable(${COMMAND_NAME} ${SOURCES})
+    target_include_directories(${COMMAND_NAME} PRIVATE .)
+    target_link_libraries(${COMMAND_NAME} LibApi LibC LibUtils)
+    install(TARGETS ${COMMAND_NAME} DESTINATION Bins)
+endfunction()
+
+function(add_test TEST_NAME)
+    add_executable(${TEST_NAME} ${SOURCES})
+    target_include_directories(${TEST_NAME} PRIVATE .)
+    target_link_libraries(${TEST_NAME} LibApi LibC LibTC LibUnitTest)
+    install(TARGETS ${TEST_NAME} DESTINATION Bins/Tests)
+endfunction()

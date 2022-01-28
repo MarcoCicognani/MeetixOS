@@ -1,3 +1,15 @@
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
 add_library(LibZ STATIC IMPORTED)
 set_target_properties(LibZ PROPERTIES IMPORTED_LOCATION ${TOOLCHAIN_LIB}/libz.a)
 
@@ -16,3 +28,4 @@ set_target_properties(LibCairo PROPERTIES IMPORTED_LOCATION ${TOOLCHAIN_LIB}/lib
 add_subdirectory(Apps)
 add_subdirectory(Commands)
 add_subdirectory(Servers)
+add_subdirectory(Tests)

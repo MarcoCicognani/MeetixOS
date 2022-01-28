@@ -1,8 +1,22 @@
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
 cmake_minimum_required(VERSION 3.16.3)
 project(MeetixOS C CXX ASM)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
+
+include(Meta/CMake/CMakeUtils.txt)
 
 # Project sub-directories
 add_subdirectory(Kernel)

@@ -1,4 +1,17 @@
-add_executable(CandyNote CandyNote.cpp GFrontEnd.cpp TFrontEnd.cpp)
-target_include_directories(CandyNote PRIVATE . ${TOOLCHAIN_INCLUDE}/freetype2)
-target_link_libraries(CandyNote LibApi LibC LibGUI LibTasking LibGraphics LibIO LibUtils LibCairo LibFreeType LibPixman LibPNG LibZ)
-install(TARGETS CandyNote DESTINATION Apps/CandyNote/Bin)
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
+set(SOURCES
+        CandyNote.cpp
+        GFrontEnd.cpp
+        TFrontEnd.cpp)
+add_application(CandyNote)

@@ -1,3 +1,15 @@
-add_executable(GZip GZip.cc)
-target_link_libraries(GZip LibApi LibC LibUtils LibZ)
-install(TARGETS GZip DESTINATION Bins)
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
+set(SOURCES GZip.cc)
+add_command(GZip)
+target_link_libraries(GZip LibZ)

@@ -1,4 +1,14 @@
-add_executable(Calculator Calculator.cpp)
-target_include_directories(Calculator PRIVATE .)
-target_link_libraries(Calculator LibApi LibC LibGUI LibGraphics LibTasking LibUtils)
-install(TARGETS Calculator DESTINATION Apps/Calculator/Bin)
+#
+# @brief
+# This file is part of the MeetiX Operating System.
+# Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @developers
+# Marco Cicognani (marco.cicognani@meetixos.org)
+#
+# @license
+# GNU General Public License version 3
+#
+
+set(SOURCES Calculator.cpp)
+add_application(Calculator)
