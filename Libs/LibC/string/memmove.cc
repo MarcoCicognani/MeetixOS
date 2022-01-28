@@ -18,7 +18,7 @@ extern "C" void* memmove(void* dest, const void* src, usize num) {
 
     auto dst_byte = reinterpret_cast<u8*>(dest);
     auto src_byte = reinterpret_cast<const u8*>(src);
-    for ( dst_byte += num, src_byte += num; --num; )
+    for ( dst_byte += num, src_byte += num; num--; )
         *--dst_byte = *--src_byte;
     return dest;
 }

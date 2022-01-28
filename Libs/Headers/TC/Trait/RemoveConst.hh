@@ -21,7 +21,7 @@ struct RemoveConst {
 };
 
 template<typename T>
-struct RemoveConst<const T> {
+struct RemoveConst<T const> {
     using Type = T;
 };
 

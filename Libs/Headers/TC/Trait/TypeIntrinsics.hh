@@ -29,7 +29,7 @@ struct TypeIntrinsics {
 };
 
 template<typename T>
-    requires(IsIntegral<T>)
+    requires IsIntegral<T>
 struct TypeIntrinsics<T> {
     static constexpr usize hash(T value) {
         return Hashing::integer_hash(value);
@@ -41,7 +41,7 @@ struct TypeIntrinsics<T> {
 };
 
 template<typename T>
-    requires(IsPointer<T>)
+    requires IsPointer<T>
 struct TypeIntrinsics<T> {
     static constexpr usize hash(T value) {
         return Hashing::pointer_hash(value);

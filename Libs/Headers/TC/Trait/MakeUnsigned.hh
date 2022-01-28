@@ -70,6 +70,11 @@ struct MakeUnsigned<unsigned long long> {
     using Type = unsigned long long;
 };
 
+template<>
+struct MakeUnsigned<bool> {
+    using Type = bool;
+};
+
 } /* namespace Details */
 
 template<typename T>

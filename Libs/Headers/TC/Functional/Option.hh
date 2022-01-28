@@ -57,7 +57,66 @@ public:
 
 private:
     bool m_is_present{ false };
-    alignas(T) u8 m_data_storage[sizeof(T)]{ 0 }; /* byte-array to avoid <m_data_storage> constructor call */
+    alignas(T) u8 m_data_storage[sizeof(T)]{ 0 }; /* byte-array to avoid <m_buckets_storage> constructor call */
+};
+
+template<typename T>
+class Option<T&> {
+public:
+    /**
+     * @brief Constructors
+     */
+    Option() = default;
+    Option(T const& value)
+        : m_inner_option{ const_cast<T*>(&value) } {
+    }
+    Option(T&& value)
+        : m_inner_option{ const_cast<T*>(&std::move(value)) } {
+    }
+    Option(Option const& rhs)     = default;
+    Option(Option&& rhs) noexcept = default;
+
+    ~Option() = default;
+
+    /**
+     * @brief Returns a reference to the value from this option
+     */
+    T& value() {
+        return *m_inner_option.value();
+    }
+    T const& value() const {
+        return *m_inner_option.value();
+    }
+    T const& value_or(T const& default_value) const {
+        return *m_inner_option.value_or(default_value);
+    }
+
+    /**
+     * @brief Returns the value of this option
+     */
+    [[nodiscard]] T& unwrap() {
+        return *m_inner_option.unwrap();
+    }
+    [[nodiscard]] T& unwrap_or(T const& default_value) const {
+        return *m_inner_option.unwrap_or(default_value);
+    }
+
+    /**
+     * @brief Resets the content of this option
+     */
+    void reset() {
+        m_inner_option.reset();
+    }
+
+    /**
+     * @brief Returns whether the value is present
+     */
+    [[nodiscard]] bool is_present() const {
+        return m_inner_option.is_present();
+    }
+
+private:
+    Option<T*> m_inner_option{};
 };
 
 template<typename T>
@@ -76,17 +135,14 @@ template<typename T>
 Option<T>::Option(Option const& rhs)
     : m_is_present{ rhs.m_is_present } {
     if ( m_is_present )
-        new (&m_data_storage) T{ rhs.m_data_storage };
+        new (&m_data_storage) T{ rhs.value() };
 }
 
 template<typename T>
 Option<T>::Option(Option&& rhs) noexcept
     : m_is_present{ rhs.m_is_present } {
-    if ( m_is_present ) {
-        new (&m_data_storage) T{ std::move(rhs.m_data_storage) };
-
-        rhs.reset();
-    }
+    if ( m_is_present )
+        new (&m_data_storage) T{ std::move(rhs.unwrap()) };
 }
 
 template<typename T>

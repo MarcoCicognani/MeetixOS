@@ -12,10 +12,10 @@
 
 #pragma once
 
-inline void* operator new(long unsigned int, void* placement_memory) {
-    return placement_memory;
+inline void* operator new(long unsigned int, void* placement_ptr) {
+    return placement_ptr;
 }
 
-inline void* operator new[](long unsigned int, void* placement_memory) {
-    return placement_memory;
+inline void* operator new[](long unsigned int, void* placement_ptr) {
+    return placement_ptr;
 }
