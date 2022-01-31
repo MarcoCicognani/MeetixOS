@@ -43,7 +43,7 @@ public:
      * @brief Returns the value of this option
      */
     [[nodiscard]] T unwrap();
-    [[nodiscard]] T unwrap_or(T const& default_value) const;
+    [[nodiscard]] T unwrap_or(T const& default_value);
 
     /**
      * @brief Resets the content of this option
@@ -67,12 +67,8 @@ public:
      * @brief Constructors
      */
     Option() = default;
-    Option(T const& value)
-        : m_inner_option{ const_cast<T*>(&value) } {
-    }
-    Option(T&& value)
-        : m_inner_option{ const_cast<T*>(&std::move(value)) } {
-    }
+    Option(T const& value);
+    Option(T&& value);
     Option(Option const& rhs)     = default;
     Option(Option&& rhs) noexcept = default;
 
@@ -81,39 +77,25 @@ public:
     /**
      * @brief Returns a reference to the value from this option
      */
-    T& value() {
-        return *m_inner_option.value();
-    }
-    T const& value() const {
-        return *m_inner_option.value();
-    }
-    T const& value_or(T const& default_value) const {
-        return *m_inner_option.value_or(default_value);
-    }
+    T&       value();
+    T const& value() const;
+    T const& value_or(T const& default_value) const;
 
     /**
      * @brief Returns the value of this option
      */
-    [[nodiscard]] T& unwrap() {
-        return *m_inner_option.unwrap();
-    }
-    [[nodiscard]] T& unwrap_or(T const& default_value) const {
-        return *m_inner_option.unwrap_or(default_value);
-    }
+    [[nodiscard]] T& unwrap();
+    [[nodiscard]] T& unwrap_or(T const& default_value);
 
     /**
      * @brief Resets the content of this option
      */
-    void reset() {
-        m_inner_option.reset();
-    }
+    void reset();
 
     /**
      * @brief Returns whether the value is present
      */
-    [[nodiscard]] bool is_present() const {
-        return m_inner_option.is_present();
-    }
+    [[nodiscard]] bool is_present() const;
 
 private:
     Option<T*> m_inner_option{};
@@ -179,7 +161,7 @@ T Option<T>::unwrap() {
     return moved_value;
 }
 template<typename T>
-T Option<T>::unwrap_or(T const& default_value) const {
+T Option<T>::unwrap_or(T const& default_value) {
     if ( is_present() )
         return unwrap();
     else
@@ -197,6 +179,51 @@ void Option<T>::reset() {
 template<typename T>
 bool Option<T>::is_present() const {
     return m_is_present;
+}
+
+template<typename T>
+Option<T&>::Option(T const& value)
+    : m_inner_option{ const_cast<T*>(&value) } {
+}
+
+template<typename T>
+Option<T&>::Option(T&& value)
+    : m_inner_option{ const_cast<T*>(&std::move(value)) } {
+}
+
+template<typename T>
+T& Option<T&>::value() {
+    return *m_inner_option.value();
+}
+
+template<typename T>
+T const& Option<T&>::value() const {
+    return *m_inner_option.value();
+}
+
+template<typename T>
+T const& Option<T&>::value_or(T const& default_value) const {
+    return *m_inner_option.value_or(default_value);
+}
+
+template<typename T>
+T& Option<T&>::unwrap() {
+    return *m_inner_option.unwrap();
+}
+
+template<typename T>
+T& Option<T&>::unwrap_or(T const& default_value) {
+    return *m_inner_option.unwrap_or(default_value);
+}
+
+template<typename T>
+void Option<T&>::reset() {
+    m_inner_option.reset();
+}
+
+template<typename T>
+bool Option<T&>::is_present() const {
+    return m_inner_option.is_present();
 }
 
 } /* namespace TC::Functional */
