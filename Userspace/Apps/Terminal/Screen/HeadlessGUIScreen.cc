@@ -125,18 +125,18 @@ void HeadlessGUIScreen::set_cursor_visible(bool visible) {
             Tasking::LockGuard lock_guard{ m_raster_buffer_lock };
 
             /* draw the cursor */
-            auto blink_on = s_millis() - m_last_input_ts < 300;
-            if ( blink_on ) {
-                cairo_save(cr);
-                cairo_set_source_rgba(cr, 1, 1, 1, 1);
-                cairo_rectangle(cr,
-                                m_cursor_position.x() * m_font_dimension.width(),
-                                m_cursor_position.y() * m_font_dimension.height() + 1,
-                                2,
-                                m_font_dimension.height() + 1);
-                cairo_fill(cr);
-                cairo_restore(cr);
-            }
+            //            auto blink_on = s_millis() - m_last_input_ts < 300;
+            //            if ( blink_on ) {
+            //                cairo_save(cr);
+            //                cairo_set_source_rgba(cr, 1, 1, 1, 1);
+            //                cairo_rectangle(cr,
+            //                                m_cursor_position.x() * m_font_dimension.width(),
+            //                                m_cursor_position.y() * m_font_dimension.height() + 1,
+            //                                2,
+            //                                m_font_dimension.height() + 1);
+            //                cairo_fill(cr);
+            //                cairo_restore(cr);
+            //            }
 
             /* resize the font to the given size */
             cairo_set_font_face(cr, m_font->cairo_font_face());
@@ -153,7 +153,7 @@ void HeadlessGUIScreen::set_cursor_visible(bool visible) {
                     cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(raster_cell.m_background));
                     cairo_rectangle(cr,
                                     x * m_font_dimension.width(),
-                                    (y + 1) * m_font_dimension.height(),
+                                    (y + 1) * (m_font_dimension.height() + 3),
                                     m_font_dimension.width(),
                                     m_font_dimension.height() + 2);
                     cairo_fill(cr);
@@ -169,7 +169,7 @@ void HeadlessGUIScreen::set_cursor_visible(bool visible) {
                     /* draw the glyph */
                     cairo_save(cr);
                     cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(raster_cell.m_foreground));
-                    cairo_translate(cr, x * m_font_dimension.width(), (y + 1) * m_font_dimension.height());
+                    cairo_translate(cr, x * m_font_dimension.width(), (y + 1) * (m_font_dimension.height() + 3));
                     cairo_glyph_path(cr, char_layout.m_cairo_glyph, char_layout.m_text_cluster[0].num_glyphs);
                     cairo_fill(cr);
                     cairo_restore(cr);
