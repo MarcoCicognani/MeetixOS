@@ -59,9 +59,6 @@ void libc_init() {
     for ( auto i = 0; i < init_array_len; i++ )
         (*__init_array_start[i])();
 
-    /* set default locale */
-    setlocale(LC_ALL, "C");
-
     /* set default signal handler */
     signal(SIGINT, SIG_DFL);
 
