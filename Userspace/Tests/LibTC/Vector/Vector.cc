@@ -51,6 +51,18 @@ TEST_CASE(resize) {
     VERIFY_EQ(vector.count(), 4096);
 }
 
+TEST_CASE(clear) {
+    Vector vector{ 1, 2, 3, 4, 5 };
+
+    vector.clear(Vector<int>::KeepStorageCapacity::Yes);
+    VERIFY(vector.is_empty());
+    VERIFY(vector.capacity() >= 5);
+
+    vector.clear(Vector<int>::KeepStorageCapacity::No);
+    VERIFY(vector.is_empty());
+    VERIFY_EQ(vector.capacity(), 0);
+}
+
 TEST_CASE(emplace_and_access) {
     Vector<int> vector{};
 
@@ -321,24 +333,93 @@ TEST_CASE(mutable_iterator) {
         VERIFY_EQ(value, expected_value++);
 }
 
-TEST_CASE(contains_and_find) {
+TEST_CASE(contains_and_index_of) {
     Vector vector{ 8, 34, 57, 21, 4, 3, 8, 78, 46 };
 
     VERIFY(vector.contains(21));
     VERIFY(vector.contains(78));
     VERIFY(vector.contains(3));
 
-    auto index_or_none_21 = vector.find(21);
+    auto index_or_none_21 = vector.index_of(21);
     VERIFY(index_or_none_21.is_present());
     VERIFY_EQ(index_or_none_21.value(), 3);
 
-    auto index_or_none_78 = vector.find(78);
+    auto index_or_none_78 = vector.index_of(78);
     VERIFY(index_or_none_78.is_present());
     VERIFY_EQ(index_or_none_78.value(), 7);
 
-    auto index_or_none_3 = vector.find(3);
+    auto index_or_none_3 = vector.index_of(3);
     VERIFY(index_or_none_3.is_present());
     VERIFY_EQ(index_or_none_3.value(), 5);
+
+    auto index_or_none_99 = vector.index_of(99);
+    VERIFY_FALSE(index_or_none_99.is_present());
+}
+
+TEST_CASE(index_if) {
+    Vector vector{ 8, 34, 57, 21, 4, 3, 8, 78, 46 };
+
+    auto index_or_none_78 = vector.index_if([](auto const& value) { return value == 78; });
+    VERIFY(index_or_none_78.is_present());
+    VERIFY_EQ(index_or_none_78.value(), 7);
+
+    auto index_or_none_first_not_even = vector.index_if([](auto const& value) { return value % 2 != 0; });
+    VERIFY(index_or_none_first_not_even.is_present());
+    VERIFY_EQ(index_or_none_first_not_even.value(), 2);
+}
+
+TEST_CASE(find) {
+    Vector vector{ 0, 4, 6, 2, 3, 8, 5, 1 };
+
+    auto value_or_none = vector.find(6);
+    VERIFY(value_or_none.is_present());
+
+    auto& value_ref = value_or_none.unwrap();
+    value_ref       = 512;
+
+    auto updated_value_or_none = vector.find(512);
+    VERIFY(updated_value_or_none.is_present());
+    VERIFY_EQ(updated_value_or_none.value(), 512);
+
+    Vector const vector_const{ 0, 4, 6, 2, 3, 8, 5, 1 };
+
+    auto const_value_or_none = vector_const.find(8);
+    VERIFY(const_value_or_none.is_present());
+
+    auto const_value_or_none_200 = vector_const.find(200);
+    VERIFY_FALSE(const_value_or_none_200.is_present());
+}
+
+TEST_CASE(find_if) {
+    class Object {
+    public:
+        Object() = default;
+        Object(usize first, char second)
+            : m_first{ first }
+            , m_second{ second } {
+        }
+
+        [[nodiscard]] usize first() const {
+            return m_first;
+        }
+        [[nodiscard]] char second() const {
+            return m_second;
+        }
+
+    private:
+        usize m_first{ 0 };
+        char  m_second{ 'c' };
+    };
+
+    Vector vector{ Object{ 4, 'a' }, Object{ 6, 'b' }, Object{ 8, 'c' }, Object{ 12, 'e' } };
+
+    auto object_or_none = vector.find_if([](auto const& o) { return o.first() < 10 && o.second() == 'b'; });
+    VERIFY(object_or_none.is_present());
+
+    Vector const vector_const{ 0, 4, 6, 2, 3, 8, 5, 1 };
+
+    auto const_value_or_none = vector_const.find_if([](auto const& i) { return i == 3; });
+    VERIFY(const_value_or_none.is_present());
 }
 
 BENCHMARK_CASE(one_hundred_thousand_append_with_reallocations) {

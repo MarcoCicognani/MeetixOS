@@ -176,7 +176,17 @@ public:
      * @brief Returns whether this vector contains the given value
      */
     [[nodiscard]] bool        contains(T const& value) const;
-    Functional::Option<usize> find(T const& value) const;
+    Functional::Option<usize> index_of(T const& value) const;
+    template<typename Callback>
+    Functional::Option<usize> index_if(Callback callback) const;
+
+    Functional::Option<T&>       find(T const& value);
+    Functional::Option<T const&> find(T const& value) const;
+
+    template<typename Callback>
+    Functional::Option<T&> find_if(Callback callback);
+    template<typename Callback>
+    Functional::Option<T const&> find_if(Callback callback) const;
 
     /**
      * @brief Vector data access
@@ -326,13 +336,13 @@ Functional::ErrorOr<void> Vector<T>::try_insert_sorted(T const& value, Comparato
     usize insert_index = 0;
     for ( usize i = 0; i < m_values_count; ++i ) {
         if ( comparator(m_data_storage[i], value) )
-            insert_index = i;
+            insert_index = i + 1;
         else
             break;
     }
 
     /* insert at the position */
-    return try_insert_at(insert_index + 1, value);
+    return try_insert_at(insert_index, value);
 }
 
 template<typename T>
@@ -619,16 +629,64 @@ typename Vector<T>::ConstIterator Vector<T>::end() const {
 
 template<typename T>
 bool Vector<T>::contains(T const& value) const {
-    return find(value).is_present();
+    return index_of(value).is_present();
 }
 
 template<typename T>
-Functional::Option<usize> Vector<T>::find(T const& value) const {
+Functional::Option<usize> Vector<T>::index_of(T const& value) const {
     for ( usize i = 0; i < m_values_count; ++i ) {
         if ( m_data_storage[i] == value )
             return i;
     }
     return {};
+}
+
+template<typename T>
+template<typename Callback>
+Functional::Option<usize> Vector<T>::index_if(Callback callback) const {
+    for ( usize i = 0; i < m_values_count; ++i ) {
+        if ( callback(m_data_storage[i]) )
+            return i;
+    }
+    return {};
+}
+
+template<typename T>
+Functional::Option<T&> Vector<T>::find(T const& value) {
+    auto index_or_none = index_of(value);
+    if ( index_or_none.is_present() )
+        return at(index_or_none.value());
+    else
+        return {};
+}
+
+template<typename T>
+Functional::Option<T const&> Vector<T>::find(T const& value) const {
+    auto index_or_none = index_of(value);
+    if ( index_or_none.is_present() )
+        return at(index_or_none.value());
+    else
+        return {};
+}
+
+template<typename T>
+template<typename Callback>
+Functional::Option<T&> Vector<T>::find_if(Callback callback) {
+    auto index_or_none = index_if(callback);
+    if ( index_or_none.is_present() )
+        return at(index_or_none.value());
+    else
+        return {};
+}
+
+template<typename T>
+template<typename Callback>
+Functional::Option<T const&> Vector<T>::find_if(Callback callback) const {
+    auto index_or_none = index_if(callback);
+    if ( index_or_none.is_present() )
+        return at(index_or_none.value());
+    else
+        return {};
 }
 
 template<typename T>

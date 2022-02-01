@@ -10,7 +10,5 @@
 # GNU General Public License version 3
 #
 
-add_subdirectory(ErrorOr)
-add_subdirectory(Option)
-add_subdirectory(Vector)
-add_subdirectory(Map)
+set(SOURCES Map.cc)
+add_test(Map)
