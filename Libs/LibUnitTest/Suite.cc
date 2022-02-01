@@ -36,12 +36,13 @@ int Suite::main(int, char const* const* argv) {
     usize benchmark_completed = 0;
     usize benchmark_failed    = 0;
 
+    auto all_tests_start_timestamp = s_millis();
     for ( auto test_case : m_test_cases ) {
         m_current_test_have_failed = false;
 
         auto test_type = test_case->is_benchmark() ? "Benchmark" : "Test";
 
-        printf("UnitTest(%s - %s) - Running...\n", test_case->name(), test_type);
+        printf("%s - %s - Running...\n", test_case->name(), test_type);
 
         /* run the test */
         auto start_timestamp = s_millis();
@@ -65,12 +66,14 @@ int Suite::main(int, char const* const* argv) {
                 ++test_completed;
         }
     }
+    auto all_tests_end_timestamp = s_millis();
 
-    printf("UnitTest(%s) - Executed %lu tests (%lu tests/%lu benchmarks)\n",
+    printf("%s - Executed %lu tests (%lu tests/%lu benchmarks) in %llums\n",
            argv[0],
            m_test_cases.count(),
            test_completed + test_failed,
-           benchmark_completed + benchmark_failed);
+           benchmark_completed + benchmark_failed,
+           all_tests_end_timestamp - all_tests_start_timestamp);
     printf("\tTests      - %lu Completed/%lu Failed\n", test_completed, test_failed);
     printf("\tBenchmarks - %lu Completed/%lu Failed\n", benchmark_completed, benchmark_failed);
 

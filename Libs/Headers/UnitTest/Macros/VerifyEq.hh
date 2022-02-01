@@ -19,12 +19,11 @@
 #define VERIFY_EQ(first, second)                                                                                       \
     do {                                                                                                               \
         if ( !(first == second) ) [[unlikely]] {                                                                       \
-            fprintf(stderr,                                                                                            \
-                    "\t\033[31mFAILURE\033[0m %s:%d - VERIFY_EQ(%s == %s) failed\n",                                   \
-                    __FILE__,                                                                                          \
-                    __LINE__,                                                                                          \
-                    #first,                                                                                            \
-                    #second);                                                                                          \
+            printf("\t\033[31mFAILURE\033[0m %s:%d - VERIFY_EQ(%s == %s) failed\n",                                    \
+                   __FILE__,                                                                                           \
+                   __LINE__,                                                                                           \
+                   #first,                                                                                             \
+                   #second);                                                                                           \
             UnitTest::Suite::inst().current_test_must_fail();                                                          \
         }                                                                                                              \
     } while ( false )

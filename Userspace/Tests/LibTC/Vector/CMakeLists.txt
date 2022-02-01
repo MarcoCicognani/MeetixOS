@@ -10,6 +10,5 @@
 # GNU General Public License version 3
 #
 
-add_subdirectory(ErrorOr)
-add_subdirectory(Option)
-add_subdirectory(Vector)
+set(SOURCES Vector.cc)
+add_test(Vector)

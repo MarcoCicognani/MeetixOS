@@ -28,6 +28,22 @@
                                                                                                                        \
     void TestCaseImpl##name::run_test()
 
+#define BENCHMARK_CASE(name)                                                                                           \
+    class BenchmarkCaseImpl##name : public UnitTest::Case {                                                            \
+    public:                                                                                                            \
+        BenchmarkCaseImpl##name()                                                                                      \
+            : UnitTest::Case{ #name, true } {                                                                          \
+        }                                                                                                              \
+                                                                                                                       \
+        ~BenchmarkCaseImpl##name() override = default;                                                                 \
+                                                                                                                       \
+        void run_test() override;                                                                                      \
+    };                                                                                                                 \
+                                                                                                                       \
+    static BenchmarkCaseImpl##name s_benchmark_case_inst_##name{};                                                     \
+                                                                                                                       \
+    void BenchmarkCaseImpl##name::run_test()
+
 namespace UnitTest {
 
 class Case {

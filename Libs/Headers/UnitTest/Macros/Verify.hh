@@ -19,7 +19,7 @@
 #define VERIFY(expression)                                                                                             \
     do {                                                                                                               \
         if ( !static_cast<bool>(expression) ) [[unlikely]] {                                                           \
-            fprintf(stderr, "\t\033[31mFAILURE\033[0m %s:%d - VERIFY(%s) failed\n", __FILE__, __LINE__, #expression);  \
+            printf("\t\033[31mFAILURE\033[0m %s:%d - VERIFY(%s) failed\n", __FILE__, __LINE__, #expression);           \
             UnitTest::Suite::inst().current_test_must_fail();                                                          \
         }                                                                                                              \
     } while ( false )
