@@ -176,7 +176,7 @@ public:
      * @brief Returns whether this vector contains the given value
      */
     [[nodiscard]] bool        contains(T const& value) const;
-    Functional::Option<usize> contains_at(T const& value) const;
+    Functional::Option<usize> find(T const& value) const;
 
     /**
      * @brief Vector data access
@@ -332,7 +332,7 @@ Functional::ErrorOr<void> Vector<T>::try_insert_sorted(T const& value, Comparato
     }
 
     /* insert at the position */
-    return try_insert_at(insert_index, value);
+    return try_insert_at(insert_index + 1, value);
 }
 
 template<typename T>
@@ -485,8 +485,8 @@ Functional::ErrorOr<void> Vector<T>::erase_at(usize index) {
     else {
         at(index).~T();
         for ( usize i = index + 1; i < m_values_count; ++i ) {
-            new (data_slot(i)) T{ std::move(m_data_storage[i + 1]) };
-            m_data_storage[i + 1].~T();
+            new (data_slot(i - 1)) T{ std::move(m_data_storage[i]) };
+            m_data_storage[i].~T();
         }
     }
     --m_values_count;
@@ -496,8 +496,10 @@ Functional::ErrorOr<void> Vector<T>::erase_at(usize index) {
 template<typename T>
 Functional::ErrorOr<void> Vector<T>::erase_first_of(T const& value) {
     for ( usize i = 0; i < m_values_count; ++i ) {
-        if ( m_data_storage[i] == value )
-            return TRY(erase_at(i));
+        if ( m_data_storage[i] == value ) {
+            TRY(erase_at(i));
+            return {};
+        }
     }
     return ENOENT;
 }
@@ -617,11 +619,11 @@ typename Vector<T>::ConstIterator Vector<T>::end() const {
 
 template<typename T>
 bool Vector<T>::contains(T const& value) const {
-    return contains_at(value).is_value();
+    return find(value).is_present();
 }
 
 template<typename T>
-Functional::Option<usize> Vector<T>::contains_at(T const& value) const {
+Functional::Option<usize> Vector<T>::find(T const& value) const {
     for ( usize i = 0; i < m_values_count; ++i ) {
         if ( m_data_storage[i] == value )
             return i;
