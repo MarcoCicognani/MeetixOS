@@ -93,3 +93,13 @@ class SalesPerson {
     /* Code */
 };
 ```
+
+## #include Style
+
+After the header file comment and the `#pragma once` guard, the minimal list of `#include`s required by the `.cc` file
+should be listed accordingly to the following priority:
+
+1. `Module.hh` header
+2. Local/private subproject headers necessary for the module
+3. Non `LibC`/`LibAPI` C/C++ headers
+4. `LibC`/`LibAPI` headers if necessary
