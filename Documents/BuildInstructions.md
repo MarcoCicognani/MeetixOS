@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-Make sure you have all the dependencies installed:
+Make sure you have all the following dependencies installed:
 
 ### Debian/Ubuntu/LinuxMint
 
@@ -33,7 +33,7 @@ If the script fails you could restart it by typing:
 ./Build.sh --rebuild
 ```
 
-If you are intentioned to do debugging you may want to keep the toolchain build file instead of deleting them, so you
+If you are intentioned to do debugging you may want to keep the toolchain build file instead of deleting them, then you
 could pass to the script `--skip-last-clean` to do that:
 
 ```shell
@@ -46,8 +46,7 @@ After the completion of this script your host should be able to build MeetixOS
 
 #### CLion
 
-MeetixOS is a `CLion` project, then If you have the `CLion IDE` check
-the [use instructions](https://github.com/MarcoCicognani/MeetixOS/tree/master/Documents/UseCLion.md).
+MeetixOS is a `CLion` project, then If you have the `CLion IDE` check the [use instructions](UseCLion.md).
 
 #### Terminal
 

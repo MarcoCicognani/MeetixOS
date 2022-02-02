@@ -1,8 +1,6 @@
-<br>
+![banner](https://www.meetixos.org/images/Logo.png)
 
-<p align="center">
-    <img src="https://www.meetixos.org/images/Logo.png" alt="meetixos_logo" width="500">
-</p>
+[![CI](https://github.com/MarcoCicognani/MeetixOS/actions/workflows/BuildAll.yml/badge.svg)](https://github.com/MarcoCicognani/MeetixOS/actions/workflows/BuildAll.yml)
 
 # About
 
@@ -17,8 +15,7 @@ It gains the power of the `UNIX` philosophy, but experiments new designs at the 
 Go to the latest job, then download `MeetixOS` located under Artifacts\
 **You MUST be logged in to GitHub to download the image**
 
-Follow [BuildInstructions.md](https://github.com/MarcoCicognani/MeetixOS/tree/master/Documents/BuildInstructions.md) to
-build the system from scratch
+Follow [BuildInstructions.md](Documents/BuildInstructions.md) to build the system from scratch
 
 # Run MeetixOS
 
@@ -33,7 +30,7 @@ $ qemu-system-i386 -enable-kvm -cpu host -smp 2 -m 512M -serial stdio -cdrom Mee
 # Current Project Direction
 
 After a very long hiatus, with side projects and various incomplete re-implementation of the MeetixOS (in `C++`
-and `Rust`), I decided to bring back the original MeetixOS's codebase and progressively rewrite and improve each
+and `Rust`), I decided to return to the original MeetixOS's codebase then progressively rewrite and improve each
 existing component and write new ones.
 
 Then I've decided to follow the fashion and implement near all the necessary code from myself to increase the fun and
@@ -41,7 +38,7 @@ the learning effect.
 
 ## Current Status
 
-Currently, I'm working on `LibTC`, a Template Collection library.
+Currently, I'm working on `LibTC`, the Template Collection Library.
 
 This nearly header-only library is inspired by
 the [SerenityOS/AK](https://github.com/SerenityOS/serenity/tree/master/AK)
