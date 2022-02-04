@@ -14,7 +14,6 @@
 
 #include <initializer_list>
 #include <TC/Assertion.hh>
-#include <TC/Collection/LinearAtIterator.hh>
 #include <TC/Cxx/Exchange.hh>
 #include <TC/Cxx/Forward.hh>
 #include <TC/Cxx/Move.hh>
@@ -29,12 +28,70 @@
 #include <TC/Trait/TypeIntrinsics.hh>
 
 namespace TC::Collection {
+namespace Details {
+
+template<typename Collection, typename T>
+class VectorIterator {
+public:
+    /**
+     * @brief Construction functions
+     */
+    static VectorIterator begin(Collection& collection);
+    static VectorIterator end(Collection& collection);
+
+    VectorIterator(VectorIterator const&) = default;
+
+    VectorIterator& operator=(VectorIterator const&) = default;
+
+    /**
+     * @brief Increment operators
+     */
+    VectorIterator& operator++();
+    VectorIterator  operator++(int);
+
+    /**
+     * @brief ValueReference access operators
+     */
+    T&       operator*();
+    T const& operator*() const;
+
+    /**
+     * @brief Pointer access operators
+     */
+    T*       operator->();
+    T const* operator->() const;
+
+    /**
+     * @brief Getters
+     */
+    [[nodiscard]] bool  is_end() const;
+    [[nodiscard]] usize index() const;
+
+    /**
+     * @brief Comparison operators
+     */
+    [[nodiscard]] bool operator==(VectorIterator const& rhs) const;
+    [[nodiscard]] bool operator!=(VectorIterator const& rhs) const;
+    [[nodiscard]] bool operator<(VectorIterator const& rhs) const;
+    [[nodiscard]] bool operator>(VectorIterator const& rhs) const;
+    [[nodiscard]] bool operator<=(VectorIterator const& rhs) const;
+    [[nodiscard]] bool operator>=(VectorIterator const& rhs) const;
+
+private:
+    VectorIterator(Collection& collection, usize index);
+
+private:
+    Collection* m_collection{ nullptr };
+    usize       m_index{ 0 };
+};
+
+} /* namespace Details */
 
 template<typename T>
 class Vector {
 public:
-    using Iterator      = LinearAtIterator<Vector, T>;
-    using ConstIterator = LinearAtIterator<Vector const, T const>;
+    using Iterator      = Details::VectorIterator<Vector, T>;
+    using ConstIterator = Details::VectorIterator<Vector const, T const>;
 
     enum class KeepStorageCapacity {
         Yes,
@@ -251,7 +308,7 @@ Vector<T>::Vector(std::initializer_list<T> initializer_list) {
     ensure_capacity(initializer_list.size());
 
     for ( auto const& element : initializer_list )
-        append_unchecked(element);
+        append_unchecked(Cxx::move(element));
 }
 
 template<typename T>
@@ -748,4 +805,95 @@ T* Vector<T>::data_slot(usize index) {
     return &m_data_storage[index];
 }
 
+namespace Details {
+
+template<typename Collection, typename T>
+VectorIterator<Collection, T> VectorIterator<Collection, T>::begin(Collection& collection) {
+    return VectorIterator{ collection, 0 };
+}
+
+template<typename Collection, typename T>
+VectorIterator<Collection, T> VectorIterator<Collection, T>::end(Collection& collection) {
+    return VectorIterator{ collection, collection.count() };
+}
+
+template<typename Collection, typename T>
+VectorIterator<Collection, T>& VectorIterator<Collection, T>::operator++() {
+    ++m_index;
+    return *this;
+}
+
+template<typename Collection, typename T>
+VectorIterator<Collection, T> VectorIterator<Collection, T>::operator++(int) {
+    ++m_index;
+    return VectorIterator{ m_collection, m_index - 1 };
+}
+
+template<typename Collection, typename T>
+T& VectorIterator<Collection, T>::operator*() {
+    return m_collection->at(m_index);
+}
+
+template<typename Collection, typename T>
+T const& VectorIterator<Collection, T>::operator*() const {
+    return m_collection->at(m_index);
+}
+
+template<typename Collection, typename T>
+T* VectorIterator<Collection, T>::operator->() {
+    return &operator*();
+}
+
+template<typename Collection, typename T>
+T const* VectorIterator<Collection, T>::operator->() const {
+    return &operator*();
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::is_end() const {
+    return m_index == end(*m_collection).index();
+}
+
+template<typename Collection, typename T>
+usize VectorIterator<Collection, T>::index() const {
+    return m_index;
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::operator==(VectorIterator<Collection, T> const& rhs) const {
+    return m_collection == rhs.m_collection && m_index == rhs.m_index;
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::operator!=(VectorIterator<Collection, T> const& rhs) const {
+    return m_collection != rhs.m_collection || m_index != rhs.m_index;
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::operator<(VectorIterator<Collection, T> const& rhs) const {
+    return m_index < rhs.m_index;
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::operator>(VectorIterator<Collection, T> const& rhs) const {
+    return m_index > rhs.m_index;
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::operator<=(VectorIterator<Collection, T> const& rhs) const {
+    return m_index <= rhs.m_index;
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::operator>=(VectorIterator<Collection, T> const& rhs) const {
+    return m_index >= rhs.m_index;
+}
+
+template<typename Collection, typename T>
+VectorIterator<Collection, T>::VectorIterator(Collection& collection, usize index)
+    : m_collection{ &collection }
+    , m_index{ index } {
+}
+
+} /* namespace Details */
 } /* namespace TC::Collection */

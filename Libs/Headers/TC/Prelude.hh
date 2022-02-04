@@ -13,10 +13,8 @@
 #pragma once
 
 #include <TC/Assertion.hh>
-#include <TC/Collection/LinearAtIterator.hh>
 #include <TC/Collection/List.hh>
 #include <TC/Collection/Map.hh>
-#include <TC/Collection/NestedIterator.hh>
 #include <TC/Collection/Pair.hh>
 #include <TC/Collection/Vector.hh>
 #include <TC/Cxx/Exchange.hh>
