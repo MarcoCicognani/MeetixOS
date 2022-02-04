@@ -12,8 +12,10 @@
 
 #pragma once
 
-namespace std {
+#include <utility>
 
-using nullptr_t = decltype(nullptr);
+namespace TC::Cxx {
 
-} /* namespace std */
+using std::exchange;
+
+} /* namespace TC::Cxx */

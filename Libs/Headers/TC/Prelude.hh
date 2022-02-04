@@ -14,10 +14,17 @@
 
 #include <TC/Assertion.hh>
 #include <TC/Collection/LinearAtIterator.hh>
+#include <TC/Collection/List.hh>
 #include <TC/Collection/Map.hh>
 #include <TC/Collection/NestedIterator.hh>
 #include <TC/Collection/Pair.hh>
 #include <TC/Collection/Vector.hh>
+#include <TC/Cxx/Exchange.hh>
+#include <TC/Cxx/Forward.hh>
+#include <TC/Cxx/Move.hh>
+#include <TC/Cxx/New.hh>
+#include <TC/Cxx/NullPtr.hh>
+#include <TC/Cxx/Swap.hh>
 #include <TC/Functional/ErrorOr.hh>
 #include <TC/Functional/Must.hh>
 #include <TC/Functional/Option.hh>
@@ -27,12 +34,6 @@
 #include <TC/Hashing/Pointer.hh>
 #include <TC/IntTypes.hh>
 #include <TC/RawMemory.hh>
-#include <TC/Std/Exchange.hh>
-#include <TC/Std/Forward.hh>
-#include <TC/Std/Move.hh>
-#include <TC/Std/New.hh>
-#include <TC/Std/NullPtr.hh>
-#include <TC/Std/Swap.hh>
 #include <TC/Tag/Adopt.hh>
 #include <TC/Tag/Copy.hh>
 #include <TC/Tag/None.hh>

@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <TC/Std/Move.hh>
+#include <TC/Cxx/Move.hh>
 
 namespace TC::Collection {
 
@@ -49,8 +49,8 @@ Pair<K, T>::Pair(K const& key, T const& value)
 
 template<typename K, typename T>
 Pair<K, T>::Pair(K&& key, T&& value)
-    : m_key{ std::move(key) }
-    , m_value{ std::move(value) } {
+    : m_key{ Cxx::move(key) }
+    , m_value{ Cxx::move(value) } {
 }
 
 template<typename K, typename T>

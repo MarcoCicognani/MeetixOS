@@ -12,15 +12,10 @@
 
 #pragma once
 
-#include <TC/Std/Move.hh>
+#include <utility>
 
-namespace std {
+namespace TC::Cxx {
 
-template<typename T>
-void swap(T& left, T& right) noexcept {
-    T tmp{ std::move(left) };
-    left  = std::move(right);
-    right = std::move(tmp);
-}
+using std::forward;
 
-} /* namespace std */
+} /* namespace TC::Cxx */

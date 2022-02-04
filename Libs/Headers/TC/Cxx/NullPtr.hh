@@ -12,16 +12,10 @@
 
 #pragma once
 
-#include <TC/Std/Forward.hh>
-#include <TC/Std/Move.hh>
+#include <utility>
 
-namespace std {
+namespace TC::Cxx {
 
-template<typename T, typename U = T>
-constexpr T exchange(T& slot, U&& value) {
-    T old_value{ move(slot) };
-    slot = forward<U>(value);
-    return old_value;
-}
+using std::nullptr_t;
 
-} /* namespace std */
+} /* namespace TC::Cxx */

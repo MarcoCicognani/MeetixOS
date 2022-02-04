@@ -17,9 +17,10 @@
 #include <TC/Collection/NestedIterator.hh>
 #include <TC/Collection/Pair.hh>
 #include <TC/Collection/Vector.hh>
+#include <TC/Cxx/Move.hh>
+#include <TC/Cxx/New.hh>
 #include <TC/Functional/ErrorOr.hh>
 #include <TC/Functional/Option.hh>
-#include <TC/Std/New.hh>
 #include <TC/Trait/TypeIntrinsics.hh>
 
 namespace TC::Collection {
@@ -142,7 +143,7 @@ Functional::Option<T> Map<K, T, Ordered>::insert(K const& key, T const& value, M
 
 template<typename K, typename T, bool Ordered>
 Functional::Option<T> Map<K, T, Ordered>::insert(K&& key, T&& value, Map::OnExistingKey on_existing_key) {
-    return MUST(try_insert(std::move(key), std::move(value), on_existing_key));
+    return MUST(try_insert(Cxx::move(key), Cxx::move(value), on_existing_key));
 }
 
 template<typename K, typename T, bool Ordered>
@@ -163,18 +164,18 @@ Map<K, T, Ordered>::try_insert(K&& key, T&& value, Map::OnExistingKey on_existin
             auto& value_ref = pair_ref.value();
 
             /* overwrite the value and save the old one */
-            T old_value{ std::move(value_ref) };
-            new (&value_ref) T{ std::move(value) };
+            T old_value{ Cxx::move(value_ref) };
+            new (&value_ref) T{ Cxx::move(value) };
 
             return Functional::Option<T>{ old_value };
         }
     } else {
         auto& sub_vector = bucket_by_hash(Trait::TypeIntrinsics<K>::hash(key));
         if constexpr ( Ordered ) {
-            TRY(sub_vector.try_insert_sorted(Pair{ std::move(key), std::move(value) },
+            TRY(sub_vector.try_insert_sorted(Pair{ Cxx::move(key), Cxx::move(value) },
                                              [](auto const& a, auto const& b) { return a.key() > b.key(); }));
         } else
-            TRY(sub_vector.try_append(Pair{ std::move(key), std::move(value) }));
+            TRY(sub_vector.try_append(Pair{ Cxx::move(key), Cxx::move(value) }));
 
         ++m_values_count;
         return Functional::Option<T>{};

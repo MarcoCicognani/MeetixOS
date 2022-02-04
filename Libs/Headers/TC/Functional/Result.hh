@@ -12,8 +12,8 @@
 
 #pragma once
 
+#include <TC/Cxx/Move.hh>
 #include <TC/Functional/Option.hh>
-#include <TC/Std/Move.hh>
 
 namespace TC::Functional {
 
@@ -166,7 +166,7 @@ Result<T, E>::Result(T const& value)
 
 template<typename T, typename E>
 Result<T, E>::Result(T&& value)
-    : m_value_option{ std::move(value) } {
+    : m_value_option{ Cxx::move(value) } {
 }
 
 template<typename T, typename E>
@@ -176,7 +176,7 @@ Result<T, E>::Result(E const& error)
 
 template<typename T, typename E>
 Result<T, E>::Result(E&& error)
-    : m_error_option{ std::move(error) } {
+    : m_error_option{ Cxx::move(error) } {
 }
 
 template<typename T, typename E>
@@ -226,7 +226,7 @@ Result<void, E>::Result(E const& error)
 
 template<typename E>
 Result<void, E>::Result(E&& error)
-    : m_error_option{ std::move(error) } {
+    : m_error_option{ Cxx::move(error) } {
 }
 
 template<typename E>
@@ -276,7 +276,7 @@ Result<T&, E>::Result(T const& value)
 
 template<typename T, typename E>
 Result<T&, E>::Result(T&& value)
-    : m_value_option{ std::move(value) } {
+    : m_value_option{ Cxx::move(value) } {
 }
 
 template<typename T, typename E>
@@ -286,7 +286,7 @@ Result<T&, E>::Result(E const& error)
 
 template<typename T, typename E>
 Result<T&, E>::Result(E&& error)
-    : m_value_option{ std::move(error) } {
+    : m_value_option{ Cxx::move(error) } {
 }
 
 template<typename T, typename E>

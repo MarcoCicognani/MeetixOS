@@ -13,8 +13,8 @@
 #pragma once
 
 #include <TC/Assertion.hh>
-#include <TC/Std/Move.hh>
-#include <TC/Std/New.hh>
+#include <TC/Cxx/Move.hh>
+#include <TC/Cxx/New.hh>
 
 namespace TC::Functional {
 
@@ -110,7 +110,7 @@ Option<T>::Option(T const& value)
 template<typename T>
 Option<T>::Option(T&& value)
     : m_is_present{ true } {
-    new (&m_data_storage) T{ std::move(value) };
+    new (&m_data_storage) T{ Cxx::move(value) };
 }
 
 template<typename T>
@@ -124,7 +124,7 @@ template<typename T>
 Option<T>::Option(Option&& rhs) noexcept
     : m_is_present{ rhs.m_is_present } {
     if ( m_is_present )
-        new (&m_data_storage) T{ std::move(rhs.unwrap()) };
+        new (&m_data_storage) T{ Cxx::move(rhs.unwrap()) };
 }
 
 template<typename T>
@@ -156,7 +156,7 @@ T const& Option<T>::value_or(T const& default_value) const {
 
 template<typename T>
 T Option<T>::unwrap() {
-    T moved_value{ std::move(value()) };
+    T moved_value{ Cxx::move(value()) };
     reset();
     return moved_value;
 }
@@ -188,7 +188,7 @@ Option<T&>::Option(T const& value)
 
 template<typename T>
 Option<T&>::Option(T&& value)
-    : m_inner_option{ const_cast<T*>(&std::move(value)) } {
+    : m_inner_option{ const_cast<T*>(&Cxx::move(value)) } {
 }
 
 template<typename T>
