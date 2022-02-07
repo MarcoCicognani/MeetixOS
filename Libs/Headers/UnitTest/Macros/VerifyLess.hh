@@ -15,11 +15,11 @@
 #include <stdio.h>
 #include <UnitTest/Suite.hh>
 
-#undef VERIFY_NQ
-#define VERIFY_NQ(first, second)                                                                                       \
+#undef VERIFY_LESS
+#define VERIFY_LESS(first, second)                                                                                     \
     do {                                                                                                               \
-        if ( !(first != second) ) [[unlikely]] {                                                                       \
-            printf("\t\033[31mFAILURE\033[0m %s:%d - VERIFY_NQ(%s != %s) failed\n",                                    \
+        if ( !(first < second) ) [[unlikely]] {                                                                        \
+            printf("\t\033[31mFAILURE\033[0m %s:%d - VERIFY_LESS(%s < %s) failed\n",                                   \
                    __FILE__,                                                                                           \
                    __LINE__,                                                                                           \
                    #first,                                                                                             \

@@ -13,7 +13,7 @@
 #include <TC/Functional/Option.hh>
 #include <UnitTest/Case.hh>
 #include <UnitTest/Macros/Verify.hh>
-#include <UnitTest/Macros/VerifyEq.hh>
+#include <UnitTest/Macros/VerifyEqual.hh>
 #include <UnitTest/Macros/VerifyFalse.hh>
 
 using TC::Functional::Option;
@@ -53,13 +53,13 @@ TEST_CASE(unwrap_reset_value) {
     VERIFY(option.is_present());
 
     auto const& object = option.value();
-    VERIFY_EQ(object.value(), 0xdeadbeef);
+    VERIFY_EQUAL(object.value(), 0xdeadbeef);
 
     auto object_v = option.unwrap();
-    VERIFY_EQ(object_v.value(), 0xdeadbeef);
+    VERIFY_EQUAL(object_v.value(), 0xdeadbeef);
     VERIFY_FALSE(option.is_present());
 
-    VERIFY_EQ(option.unwrap_or(Object{ 0xcafebabe }).value(), 0xcafebabe);
+    VERIFY_EQUAL(option.unwrap_or(Object{ 0xcafebabe }).value(), 0xcafebabe);
 }
 
 TEST_CASE(option_with_reference) {
@@ -71,14 +71,14 @@ TEST_CASE(option_with_reference) {
     VERIFY(option.is_present());
 
     auto& int_ref_from_option = option.value();
-    VERIFY_EQ(int_ref_from_option, 0xdeadbeef);
+    VERIFY_EQUAL(int_ref_from_option, 0xdeadbeef);
 
     int_ref_from_option = 0xcafebabe;
-    VERIFY_EQ(*int_ptr, 0xcafebabe);
-    VERIFY_EQ(int_ref, 0xcafebabe);
+    VERIFY_EQUAL(*int_ptr, 0xcafebabe);
+    VERIFY_EQUAL(int_ref, 0xcafebabe);
 
     auto& int_ref_value = option.unwrap();
-    VERIFY_EQ(int_ref_value, 0xcafebabe);
+    VERIFY_EQUAL(int_ref_value, 0xcafebabe);
     VERIFY_FALSE(option.is_present());
 
     delete int_ptr;
@@ -87,11 +87,11 @@ TEST_CASE(option_with_reference) {
 TEST_CASE(assignment_operator) {
     Option option{ 'a' };
     VERIFY(option.is_present());
-    VERIFY_EQ(option.value(), 'a');
+    VERIFY_EQUAL(option.value(), 'a');
 
     option = 'b';
     VERIFY(option.is_present());
-    VERIFY_EQ(option.value(), 'b');
+    VERIFY_EQUAL(option.value(), 'b');
 
     option = nullptr;
     VERIFY_FALSE(option.is_present());
@@ -101,7 +101,7 @@ TEST_CASE(assignment_operator) {
 
     Option<usize&> option2 = int_ref;
     VERIFY(option2.is_present());
-    VERIFY_EQ(option2.value(), 0xcafebabe);
+    VERIFY_EQUAL(option2.value(), 0xcafebabe);
 
     delete int_ptr;
 }

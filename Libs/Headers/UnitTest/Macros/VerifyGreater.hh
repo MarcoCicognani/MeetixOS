@@ -15,11 +15,11 @@
 #include <stdio.h>
 #include <UnitTest/Suite.hh>
 
-#undef VERIFY_EQ
-#define VERIFY_EQ(first, second)                                                                                       \
+#undef VERIFY_GREATER
+#define VERIFY_GREATER(first, second)                                                                                  \
     do {                                                                                                               \
-        if ( !(first == second) ) [[unlikely]] {                                                                       \
-            printf("\t\033[31mFAILURE\033[0m %s:%d - VERIFY_EQ(%s == %s) failed\n",                                    \
+        if ( !(first > second) ) [[unlikely]] {                                                                        \
+            printf("\t\033[31mFAILURE\033[0m %s:%d - VERIFY_GREATER(%s > %s) failed\n",                                \
                    __FILE__,                                                                                           \
                    __LINE__,                                                                                           \
                    #first,                                                                                             \

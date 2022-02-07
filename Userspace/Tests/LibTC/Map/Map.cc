@@ -14,8 +14,9 @@
 #include <TC/Cxx/Move.hh>
 #include <UnitTest/Case.hh>
 #include <UnitTest/Macros/Verify.hh>
-#include <UnitTest/Macros/VerifyEq.hh>
+#include <UnitTest/Macros/VerifyEqual.hh>
 #include <UnitTest/Macros/VerifyFalse.hh>
+#include <UnitTest/Macros/VerifyGreater.hh>
 
 using TC::Collection::Map;
 using TC::Collection::Pair;
@@ -25,25 +26,25 @@ TEST_CASE(initializer_list) {
     Map<int, int> map{ { 1, 10 }, { 2, 20 }, { 3, 30 }, { 4, 40 }, { 5, 50 } };
 
     VERIFY_FALSE(map.is_empty());
-    VERIFY_EQ(map.count(), 5);
+    VERIFY_EQUAL(map.count(), 5);
 }
 
 TEST_CASE(capacity) {
     class Object {};
     Map<Object, Object> map{ 512 };
 
-    VERIFY_EQ(map.count(), 0);
+    VERIFY_EQUAL(map.count(), 0);
     VERIFY(map.is_empty());
-    VERIFY_EQ(map.capacity(), 512);
+    VERIFY_EQUAL(map.capacity(), 512);
 }
 
 TEST_CASE(clear) {
     Map<int, int> map{ { 1, 10 }, { 2, 20 }, { 3, 30 }, { 4, 40 }, { 5, 50 } };
 
     map.clear();
-    VERIFY_EQ(map.count(), 0);
+    VERIFY_EQUAL(map.count(), 0);
     VERIFY(map.is_empty());
-    VERIFY(map.capacity() > 0);
+    VERIFY_GREATER(map.capacity(), 0);
 }
 
 TEST_CASE(insert_and_access) {
@@ -76,19 +77,19 @@ TEST_CASE(insert_and_access) {
 
     auto object_or_none_10 = map[10];
     VERIFY(object_or_none_10.is_present());
-    VERIFY_EQ(object_or_none_10.value(), Object{ 512 });
+    VERIFY_EQUAL(object_or_none_10.value(), Object{ 512 });
 
     auto error_or_old_value_10_new = map.try_insert(10, Object{ 4096 });
     VERIFY(error_or_old_value_10_new.is_value());
-    VERIFY_EQ(error_or_old_value_10_new.value().value(), Object{ 512 });
+    VERIFY_EQUAL(error_or_old_value_10_new.value().value(), Object{ 512 });
 
     auto object_or_none_20 = map[20];
     VERIFY(object_or_none_20.is_present());
-    VERIFY_EQ(object_or_none_20.value(), Object{ 256 });
+    VERIFY_EQUAL(object_or_none_20.value(), Object{ 256 });
 
     auto object_or_none_10_new = map[10];
     VERIFY(object_or_none_10_new.is_present());
-    VERIFY_EQ(object_or_none_10_new.value(), Object{ 4096 });
+    VERIFY_EQUAL(object_or_none_10_new.value(), Object{ 4096 });
 }
 
 TEST_CASE(insert_and_access_unordered) {
@@ -121,19 +122,19 @@ TEST_CASE(insert_and_access_unordered) {
 
     auto object_or_none_10 = map[10];
     VERIFY(object_or_none_10.is_present());
-    VERIFY_EQ(object_or_none_10.value(), Object{ 512 });
+    VERIFY_EQUAL(object_or_none_10.value(), Object{ 512 });
 
     auto error_or_old_value_10_new = map.try_insert(10, Object{ 4096 });
     VERIFY(error_or_old_value_10_new.is_value());
-    VERIFY_EQ(error_or_old_value_10_new.value().value(), Object{ 512 });
+    VERIFY_EQUAL(error_or_old_value_10_new.value().value(), Object{ 512 });
 
     auto object_or_none_20 = map[20];
     VERIFY(object_or_none_20.is_present());
-    VERIFY_EQ(object_or_none_20.value(), Object{ 256 });
+    VERIFY_EQUAL(object_or_none_20.value(), Object{ 256 });
 
     auto object_or_none_10_new = map[10];
     VERIFY(object_or_none_10_new.is_present());
-    VERIFY_EQ(object_or_none_10_new.value(), Object{ 4096 });
+    VERIFY_EQUAL(object_or_none_10_new.value(), Object{ 4096 });
 }
 
 TEST_CASE(erase_key) {
@@ -141,14 +142,14 @@ TEST_CASE(erase_key) {
 
     auto error_or_void_2 = map.erase_key(2);
     VERIFY(error_or_void_2.is_value());
-    VERIFY_EQ(map.count(), 4);
+    VERIFY_EQUAL(map.count(), 4);
 
     auto value_or_none_2 = map[2];
     VERIFY_FALSE(value_or_none_2.is_present());
 
     auto error_or_void_5 = map.erase_key(5);
     VERIFY(error_or_void_5.is_value());
-    VERIFY_EQ(map.count(), 3);
+    VERIFY_EQUAL(map.count(), 3);
 
     auto value_or_none_5 = map[5];
     VERIFY_FALSE(value_or_none_5.is_present());
@@ -159,11 +160,11 @@ TEST_CASE(erase_value) {
 
     auto error_or_erased_count_40 = map.erase_value(40);
     VERIFY(error_or_erased_count_40.is_value());
-    VERIFY_EQ(error_or_erased_count_40.value(), 2);
+    VERIFY_EQUAL(error_or_erased_count_40.value(), 2);
 
     auto error_or_erased_count_50 = map.erase_value(50);
     VERIFY(error_or_erased_count_50.is_value());
-    VERIFY_EQ(error_or_erased_count_50.value(), 3);
+    VERIFY_EQUAL(error_or_erased_count_50.value(), 3);
 }
 
 TEST_CASE(has_key) {
@@ -191,7 +192,7 @@ TEST_CASE(iterator) {
         loop_counter += 1;
     }
 
-    VERIFY_EQ(loop_counter, 7);
+    VERIFY_EQUAL(loop_counter, 7);
 }
 
 TEST_CASE(iterator_mut) {
@@ -201,33 +202,33 @@ TEST_CASE(iterator_mut) {
         pair.value() = 512;
     }
 
-    VERIFY_EQ(map[0].value(), 512);
-    VERIFY_EQ(map[1].value(), 512);
-    VERIFY_EQ(map[2].value(), 512);
-    VERIFY_EQ(map[3].value(), 512);
-    VERIFY_EQ(map[4].value(), 512);
-    VERIFY_EQ(map[5].value(), 512);
-    VERIFY_EQ(map[6].value(), 512);
+    VERIFY_EQUAL(map[0].value(), 512);
+    VERIFY_EQUAL(map[1].value(), 512);
+    VERIFY_EQUAL(map[2].value(), 512);
+    VERIFY_EQUAL(map[3].value(), 512);
+    VERIFY_EQUAL(map[4].value(), 512);
+    VERIFY_EQUAL(map[5].value(), 512);
+    VERIFY_EQUAL(map[6].value(), 512);
 }
 
 TEST_CASE(assignment_operator) {
     Map<int, int> map{};
     map = { { 1, 10 }, { 2, 20 }, { 3, 30 }, { 4, 40 }, { 5, 50 } };
     VERIFY_FALSE(map.is_empty());
-    VERIFY_EQ(map.count(), 5);
+    VERIFY_EQUAL(map.count(), 5);
 
     Map<int, int> map2 = map;
     VERIFY_FALSE(map2.is_empty());
-    VERIFY_EQ(map2.count(), 5);
+    VERIFY_EQUAL(map2.count(), 5);
     VERIFY_FALSE(map.is_empty());
-    VERIFY_EQ(map.count(), 5);
+    VERIFY_EQUAL(map.count(), 5);
 
     Map<int, int> map3 = move(map2);
     VERIFY(map2.is_empty());
-    VERIFY_EQ(map2.count(), 0);
+    VERIFY_EQUAL(map2.count(), 0);
     VERIFY_FALSE(map3.is_empty());
-    VERIFY_EQ(map3.count(), 5);
+    VERIFY_EQUAL(map3.count(), 5);
 
     map3 = { { 0, 1 }, { 2, 3 }, { 4, 5 }, { 6, 7 } };
-    VERIFY_EQ(map3.count(), 4);
+    VERIFY_EQUAL(map3.count(), 4);
 }

@@ -14,8 +14,9 @@
 #include <TC/Cxx/Move.hh>
 #include <UnitTest/Case.hh>
 #include <UnitTest/Macros/Verify.hh>
-#include <UnitTest/Macros/VerifyEq.hh>
+#include <UnitTest/Macros/VerifyEqual.hh>
 #include <UnitTest/Macros/VerifyFalse.hh>
+#include <UnitTest/Macros/VerifyGreaterEqual.hh>
 
 using TC::Collection::Vector;
 using TC::Cxx::move;
@@ -24,16 +25,16 @@ TEST_CASE(initializer_list) {
     Vector vector{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
     VERIFY_FALSE(vector.is_empty());
-    VERIFY_EQ(vector.count(), 10);
+    VERIFY_EQUAL(vector.count(), 10);
 }
 
 TEST_CASE(capacity) {
     class Object {};
     Vector<Object> vector{ 512 };
 
-    VERIFY_EQ(vector.count(), 0);
+    VERIFY_EQUAL(vector.count(), 0);
     VERIFY(vector.is_empty());
-    VERIFY_EQ(vector.capacity(), 512);
+    VERIFY_EQUAL(vector.capacity(), 512);
 }
 
 TEST_CASE(ensure_capacity) {
@@ -41,7 +42,7 @@ TEST_CASE(ensure_capacity) {
 
     auto error_or_void = vector.try_ensure_capacity(4096);
     VERIFY(error_or_void.is_value());
-    VERIFY(vector.capacity() >= 4096);
+    VERIFY_GREATER_EQUAL(vector.capacity(), 4096);
 }
 
 TEST_CASE(resize) {
@@ -49,8 +50,8 @@ TEST_CASE(resize) {
 
     auto error_or_void = vector.try_resize(4096);
     VERIFY(error_or_void.is_value());
-    VERIFY(vector.capacity() >= 4096);
-    VERIFY_EQ(vector.count(), 4096);
+    VERIFY_GREATER_EQUAL(vector.capacity(), 4096);
+    VERIFY_EQUAL(vector.count(), 4096);
 }
 
 TEST_CASE(clear) {
@@ -58,11 +59,11 @@ TEST_CASE(clear) {
 
     vector.clear(Vector<int>::KeepStorageCapacity::Yes);
     VERIFY(vector.is_empty());
-    VERIFY(vector.capacity() >= 5);
+    VERIFY_GREATER_EQUAL(vector.capacity(), 5);
 
     vector.clear(Vector<int>::KeepStorageCapacity::No);
     VERIFY(vector.is_empty());
-    VERIFY_EQ(vector.capacity(), 0);
+    VERIFY_EQUAL(vector.capacity(), 0);
 }
 
 TEST_CASE(emplace_and_access) {
@@ -71,11 +72,11 @@ TEST_CASE(emplace_and_access) {
     auto error_or_void_50 = vector.try_emplace_first(50);
     VERIFY(error_or_void_50.is_value());
 
-    VERIFY_EQ(vector.first(), 50);
-    VERIFY_EQ(vector.last(), 50);
+    VERIFY_EQUAL(vector.first(), 50);
+    VERIFY_EQUAL(vector.last(), 50);
 
     VERIFY_FALSE(vector.is_empty());
-    VERIFY_EQ(vector.count(), 1);
+    VERIFY_EQUAL(vector.count(), 1);
 
     auto error_or_void_40 = vector.try_emplace_first(40);
     VERIFY(error_or_void_40.is_value());
@@ -86,13 +87,13 @@ TEST_CASE(emplace_and_access) {
     auto error_or_void_10 = vector.try_emplace_first(10);
     VERIFY(error_or_void_10.is_value());
 
-    VERIFY_EQ(vector.count(), 5);
+    VERIFY_EQUAL(vector.count(), 5);
 
-    VERIFY_EQ(vector[0], 10);
-    VERIFY_EQ(vector[1], 20);
-    VERIFY_EQ(vector[2], 30);
-    VERIFY_EQ(vector[3], 40);
-    VERIFY_EQ(vector[4], 50);
+    VERIFY_EQUAL(vector[0], 10);
+    VERIFY_EQUAL(vector[1], 20);
+    VERIFY_EQUAL(vector[2], 30);
+    VERIFY_EQUAL(vector[3], 40);
+    VERIFY_EQUAL(vector[4], 50);
 
     auto error_or_void_100 = vector.try_emplace_last(100);
     VERIFY(error_or_void_100.is_value());
@@ -105,13 +106,13 @@ TEST_CASE(emplace_and_access) {
     auto error_or_void_500 = vector.try_emplace_last(500);
     VERIFY(error_or_void_500.is_value());
 
-    VERIFY_EQ(vector.count(), 10);
+    VERIFY_EQUAL(vector.count(), 10);
 
-    VERIFY_EQ(vector[5], 100);
-    VERIFY_EQ(vector[6], 200);
-    VERIFY_EQ(vector[7], 300);
-    VERIFY_EQ(vector[8], 400);
-    VERIFY_EQ(vector[9], 500);
+    VERIFY_EQUAL(vector[5], 100);
+    VERIFY_EQUAL(vector[6], 200);
+    VERIFY_EQUAL(vector[7], 300);
+    VERIFY_EQUAL(vector[8], 400);
+    VERIFY_EQUAL(vector[9], 500);
 }
 
 TEST_CASE(append) {
@@ -144,8 +145,8 @@ TEST_CASE(append) {
     VERIFY(error_or_void_50.is_value());
 
     VERIFY_FALSE(vector.is_empty());
-    VERIFY_EQ(vector.count(), 5);
-    VERIFY(vector.capacity() >= 5);
+    VERIFY_EQUAL(vector.count(), 5);
+    VERIFY_GREATER_EQUAL(vector.capacity(), 5);
 }
 
 TEST_CASE(prepend) {
@@ -162,19 +163,19 @@ TEST_CASE(prepend) {
     auto error_or_void_0 = vector.try_prepend(0);
     VERIFY(error_or_void_0.is_value());
 
-    VERIFY_EQ(vector.count(), 10);
-    VERIFY_EQ(vector.first(), 0);
-    VERIFY_EQ(vector.last(), 9);
-    VERIFY_EQ(vector[0], 0);
-    VERIFY_EQ(vector[1], 1);
-    VERIFY_EQ(vector[2], 2);
-    VERIFY_EQ(vector[3], 3);
-    VERIFY_EQ(vector[4], 4);
-    VERIFY_EQ(vector[5], 5);
-    VERIFY_EQ(vector[6], 6);
-    VERIFY_EQ(vector[7], 7);
-    VERIFY_EQ(vector[8], 8);
-    VERIFY_EQ(vector[9], 9);
+    VERIFY_EQUAL(vector.count(), 10);
+    VERIFY_EQUAL(vector.first(), 0);
+    VERIFY_EQUAL(vector.last(), 9);
+    VERIFY_EQUAL(vector[0], 0);
+    VERIFY_EQUAL(vector[1], 1);
+    VERIFY_EQUAL(vector[2], 2);
+    VERIFY_EQUAL(vector[3], 3);
+    VERIFY_EQUAL(vector[4], 4);
+    VERIFY_EQUAL(vector[5], 5);
+    VERIFY_EQUAL(vector[6], 6);
+    VERIFY_EQUAL(vector[7], 7);
+    VERIFY_EQUAL(vector[8], 8);
+    VERIFY_EQUAL(vector[9], 9);
 }
 
 TEST_CASE(insert_at) {
@@ -186,46 +187,46 @@ TEST_CASE(insert_at) {
     auto error_or_void_700 = vector.try_insert_sorted(700);
     VERIFY(error_or_void_700.is_value());
 
-    VERIFY_EQ(vector.count(), 6);
-    VERIFY_EQ(vector[0], 100);
-    VERIFY_EQ(vector[1], 200);
-    VERIFY_EQ(vector[2], 300);
-    VERIFY_EQ(vector[3], 400);
-    VERIFY_EQ(vector[4], 600);
-    VERIFY_EQ(vector[5], 700);
+    VERIFY_EQUAL(vector.count(), 6);
+    VERIFY_EQUAL(vector[0], 100);
+    VERIFY_EQUAL(vector[1], 200);
+    VERIFY_EQUAL(vector[2], 300);
+    VERIFY_EQUAL(vector[3], 400);
+    VERIFY_EQUAL(vector[4], 600);
+    VERIFY_EQUAL(vector[5], 700);
 
     auto error_or_void_500 = vector.try_insert_sorted(500);
     VERIFY(error_or_void_500.is_value());
 
-    VERIFY_EQ(vector[4], 500);
+    VERIFY_EQUAL(vector[4], 500);
 }
 
 TEST_CASE(sort) {
     Vector vector{ 9, 4, 6, 12, 44, 102, 0, 45 };
 
-    VERIFY_EQ(vector.count(), 8);
+    VERIFY_EQUAL(vector.count(), 8);
 
     vector.sort([](auto const& a, auto const& b) { return a > b ? 1 : -1; });
 
-    VERIFY_EQ(vector[0], 0);
-    VERIFY_EQ(vector[1], 4);
-    VERIFY_EQ(vector[2], 6);
-    VERIFY_EQ(vector[3], 9);
-    VERIFY_EQ(vector[4], 12);
-    VERIFY_EQ(vector[5], 44);
-    VERIFY_EQ(vector[6], 45);
-    VERIFY_EQ(vector[7], 102);
+    VERIFY_EQUAL(vector[0], 0);
+    VERIFY_EQUAL(vector[1], 4);
+    VERIFY_EQUAL(vector[2], 6);
+    VERIFY_EQUAL(vector[3], 9);
+    VERIFY_EQUAL(vector[4], 12);
+    VERIFY_EQUAL(vector[5], 44);
+    VERIFY_EQUAL(vector[6], 45);
+    VERIFY_EQUAL(vector[7], 102);
 
     vector.sort([](auto const& a, auto const& b) { return a < b ? 1 : -1; });
 
-    VERIFY_EQ(vector[0], 102);
-    VERIFY_EQ(vector[1], 45);
-    VERIFY_EQ(vector[2], 44);
-    VERIFY_EQ(vector[3], 12);
-    VERIFY_EQ(vector[4], 9);
-    VERIFY_EQ(vector[5], 6);
-    VERIFY_EQ(vector[6], 4);
-    VERIFY_EQ(vector[7], 0);
+    VERIFY_EQUAL(vector[0], 102);
+    VERIFY_EQUAL(vector[1], 45);
+    VERIFY_EQUAL(vector[2], 44);
+    VERIFY_EQUAL(vector[3], 12);
+    VERIFY_EQUAL(vector[4], 9);
+    VERIFY_EQUAL(vector[5], 6);
+    VERIFY_EQUAL(vector[6], 4);
+    VERIFY_EQUAL(vector[7], 0);
 }
 
 TEST_CASE(erase_at) {
@@ -233,13 +234,13 @@ TEST_CASE(erase_at) {
 
     auto error_or_void_1 = vector.erase_at(1);
     VERIFY(error_or_void_1.is_value());
-    VERIFY_EQ(vector.count(), 4);
-    VERIFY_EQ(vector[1], 350);
+    VERIFY_EQUAL(vector.count(), 4);
+    VERIFY_EQUAL(vector[1], 350);
 
     auto error_or_void_3 = vector.erase_at(3);
     VERIFY(error_or_void_3.is_value());
-    VERIFY_EQ(vector.count(), 3);
-    VERIFY_EQ(vector[2], 450);
+    VERIFY_EQUAL(vector.count(), 3);
+    VERIFY_EQUAL(vector[2], 450);
 }
 
 TEST_CASE(erase_first_of) {
@@ -266,13 +267,13 @@ TEST_CASE(erase_first_of) {
 
     auto error_or_void_30 = vector.erase_first_of(Object{ 30 });
     VERIFY(error_or_void_30.is_value());
-    VERIFY_EQ(vector.count(), 4);
-    VERIFY_EQ(vector[2], Object{ 40 });
+    VERIFY_EQUAL(vector.count(), 4);
+    VERIFY_EQUAL(vector[2], Object{ 40 });
 
     auto error_or_void_10 = vector.erase_first_of(Object{ 10 });
     VERIFY(error_or_void_10.is_value());
-    VERIFY_EQ(vector.count(), 3);
-    VERIFY_EQ(vector.first(), Object{ 20 });
+    VERIFY_EQUAL(vector.count(), 3);
+    VERIFY_EQUAL(vector.first(), Object{ 20 });
 }
 
 TEST_CASE(erase_all_of) {
@@ -280,13 +281,13 @@ TEST_CASE(erase_all_of) {
 
     auto error_or_count_45 = vector.erase_all_of(45);
     VERIFY(error_or_count_45.is_value());
-    VERIFY_EQ(error_or_count_45.value(), 3);
-    VERIFY_EQ(vector.count(), 6);
-    VERIFY_EQ(vector.first(), 67);
+    VERIFY_EQUAL(error_or_count_45.value(), 3);
+    VERIFY_EQUAL(vector.count(), 6);
+    VERIFY_EQUAL(vector.first(), 67);
 
     auto error_or_count_100 = vector.erase_all_of(100);
     VERIFY(error_or_count_100.is_error());
-    VERIFY_EQ(error_or_count_100.error(), ENOENT);
+    VERIFY_EQUAL(error_or_count_100.error(), ENOENT);
 }
 
 TEST_CASE(erase_all_matches) {
@@ -311,9 +312,9 @@ TEST_CASE(erase_all_matches) {
 
     auto error_or_count = vector.erase_all_matches([](auto const& o) { return o.value() % 2 == 0; });
     VERIFY(error_or_count.is_value());
-    VERIFY_EQ(error_or_count.value(), 4);
-    VERIFY_EQ(vector.first(), Object{ 57 });
-    VERIFY_EQ(vector.count(), 1);
+    VERIFY_EQUAL(error_or_count.value(), 4);
+    VERIFY_EQUAL(vector.first(), Object{ 57 });
+    VERIFY_EQUAL(vector.count(), 1);
 }
 
 TEST_CASE(const_iterator) {
@@ -321,7 +322,7 @@ TEST_CASE(const_iterator) {
 
     int expected_value = 1;
     for ( auto const& value : vector )
-        VERIFY_EQ(value, expected_value++);
+        VERIFY_EQUAL(value, expected_value++);
 }
 
 TEST_CASE(mutable_iterator) {
@@ -332,7 +333,7 @@ TEST_CASE(mutable_iterator) {
 
     int expected_value = 2;
     for ( auto const& value : vector )
-        VERIFY_EQ(value, expected_value++);
+        VERIFY_EQUAL(value, expected_value++);
 }
 
 TEST_CASE(contains_and_index_of) {
@@ -344,15 +345,15 @@ TEST_CASE(contains_and_index_of) {
 
     auto index_or_none_21 = vector.index_of(21);
     VERIFY(index_or_none_21.is_present());
-    VERIFY_EQ(index_or_none_21.value(), 3);
+    VERIFY_EQUAL(index_or_none_21.value(), 3);
 
     auto index_or_none_78 = vector.index_of(78);
     VERIFY(index_or_none_78.is_present());
-    VERIFY_EQ(index_or_none_78.value(), 7);
+    VERIFY_EQUAL(index_or_none_78.value(), 7);
 
     auto index_or_none_3 = vector.index_of(3);
     VERIFY(index_or_none_3.is_present());
-    VERIFY_EQ(index_or_none_3.value(), 5);
+    VERIFY_EQUAL(index_or_none_3.value(), 5);
 
     auto index_or_none_99 = vector.index_of(99);
     VERIFY_FALSE(index_or_none_99.is_present());
@@ -363,11 +364,11 @@ TEST_CASE(index_if) {
 
     auto index_or_none_78 = vector.index_if([](auto const& value) { return value == 78; });
     VERIFY(index_or_none_78.is_present());
-    VERIFY_EQ(index_or_none_78.value(), 7);
+    VERIFY_EQUAL(index_or_none_78.value(), 7);
 
     auto index_or_none_first_not_even = vector.index_if([](auto const& value) { return value % 2 != 0; });
     VERIFY(index_or_none_first_not_even.is_present());
-    VERIFY_EQ(index_or_none_first_not_even.value(), 2);
+    VERIFY_EQUAL(index_or_none_first_not_even.value(), 2);
 }
 
 TEST_CASE(find) {
@@ -381,7 +382,7 @@ TEST_CASE(find) {
 
     auto updated_value_or_none = vector.find(512);
     VERIFY(updated_value_or_none.is_present());
-    VERIFY_EQ(updated_value_or_none.value(), 512);
+    VERIFY_EQUAL(updated_value_or_none.value(), 512);
 
     Vector const vector_const{ 0, 4, 6, 2, 3, 8, 5, 1 };
 
@@ -428,30 +429,30 @@ TEST_CASE(assignment_operator) {
     Vector vector{ 1, 2, 3, 4, 5 };
 
     vector = { 6, 7, 8, 9, 10 };
-    VERIFY_EQ(vector.count(), 5);
+    VERIFY_EQUAL(vector.count(), 5);
 
     usize expected_value = 6;
     for ( auto const& value : vector )
-        VERIFY_EQ(value, expected_value++);
+        VERIFY_EQUAL(value, expected_value++);
 
     Vector<int> vector2{};
     vector2        = vector;
     expected_value = 6;
     for ( auto const& value : vector2 )
-        VERIFY_EQ(value, expected_value++);
+        VERIFY_EQUAL(value, expected_value++);
 
     Vector vector3{ 8, 5, 2 };
-    VERIFY_EQ(vector3.count(), 3);
-    VERIFY_EQ(vector3[0], 8);
-    VERIFY_EQ(vector3[1], 5);
-    VERIFY_EQ(vector3[2], 2);
+    VERIFY_EQUAL(vector3.count(), 3);
+    VERIFY_EQUAL(vector3[0], 8);
+    VERIFY_EQUAL(vector3[1], 5);
+    VERIFY_EQUAL(vector3[2], 2);
 
     vector3 = move(vector);
-    VERIFY_EQ(vector3.count(), 5);
-    
+    VERIFY_EQUAL(vector3.count(), 5);
+
     expected_value = 6;
     for ( auto const& value : vector3 )
-        VERIFY_EQ(value, expected_value++);
+        VERIFY_EQUAL(value, expected_value++);
 }
 
 BENCHMARK_CASE(one_hundred_thousand_append_with_reallocations) {
@@ -477,7 +478,7 @@ BENCHMARK_CASE(one_hundred_thousand_append_with_reallocations) {
     for ( usize i = 0; i < 100'000; ++i )
         VERIFY(vector.try_append(Object{ i * 34 }).is_value());
 
-    VERIFY_EQ(vector.count(), 100'000);
+    VERIFY_EQUAL(vector.count(), 100'000);
     VERIFY(vector.capacity() >= 100'000);
 }
 
@@ -504,8 +505,8 @@ BENCHMARK_CASE(one_hundred_thousand_append_without_reallocations) {
     for ( usize i = 0; i < 100'000; ++i )
         VERIFY(vector.try_append(Object{ i * 34 }).is_value());
 
-    VERIFY_EQ(vector.count(), 100'000);
-    VERIFY_EQ(vector.capacity(), 100'000);
+    VERIFY_EQUAL(vector.count(), 100'000);
+    VERIFY_EQUAL(vector.capacity(), 100'000);
 }
 
 BENCHMARK_CASE(one_hundred_thousand_append_unchecked_without_reallocations) {
@@ -531,6 +532,6 @@ BENCHMARK_CASE(one_hundred_thousand_append_unchecked_without_reallocations) {
     for ( usize i = 0; i < 100'000; ++i )
         vector.append_unchecked(Object{ i * 34 });
 
-    VERIFY_EQ(vector.count(), 100'000);
-    VERIFY_EQ(vector.capacity(), 100'000);
+    VERIFY_EQUAL(vector.count(), 100'000);
+    VERIFY_EQUAL(vector.capacity(), 100'000);
 }

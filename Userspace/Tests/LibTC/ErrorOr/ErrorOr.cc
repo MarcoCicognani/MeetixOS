@@ -13,7 +13,7 @@
 #include <TC/Functional/ErrorOr.hh>
 #include <UnitTest/Case.hh>
 #include <UnitTest/Macros/Verify.hh>
-#include <UnitTest/Macros/VerifyEq.hh>
+#include <UnitTest/Macros/VerifyEqual.hh>
 #include <UnitTest/Macros/VerifyFalse.hh>
 
 using TC::Functional::ErrorOr;
@@ -28,11 +28,11 @@ TEST_CASE(value_and_error) {
 
     auto must_be_value_result = may_produce_value(100);
     VERIFY(must_be_value_result.is_value());
-    VERIFY_EQ(must_be_value_result.value(), 110);
+    VERIFY_EQUAL(must_be_value_result.value(), 110);
 
     auto must_be_error_result = may_produce_value(0);
     VERIFY(must_be_error_result.is_error());
-    VERIFY_EQ(must_be_error_result.error(), EINVAL);
+    VERIFY_EQUAL(must_be_error_result.error(), EINVAL);
 }
 
 TEST_CASE(unwrap_value) {
@@ -55,10 +55,10 @@ TEST_CASE(unwrap_value) {
     VERIFY(error_or_object.is_value());
 
     auto const& object = error_or_object.value();
-    VERIFY_EQ(object.value(), 0xcafebabe);
+    VERIFY_EQUAL(object.value(), 0xcafebabe);
 
     auto object_v = error_or_object.unwrap_value();
-    VERIFY_EQ(object_v.value(), 0xcafebabe);
+    VERIFY_EQUAL(object_v.value(), 0xcafebabe);
     VERIFY_FALSE(error_or_object.is_value());
     VERIFY_FALSE(error_or_object.is_error());
 }
@@ -68,10 +68,10 @@ TEST_CASE(unwrap_error) {
     VERIFY(error_or_int.is_error());
 
     auto const& error = error_or_int.error();
-    VERIFY_EQ(error, ENOENT);
+    VERIFY_EQUAL(error, ENOENT);
 
     auto error_v = error_or_int.unwrap_error();
-    VERIFY_EQ(error_v, ENOENT);
+    VERIFY_EQUAL(error_v, ENOENT);
     VERIFY_FALSE(error_or_int.is_error());
     VERIFY_FALSE(error_or_int.is_value());
 }
@@ -85,14 +85,14 @@ TEST_CASE(reference_as_value) {
     VERIFY(error_or_usize.is_value());
 
     auto& int_ref_from_error_or = error_or_usize.value();
-    VERIFY(int_ref_from_error_or == 0xdeadbeef);
+    VERIFY_EQUAL(int_ref_from_error_or, 0xdeadbeef);
 
     int_ref_from_error_or = 0xcafebabe;
-    VERIFY_EQ(*int_ptr, 0xcafebabe);
-    VERIFY_EQ(int_ref, 0xcafebabe);
+    VERIFY_EQUAL(*int_ptr, 0xcafebabe);
+    VERIFY_EQUAL(int_ref, 0xcafebabe);
 
     auto& int_ref_value = error_or_usize.unwrap_value();
-    VERIFY_EQ(int_ref_value, 0xcafebabe);
+    VERIFY_EQUAL(int_ref_value, 0xcafebabe);
     VERIFY_FALSE(error_or_usize.is_value());
     VERIFY_FALSE(error_or_usize.is_error());
 
@@ -105,19 +105,19 @@ TEST_CASE(assignment_operator) {
     error_or_int = ENOENT;
     VERIFY(error_or_int.is_error());
     VERIFY_FALSE(error_or_int.is_value());
-    VERIFY_EQ(error_or_int.error(), ENOENT);
+    VERIFY_EQUAL(error_or_int.error(), ENOENT);
 
     error_or_int = 4096;
     VERIFY(error_or_int.is_value());
     VERIFY_FALSE(error_or_int.is_error());
-    VERIFY_EQ(error_or_int.value(), 4096);
+    VERIFY_EQUAL(error_or_int.value(), 4096);
 
     ErrorOr<void> error_or_void{};
 
     error_or_void = EINVAL;
     VERIFY(error_or_void.is_error());
     VERIFY_FALSE(error_or_void.is_value());
-    VERIFY_EQ(error_or_void.error(), EINVAL);
+    VERIFY_EQUAL(error_or_void.error(), EINVAL);
 
     ErrorOr<int&> error_or_ref = *new int{ 256 };
 
@@ -129,5 +129,5 @@ TEST_CASE(assignment_operator) {
     error_or_ref = ENOENT;
     VERIFY(error_or_ref.is_error());
     VERIFY_FALSE(error_or_ref.is_value());
-    VERIFY_EQ(error_or_ref.error(), ENOENT);
+    VERIFY_EQUAL(error_or_ref.error(), ENOENT);
 }

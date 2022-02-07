@@ -14,7 +14,7 @@
 #include <TC/Cxx/Move.hh>
 #include <UnitTest/Case.hh>
 #include <UnitTest/Macros/Verify.hh>
-#include <UnitTest/Macros/VerifyEq.hh>
+#include <UnitTest/Macros/VerifyEqual.hh>
 #include <UnitTest/Macros/VerifyFalse.hh>
 
 using TC::Collection::List;
@@ -24,7 +24,7 @@ TEST_CASE(initializer_list) {
     List list{ 1, 2, 3, 4, 5 };
 
     VERIFY_FALSE(list.is_empty());
-    VERIFY_EQ(list.count(), 5);
+    VERIFY_EQUAL(list.count(), 5);
 }
 
 TEST_CASE(clear) {
@@ -32,7 +32,7 @@ TEST_CASE(clear) {
 
     list.clear();
     VERIFY(list.is_empty());
-    VERIFY_EQ(list.count(), 0);
+    VERIFY_EQUAL(list.count(), 0);
 }
 
 TEST_CASE(append) {
@@ -61,7 +61,7 @@ TEST_CASE(append) {
     list.append(Object{ 10'000 });
 
     VERIFY_FALSE(list.is_empty());
-    VERIFY_EQ(list.count(), 5);
+    VERIFY_EQUAL(list.count(), 5);
 }
 
 TEST_CASE(prepend) {
@@ -90,7 +90,7 @@ TEST_CASE(prepend) {
     list.prepend(Object{ 10'000 });
 
     VERIFY_FALSE(list.is_empty());
-    VERIFY_EQ(list.count(), 5);
+    VERIFY_EQUAL(list.count(), 5);
 }
 
 TEST_CASE(erase) {
@@ -105,7 +105,7 @@ TEST_CASE(erase) {
     }
 
     VERIFY_FALSE(list.is_empty());
-    VERIFY_EQ(list.count(), 3);
+    VERIFY_EQUAL(list.count(), 3);
 }
 
 TEST_CASE(erase_if) {
@@ -135,7 +135,7 @@ TEST_CASE(erase_if) {
 
     list.erase_if([](auto const& o) { return o.value() == 3 && o.cc() != 'd'; });
 
-    VERIFY_EQ(list.count(), 6);
+    VERIFY_EQUAL(list.count(), 6);
 }
 
 TEST_CASE(contains) {
@@ -159,8 +159,8 @@ TEST_CASE(find) {
 
     auto value_or_none_1000 = list.find(1000);
     VERIFY(value_or_none_1000.is_present());
-    VERIFY_EQ(value_or_none_1000.value(), 1000);
-    VERIFY_EQ(value_or_none_78.value(), 1000);
+    VERIFY_EQUAL(value_or_none_1000.value(), 1000);
+    VERIFY_EQUAL(value_or_none_78.value(), 1000);
 
     auto value_or_none_4 = list.find(4);
     VERIFY_FALSE(value_or_none_4.is_present());
@@ -197,37 +197,37 @@ TEST_CASE(find_if) {
 
     auto value_or_none = list.find_if([](auto const& o) { return o.value() == 400; });
     VERIFY(value_or_none.is_present());
-    VERIFY_EQ(value_or_none.value(), Object{ 400 });
+    VERIFY_EQUAL(value_or_none.value(), Object{ 400 });
 
     auto& object = value_or_none.value();
     object.set_value(3000);
 
     auto value_or_none_3000 = list.find_if([](auto const& o) { return o.value() == 3000; });
     VERIFY(value_or_none_3000.is_present());
-    VERIFY_EQ(value_or_none_3000.value(), Object{ 3000 });
-    VERIFY_EQ(value_or_none.value(), Object{ 3000 });
+    VERIFY_EQUAL(value_or_none_3000.value(), Object{ 3000 });
+    VERIFY_EQUAL(value_or_none.value(), Object{ 3000 });
 
     List const list2{ Object{ 100 }, Object{ 200 }, Object{ 500 } };
 
     auto value_or_none_500 = list2.find_if([](auto const& o) { return o.value() == 500; });
-    VERIFY_EQ(value_or_none_500.value(), Object{ 500 });
+    VERIFY_EQUAL(value_or_none_500.value(), Object{ 500 });
 }
 
 TEST_CASE(first_and_last) {
     List list{ 1 };
 
-    VERIFY_EQ(list.first(), 1);
-    VERIFY_EQ(list.last(), 1);
+    VERIFY_EQUAL(list.first(), 1);
+    VERIFY_EQUAL(list.last(), 1);
 
     list.append(2);
 
-    VERIFY_EQ(list.first(), 1);
-    VERIFY_EQ(list.last(), 2);
+    VERIFY_EQUAL(list.first(), 1);
+    VERIFY_EQUAL(list.last(), 2);
 
     list.prepend(0);
 
-    VERIFY_EQ(list.first(), 0);
-    VERIFY_EQ(list.last(), 2);
+    VERIFY_EQUAL(list.first(), 0);
+    VERIFY_EQUAL(list.last(), 2);
 }
 
 TEST_CASE(const_iterator) {
@@ -235,7 +235,7 @@ TEST_CASE(const_iterator) {
 
     usize expected_value = 1;
     for ( auto const& value : list )
-        VERIFY_EQ(value, expected_value++);
+        VERIFY_EQUAL(value, expected_value++);
 }
 
 TEST_CASE(mutable_iterator) {
@@ -246,32 +246,32 @@ TEST_CASE(mutable_iterator) {
 
     int expected_value = 2;
     for ( auto const& value : list )
-        VERIFY_EQ(value, expected_value++);
+        VERIFY_EQUAL(value, expected_value++);
 }
 
 TEST_CASE(assignment_operator) {
     List list = { 1, 2, 3, 4, 5, 6 };
     VERIFY_FALSE(list.is_empty());
-    VERIFY_EQ(list.count(), 6);
+    VERIFY_EQUAL(list.count(), 6);
 
     usize expected_value = 1;
     for ( auto const& value : list )
-        VERIFY_EQ(value, expected_value++);
+        VERIFY_EQUAL(value, expected_value++);
 
     list = { 7, 8, 9, 10, 11, 12, 13, 14 };
     VERIFY_FALSE(list.is_empty());
-    VERIFY_EQ(list.count(), 8);
+    VERIFY_EQUAL(list.count(), 8);
     for ( auto const& value : list )
-        VERIFY_EQ(value, expected_value++);
+        VERIFY_EQUAL(value, expected_value++);
 
     List other{ 64, 65, 66, 67, 68 };
     list = move(other);
     VERIFY(other.is_empty());
-    VERIFY_EQ(other.count(), 0);
+    VERIFY_EQUAL(other.count(), 0);
     VERIFY_FALSE(list.is_empty());
-    VERIFY_EQ(list.count(), 5);
+    VERIFY_EQUAL(list.count(), 5);
 
     expected_value = 64;
     for ( auto const& value : list )
-        VERIFY_EQ(value, expected_value++);
+        VERIFY_EQUAL(value, expected_value++);
 }
