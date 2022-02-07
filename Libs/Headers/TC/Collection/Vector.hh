@@ -691,11 +691,7 @@ bool Vector<T>::contains(T const& value) const {
 
 template<typename T>
 Functional::Option<usize> Vector<T>::index_of(T const& value) const {
-    for ( usize i = 0; i < m_values_count; ++i ) {
-        if ( m_data_storage[i] == value )
-            return i;
-    }
-    return {};
+    return index_if([&value](auto const& v) { return v == value; });
 }
 
 template<typename T>

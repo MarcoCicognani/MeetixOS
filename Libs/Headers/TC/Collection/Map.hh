@@ -425,7 +425,7 @@ template<typename MainContainer, typename InnerContainer, typename T>
 MapIterator<MainContainer, InnerContainer, T> MapIterator<MainContainer, InnerContainer, T>::operator++(int) {
     MapIterator it{ *this };
 
-    this->operator++();
+    operator++();
     return it;
 }
 

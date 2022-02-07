@@ -10,8 +10,5 @@
 # GNU General Public License version 3
 #
 
-add_subdirectory(ErrorOr)
-add_subdirectory(Option)
-add_subdirectory(Vector)
-add_subdirectory(Map)
-add_subdirectory(LList)
+set(SOURCES LList.cc)
+add_test(LList)
