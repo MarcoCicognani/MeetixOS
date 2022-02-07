@@ -16,6 +16,7 @@
 #include <TC/Assertion.hh>
 #include <TC/Collection/Pair.hh>
 #include <TC/Collection/Vector.hh>
+#include <TC/Cxx/Exchange.hh>
 #include <TC/Cxx/Move.hh>
 #include <TC/Cxx/New.hh>
 #include <TC/Functional/ErrorOr.hh>
@@ -98,11 +99,16 @@ public:
      */
     explicit Map();
     explicit Map(usize bucket_count);
-    Map(Map const&)     = default;
-    Map(Map&&) noexcept = default;
+    Map(Map const& rhs);
+    Map(Map&& rhs) noexcept;
     Map(std::initializer_list<Pair<K, T>> initializer_list);
 
     ~Map() = default;
+
+    Map& operator=(Map const&);
+    Map& operator=(Map&&) noexcept;
+
+    Map& operator=(std::initializer_list<Pair<K, T>> initializer_list);
 
     /**
      * @brief Clears this map
@@ -180,15 +186,56 @@ Map<K, T, Ordered>::Map(usize bucket_count)
 }
 
 template<typename K, typename T, bool Ordered>
+Map<K, T, Ordered>::Map(Map<K, T, Ordered> const& rhs)
+    : m_buckets_storage{ rhs.m_buckets_storage }
+    , m_values_count{ rhs.m_values_count } {
+}
+
+template<typename K, typename T, bool Ordered>
+Map<K, T, Ordered>::Map(Map<K, T, Ordered>&& rhs) noexcept
+    : m_buckets_storage{ Cxx::move(rhs.m_buckets_storage) }
+    , m_values_count{ Cxx::exchange(rhs.m_values_count, 0) } {
+}
+
+template<typename K, typename T, bool Ordered>
 Map<K, T, Ordered>::Map(std::initializer_list<Pair<K, T>> initializer_list)
-    : Map{ initializer_list.size() } {
+    : Map{} {
     for ( auto const& pair : initializer_list )
         insert(pair.key(), pair.value());
 }
 
 template<typename K, typename T, bool Ordered>
+Map<K, T, Ordered>& Map<K, T, Ordered>::operator=(Map<K, T, Ordered> const& rhs) {
+    if ( this == &rhs )
+        return *this;
+
+    clear();
+    m_buckets_storage = rhs.m_buckets_storage;
+    m_values_count    = rhs.m_values_count;
+    return *this;
+}
+
+template<typename K, typename T, bool Ordered>
+Map<K, T, Ordered>& Map<K, T, Ordered>::operator=(Map<K, T, Ordered>&& rhs) noexcept {
+    clear();
+    m_buckets_storage = Cxx::move(rhs.m_buckets_storage);
+    m_values_count    = Cxx::exchange(rhs.m_values_count, 0);
+    return *this;
+}
+
+template<typename K, typename T, bool Ordered>
+Map<K, T, Ordered>& Map<K, T, Ordered>::operator=(std::initializer_list<Pair<K, T>> initializer_list) {
+    clear();
+    for ( auto const& pair : initializer_list )
+        insert(pair.key(), pair.value());
+    return *this;
+}
+
+template<typename K, typename T, bool Ordered>
 void Map<K, T, Ordered>::clear() {
-    m_buckets_storage.clear();
+    auto capacity = m_buckets_storage.capacity();
+    m_buckets_storage.clear(decltype(m_buckets_storage)::KeepStorageCapacity::Yes);
+    m_buckets_storage.resize(capacity);
     m_values_count = 0;
 }
 

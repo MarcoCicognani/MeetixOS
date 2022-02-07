@@ -23,6 +23,8 @@
 #include <TC/Cxx/New.hh>
 #include <TC/Cxx/NullPtr.hh>
 #include <TC/Cxx/Swap.hh>
+#include <TC/DenyCopy.hh>
+#include <TC/DenyMove.hh>
 #include <TC/Functional/ErrorOr.hh>
 #include <TC/Functional/Must.hh>
 #include <TC/Functional/Option.hh>

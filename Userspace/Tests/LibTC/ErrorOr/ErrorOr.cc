@@ -18,7 +18,7 @@
 
 using TC::Functional::ErrorOr;
 
-TEST_CASE(may_produce_value) {
+TEST_CASE(value_and_error) {
     auto may_produce_value = [](int value) -> ErrorOr<int> {
         if ( value == 100 )
             return 110;
@@ -35,7 +35,7 @@ TEST_CASE(may_produce_value) {
     VERIFY_EQ(must_be_error_result.error(), EINVAL);
 }
 
-TEST_CASE(unwrap_reset_value) {
+TEST_CASE(unwrap_value) {
     class Object {
     public:
         Object() = default;
@@ -63,7 +63,7 @@ TEST_CASE(unwrap_reset_value) {
     VERIFY_FALSE(error_or_object.is_error());
 }
 
-TEST_CASE(unwrap_reset_error) {
+TEST_CASE(unwrap_error) {
     ErrorOr<int> error_or_int{ ENOENT };
     VERIFY(error_or_int.is_error());
 
@@ -76,7 +76,7 @@ TEST_CASE(unwrap_reset_error) {
     VERIFY_FALSE(error_or_int.is_value());
 }
 
-TEST_CASE(error_or_with_value_reference) {
+TEST_CASE(reference_as_value) {
     auto  int_ptr = new usize{ 0xdeadbeef };
     auto& int_ref = *int_ptr;
 
@@ -97,4 +97,37 @@ TEST_CASE(error_or_with_value_reference) {
     VERIFY_FALSE(error_or_usize.is_error());
 
     delete int_ptr;
+}
+
+TEST_CASE(assignment_operator) {
+    ErrorOr<int> error_or_int{ 512 };
+
+    error_or_int = ENOENT;
+    VERIFY(error_or_int.is_error());
+    VERIFY_FALSE(error_or_int.is_value());
+    VERIFY_EQ(error_or_int.error(), ENOENT);
+
+    error_or_int = 4096;
+    VERIFY(error_or_int.is_value());
+    VERIFY_FALSE(error_or_int.is_error());
+    VERIFY_EQ(error_or_int.value(), 4096);
+
+    ErrorOr<void> error_or_void{};
+
+    error_or_void = EINVAL;
+    VERIFY(error_or_void.is_error());
+    VERIFY_FALSE(error_or_void.is_value());
+    VERIFY_EQ(error_or_void.error(), EINVAL);
+
+    ErrorOr<int&> error_or_ref = *new int{ 256 };
+
+    VERIFY(error_or_ref.is_value());
+
+    auto* value = &error_or_ref.value();
+    delete value;
+
+    error_or_ref = ENOENT;
+    VERIFY(error_or_ref.is_error());
+    VERIFY_FALSE(error_or_ref.is_value());
+    VERIFY_EQ(error_or_ref.error(), ENOENT);
 }

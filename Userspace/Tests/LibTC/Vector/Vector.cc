@@ -11,12 +11,14 @@
  */
 
 #include <TC/Collection/Vector.hh>
+#include <TC/Cxx/Move.hh>
 #include <UnitTest/Case.hh>
 #include <UnitTest/Macros/Verify.hh>
 #include <UnitTest/Macros/VerifyEq.hh>
 #include <UnitTest/Macros/VerifyFalse.hh>
 
 using TC::Collection::Vector;
+using TC::Cxx::move;
 
 TEST_CASE(initializer_list) {
     Vector vector{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -420,6 +422,36 @@ TEST_CASE(find_if) {
 
     auto const_value_or_none = vector_const.find_if([](auto const& i) { return i == 3; });
     VERIFY(const_value_or_none.is_present());
+}
+
+TEST_CASE(assignment_operator) {
+    Vector vector{ 1, 2, 3, 4, 5 };
+
+    vector = { 6, 7, 8, 9, 10 };
+    VERIFY_EQ(vector.count(), 5);
+
+    usize expected_value = 6;
+    for ( auto const& value : vector )
+        VERIFY_EQ(value, expected_value++);
+
+    Vector<int> vector2{};
+    vector2        = vector;
+    expected_value = 6;
+    for ( auto const& value : vector2 )
+        VERIFY_EQ(value, expected_value++);
+
+    Vector vector3{ 8, 5, 2 };
+    VERIFY_EQ(vector3.count(), 3);
+    VERIFY_EQ(vector3[0], 8);
+    VERIFY_EQ(vector3[1], 5);
+    VERIFY_EQ(vector3[2], 2);
+
+    vector3 = move(vector);
+    VERIFY_EQ(vector3.count(), 5);
+    
+    expected_value = 6;
+    for ( auto const& value : vector3 )
+        VERIFY_EQ(value, expected_value++);
 }
 
 BENCHMARK_CASE(one_hundred_thousand_append_with_reallocations) {

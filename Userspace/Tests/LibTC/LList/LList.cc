@@ -11,12 +11,14 @@
  */
 
 #include <TC/Collection/List.hh>
+#include <TC/Cxx/Move.hh>
 #include <UnitTest/Case.hh>
 #include <UnitTest/Macros/Verify.hh>
 #include <UnitTest/Macros/VerifyEq.hh>
 #include <UnitTest/Macros/VerifyFalse.hh>
 
 using TC::Collection::List;
+using TC::Cxx::move;
 
 TEST_CASE(initializer_list) {
     List list{ 1, 2, 3, 4, 5 };
@@ -243,6 +245,33 @@ TEST_CASE(mutable_iterator) {
         value += 1;
 
     int expected_value = 2;
+    for ( auto const& value : list )
+        VERIFY_EQ(value, expected_value++);
+}
+
+TEST_CASE(assignment_operator) {
+    List list = { 1, 2, 3, 4, 5, 6 };
+    VERIFY_FALSE(list.is_empty());
+    VERIFY_EQ(list.count(), 6);
+
+    usize expected_value = 1;
+    for ( auto const& value : list )
+        VERIFY_EQ(value, expected_value++);
+
+    list = { 7, 8, 9, 10, 11, 12, 13, 14 };
+    VERIFY_FALSE(list.is_empty());
+    VERIFY_EQ(list.count(), 8);
+    for ( auto const& value : list )
+        VERIFY_EQ(value, expected_value++);
+
+    List other{ 64, 65, 66, 67, 68 };
+    list = move(other);
+    VERIFY(other.is_empty());
+    VERIFY_EQ(other.count(), 0);
+    VERIFY_FALSE(list.is_empty());
+    VERIFY_EQ(list.count(), 5);
+
+    expected_value = 64;
     for ( auto const& value : list )
         VERIFY_EQ(value, expected_value++);
 }

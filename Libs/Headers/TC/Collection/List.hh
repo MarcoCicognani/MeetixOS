@@ -16,6 +16,7 @@
 #include <TC/Assertion.hh>
 #include <TC/Cxx/Exchange.hh>
 #include <TC/Cxx/Move.hh>
+#include <TC/DenyCopy.hh>
 #include <TC/Functional/Option.hh>
 #include <TC/IntTypes.hh>
 
@@ -89,6 +90,8 @@ struct ListNode {
 
 template<typename T>
 class List {
+    TC_DENY_COPY(List);
+
 public:
     using Iterator      = Details::ListIterator<List, T>;
     using ConstIterator = Details::ListIterator<List const, T const>;
@@ -98,12 +101,14 @@ public:
     /**
      * @brief Constructors
      */
-    List()            = default;
-    List(List const&) = delete;
+    List() = default;
     List(List&& rhs) noexcept;
     List(std::initializer_list<T> initializer_list);
 
     ~List();
+
+    List& operator=(List&& rhs) noexcept;
+    List& operator=(std::initializer_list<T> initializer_list);
 
     void clear();
 
@@ -186,6 +191,26 @@ List<T>::List(std::initializer_list<T> initializer_list) {
 template<typename T>
 List<T>::~List() {
     clear();
+}
+
+template<typename T>
+List<T>& List<T>::operator=(List&& rhs) noexcept {
+    if ( this == &rhs )
+        return *this;
+
+    clear();
+    m_head_node    = Cxx::exchange(rhs.m_head_node, nullptr);
+    m_tail_node    = Cxx::exchange(rhs.m_tail_node, nullptr);
+    m_values_count = Cxx::exchange(rhs.m_values_count, 0);
+    return *this;
+}
+
+template<typename T>
+List<T>& List<T>::operator=(std::initializer_list<T> initializer_list) {
+    clear();
+    for ( auto const& value : initializer_list )
+        append(value);
+    return *this;
 }
 
 template<typename T>

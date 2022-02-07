@@ -33,6 +33,14 @@ public:
     Result(Result&&) noexcept = default;
     ~Result()                 = default;
 
+    Result& operator=(T const& value);
+    Result& operator=(T&& value);
+    Result& operator=(E const& error);
+    Result& operator=(E&& error);
+
+    Result& operator=(Result const&) = default;
+    Result& operator=(Result&&) noexcept = default;
+
     /**
      * @brief Returns the reference to the result value
      */
@@ -75,6 +83,12 @@ public:
     Result(Result const&)     = default;
     Result(Result&&) noexcept = default;
     ~Result()                 = default;
+
+    Result& operator=(E const& error);
+    Result& operator=(E&& error);
+
+    Result& operator=(Result const&) = default;
+    Result& operator=(Result&&) noexcept = default;
 
     /**
      * @brief Returns the reference to the result value
@@ -130,6 +144,14 @@ public:
     Result(Result&&) noexcept = default;
     ~Result()                 = default;
 
+    Result& operator=(T const& value);
+    Result& operator=(T&& value);
+    Result& operator=(E const& error);
+    Result& operator=(E&& error);
+
+    Result& operator=(Result const&) = default;
+    Result& operator=(Result&&) noexcept = default;
+
     /**
      * @brief Returns the reference to the result value
      */
@@ -180,6 +202,42 @@ Result<T, E>::Result(E&& error)
 }
 
 template<typename T, typename E>
+Result<T, E>& Result<T, E>::operator=(T const& value) {
+    m_value_option.reset();
+    m_error_option.reset();
+
+    m_value_option = value;
+    return *this;
+}
+
+template<typename T, typename E>
+Result<T, E>& Result<T, E>::operator=(T&& value) {
+    m_value_option.reset();
+    m_error_option.reset();
+
+    m_value_option = Cxx::move(value);
+    return *this;
+}
+
+template<typename T, typename E>
+Result<T, E>& Result<T, E>::operator=(E const& error) {
+    m_value_option.reset();
+    m_error_option.reset();
+
+    m_error_option = error;
+    return *this;
+}
+
+template<typename T, typename E>
+Result<T, E>& Result<T, E>::operator=(E&& error) {
+    m_value_option.reset();
+    m_error_option.reset();
+
+    m_error_option = Cxx::move(error);
+    return *this;
+}
+
+template<typename T, typename E>
 T& Result<T, E>::value() {
     return m_value_option.value();
 }
@@ -227,6 +285,18 @@ Result<void, E>::Result(E const& error)
 template<typename E>
 Result<void, E>::Result(E&& error)
     : m_error_option{ Cxx::move(error) } {
+}
+
+template<typename E>
+Result<void, E>& Result<void, E>::operator=(E const& error) {
+    m_error_option = error;
+    return *this;
+}
+
+template<typename E>
+Result<void, E>& Result<void, E>::operator=(E&& error) {
+    m_error_option = Cxx::move(error);
+    return *this;
 }
 
 template<typename E>
@@ -287,6 +357,42 @@ Result<T&, E>::Result(E const& error)
 template<typename T, typename E>
 Result<T&, E>::Result(E&& error)
     : m_value_option{ Cxx::move(error) } {
+}
+
+template<typename T, typename E>
+Result<T&, E>& Result<T&, E>::operator=(T const& value) {
+    m_value_option.reset();
+    m_error_option.reset();
+
+    m_value_option = value;
+    return *this;
+}
+
+template<typename T, typename E>
+Result<T&, E>& Result<T&, E>::operator=(T&& value) {
+    m_value_option.reset();
+    m_error_option.reset();
+
+    m_value_option = Cxx::move(value);
+    return *this;
+}
+
+template<typename T, typename E>
+Result<T&, E>& Result<T&, E>::operator=(E const& error) {
+    m_value_option.reset();
+    m_error_option.reset();
+
+    m_error_option = error;
+    return *this;
+}
+
+template<typename T, typename E>
+Result<T&, E>& Result<T&, E>::operator=(E&& error) {
+    m_value_option.reset();
+    m_error_option.reset();
+
+    m_error_option = Cxx::move(error);
+    return *this;
 }
 
 template<typename T, typename E>

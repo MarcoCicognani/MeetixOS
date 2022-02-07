@@ -11,6 +11,7 @@
  */
 
 #include <TC/Collection/Map.hh>
+#include <TC/Cxx/Move.hh>
 #include <UnitTest/Case.hh>
 #include <UnitTest/Macros/Verify.hh>
 #include <UnitTest/Macros/VerifyEq.hh>
@@ -18,6 +19,7 @@
 
 using TC::Collection::Map;
 using TC::Collection::Pair;
+using TC::Cxx::move;
 
 TEST_CASE(initializer_list) {
     Map<int, int> map{ { 1, 10 }, { 2, 20 }, { 3, 30 }, { 4, 40 }, { 5, 50 } };
@@ -206,4 +208,26 @@ TEST_CASE(iterator_mut) {
     VERIFY_EQ(map[4].value(), 512);
     VERIFY_EQ(map[5].value(), 512);
     VERIFY_EQ(map[6].value(), 512);
+}
+
+TEST_CASE(assignment_operator) {
+    Map<int, int> map{};
+    map = { { 1, 10 }, { 2, 20 }, { 3, 30 }, { 4, 40 }, { 5, 50 } };
+    VERIFY_FALSE(map.is_empty());
+    VERIFY_EQ(map.count(), 5);
+
+    Map<int, int> map2 = map;
+    VERIFY_FALSE(map2.is_empty());
+    VERIFY_EQ(map2.count(), 5);
+    VERIFY_FALSE(map.is_empty());
+    VERIFY_EQ(map.count(), 5);
+
+    Map<int, int> map3 = move(map2);
+    VERIFY(map2.is_empty());
+    VERIFY_EQ(map2.count(), 0);
+    VERIFY_FALSE(map3.is_empty());
+    VERIFY_EQ(map3.count(), 5);
+
+    map3 = { { 0, 1 }, { 2, 3 }, { 4, 5 }, { 6, 7 } };
+    VERIFY_EQ(map3.count(), 4);
 }

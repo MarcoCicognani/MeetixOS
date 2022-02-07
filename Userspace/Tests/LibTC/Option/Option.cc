@@ -63,7 +63,7 @@ TEST_CASE(unwrap_reset_value) {
 }
 
 TEST_CASE(option_with_reference) {
-    auto  int_ptr = new usize{ 0xdeadbeef };
+    auto* int_ptr = new usize{ 0xdeadbeef };
     auto& int_ref = *int_ptr;
 
     Option<usize&> option{ int_ref };
@@ -80,6 +80,28 @@ TEST_CASE(option_with_reference) {
     auto& int_ref_value = option.unwrap();
     VERIFY_EQ(int_ref_value, 0xcafebabe);
     VERIFY_FALSE(option.is_present());
+
+    delete int_ptr;
+}
+
+TEST_CASE(assignment_operator) {
+    Option option{ 'a' };
+    VERIFY(option.is_present());
+    VERIFY_EQ(option.value(), 'a');
+
+    option = 'b';
+    VERIFY(option.is_present());
+    VERIFY_EQ(option.value(), 'b');
+
+    option = nullptr;
+    VERIFY_FALSE(option.is_present());
+
+    auto* int_ptr = new usize{ 0xcafebabe };
+    auto& int_ref = *int_ptr;
+
+    Option<usize&> option2 = int_ref;
+    VERIFY(option2.is_present());
+    VERIFY_EQ(option2.value(), 0xcafebabe);
 
     delete int_ptr;
 }

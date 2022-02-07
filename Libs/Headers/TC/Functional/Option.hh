@@ -13,8 +13,10 @@
 #pragma once
 
 #include <TC/Assertion.hh>
+#include <TC/Cxx/Exchange.hh>
 #include <TC/Cxx/Move.hh>
 #include <TC/Cxx/New.hh>
+#include <TC/Cxx/NullPtr.hh>
 
 namespace TC::Functional {
 
@@ -31,6 +33,12 @@ public:
     Option(Option&& rhs) noexcept;
 
     ~Option();
+
+    Option& operator=(T const& value);
+    Option& operator=(T&& value);
+    Option& operator=(Cxx::nullptr_t);
+    Option& operator=(Option const& rhs);
+    Option& operator=(Option&& rhs) noexcept;
 
     /**
      * @brief Returns a reference to the value from this option
@@ -73,6 +81,12 @@ public:
     Option(Option&& rhs) noexcept = default;
 
     ~Option() = default;
+
+    Option& operator=(T const& value);
+    Option& operator=(T&& value);
+    Option& operator=(Cxx::nullptr_t);
+    Option& operator=(Option const& rhs);
+    Option& operator=(Option&& rhs) noexcept;
 
     /**
      * @brief Returns a reference to the value from this option
@@ -133,6 +147,47 @@ Option<T>::~Option() {
 }
 
 template<typename T>
+Option<T>& Option<T>::operator=(T const& value) {
+    reset();
+    m_is_present = true;
+    new (&m_data_storage) T{ value };
+    return *this;
+}
+
+template<typename T>
+Option<T>& Option<T>::operator=(T&& value) {
+    reset();
+    m_is_present = true;
+    new (&m_data_storage) T{ Cxx::move(value) };
+    return *this;
+}
+
+template<typename T>
+Option<T>& Option<T>::operator=(Cxx::nullptr_t) {
+    reset();
+    return *this;
+}
+
+template<typename T>
+Option<T>& Option<T>::operator=(Option const& rhs) {
+    if ( this == &rhs )
+        return *this;
+
+    reset();
+    m_is_present = rhs.m_is_present;
+    new (&m_data_storage) T{ rhs.value() };
+    return *this;
+}
+
+template<typename T>
+Option<T>& Option<T>::operator=(Option&& rhs) noexcept {
+    reset();
+    m_is_present = Cxx::exchange(rhs.m_is_present, false);
+    new (&m_data_storage) T{ Cxx::move(rhs.value()) };
+    return *this;
+}
+
+template<typename T>
 T& Option<T>::value() {
     VERIFY(is_present());
 
@@ -189,6 +244,36 @@ Option<T&>::Option(T const& value)
 template<typename T>
 Option<T&>::Option(T&& value)
     : m_inner_option{ const_cast<T*>(&Cxx::move(value)) } {
+}
+
+template<typename T>
+Option<T&>& Option<T&>::operator=(const T& value) {
+    m_inner_option = &value;
+    return *this;
+}
+
+template<typename T>
+Option<T&>& Option<T&>::operator=(T&& value) {
+    m_inner_option = &Cxx::move(value);
+    return *this;
+}
+
+template<typename T>
+Option<T&>& Option<T&>::operator=(Cxx::nullptr_t) {
+    m_inner_option = nullptr;
+    return *this;
+}
+
+template<typename T>
+Option<T&>& Option<T&>::operator=(const Option& rhs) {
+    m_inner_option = rhs.m_inner_option;
+    return *this;
+}
+
+template<typename T>
+Option<T&>& Option<T&>::operator=(Option&& rhs) noexcept {
+    m_inner_option = Cxx::move(rhs.m_inner_option);
+    return *this;
 }
 
 template<typename T>

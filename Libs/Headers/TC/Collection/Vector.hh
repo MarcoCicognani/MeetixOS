@@ -112,6 +112,10 @@ public:
 
     ~Vector();
 
+    Vector& operator=(Vector const& rhs);
+    Vector& operator=(Vector&& rhs) noexcept;
+    Vector& operator=(std::initializer_list<T> initializer_list);
+
     /**
      * @brief Destroys all the stored values keeping the capacity of this vector
      */
@@ -306,7 +310,6 @@ Vector<T>::Vector(Vector&& rhs) noexcept
 template<typename T>
 Vector<T>::Vector(std::initializer_list<T> initializer_list) {
     ensure_capacity(initializer_list.size());
-
     for ( auto const& element : initializer_list )
         append_unchecked(Cxx::move(element));
 }
@@ -314,6 +317,37 @@ Vector<T>::Vector(std::initializer_list<T> initializer_list) {
 template<typename T>
 Vector<T>::~Vector() {
     clear(KeepStorageCapacity::No);
+}
+
+template<typename T>
+Vector<T>& Vector<T>::operator=(Vector const& rhs) {
+    if ( this == &rhs )
+        return *this;
+
+    clear(rhs.count() < capacity() ? KeepStorageCapacity::Yes : KeepStorageCapacity::No);
+    ensure_capacity(rhs.count());
+    for ( auto const& value : rhs )
+        append_unchecked(value);
+    return *this;
+}
+
+template<typename T>
+Vector<T>& Vector<T>::operator=(Vector&& rhs) noexcept {
+    clear(KeepStorageCapacity::No);
+
+    m_data_storage  = Cxx::exchange(rhs.m_data_storage, nullptr);
+    m_data_capacity = Cxx::exchange(rhs.m_data_capacity, 0);
+    m_values_count  = Cxx::exchange(rhs.m_values_count, 0);
+    return *this;
+}
+
+template<typename T>
+Vector<T>& Vector<T>::operator=(std::initializer_list<T> initializer_list) {
+    clear(initializer_list.size() < capacity() ? KeepStorageCapacity::Yes : KeepStorageCapacity::No);
+    ensure_capacity(initializer_list.size());
+    for ( auto const& value : initializer_list )
+        append_unchecked(Cxx::move(value));
+    return *this;
 }
 
 template<typename T>

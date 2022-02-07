@@ -30,6 +30,9 @@ public:
 
     ~Pair() = default;
 
+    Pair& operator=(Pair const&) = default;
+    Pair& operator=(Pair&&) noexcept = default;
+
     K&       key();
     K const& key() const;
 
