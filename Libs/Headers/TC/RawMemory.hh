@@ -18,7 +18,6 @@
 #    include <malloc.h>
 #endif
 
-#include <TC/Assertion.hh>
 #include <TC/Functional/ErrorOr.hh>
 
 namespace TC::RawMemory {

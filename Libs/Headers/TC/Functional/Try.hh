@@ -19,7 +19,7 @@
 #define TRY(expression)                                                                                                \
     ({                                                                                                                 \
         auto expression_result = (expression);                                                                         \
-        if ( expression_result.is_error() )                                                                            \
+        if ( expression_result.is_error() ) [[unlikely]]                                                               \
             return expression_result.unwrap_error();                                                                   \
         expression_result.unwrap_value();                                                                              \
     })

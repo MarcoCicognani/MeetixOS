@@ -13,7 +13,7 @@
 #pragma once
 
 #include <initializer_list>
-#include <TC/Assertion.hh>
+#include <TC/Assertions.hh>
 #include <TC/Cxx/Exchange.hh>
 #include <TC/Cxx/Move.hh>
 #include <TC/DenyCopy.hh>
@@ -233,6 +233,7 @@ void List<T>::append(T const& value) {
 template<typename T>
 void List<T>::append(T&& value) {
     auto* new_node = new Node{ Cxx::move(value) };
+    VERIFY_NOT_NULL(new_node);
 
     if ( m_tail_node == nullptr )
         m_head_node = new_node;
@@ -253,6 +254,7 @@ void List<T>::prepend(T const& value) {
 template<typename T>
 void List<T>::prepend(T&& value) {
     auto* new_node = new Node{ Cxx::move(value) };
+    VERIFY_NOT_NULL(new_node);
 
     if ( m_head_node == nullptr )
         m_tail_node = new_node;
@@ -267,7 +269,7 @@ void List<T>::prepend(T&& value) {
 
 template<typename T>
 void List<T>::erase(Iterator& iterator) {
-    VERIFY(!iterator.is_end());
+    VERIFY_FALSE(iterator.is_end());
 
     auto* node_to_erase = iterator.m_current_node;
     if ( m_head_node == node_to_erase )
@@ -381,26 +383,26 @@ typename List<T>::Node const* List<T>::tail() const {
 }
 template<typename T>
 T& List<T>::first() {
-    VERIFY(m_head_node != nullptr);
-    return head()->m_value;
+    VERIFY_NOT_NULL(m_head_node);
+    return m_head_node->m_value;
 }
 
 template<typename T>
 T const& List<T>::first() const {
-    VERIFY(m_head_node != nullptr);
-    return head()->m_value;
+    VERIFY_NOT_NULL(m_head_node);
+    return m_head_node->m_value;
 }
 
 template<typename T>
 T& List<T>::last() {
-    VERIFY(m_tail_node != nullptr);
-    return tail()->m_value;
+    VERIFY_NOT_NULL(m_tail_node);
+    return m_tail_node->m_value;
 }
 
 template<typename T>
 T const& List<T>::last() const {
-    VERIFY(m_tail_node != nullptr);
-    return tail()->m_value;
+    VERIFY_NOT_NULL(m_tail_node);
+    return m_tail_node->m_value;
 }
 
 namespace Details {
@@ -433,13 +435,13 @@ ListIterator<Collection, T> ListIterator<Collection, T>::operator++(int) {
 
 template<typename Collection, typename T>
 T& ListIterator<Collection, T>::operator*() {
-    VERIFY(m_current_node != nullptr);
+    VERIFY_NOT_NULL(m_current_node);
     return m_current_node->m_value;
 }
 
 template<typename Collection, typename T>
 T const& ListIterator<Collection, T>::operator*() const {
-    VERIFY(m_current_node != nullptr);
+    VERIFY_NOT_NULL(m_current_node);
     return m_current_node->m_value;
 }
 

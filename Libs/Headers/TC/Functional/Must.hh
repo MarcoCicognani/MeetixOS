@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <TC/Assertion.hh>
+#include <TC/Assertions.hh>
 
 #define MUST(expression)                                                                                               \
     ({                                                                                                                 \

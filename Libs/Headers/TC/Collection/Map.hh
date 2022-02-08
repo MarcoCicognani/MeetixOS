@@ -13,7 +13,7 @@
 #pragma once
 
 #include <initializer_list>
-#include <TC/Assertion.hh>
+#include <TC/Assertions.hh>
 #include <TC/Collection/Pair.hh>
 #include <TC/Collection/Vector.hh>
 #include <TC/Cxx/Exchange.hh>
@@ -182,6 +182,7 @@ Map<K, T, Ordered>::Map()
 template<typename K, typename T, bool Ordered>
 Map<K, T, Ordered>::Map(usize bucket_count)
     : m_buckets_storage{ bucket_count } {
+    VERIFY_GREATER(bucket_count, 0);
     m_buckets_storage.resize(bucket_count);
 }
 
@@ -309,7 +310,7 @@ Functional::ErrorOr<void> Map<K, T, Ordered>::erase_key(K const& key) {
         = TRY(bucket_by_hash(Trait::TypeIntrinsics<K>::hash(key)).erase_all_matches([&key](auto const& pair) {
               return key == pair.key();
           }));
-    VERIFY(erased_count == 1);
+    VERIFY_EQUAL(erased_count, 1);
     m_values_count -= erased_count;
     return {};
 }

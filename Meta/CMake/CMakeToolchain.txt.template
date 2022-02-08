@@ -42,6 +42,10 @@ add_compile_options(-fdiagnostics-color=always)
 set(CMAKE_CXX_FLAGS_RELEASE "-g0")
 set(CMAKE_C_FLAGS_RELEASE "-g0")
 
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+    add_compile_definitions(NDEBUG)
+endif ()
+
 #
 # Since there are custom dependencies between the libraries we cannot link a program
 #

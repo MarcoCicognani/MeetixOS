@@ -12,41 +12,30 @@
 
 #pragma once
 
-#include <Api.h>
+#include <Api/Common.h>
+
+#ifndef __cplusplus
+#    define static_assert _Static_assert
+#endif
+
+#define __stringify_helper(x) #x
+#define __stringify(x)        __stringify_helper(x)
+
+#undef assert
+
+#ifndef NDEBUG
+#    define assert(expression)                                                                                         \
+        (__builtin_expect(!(expression), 0) ? assert_failed(#expression "\n" __FILE__ ":" __stringify(__LINE__))       \
+                                            : (void)0)
+#else
+#    define assert(expression) ((void)0)
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
-
-#if defined(__cplusplus) && defined(__GNUC__)
-#    define __assert_function __PRETTY_FUNCTION__
-#elif __STDC_VERSION__ >= 199901L
-#    define __assert_function __func__
-#else
-#    define __assert_function ((char*)0)
-#endif
-
-#undef assert
-
-/* disable assert for NDEBUG disabled */
-#ifdef NDEBUG
-#    define assert(ignore) ((void)0)
-#endif
-
-#ifndef NDEBUG
-#    define assert(expr) ((expr) ? (void)0 : assert_failed(__FILE__, __LINE__, __assert_function, #    expr))
-#endif
-
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
-#    undef static_assert
-#    define static_assert _Static_assert
-#endif
-
-/* ------------------------------------ C function prototypes ----------------------------------- */
-
-void assert_failed(const char*, int, const char*, const char*);
+A_NORETURN void assert_failed(const char*);
 
 #ifdef __cplusplus
 }

@@ -13,7 +13,7 @@
 #pragma once
 
 #include <initializer_list>
-#include <TC/Assertion.hh>
+#include <TC/Assertions.hh>
 #include <TC/Cxx/Exchange.hh>
 #include <TC/Cxx/Forward.hh>
 #include <TC/Cxx/Move.hh>
@@ -568,7 +568,7 @@ T Vector<T>::take_last() {
 
 template<typename T>
 T Vector<T>::take_at(usize index) {
-    VERIFY(index < m_values_count);
+    VERIFY_LESS(index, m_values_count);
 
     T value{ Cxx::move(m_data_storage[index]) };
     erase_at(index);
@@ -658,6 +658,8 @@ Functional::ErrorOr<void> Vector<T>::try_resize(usize new_count) {
 
 template<typename T>
 Functional::ErrorOr<void> Vector<T>::try_ensure_capacity(usize capacity) {
+    VERIFY_GREATER(capacity, 0);
+
     if ( m_data_capacity >= capacity )
         return {};
 
@@ -778,14 +780,14 @@ Functional::Option<T const&> Vector<T>::find_if(Callback callback) const {
 
 template<typename T>
 T& Vector<T>::at(usize index) {
-    VERIFY(index < m_values_count);
+    VERIFY_LESS(index, m_values_count);
 
     return m_data_storage[index];
 }
 
 template<typename T>
 T const& Vector<T>::at(usize index) const {
-    VERIFY(index < m_values_count);
+    VERIFY_LESS(index, m_values_count);
 
     return m_data_storage[index];
 }
@@ -861,11 +863,13 @@ VectorIterator<Collection, T> VectorIterator<Collection, T>::operator++(int) {
 
 template<typename Collection, typename T>
 T& VectorIterator<Collection, T>::operator*() {
+    VERIFY_FALSE(is_end());
     return m_collection->at(m_index);
 }
 
 template<typename Collection, typename T>
 T const& VectorIterator<Collection, T>::operator*() const {
+    VERIFY_FALSE(is_end());
     return m_collection->at(m_index);
 }
 

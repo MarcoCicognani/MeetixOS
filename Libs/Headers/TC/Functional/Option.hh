@@ -12,11 +12,12 @@
 
 #pragma once
 
-#include <TC/Assertion.hh>
+#include <TC/Assertions.hh>
 #include <TC/Cxx/Exchange.hh>
 #include <TC/Cxx/Move.hh>
 #include <TC/Cxx/New.hh>
 #include <TC/Cxx/NullPtr.hh>
+#include <TC/IntTypes.hh>
 
 namespace TC::Functional {
 
