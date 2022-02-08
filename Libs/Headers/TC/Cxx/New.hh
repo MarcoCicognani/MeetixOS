@@ -12,10 +12,10 @@
 
 #pragma once
 
-inline void* operator new(long unsigned int, void* placement_ptr) {
-    return placement_ptr;
-}
+#include <new>
 
-inline void* operator new[](long unsigned int, void* placement_ptr) {
-    return placement_ptr;
-}
+namespace TC::Cxx {
+
+using std::nothrow;
+
+} /* namespace TC::Cxx */

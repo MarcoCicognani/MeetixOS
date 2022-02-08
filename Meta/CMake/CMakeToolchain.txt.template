@@ -34,6 +34,7 @@ set(CMAKE_ASM_NASM_COMPILE_OBJECT "${CMAKE_ASM_NASM_COMPILER} -f elf -o <OBJECT>
 # C/C++ Flags
 #
 add_compile_options(-fdiagnostics-color=always)
+add_compile_options(-m32)
 
 #
 # C/C++ Release Flags

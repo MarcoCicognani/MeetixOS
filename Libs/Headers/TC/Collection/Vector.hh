@@ -23,7 +23,7 @@
 #include <TC/Functional/Must.hh>
 #include <TC/Functional/Try.hh>
 #include <TC/IntTypes.hh>
-#include <TC/RawMemory.hh>
+#include <TC/Memory/Raw.hh>
 #include <TC/Tag/Adopt.hh>
 #include <TC/Trait/TypeIntrinsics.hh>
 
@@ -363,7 +363,7 @@ void Vector<T>::clear(KeepStorageCapacity keep_storage_capacity) {
 
         /* free the memory if requested */
         if ( keep_storage_capacity == KeepStorageCapacity::No ) {
-            RawMemory::free_sized(m_data_storage, m_data_capacity);
+            Memory::Raw::free_sized(m_data_storage, m_data_capacity);
             m_data_storage  = nullptr;
             m_data_capacity = 0;
         }
@@ -673,7 +673,7 @@ Functional::ErrorOr<void> Vector<T>::try_ensure_capacity(usize capacity) {
         new_capacity = capacity + capacity / 4;
 
     /* allocate new memory and move the content into it */
-    auto new_data_storage = TRY(RawMemory::clean_alloc<T>(new_capacity));
+    auto new_data_storage = TRY(Memory::Raw::clean_alloc<T>(new_capacity));
     if constexpr ( Trait::TypeIntrinsics<T>::is_trivial() )
         __builtin_memmove(new_data_storage, m_data_storage, m_values_count * sizeof(T));
     else {
@@ -685,7 +685,7 @@ Functional::ErrorOr<void> Vector<T>::try_ensure_capacity(usize capacity) {
 
     /* destroy the previous buffer if exists and update the other fields */
     if ( m_data_storage )
-        RawMemory::free_sized<T>(m_data_storage, m_data_capacity);
+        Memory::Raw::free_sized<T>(m_data_storage, m_data_capacity);
 
     m_data_storage  = new_data_storage;
     m_data_capacity = new_capacity;

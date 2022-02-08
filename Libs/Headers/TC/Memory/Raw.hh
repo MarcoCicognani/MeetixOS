@@ -20,7 +20,7 @@
 
 #include <TC/Functional/ErrorOr.hh>
 
-namespace TC::RawMemory {
+namespace TC::Memory::Raw {
 
 #ifdef IN_KERNEL
 
@@ -57,4 +57,4 @@ void free_sized(T* object_start, usize) {
 
 #endif
 
-} /* namespace TC::RawMemory */
+} /* namespace TC::Memory::Raw */

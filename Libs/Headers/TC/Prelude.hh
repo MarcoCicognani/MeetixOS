@@ -33,7 +33,8 @@
 #include <TC/Hashing/Integer.hh>
 #include <TC/Hashing/Pointer.hh>
 #include <TC/IntTypes.hh>
-#include <TC/RawMemory.hh>
+#include <TC/Memory/OwnPtr.hh>
+#include <TC/Memory/Raw.hh>
 #include <TC/Tag/Adopt.hh>
 #include <TC/Tag/Copy.hh>
 #include <TC/Tag/None.hh>
