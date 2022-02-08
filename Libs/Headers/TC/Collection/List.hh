@@ -381,6 +381,7 @@ template<typename T>
 typename List<T>::Node const* List<T>::tail() const {
     return m_tail_node;
 }
+
 template<typename T>
 T& List<T>::first() {
     VERIFY_NOT_NULL(m_head_node);
