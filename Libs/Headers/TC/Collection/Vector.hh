@@ -295,9 +295,11 @@ Vector<T>::Vector(TC::Tag::Adopt, T* data_storage, usize size)
 template<typename T>
 Vector<T>::Vector(Vector const& rhs)
     : m_values_count{ rhs.m_values_count } {
-    ensure_capacity(rhs.count());
-    for ( usize i = 0; i < m_values_count; ++i )
-        new (&m_data_storage[i]) T{ rhs.at(i) };
+    if ( !is_empty() ) {
+        ensure_capacity(rhs.count());
+        for ( usize i = 0; i < m_values_count; ++i )
+            new (&m_data_storage[i]) T{ rhs.at(i) };
+    }
 }
 
 template<typename T>

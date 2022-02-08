@@ -182,7 +182,6 @@ Map<K, T, Ordered>::Map()
 template<typename K, typename T, bool Ordered>
 Map<K, T, Ordered>::Map(usize bucket_count)
     : m_buckets_storage{ bucket_count } {
-    VERIFY_GREATER(bucket_count, 0);
     m_buckets_storage.resize(bucket_count);
 }
 
