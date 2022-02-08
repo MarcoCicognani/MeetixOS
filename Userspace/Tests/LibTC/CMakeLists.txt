@@ -10,8 +10,8 @@
 # GNU General Public License version 3
 #
 
-add_subdirectory(ErrorOr)
-add_subdirectory(Option)
-add_subdirectory(Vector)
-add_subdirectory(Map)
-add_subdirectory(LList)
+add_test(ErrorOr)
+add_test(LList)
+add_test(Map)
+add_test(Option)
+add_test(Vector)
