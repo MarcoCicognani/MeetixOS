@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<typename>
 inline constexpr bool IsFunction = false;
@@ -89,4 +90,8 @@ inline constexpr bool IsFunction<Ret(Args...) const volatile&&> = true;
 template<typename Ret, typename... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...) const volatile&&> = true;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::IsFunction;
+
+} /* namespace TC */

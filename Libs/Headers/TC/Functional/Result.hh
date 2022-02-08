@@ -15,7 +15,8 @@
 #include <TC/Cxx/Move.hh>
 #include <TC/Functional/Option.hh>
 
-namespace TC::Functional {
+namespace TC {
+namespace Functional {
 
 template<typename T, typename E>
 class Result {
@@ -435,4 +436,8 @@ bool Result<T&, E>::is_error() const {
     return m_error_option.is_present();
 }
 
-} /* namespace TC::Functional */
+} /* namespace Functional */
+
+using Functional::Result;
+
+} /* namespace TC */

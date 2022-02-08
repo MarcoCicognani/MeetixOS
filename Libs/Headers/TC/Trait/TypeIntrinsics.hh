@@ -19,7 +19,8 @@
 #include <TC/Trait/IsPointer.hh>
 #include <TC/Trait/IsSame.hh>
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<typename T>
 struct TypeIntrinsics {
@@ -32,7 +33,7 @@ template<typename T>
     requires IsIntegral<T>
 struct TypeIntrinsics<T> {
     static constexpr usize hash(T value) {
-        return Hashing::integer_hash(value);
+        return integer_hash(value);
     }
 
     static constexpr bool is_trivial() {
@@ -44,7 +45,7 @@ template<typename T>
     requires IsPointer<T>
 struct TypeIntrinsics<T> {
     static constexpr usize hash(T value) {
-        return Hashing::pointer_hash(value);
+        return pointer_hash(value);
     }
 
     static constexpr bool is_trivial() {
@@ -52,4 +53,8 @@ struct TypeIntrinsics<T> {
     }
 };
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::TypeIntrinsics;
+
+} /* namespace TC */

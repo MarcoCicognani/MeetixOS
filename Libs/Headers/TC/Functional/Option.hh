@@ -19,7 +19,8 @@
 #include <TC/Cxx/NullPtr.hh>
 #include <TC/IntTypes.hh>
 
-namespace TC::Functional {
+namespace TC {
+namespace Functional {
 
 template<typename T>
 class Option {
@@ -312,4 +313,8 @@ bool Option<T&>::is_present() const {
     return m_inner_option.is_present();
 }
 
-} /* namespace TC::Functional */
+} /* namespace Functional */
+
+using Functional::Option;
+
+} /* namespace TC */

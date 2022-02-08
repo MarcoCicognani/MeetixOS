@@ -14,9 +14,14 @@
 
 #include <TC/Trait/IsSame.hh>
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<typename T, typename... Ts>
 concept In = (IsSame<T, Ts> || ...);
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::In;
+
+} /* namespace TC */

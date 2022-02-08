@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<typename T>
 inline constexpr bool IsConst = false;
@@ -20,4 +21,8 @@ inline constexpr bool IsConst = false;
 template<typename T>
 inline constexpr bool IsConst<T const> = true;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::IsConst;
+
+} /* namespace TC */

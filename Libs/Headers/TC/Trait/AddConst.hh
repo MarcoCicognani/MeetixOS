@@ -12,9 +12,14 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<typename T>
 using AddConst = T const;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::AddConst;
+
+} /* namespace TC */

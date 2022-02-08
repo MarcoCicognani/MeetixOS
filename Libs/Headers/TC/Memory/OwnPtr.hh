@@ -19,7 +19,8 @@
 #include <TC/DenyCopy.hh>
 #include <TC/Functional/ErrorOr.hh>
 
-namespace TC::Memory {
+namespace TC {
+namespace Memory {
 
 template<typename T>
 class OwnPtr {
@@ -196,4 +197,10 @@ bool OwnPtr<T>::is_null() const {
     return m_data_pointer == nullptr;
 }
 
-} /* namespace TC::Memory */
+} /* namespace Memory */
+
+using Memory::make_own_ptr;
+using Memory::OwnPtr;
+using Memory::try_make_own_ptr;
+
+} /* namespace TC */

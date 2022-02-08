@@ -14,8 +14,13 @@
 
 #include <TC/IntTypes.hh>
 
-namespace TC::Hashing {
+namespace TC {
+namespace Hashing {
 
 usize pointer_hash(void const* value);
 
-} /* namespace TC::Hashing */
+} /* namespace Hashing */
+
+using Hashing::pointer_hash;
+
+} /* namespace TC */

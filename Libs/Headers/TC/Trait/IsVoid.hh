@@ -15,9 +15,14 @@
 #include <TC/Trait/IsSame.hh>
 #include <TC/Trait/RemoveConstVolatile.hh>
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<typename T>
 inline constexpr bool IsVoid = IsSame<void, RemoveConstVolatile<T>>;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::IsVoid;
+
+} /* namespace TC */

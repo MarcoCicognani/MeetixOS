@@ -14,7 +14,8 @@
 
 #include <TC/Trait/RemoveConstVolatile.hh>
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<typename T>
@@ -28,4 +29,8 @@ inline constexpr bool IsPointer<T*> = true;
 template<typename T>
 inline constexpr bool IsPointer = Details::IsPointer<RemoveConstVolatile<T>>;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::IsPointer;
+
+} /* namespace TC */

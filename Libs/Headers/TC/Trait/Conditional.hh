@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<bool condition, typename TrueType, typename FalseType>
@@ -30,4 +31,8 @@ struct Conditional<false, TrueType, FalseType> {
 template<bool condition, typename TrueType, typename FalseType>
 using Conditional = typename Details::Conditional<condition, TrueType, FalseType>::Type;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::Conditional;
+
+} /* namespace TC */

@@ -18,9 +18,7 @@
 #include <UnitTest/Macros/VerifyFalse.hh>
 #include <UnitTest/Macros/VerifyGreater.hh>
 
-using TC::Collection::Map;
-using TC::Collection::Pair;
-using TC::Cxx::move;
+using namespace TC;
 
 TEST_CASE(initializer_list) {
     Map<int, int> map{ { 1, 10 }, { 2, 20 }, { 3, 30 }, { 4, 40 }, { 5, 50 } };

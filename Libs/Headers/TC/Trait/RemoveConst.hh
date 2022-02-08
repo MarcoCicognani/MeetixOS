@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<typename T>
@@ -30,4 +31,8 @@ struct RemoveConst<T const> {
 template<typename T>
 using RemoveConst = typename Details::RemoveConst<T>::Type;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::RemoveConst;
+
+} /* namespace TC */

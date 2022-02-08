@@ -14,7 +14,8 @@
 
 #include <TC/IntTypes.hh>
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<usize a, usize... others>
 struct Max {
@@ -31,4 +32,8 @@ struct Max<a, b, others...> {
     static constexpr usize value = a >= b ? Max<a, others...>::value : Max<b, others...>::value;
 };
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::Max;
+
+} /* namespace TC */

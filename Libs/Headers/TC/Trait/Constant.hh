@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<typename T, T v>
 struct Constant {
@@ -30,4 +31,8 @@ struct Constant {
     }
 };
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::Constant;
+
+} /* namespace TC */

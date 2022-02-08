@@ -16,7 +16,7 @@
 #include <UnitTest/Macros/VerifyEqual.hh>
 #include <UnitTest/Macros/VerifyFalse.hh>
 
-using TC::Functional::ErrorOr;
+using namespace TC;
 
 TEST_CASE(value_and_error) {
     auto may_produce_value = [](int value) -> ErrorOr<int> {

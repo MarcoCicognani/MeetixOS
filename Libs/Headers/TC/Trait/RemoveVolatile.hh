@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<typename T>
@@ -30,4 +31,8 @@ struct RemoveVolatile<T volatile> {
 template<typename T>
 using RemoveVolatile = typename Details::RemoveVolatile<T>::Type;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::RemoveVolatile;
+
+} /* namespace TC */

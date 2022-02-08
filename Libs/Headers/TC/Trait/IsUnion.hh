@@ -14,9 +14,14 @@
 
 #include <TC/Trait/Constant.hh>
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<typename T>
 inline constexpr bool IsUnion = __is_union(T);
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::IsUnion;
+
+} /* namespace TC */

@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<typename T>
@@ -80,4 +81,8 @@ struct MakeUnsigned<bool> {
 template<typename T>
 using MakeUnsigned = typename Details::MakeUnsigned<T>::Type;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::MakeUnsigned;
+
+} /* namespace TC */

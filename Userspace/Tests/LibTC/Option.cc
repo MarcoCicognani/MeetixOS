@@ -16,7 +16,7 @@
 #include <UnitTest/Macros/VerifyEqual.hh>
 #include <UnitTest/Macros/VerifyFalse.hh>
 
-using TC::Functional::Option;
+using namespace TC;
 
 TEST_CASE(may_produce_value) {
     auto may_produce_value = [](int value) -> Option<int> {

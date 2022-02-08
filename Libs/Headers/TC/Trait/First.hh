@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<typename... Ts>
@@ -30,4 +31,8 @@ struct First<TFirst, Ts...> {
 template<typename... Ts>
 using First = typename Details::First<Ts...>::Type;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::First;
+
+} /* namespace TC */

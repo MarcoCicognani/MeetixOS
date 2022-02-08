@@ -15,9 +15,14 @@
 #include <errno.h>
 #include <TC/Functional/Result.hh>
 
-namespace TC::Functional {
+namespace TC {
+namespace Functional {
 
 template<typename T>
 using ErrorOr = Result<T, OSError>;
 
-} /* namespace TC::Functional */
+} /* namespace Functional */
+
+using Functional::ErrorOr;
+
+} /* namespace TC */

@@ -14,8 +14,13 @@
 
 #include <utility>
 
-namespace TC::Cxx {
+namespace TC {
+namespace Cxx {
 
 using std::nullptr_t;
 
-} /* namespace TC::Cxx */
+} /* namespace Cxx */
+
+using Cxx::nullptr_t;
+
+} /* namespace TC */

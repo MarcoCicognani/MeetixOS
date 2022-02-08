@@ -18,8 +18,7 @@
 #include <UnitTest/Macros/VerifyFalse.hh>
 #include <UnitTest/Macros/VerifyGreaterEqual.hh>
 
-using TC::Collection::Vector;
-using TC::Cxx::move;
+using namespace TC;
 
 TEST_CASE(initializer_list) {
     Vector vector{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };

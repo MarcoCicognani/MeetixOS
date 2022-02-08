@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<typename T>
@@ -35,4 +36,8 @@ struct RemoveReference<T&&> {
 template<typename T>
 using RemoveReference = typename Details::RemoveReference<T>::Type;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::RemoveReference;
+
+} /* namespace TC */

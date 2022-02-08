@@ -35,10 +35,6 @@
 #include <TC/IntTypes.hh>
 #include <TC/Memory/OwnPtr.hh>
 #include <TC/Memory/Raw.hh>
-#include <TC/Tag/Adopt.hh>
-#include <TC/Tag/Copy.hh>
-#include <TC/Tag/None.hh>
-#include <TC/Tag/Wrap.hh>
 #include <TC/Trait/AddConst.hh>
 #include <TC/Trait/AddVolatile.hh>
 #include <TC/Trait/Conditional.hh>

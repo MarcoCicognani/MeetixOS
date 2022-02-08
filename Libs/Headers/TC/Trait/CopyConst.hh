@@ -17,9 +17,14 @@
 #include <TC/Trait/IsConst.hh>
 #include <TC/Trait/RemoveConst.hh>
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<typename ReferenceType, typename T>
 using CopyConst = Conditional<IsConst<ReferenceType>, AddConst<T>, RemoveConst<T>>;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::CopyConst;
+
+} /* namespace TC */

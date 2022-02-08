@@ -23,7 +23,8 @@
 #include <TC/Functional/Option.hh>
 #include <TC/Trait/TypeIntrinsics.hh>
 
-namespace TC::Collection {
+namespace TC {
+namespace Collection {
 namespace Details {
 
 template<typename MainContainer, typename InnerContainer, typename T>
@@ -118,25 +119,23 @@ public:
     /**
      * @brief Inserts a new pair if doesn't exists or update it
      */
-    Functional::Option<T> insert(K const& key, T const& value, OnExistingKey on_existing_key = OnExistingKey::Update);
-    Functional::Option<T> insert(K&& key, T&& value, OnExistingKey on_existing_key = OnExistingKey::Update);
+    Option<T> insert(K const& key, T const& value, OnExistingKey on_existing_key = OnExistingKey::Update);
+    Option<T> insert(K&& key, T&& value, OnExistingKey on_existing_key = OnExistingKey::Update);
 
-    Functional::ErrorOr<Functional::Option<T>>
-    try_insert(K const& key, T const& value, OnExistingKey on_existing_key = OnExistingKey::Update);
-    Functional::ErrorOr<Functional::Option<T>>
-    try_insert(K&& key, T&& value, OnExistingKey on_existing_key = OnExistingKey::Update);
+    ErrorOr<Option<T>> try_insert(K const& key, T const& value, OnExistingKey on_existing_key = OnExistingKey::Update);
+    ErrorOr<Option<T>> try_insert(K&& key, T&& value, OnExistingKey on_existing_key = OnExistingKey::Update);
 
     /**
      * @brief Returns the value by the given key, inserts a new one if the doesn't exists
      */
-    Functional::Option<T&> at(K const& key);
-    Functional::Option<T&> operator[](K const& key);
+    Option<T&> at(K const& key);
+    Option<T&> operator[](K const& key);
 
     /**
      * @brief Erases from this map the given key or alle the keys related to the given value
      */
-    Functional::ErrorOr<void>  erase_key(K const& key);
-    Functional::ErrorOr<usize> erase_value(T const& value);
+    ErrorOr<void>  erase_key(K const& key);
+    ErrorOr<usize> erase_value(T const& value);
 
     /**
      * @brief Returns whether this map has the given key or the given value
@@ -164,10 +163,10 @@ public:
     [[nodiscard]] Vector<Vector<Pair<K, T>>> const& data() const;
 
 private:
-    Vector<Pair<K, T>>&                   bucket_by_hash(usize key_hash);
-    Vector<Pair<K, T>> const&             bucket_by_hash(usize key_hash) const;
-    Functional::Option<Pair<K, T>&>       find_pair_by_key(K const& key);
-    Functional::Option<Pair<K, T> const&> find_pair_by_key(K const& key) const;
+    Vector<Pair<K, T>>&       bucket_by_hash(usize key_hash);
+    Vector<Pair<K, T>> const& bucket_by_hash(usize key_hash) const;
+    Option<Pair<K, T>&>       find_pair_by_key(K const& key);
+    Option<Pair<K, T> const&> find_pair_by_key(K const& key) const;
 
 private:
     Vector<Vector<Pair<K, T>>> m_buckets_storage{};
@@ -193,8 +192,8 @@ Map<K, T, Ordered>::Map(Map<K, T, Ordered> const& rhs)
 
 template<typename K, typename T, bool Ordered>
 Map<K, T, Ordered>::Map(Map<K, T, Ordered>&& rhs) noexcept
-    : m_buckets_storage{ Cxx::move(rhs.m_buckets_storage) }
-    , m_values_count{ Cxx::exchange(rhs.m_values_count, 0) } {
+    : m_buckets_storage{ move(rhs.m_buckets_storage) }
+    , m_values_count{ exchange(rhs.m_values_count, 0) } {
 }
 
 template<typename K, typename T, bool Ordered>
@@ -218,8 +217,8 @@ Map<K, T, Ordered>& Map<K, T, Ordered>::operator=(Map<K, T, Ordered> const& rhs)
 template<typename K, typename T, bool Ordered>
 Map<K, T, Ordered>& Map<K, T, Ordered>::operator=(Map<K, T, Ordered>&& rhs) noexcept {
     clear();
-    m_buckets_storage = Cxx::move(rhs.m_buckets_storage);
-    m_values_count    = Cxx::exchange(rhs.m_values_count, 0);
+    m_buckets_storage = move(rhs.m_buckets_storage);
+    m_values_count    = exchange(rhs.m_values_count, 0);
     return *this;
 }
 
@@ -240,53 +239,51 @@ void Map<K, T, Ordered>::clear() {
 }
 
 template<typename K, typename T, bool Ordered>
-Functional::Option<T> Map<K, T, Ordered>::insert(K const& key, T const& value, Map::OnExistingKey on_existing_key) {
+Option<T> Map<K, T, Ordered>::insert(K const& key, T const& value, Map::OnExistingKey on_existing_key) {
     return MUST(try_insert(K{ key }, T{ value }, on_existing_key));
 }
 
 template<typename K, typename T, bool Ordered>
-Functional::Option<T> Map<K, T, Ordered>::insert(K&& key, T&& value, Map::OnExistingKey on_existing_key) {
-    return MUST(try_insert(Cxx::move(key), Cxx::move(value), on_existing_key));
+Option<T> Map<K, T, Ordered>::insert(K&& key, T&& value, Map::OnExistingKey on_existing_key) {
+    return MUST(try_insert(move(key), move(value), on_existing_key));
 }
 
 template<typename K, typename T, bool Ordered>
-Functional::ErrorOr<Functional::Option<T>>
-Map<K, T, Ordered>::try_insert(K const& key, T const& value, Map::OnExistingKey on_existing_key) {
+ErrorOr<Option<T>> Map<K, T, Ordered>::try_insert(K const& key, T const& value, Map::OnExistingKey on_existing_key) {
     return try_insert(K{ key }, T{ value }, on_existing_key);
 }
 
 template<typename K, typename T, bool Ordered>
-Functional::ErrorOr<Functional::Option<T>>
-Map<K, T, Ordered>::try_insert(K&& key, T&& value, Map::OnExistingKey on_existing_key) {
+ErrorOr<Option<T>> Map<K, T, Ordered>::try_insert(K&& key, T&& value, Map::OnExistingKey on_existing_key) {
     auto pair_or_none = find_pair_by_key(key);
     if ( pair_or_none.is_present() ) {
         if ( on_existing_key == OnExistingKey::KeepOldValue )
-            return Functional::Option<T>{};
+            return Option<T>{};
         else {
             auto& pair_ref  = pair_or_none.unwrap();
             auto& value_ref = pair_ref.value();
 
             /* overwrite the value and save the old one */
-            T old_value{ Cxx::move(value_ref) };
-            new (&value_ref) T{ Cxx::move(value) };
+            T old_value{ move(value_ref) };
+            new (&value_ref) T{ move(value) };
 
-            return Functional::Option<T>{ old_value };
+            return Option<T>{ old_value };
         }
     } else {
         auto& sub_vector = bucket_by_hash(Trait::TypeIntrinsics<K>::hash(key));
         if constexpr ( Ordered ) {
-            TRY(sub_vector.try_insert_sorted(Pair{ Cxx::move(key), Cxx::move(value) },
+            TRY(sub_vector.try_insert_sorted(Pair{ move(key), move(value) },
                                              [](auto const& a, auto const& b) { return a.key() > b.key(); }));
         } else
-            TRY(sub_vector.try_append(Pair{ Cxx::move(key), Cxx::move(value) }));
+            TRY(sub_vector.try_append(Pair{ move(key), move(value) }));
 
         ++m_values_count;
-        return Functional::Option<T>{};
+        return Option<T>{};
     }
 }
 
 template<typename K, typename T, bool Ordered>
-Functional::Option<T&> Map<K, T, Ordered>::at(K const& key) {
+Option<T&> Map<K, T, Ordered>::at(K const& key) {
     auto pair_or_none = find_pair_by_key(key);
     if ( pair_or_none.is_present() )
         return pair_or_none.value().value();
@@ -295,7 +292,7 @@ Functional::Option<T&> Map<K, T, Ordered>::at(K const& key) {
 }
 
 template<typename K, typename T, bool Ordered>
-Functional::Option<T&> Map<K, T, Ordered>::operator[](K const& key) {
+Option<T&> Map<K, T, Ordered>::operator[](K const& key) {
     auto pair_or_none = find_pair_by_key(key);
     if ( pair_or_none.is_present() )
         return pair_or_none.value().value();
@@ -304,7 +301,7 @@ Functional::Option<T&> Map<K, T, Ordered>::operator[](K const& key) {
 }
 
 template<typename K, typename T, bool Ordered>
-Functional::ErrorOr<void> Map<K, T, Ordered>::erase_key(K const& key) {
+ErrorOr<void> Map<K, T, Ordered>::erase_key(K const& key) {
     auto erased_count
         = TRY(bucket_by_hash(Trait::TypeIntrinsics<K>::hash(key)).erase_all_matches([&key](auto const& pair) {
               return key == pair.key();
@@ -315,7 +312,7 @@ Functional::ErrorOr<void> Map<K, T, Ordered>::erase_key(K const& key) {
 }
 
 template<typename K, typename T, bool Ordered>
-Functional::ErrorOr<usize> Map<K, T, Ordered>::erase_value(T const& value) {
+ErrorOr<usize> Map<K, T, Ordered>::erase_value(T const& value) {
     usize removed_keys_count = 0;
     for ( auto& bucket : m_buckets_storage ) {
         auto removed_keys_count_or_error
@@ -404,14 +401,14 @@ Vector<Pair<K, T>>& Map<K, T, Ordered>::bucket_by_hash(usize key_hash) {
 }
 
 template<typename K, typename T, bool Ordered>
-Functional::Option<Pair<K, T>&> Map<K, T, Ordered>::find_pair_by_key(K const& key) {
+Option<Pair<K, T>&> Map<K, T, Ordered>::find_pair_by_key(K const& key) {
     return bucket_by_hash(Trait::TypeIntrinsics<K>::hash(key)).find_if([&key](auto const& pair) {
         return pair.key() == key;
     });
 }
 
 template<typename K, typename T, bool Ordered>
-Functional::Option<const Pair<K, T>&> Map<K, T, Ordered>::find_pair_by_key(K const& key) const {
+Option<const Pair<K, T>&> Map<K, T, Ordered>::find_pair_by_key(K const& key) const {
     return bucket_by_hash(Trait::TypeIntrinsics<K>::hash(key)).find_if([&key](auto const& pair) {
         return pair.key() == key;
     });
@@ -512,4 +509,8 @@ bool MapIterator<MainContainer, InnerContainer, T>::operator!=(const MapIterator
 }
 
 } /* namespace Details */
-} /* namespace TC::Collection */
+} /* namespace Collection */
+
+using Collection::Map;
+
+} /* namespace TC */

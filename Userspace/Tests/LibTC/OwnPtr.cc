@@ -16,10 +16,7 @@
 #include <UnitTest/Case.hh>
 #include <UnitTest/Macros/Verify.hh>
 
-using TC::Cxx::move;
-using TC::Memory::make_own_ptr;
-using TC::Memory::OwnPtr;
-using TC::Memory::try_make_own_ptr;
+using namespace TC;
 
 TEST_CASE(is_null_on_null_ptr) {
     OwnPtr<char> own_ptr_default{};

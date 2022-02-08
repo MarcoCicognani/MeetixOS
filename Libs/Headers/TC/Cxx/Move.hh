@@ -14,8 +14,13 @@
 
 #include <utility>
 
-namespace TC::Cxx {
+namespace TC {
+namespace Cxx {
 
 using std::move;
 
-} /* namespace TC::Cxx */
+} /* namespace Cxx */
+
+using Cxx::move;
+
+} /* namespace TC */

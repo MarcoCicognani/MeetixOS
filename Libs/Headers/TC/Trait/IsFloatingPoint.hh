@@ -14,7 +14,8 @@
 
 #include <TC/Trait/RemoveConstVolatile.hh>
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<typename T>
@@ -34,4 +35,8 @@ inline constexpr bool IsFloatingPoint<long double> = true;
 template<typename T>
 inline constexpr bool IsFloatingPoint = Details::IsFloatingPoint<RemoveConstVolatile<T>>;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::IsFloatingPoint;
+
+} /* namespace TC */

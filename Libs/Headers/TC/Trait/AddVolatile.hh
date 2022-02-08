@@ -12,9 +12,14 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<typename T>
 using AddVolatile = T volatile;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::AddVolatile;
+
+} /* namespace TC */

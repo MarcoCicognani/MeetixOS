@@ -14,8 +14,13 @@
 
 #include <utility>
 
-namespace TC::Cxx {
+namespace TC {
+namespace Cxx {
 
 using std::exchange;
 
-} /* namespace TC::Cxx */
+} /* namespace Cxx */
+
+using Cxx::exchange;
+
+} /* namespace TC */

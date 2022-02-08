@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<typename T>
@@ -26,17 +27,17 @@ struct RemovePointer<T*> {
 };
 
 template<typename T>
-struct RemovePointer<T* const> {
+struct RemovePointer<T const*> {
     using Type = T;
 };
 
 template<typename T>
-struct RemovePointer<T* volatile> {
+struct RemovePointer<T volatile*> {
     using Type = T;
 };
 
 template<typename T>
-struct RemovePointer<T* const volatile> {
+struct RemovePointer<T const volatile*> {
     using Type = T;
 };
 
@@ -45,4 +46,8 @@ struct RemovePointer<T* const volatile> {
 template<typename T>
 using RemovePointer = typename Details::RemovePointer<T>::Type;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::RemovePointer;
+
+} /* namespace TC */

@@ -15,7 +15,8 @@
 #include <TC/Trait/Constant.hh>
 #include <TC/Trait/IsSame.hh>
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<typename TQuery, typename... Ts>
@@ -38,4 +39,8 @@ struct IndexOf<TQuery, TFirst, Ts...> : Constant<int, IsSame<TQuery, TFirst> ? 0
 template<typename TQuery, typename... Ts>
 inline constexpr int IndexOf = Details::IndexOf<TQuery, Ts...>::value;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::IndexOf;
+
+} /* namespace TC */

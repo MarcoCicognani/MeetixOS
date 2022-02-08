@@ -14,7 +14,8 @@
 
 #include <TC/Cxx/Move.hh>
 
-namespace TC::Collection {
+namespace TC {
+namespace Collection {
 
 template<typename K, typename T>
 class Pair {
@@ -52,8 +53,8 @@ Pair<K, T>::Pair(K const& key, T const& value)
 
 template<typename K, typename T>
 Pair<K, T>::Pair(K&& key, T&& value)
-    : m_key{ Cxx::move(key) }
-    , m_value{ Cxx::move(value) } {
+    : m_key{ move(key) }
+    , m_value{ move(value) } {
 }
 
 template<typename K, typename T>
@@ -76,4 +77,8 @@ T const& Pair<K, T>::value() const {
     return m_value;
 }
 
-} /* namespace TC::Collection */
+} /* namespace Collection */
+
+using Collection::Pair;
+
+} /* namespace TC */

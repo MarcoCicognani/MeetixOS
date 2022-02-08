@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<typename T>
@@ -75,4 +76,8 @@ struct MakeSigned<signed long long> {
 template<typename T>
 using MakeSigned = typename Details::MakeSigned<T>::Type;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::MakeSigned;
+
+} /* namespace TC */

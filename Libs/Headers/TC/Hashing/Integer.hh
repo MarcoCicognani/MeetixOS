@@ -14,8 +14,13 @@
 
 #include <TC/IntTypes.hh>
 
-namespace TC::Hashing {
+namespace TC {
+namespace Hashing {
 
 usize integer_hash(u64 value);
 
-} /* namespace TC::Hashing */
+} /* namespace Hashing */
+
+using Hashing::integer_hash;
+
+} /* namespace TC */

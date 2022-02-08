@@ -12,9 +12,14 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<typename B, typename D>
 inline constexpr bool IsBaseOf = __is_base_of(B, D);
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::IsBaseOf;
+
+} /* namespace TC */

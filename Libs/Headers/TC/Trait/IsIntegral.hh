@@ -15,7 +15,8 @@
 #include <TC/Trait/MakeUnsigned.hh>
 #include <TC/Trait/RemoveConstVolatile.hh>
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<typename T>
@@ -53,4 +54,8 @@ inline constexpr bool IsIntegral<unsigned long long> = true;
 template<typename T>
 inline constexpr bool IsIntegral = Details::IsIntegral<MakeUnsigned<RemoveConstVolatile<T>>>;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::IsIntegral;
+
+} /* namespace TC */

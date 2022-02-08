@@ -24,10 +24,10 @@
 #include <TC/Functional/Try.hh>
 #include <TC/IntTypes.hh>
 #include <TC/Memory/Raw.hh>
-#include <TC/Tag/Adopt.hh>
 #include <TC/Trait/TypeIntrinsics.hh>
 
-namespace TC::Collection {
+namespace TC {
+namespace Collection {
 namespace Details {
 
 template<typename Collection, typename T>
@@ -98,13 +98,15 @@ public:
         No
     };
 
+    enum Adopt { Adopt };
+
 public:
     /**
      * @brief Constructors
      */
     explicit Vector();
     explicit Vector(usize capacity);
-    explicit Vector(TC::Tag::Adopt, T* data_storage, usize size);
+    explicit Vector(enum Adopt, T* data_storage, usize size);
 
     Vector(Vector const& rhs);
     Vector(Vector&& rhs) noexcept;
@@ -124,10 +126,10 @@ public:
     /**
      * @brief Inserts the given <value> to the given <index>
      */
-    void                      insert_at(usize index, T const& value);
-    void                      insert_at(usize index, T&& value);
-    Functional::ErrorOr<void> try_insert_at(usize index, T const& value);
-    Functional::ErrorOr<void> try_insert_at(usize index, T&& value);
+    void          insert_at(usize index, T const& value);
+    void          insert_at(usize index, T&& value);
+    ErrorOr<void> try_insert_at(usize index, T const& value);
+    ErrorOr<void> try_insert_at(usize index, T&& value);
 
     /**
      * @brief Inserts the given <value> sorted
@@ -136,26 +138,26 @@ public:
     void insert_sorted(T const& value, Comparator comparator);
     void insert_sorted(T const& value);
     template<typename Comparator>
-    Functional::ErrorOr<void> try_insert_sorted(T const& value, Comparator comparator);
-    Functional::ErrorOr<void> try_insert_sorted(T const& value);
+    ErrorOr<void> try_insert_sorted(T const& value, Comparator comparator);
+    ErrorOr<void> try_insert_sorted(T const& value);
 
     /**
      * @brief Pushes the given <value> to the begin of the vector
      */
-    void                      prepend(T const& value);
-    void                      prepend(T&& value);
-    Functional::ErrorOr<void> try_prepend(T const& value);
-    Functional::ErrorOr<void> try_prepend(T&& value);
+    void          prepend(T const& value);
+    void          prepend(T&& value);
+    ErrorOr<void> try_prepend(T const& value);
+    ErrorOr<void> try_prepend(T&& value);
 
     /**
      * @brief Pushes the given <value> to the end of the vector
      * @param value
      * @return
      */
-    void                      append(T const& value);
-    void                      append(T&& value);
-    Functional::ErrorOr<void> try_append(T const& value);
-    Functional::ErrorOr<void> try_append(T&& value);
+    void          append(T const& value);
+    void          append(T&& value);
+    ErrorOr<void> try_append(T const& value);
+    ErrorOr<void> try_append(T&& value);
 
     void append_unchecked(T const& value);
     void append_unchecked(T&& value);
@@ -166,7 +168,7 @@ public:
     template<typename... Args>
     void emplace_first(Args&&... args);
     template<typename... Args>
-    Functional::ErrorOr<void> try_emplace_first(Args&&... args);
+    ErrorOr<void> try_emplace_first(Args&&... args);
 
     /**
      * @brief Pushes a new value to the end of the vector constructing it with the given arguments
@@ -174,7 +176,7 @@ public:
     template<typename... Args>
     void emplace_last(Args&&... args);
     template<typename... Args>
-    Functional::ErrorOr<void> try_emplace_last(Args&&... args);
+    ErrorOr<void> try_emplace_last(Args&&... args);
 
     /**
      * @brief Returns a reference to the first element
@@ -199,11 +201,11 @@ public:
     /**
      * @brief Removes the element(s)
      */
-    Functional::ErrorOr<void>  erase_at(usize index);
-    Functional::ErrorOr<void>  erase_first_of(T const& value);
-    Functional::ErrorOr<usize> erase_all_of(T const& value);
+    ErrorOr<void>  erase_at(usize index);
+    ErrorOr<void>  erase_first_of(T const& value);
+    ErrorOr<usize> erase_all_of(T const& value);
     template<typename CallBack>
-    Functional::ErrorOr<usize> erase_all_matches(CallBack matches);
+    ErrorOr<usize> erase_all_matches(CallBack matches);
 
     /**
      * @brief Sorts the vector content using the given comparator
@@ -215,14 +217,14 @@ public:
      * @brief Resizes the amount of elements inside this vector creating (by default constructor) if new_count >
      * count(), destroying if new_count < count()
      */
-    void                      resize(usize new_count);
-    Functional::ErrorOr<void> try_resize(usize new_count);
+    void          resize(usize new_count);
+    ErrorOr<void> try_resize(usize new_count);
 
     /**
      * @brief Allocates new capacity for this vector for at least the given capacity
      */
-    void                      ensure_capacity(usize capacity);
-    Functional::ErrorOr<void> try_ensure_capacity(usize capacity);
+    void          ensure_capacity(usize capacity);
+    ErrorOr<void> try_ensure_capacity(usize capacity);
 
     /**
      * @brief for-each support
@@ -236,18 +238,18 @@ public:
     /**
      * @brief Returns whether this vector contains the given value
      */
-    [[nodiscard]] bool        contains(T const& value) const;
-    Functional::Option<usize> index_of(T const& value) const;
+    [[nodiscard]] bool contains(T const& value) const;
+    Option<usize>      index_of(T const& value) const;
     template<typename Callback>
-    Functional::Option<usize> index_if(Callback callback) const;
+    Option<usize> index_if(Callback callback) const;
 
-    Functional::Option<T&>       find(T const& value);
-    Functional::Option<T const&> find(T const& value) const;
+    Option<T&>       find(T const& value);
+    Option<T const&> find(T const& value) const;
 
     template<typename Callback>
-    Functional::Option<T&> find_if(Callback callback);
+    Option<T&> find_if(Callback callback);
     template<typename Callback>
-    Functional::Option<T const&> find_if(Callback callback) const;
+    Option<T const&> find_if(Callback callback) const;
 
     /**
      * @brief Vector data access
@@ -286,7 +288,7 @@ Vector<T>::Vector(usize capacity) {
 }
 
 template<typename T>
-Vector<T>::Vector(TC::Tag::Adopt, T* data_storage, usize size)
+Vector<T>::Vector(enum Adopt, T* data_storage, usize size)
     : m_data_storage{ data_storage }
     , m_data_capacity{ size }
     , m_values_count{ size } {
@@ -304,16 +306,16 @@ Vector<T>::Vector(Vector const& rhs)
 
 template<typename T>
 Vector<T>::Vector(Vector&& rhs) noexcept
-    : m_data_storage{ Cxx::exchange(rhs.m_data_storage, nullptr) }
-    , m_data_capacity{ Cxx::exchange(rhs.m_data_capacity, 0) }
-    , m_values_count{ Cxx::exchange(rhs.m_values_count, 0) } {
+    : m_data_storage{ exchange(rhs.m_data_storage, nullptr) }
+    , m_data_capacity{ exchange(rhs.m_data_capacity, 0) }
+    , m_values_count{ exchange(rhs.m_values_count, 0) } {
 }
 
 template<typename T>
 Vector<T>::Vector(std::initializer_list<T> initializer_list) {
     ensure_capacity(initializer_list.size());
     for ( auto const& element : initializer_list )
-        append_unchecked(Cxx::move(element));
+        append_unchecked(move(element));
 }
 
 template<typename T>
@@ -337,9 +339,9 @@ template<typename T>
 Vector<T>& Vector<T>::operator=(Vector&& rhs) noexcept {
     clear(KeepStorageCapacity::No);
 
-    m_data_storage  = Cxx::exchange(rhs.m_data_storage, nullptr);
-    m_data_capacity = Cxx::exchange(rhs.m_data_capacity, 0);
-    m_values_count  = Cxx::exchange(rhs.m_values_count, 0);
+    m_data_storage  = exchange(rhs.m_data_storage, nullptr);
+    m_data_capacity = exchange(rhs.m_data_capacity, 0);
+    m_values_count  = exchange(rhs.m_values_count, 0);
     return *this;
 }
 
@@ -348,7 +350,7 @@ Vector<T>& Vector<T>::operator=(std::initializer_list<T> initializer_list) {
     clear(initializer_list.size() < capacity() ? KeepStorageCapacity::Yes : KeepStorageCapacity::No);
     ensure_capacity(initializer_list.size());
     for ( auto const& value : initializer_list )
-        append_unchecked(Cxx::move(value));
+        append_unchecked(move(value));
     return *this;
 }
 
@@ -378,16 +380,16 @@ void Vector<T>::insert_at(usize index, T const& value) {
 
 template<typename T>
 void Vector<T>::insert_at(usize index, T&& value) {
-    MUST(try_insert_at(index, Cxx::move(value)));
+    MUST(try_insert_at(index, move(value)));
 }
 
 template<typename T>
-Functional::ErrorOr<void> Vector<T>::try_insert_at(usize index, T const& value) {
+ErrorOr<void> Vector<T>::try_insert_at(usize index, T const& value) {
     return try_insert_at(index, T{ value });
 }
 
 template<typename T>
-Functional::ErrorOr<void> Vector<T>::try_insert_at(usize index, T&& value) {
+ErrorOr<void> Vector<T>::try_insert_at(usize index, T&& value) {
     if ( index > m_values_count )
         return EINVAL;
 
@@ -399,14 +401,14 @@ Functional::ErrorOr<void> Vector<T>::try_insert_at(usize index, T&& value) {
             __builtin_memmove(data_slot(index + 1), data_slot(index), (m_values_count - index) * sizeof(T));
         else {
             for ( usize i = m_values_count; i > index; --i ) {
-                new (data_slot(i)) T{ Cxx::move(m_data_storage[i - 1]) };
+                new (data_slot(i)) T{ move(m_data_storage[i - 1]) };
                 at(i - 1).~T();
             }
         }
     }
 
     /* move the value into the memory */
-    new (data_slot(index)) T{ Cxx::move(value) };
+    new (data_slot(index)) T{ move(value) };
     ++m_values_count;
     return {};
 }
@@ -424,7 +426,7 @@ void Vector<T>::insert_sorted(T const& value) {
 
 template<typename T>
 template<typename Comparator>
-Functional::ErrorOr<void> Vector<T>::try_insert_sorted(T const& value, Comparator comparator) {
+ErrorOr<void> Vector<T>::try_insert_sorted(T const& value, Comparator comparator) {
     /* find the insertion index */
     usize insert_index = 0;
     for ( usize i = 0; i < m_values_count; ++i ) {
@@ -439,7 +441,7 @@ Functional::ErrorOr<void> Vector<T>::try_insert_sorted(T const& value, Comparato
 }
 
 template<typename T>
-Functional::ErrorOr<void> Vector<T>::try_insert_sorted(T const& value) {
+ErrorOr<void> Vector<T>::try_insert_sorted(T const& value) {
     return try_insert_sorted(value, [](T const& a, T const& b) { return a < b; });
 }
 
@@ -450,17 +452,17 @@ void Vector<T>::prepend(T const& value) {
 
 template<typename T>
 void Vector<T>::prepend(T&& value) {
-    MUST(try_prepend(Cxx::move(value)));
+    MUST(try_prepend(move(value)));
 }
 
 template<typename T>
-Functional::ErrorOr<void> Vector<T>::try_prepend(T const& value) {
+ErrorOr<void> Vector<T>::try_prepend(T const& value) {
     return try_prepend(T{ value });
 }
 
 template<typename T>
-Functional::ErrorOr<void> Vector<T>::try_prepend(T&& value) {
-    return try_insert_at(0, Cxx::move(value));
+ErrorOr<void> Vector<T>::try_prepend(T&& value) {
+    return try_insert_at(0, move(value));
 }
 
 template<typename T>
@@ -470,17 +472,17 @@ void Vector<T>::append(T const& value) {
 
 template<typename T>
 void Vector<T>::append(T&& value) {
-    MUST(try_append(Cxx::move(value)));
+    MUST(try_append(move(value)));
 }
 
 template<typename T>
-Functional::ErrorOr<void> Vector<T>::try_append(T const& value) {
+ErrorOr<void> Vector<T>::try_append(T const& value) {
     return try_append(T{ value });
 }
 
 template<typename T>
-Functional::ErrorOr<void> Vector<T>::try_append(T&& value) {
-    return try_insert_at(m_values_count, Cxx::move(value));
+ErrorOr<void> Vector<T>::try_append(T&& value) {
+    return try_insert_at(m_values_count, move(value));
 }
 
 template<typename T>
@@ -490,7 +492,7 @@ void Vector<T>::append_unchecked(T const& value) {
 
 template<typename T>
 void Vector<T>::append_unchecked(T&& value) {
-    new (data_slot(m_values_count)) T{ Cxx::move(value) };
+    new (data_slot(m_values_count)) T{ move(value) };
     ++m_values_count;
 }
 
@@ -502,7 +504,7 @@ void Vector<T>::emplace_first(Args&&... args) {
 
 template<typename T>
 template<typename... Args>
-Functional::ErrorOr<void> Vector<T>::try_emplace_first(Args&&... args) {
+ErrorOr<void> Vector<T>::try_emplace_first(Args&&... args) {
     TRY(try_ensure_capacity(m_values_count + 1));
 
     /* move the values after the insertion one place forward */
@@ -510,7 +512,7 @@ Functional::ErrorOr<void> Vector<T>::try_emplace_first(Args&&... args) {
         __builtin_memmove(data_slot(1), m_data_storage, m_values_count * sizeof(T));
     else {
         for ( usize i = m_values_count; i > 0; --i ) {
-            new (data_slot(i)) T{ Cxx::move(m_data_storage[i - 1]) };
+            new (data_slot(i)) T{ move(m_data_storage[i - 1]) };
             at(i - 1).~T();
         }
     }
@@ -529,7 +531,7 @@ void Vector<T>::emplace_last(Args&&... args) {
 
 template<typename T>
 template<typename... Args>
-Functional::ErrorOr<void> Vector<T>::try_emplace_last(Args&&... args) {
+ErrorOr<void> Vector<T>::try_emplace_last(Args&&... args) {
     TRY(try_ensure_capacity(m_values_count + 1));
 
     /* move the value into the memory */
@@ -572,13 +574,13 @@ template<typename T>
 T Vector<T>::take_at(usize index) {
     VERIFY_LESS(index, m_values_count);
 
-    T value{ Cxx::move(m_data_storage[index]) };
+    T value{ move(m_data_storage[index]) };
     erase_at(index);
     return value;
 }
 
 template<typename T>
-Functional::ErrorOr<void> Vector<T>::erase_at(usize index) {
+ErrorOr<void> Vector<T>::erase_at(usize index) {
     if ( index >= m_values_count )
         return EINVAL;
 
@@ -588,7 +590,7 @@ Functional::ErrorOr<void> Vector<T>::erase_at(usize index) {
     else {
         at(index).~T();
         for ( usize i = index + 1; i < m_values_count; ++i ) {
-            new (data_slot(i - 1)) T{ Cxx::move(m_data_storage[i]) };
+            new (data_slot(i - 1)) T{ move(m_data_storage[i]) };
             m_data_storage[i].~T();
         }
     }
@@ -597,7 +599,7 @@ Functional::ErrorOr<void> Vector<T>::erase_at(usize index) {
 }
 
 template<typename T>
-Functional::ErrorOr<void> Vector<T>::erase_first_of(T const& value) {
+ErrorOr<void> Vector<T>::erase_first_of(T const& value) {
     for ( usize i = 0; i < m_values_count; ++i ) {
         if ( m_data_storage[i] == value ) {
             TRY(erase_at(i));
@@ -608,13 +610,13 @@ Functional::ErrorOr<void> Vector<T>::erase_first_of(T const& value) {
 }
 
 template<typename T>
-Functional::ErrorOr<usize> Vector<T>::erase_all_of(T const& value) {
+ErrorOr<usize> Vector<T>::erase_all_of(T const& value) {
     return erase_all_matches([&value](T const& current) { return current == value; });
 }
 
 template<typename T>
 template<typename Matcher>
-Functional::ErrorOr<usize> Vector<T>::erase_all_matches(Matcher matches) {
+ErrorOr<usize> Vector<T>::erase_all_matches(Matcher matches) {
     usize erased_count = 0;
     for ( usize i = 0; i < m_values_count; ) {
         if ( matches(m_data_storage[i]) ) {
@@ -636,13 +638,13 @@ void Vector<T>::sort(Comparator comparator) {
     for ( usize i = 0; i + 1 < m_values_count; ++i ) {
         for ( usize j = i + 1; j < m_values_count; ++j ) {
             if ( comparator(m_data_storage[i], m_data_storage[j]) > 0 )
-                Cxx::swap(m_data_storage[i], m_data_storage[j]);
+                swap(m_data_storage[i], m_data_storage[j]);
         }
     }
 }
 
 template<typename T>
-Functional::ErrorOr<void> Vector<T>::try_resize(usize new_count) {
+ErrorOr<void> Vector<T>::try_resize(usize new_count) {
     if ( new_count < m_values_count ) {
         for ( usize i = new_count; i < m_values_count; ++i )
             at(i).~T();
@@ -659,7 +661,7 @@ Functional::ErrorOr<void> Vector<T>::try_resize(usize new_count) {
 }
 
 template<typename T>
-Functional::ErrorOr<void> Vector<T>::try_ensure_capacity(usize capacity) {
+ErrorOr<void> Vector<T>::try_ensure_capacity(usize capacity) {
     VERIFY_GREATER(capacity, 0);
 
     if ( m_data_capacity >= capacity )
@@ -678,7 +680,7 @@ Functional::ErrorOr<void> Vector<T>::try_ensure_capacity(usize capacity) {
         __builtin_memmove(new_data_storage, m_data_storage, m_values_count * sizeof(T));
     else {
         for ( usize i = 0; i < m_values_count; ++i ) {
-            new (&new_data_storage[i]) T{ Cxx::move(at(i)) };
+            new (&new_data_storage[i]) T{ move(at(i)) };
             at(i).~T();
         }
     }
@@ -728,13 +730,13 @@ bool Vector<T>::contains(T const& value) const {
 }
 
 template<typename T>
-Functional::Option<usize> Vector<T>::index_of(T const& value) const {
+Option<usize> Vector<T>::index_of(T const& value) const {
     return index_if([&value](auto const& v) { return v == value; });
 }
 
 template<typename T>
 template<typename Callback>
-Functional::Option<usize> Vector<T>::index_if(Callback callback) const {
+Option<usize> Vector<T>::index_if(Callback callback) const {
     for ( usize i = 0; i < m_values_count; ++i ) {
         if ( callback(m_data_storage[i]) )
             return i;
@@ -743,7 +745,7 @@ Functional::Option<usize> Vector<T>::index_if(Callback callback) const {
 }
 
 template<typename T>
-Functional::Option<T&> Vector<T>::find(T const& value) {
+Option<T&> Vector<T>::find(T const& value) {
     auto index_or_none = index_of(value);
     if ( index_or_none.is_present() )
         return at(index_or_none.value());
@@ -752,7 +754,7 @@ Functional::Option<T&> Vector<T>::find(T const& value) {
 }
 
 template<typename T>
-Functional::Option<T const&> Vector<T>::find(T const& value) const {
+Option<T const&> Vector<T>::find(T const& value) const {
     auto index_or_none = index_of(value);
     if ( index_or_none.is_present() )
         return at(index_or_none.value());
@@ -762,7 +764,7 @@ Functional::Option<T const&> Vector<T>::find(T const& value) const {
 
 template<typename T>
 template<typename Callback>
-Functional::Option<T&> Vector<T>::find_if(Callback callback) {
+Option<T&> Vector<T>::find_if(Callback callback) {
     auto index_or_none = index_if(callback);
     if ( index_or_none.is_present() )
         return at(index_or_none.value());
@@ -772,7 +774,7 @@ Functional::Option<T&> Vector<T>::find_if(Callback callback) {
 
 template<typename T>
 template<typename Callback>
-Functional::Option<T const&> Vector<T>::find_if(Callback callback) const {
+Option<T const&> Vector<T>::find_if(Callback callback) const {
     auto index_or_none = index_if(callback);
     if ( index_or_none.is_present() )
         return at(index_or_none.value());
@@ -932,4 +934,8 @@ VectorIterator<Collection, T>::VectorIterator(Collection& collection, usize inde
 }
 
 } /* namespace Details */
-} /* namespace TC::Collection */
+} /* namespace Collection */
+
+using Collection::Vector;
+
+} /* namespace TC */

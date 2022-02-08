@@ -17,8 +17,7 @@
 #include <UnitTest/Macros/VerifyEqual.hh>
 #include <UnitTest/Macros/VerifyFalse.hh>
 
-using TC::Collection::List;
-using TC::Cxx::move;
+using namespace TC;
 
 TEST_CASE(initializer_list) {
     List list{ 1, 2, 3, 4, 5 };

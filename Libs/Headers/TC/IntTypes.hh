@@ -13,9 +13,11 @@
 #pragma once
 
 #include <Api/StdInt.h>
-
 //#include <TC/Trait/Conditional.hh>
 //#include <TC/Trait/MakeSigned.hh>
+
+namespace TC::IntTypes {
+
 //
 // using u8    = __UINT8_TYPE__;
 // using u16   = __UINT16_TYPE__;
@@ -36,3 +38,5 @@
 //
 // using intptr_t  = __INTPTR_TYPE__;
 // using uintptr_t = __UINTPTR_TYPE__;
+
+}

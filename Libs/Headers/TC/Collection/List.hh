@@ -20,7 +20,8 @@
 #include <TC/Functional/Option.hh>
 #include <TC/IntTypes.hh>
 
-namespace TC::Collection {
+namespace TC {
+namespace Collection {
 namespace Details {
 
 template<typename Collection, typename T>
@@ -134,13 +135,13 @@ public:
 
     [[nodiscard]] bool contains(T const& value) const;
 
-    Functional::Option<T&>       find(T const& value);
-    Functional::Option<T const&> find(T const& value) const;
+    Option<T&>       find(T const& value);
+    Option<T const&> find(T const& value) const;
 
     template<typename Callback>
-    Functional::Option<T&> find_if(Callback callback);
+    Option<T&> find_if(Callback callback);
     template<typename Callback>
-    Functional::Option<T const&> find_if(Callback callback) const;
+    Option<T const&> find_if(Callback callback) const;
 
     /**
      * @brief for-each support
@@ -177,9 +178,9 @@ private:
 
 template<typename T>
 List<T>::List(List&& rhs) noexcept
-    : m_head_node{ Cxx::exchange(rhs.m_head_node, nullptr) }
-    , m_tail_node{ Cxx::exchange(rhs.m_tail_node, nullptr) }
-    , m_values_count{ Cxx::exchange(rhs.m_values_count, 0) } {
+    : m_head_node{ exchange(rhs.m_head_node, nullptr) }
+    , m_tail_node{ exchange(rhs.m_tail_node, nullptr) }
+    , m_values_count{ exchange(rhs.m_values_count, 0) } {
 }
 
 template<typename T>
@@ -199,9 +200,9 @@ List<T>& List<T>::operator=(List&& rhs) noexcept {
         return *this;
 
     clear();
-    m_head_node    = Cxx::exchange(rhs.m_head_node, nullptr);
-    m_tail_node    = Cxx::exchange(rhs.m_tail_node, nullptr);
-    m_values_count = Cxx::exchange(rhs.m_values_count, 0);
+    m_head_node    = exchange(rhs.m_head_node, nullptr);
+    m_tail_node    = exchange(rhs.m_tail_node, nullptr);
+    m_values_count = exchange(rhs.m_values_count, 0);
     return *this;
 }
 
@@ -232,7 +233,7 @@ void List<T>::append(T const& value) {
 
 template<typename T>
 void List<T>::append(T&& value) {
-    auto* new_node = new Node{ Cxx::move(value) };
+    auto* new_node = new Node{ move(value) };
     VERIFY_NOT_NULL(new_node);
 
     if ( m_tail_node == nullptr )
@@ -253,7 +254,7 @@ void List<T>::prepend(T const& value) {
 
 template<typename T>
 void List<T>::prepend(T&& value) {
-    auto* new_node = new Node{ Cxx::move(value) };
+    auto* new_node = new Node{ move(value) };
     VERIFY_NOT_NULL(new_node);
 
     if ( m_head_node == nullptr )
@@ -303,18 +304,18 @@ bool List<T>::contains(T const& value) const {
 }
 
 template<typename T>
-Functional::Option<T&> List<T>::find(T const& value) {
+Option<T&> List<T>::find(T const& value) {
     return find_if([&value](auto const& v) { return value == v; });
 }
 
 template<typename T>
-Functional::Option<const T&> List<T>::find(T const& value) const {
+Option<const T&> List<T>::find(T const& value) const {
     return find_if([&value](auto const& v) { return value == v; });
 }
 
 template<typename T>
 template<typename Callback>
-Functional::Option<T&> List<T>::find_if(Callback callback) {
+Option<T&> List<T>::find_if(Callback callback) {
     for ( auto& node : *this ) {
         if ( callback(node) )
             return node;
@@ -324,7 +325,7 @@ Functional::Option<T&> List<T>::find_if(Callback callback) {
 
 template<typename T>
 template<typename Callback>
-Functional::Option<T const&> List<T>::find_if(Callback callback) const {
+Option<T const&> List<T>::find_if(Callback callback) const {
     for ( auto const& node : *this ) {
         if ( callback(node) )
             return node;
@@ -488,8 +489,12 @@ void ListIterator<Collection, T>::delete_node() {
 
 template<typename T>
 ListNode<T>::ListNode(T&& value)
-    : m_value{ Cxx::move(value) } {
+    : m_value{ move(value) } {
 }
 
 } /* namespace Details */
-} /* namespace TC::Collection */
+} /* namespace Collection */
+
+using Collection::List;
+
+} /* namespace TC */

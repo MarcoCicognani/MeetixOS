@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 namespace Details {
 
 template<bool B, typename T>
@@ -30,4 +31,8 @@ struct EnableIf<true, T> {
 template<bool B, typename T>
 using EnableIf = typename Details::EnableIf<B, T>::Type;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::EnableIf;
+
+} /* namespace TC */

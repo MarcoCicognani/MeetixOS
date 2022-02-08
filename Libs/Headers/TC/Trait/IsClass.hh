@@ -12,9 +12,14 @@
 
 #pragma once
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 template<typename T>
 inline constexpr bool IsClass = __is_class(T);
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::IsClass;
+
+} /* namespace TC */

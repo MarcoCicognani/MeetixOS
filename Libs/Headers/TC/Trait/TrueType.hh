@@ -14,8 +14,13 @@
 
 #include <TC/Trait/Constant.hh>
 
-namespace TC::Trait {
+namespace TC {
+namespace Trait {
 
 using TrueType = Constant<bool, true>;
 
-} /* namespace TC::Trait */
+} /* namespace Trait */
+
+using Trait::TrueType;
+
+} /* namespace TC */

@@ -14,8 +14,13 @@
 
 #include <new>
 
-namespace TC::Cxx {
+namespace TC {
+namespace Cxx {
 
 using std::nothrow;
 
-} /* namespace TC::Cxx */
+} /* namespace Cxx */
+
+using Cxx::nothrow;
+
+} /* namespace TC */
