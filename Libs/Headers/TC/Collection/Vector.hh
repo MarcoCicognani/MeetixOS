@@ -98,7 +98,7 @@ public:
         No
     };
 
-    enum Adopt { Adopt };
+    enum AdoptTag { Adopt };
 
 public:
     /**
@@ -106,7 +106,7 @@ public:
      */
     explicit Vector();
     explicit Vector(usize capacity);
-    explicit Vector(enum Adopt, T* data_storage, usize size);
+    explicit Vector(AdoptTag, T* data_storage, usize size);
 
     Vector(Vector const& rhs);
     Vector(Vector&& rhs) noexcept;
@@ -288,7 +288,7 @@ Vector<T>::Vector(usize capacity) {
 }
 
 template<typename T>
-Vector<T>::Vector(enum Adopt, T* data_storage, usize size)
+Vector<T>::Vector(AdoptTag, T* data_storage, usize size)
     : m_data_storage{ data_storage }
     , m_data_capacity{ size }
     , m_values_count{ size } {

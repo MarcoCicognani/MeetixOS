@@ -15,8 +15,8 @@
 #include <stdlib.h>
 
 extern "C" A_NORETURN void assert_failed(const char* message) {
-    fprintf(stderr, "ASSERTION FAILED: %s\n", message);
-    fflush(stderr);
+    fprintf(stdout, "\033[31mASSERTION FAILED: %s\033[0m\n", message);
+    fflush(stdout);
 
     exit(EXIT_FAILURE);
 }

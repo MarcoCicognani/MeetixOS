@@ -12,10 +12,8 @@
 
 #include <TC/Collection/List.hh>
 #include <TC/Cxx/Move.hh>
+#include <UnitTest/Assertions.hh>
 #include <UnitTest/Case.hh>
-#include <UnitTest/Macros/Verify.hh>
-#include <UnitTest/Macros/VerifyEqual.hh>
-#include <UnitTest/Macros/VerifyFalse.hh>
 
 using namespace TC;
 

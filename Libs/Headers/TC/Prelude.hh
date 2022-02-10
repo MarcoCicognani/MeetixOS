@@ -33,8 +33,10 @@
 #include <TC/Hashing/Integer.hh>
 #include <TC/Hashing/Pointer.hh>
 #include <TC/IntTypes.hh>
-#include <TC/Memory/OwnPtr.hh>
+#include <TC/Memory/NonNullBox.hh>
+#include <TC/Memory/NonNullRef.hh>
 #include <TC/Memory/Raw.hh>
+#include <TC/Memory/Shareable.hh>
 #include <TC/Trait/AddConst.hh>
 #include <TC/Trait/AddVolatile.hh>
 #include <TC/Trait/Conditional.hh>

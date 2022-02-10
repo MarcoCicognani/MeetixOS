@@ -35,4 +35,5 @@
 #define A_UNUSED                       __attribute__((unused))
 #define A_NOINLINE                     __attribute__((noinline))
 #define A_NORETURN                     __attribute__((noreturn))
+#define A_RETURN_NONNULL               __attribute__((returns_nonnull))
 #define A_PRINTF(fmt_pos, va_list_pos) __attribute__((format(printf, fmt_pos, va_list_pos)))
