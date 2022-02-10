@@ -17,6 +17,7 @@
 #include <TC/Cxx/Exchange.hh>
 #include <TC/Cxx/Move.hh>
 #include <TC/Cxx/New.hh>
+#include <TC/Cxx/Swap.hh>
 #include <TC/DenyCopy.hh>
 #include <TC/Functional/ErrorOr.hh>
 #include <TC/Functional/Must.hh>
@@ -115,6 +116,7 @@ public:
     List& operator=(std::initializer_list<T> initializer_list);
 
     void clear();
+    void swap(List& rhs) noexcept;
 
     /**
      * @brief Creates a new node and appends it to the last of the list
@@ -203,21 +205,15 @@ List<T>::~List() {
 
 template<typename T>
 List<T>& List<T>::operator=(List&& rhs) noexcept {
-    if ( this == &rhs )
-        return *this;
-
-    clear();
-    m_head_node    = exchange(rhs.m_head_node, nullptr);
-    m_tail_node    = exchange(rhs.m_tail_node, nullptr);
-    m_values_count = exchange(rhs.m_values_count, 0);
+    List list{ move(rhs) };
+    swap(list);
     return *this;
 }
 
 template<typename T>
 List<T>& List<T>::operator=(std::initializer_list<T> initializer_list) {
-    clear();
-    for ( auto const& value : initializer_list )
-        append(value);
+    List list{ initializer_list };
+    swap(list);
     return *this;
 }
 
@@ -234,6 +230,13 @@ void List<T>::clear() {
 }
 
 template<typename T>
+void List<T>::swap(List& rhs) noexcept {
+    Cxx::swap(m_head_node, rhs.m_head_node);
+    Cxx::swap(m_tail_node, rhs.m_tail_node);
+    Cxx::swap(m_values_count, rhs.m_values_count);
+}
+
+template<typename T>
 void List<T>::append(T const& value) {
     MUST(try_append(T{ value }));
 }
@@ -245,7 +248,7 @@ void List<T>::append(T&& value) {
 
 template<typename T>
 ErrorOr<void> List<T>::try_append(T const& value) {
-    return try_append(value);
+    return try_append(T{ value });
 }
 
 template<typename T>

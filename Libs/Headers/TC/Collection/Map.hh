@@ -115,6 +115,7 @@ public:
      * @brief Clears this map
      */
     void clear();
+    void swap(Map& rhs) noexcept;
 
     /**
      * @brief Inserts a new pair if doesn't exists or update it
@@ -185,13 +186,13 @@ Map<K, T, Ordered>::Map(usize bucket_count)
 }
 
 template<typename K, typename T, bool Ordered>
-Map<K, T, Ordered>::Map(Map<K, T, Ordered> const& rhs)
+Map<K, T, Ordered>::Map(Map const& rhs)
     : m_buckets_storage{ rhs.m_buckets_storage }
     , m_values_count{ rhs.m_values_count } {
 }
 
 template<typename K, typename T, bool Ordered>
-Map<K, T, Ordered>::Map(Map<K, T, Ordered>&& rhs) noexcept
+Map<K, T, Ordered>::Map(Map&& rhs) noexcept
     : m_buckets_storage{ move(rhs.m_buckets_storage) }
     , m_values_count{ exchange(rhs.m_values_count, 0) } {
 }
@@ -204,29 +205,26 @@ Map<K, T, Ordered>::Map(std::initializer_list<Pair<K, T>> initializer_list)
 }
 
 template<typename K, typename T, bool Ordered>
-Map<K, T, Ordered>& Map<K, T, Ordered>::operator=(Map<K, T, Ordered> const& rhs) {
+Map<K, T, Ordered>& Map<K, T, Ordered>::operator=(Map const& rhs) {
     if ( this == &rhs )
         return *this;
 
-    clear();
-    m_buckets_storage = rhs.m_buckets_storage;
-    m_values_count    = rhs.m_values_count;
+    Map map{ rhs };
+    swap(map);
     return *this;
 }
 
 template<typename K, typename T, bool Ordered>
-Map<K, T, Ordered>& Map<K, T, Ordered>::operator=(Map<K, T, Ordered>&& rhs) noexcept {
-    clear();
-    m_buckets_storage = move(rhs.m_buckets_storage);
-    m_values_count    = exchange(rhs.m_values_count, 0);
+Map<K, T, Ordered>& Map<K, T, Ordered>::operator=(Map&& rhs) noexcept {
+    Map map{ move(rhs) };
+    swap(map);
     return *this;
 }
 
 template<typename K, typename T, bool Ordered>
 Map<K, T, Ordered>& Map<K, T, Ordered>::operator=(std::initializer_list<Pair<K, T>> initializer_list) {
-    clear();
-    for ( auto const& pair : initializer_list )
-        insert(pair.key(), pair.value());
+    Map map{ initializer_list };
+    swap(map);
     return *this;
 }
 
@@ -236,6 +234,12 @@ void Map<K, T, Ordered>::clear() {
     m_buckets_storage.clear(decltype(m_buckets_storage)::KeepStorageCapacity::Yes);
     m_buckets_storage.resize(capacity);
     m_values_count = 0;
+}
+
+template<typename K, typename T, bool Ordered>
+void Map<K, T, Ordered>::swap(Map& rhs) noexcept {
+    m_buckets_storage.swap(rhs.m_buckets_storage);
+    Cxx::swap(m_values_count, rhs.m_values_count);
 }
 
 template<typename K, typename T, bool Ordered>

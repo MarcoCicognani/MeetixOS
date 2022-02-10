@@ -122,6 +122,7 @@ public:
      * @brief Destroys all the stored values keeping the capacity of this vector
      */
     void clear(KeepStorageCapacity keep_storage_capacity = KeepStorageCapacity::Yes);
+    void swap(Vector& rhs) noexcept;
 
     /**
      * @brief Inserts the given <value> to the given <index>
@@ -328,29 +329,22 @@ Vector<T>& Vector<T>::operator=(Vector const& rhs) {
     if ( this == &rhs )
         return *this;
 
-    clear(rhs.count() < capacity() ? KeepStorageCapacity::Yes : KeepStorageCapacity::No);
-    ensure_capacity(rhs.count());
-    for ( auto const& value : rhs )
-        append_unchecked(value);
+    Vector vector{ rhs };
+    swap(vector);
     return *this;
 }
 
 template<typename T>
 Vector<T>& Vector<T>::operator=(Vector&& rhs) noexcept {
-    clear(KeepStorageCapacity::No);
-
-    m_data_storage  = exchange(rhs.m_data_storage, nullptr);
-    m_data_capacity = exchange(rhs.m_data_capacity, 0);
-    m_values_count  = exchange(rhs.m_values_count, 0);
+    Vector vector{ move(rhs) };
+    swap(vector);
     return *this;
 }
 
 template<typename T>
 Vector<T>& Vector<T>::operator=(std::initializer_list<T> initializer_list) {
-    clear(initializer_list.size() < capacity() ? KeepStorageCapacity::Yes : KeepStorageCapacity::No);
-    ensure_capacity(initializer_list.size());
-    for ( auto const& value : initializer_list )
-        append_unchecked(move(value));
+    Vector vector{ initializer_list };
+    swap(vector);
     return *this;
 }
 
@@ -371,6 +365,13 @@ void Vector<T>::clear(KeepStorageCapacity keep_storage_capacity) {
         }
     }
     m_values_count = 0;
+}
+
+template<typename T>
+void Vector<T>::swap(Vector& rhs) noexcept {
+    Cxx::swap(m_data_storage, rhs.m_data_storage);
+    Cxx::swap(m_data_capacity, rhs.m_data_capacity);
+    Cxx::swap(m_values_count, rhs.m_values_count);
 }
 
 template<typename T>
@@ -638,7 +639,7 @@ void Vector<T>::sort(Comparator comparator) {
     for ( usize i = 0; i + 1 < m_values_count; ++i ) {
         for ( usize j = i + 1; j < m_values_count; ++j ) {
             if ( comparator(m_data_storage[i], m_data_storage[j]) > 0 )
-                swap(m_data_storage[i], m_data_storage[j]);
+                Cxx::swap(m_data_storage[i], m_data_storage[j]);
         }
     }
 }
