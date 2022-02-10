@@ -16,7 +16,10 @@
 #include <TC/Assertions.hh>
 #include <TC/Cxx/Exchange.hh>
 #include <TC/Cxx/Move.hh>
+#include <TC/Cxx/New.hh>
 #include <TC/DenyCopy.hh>
+#include <TC/Functional/ErrorOr.hh>
+#include <TC/Functional/Must.hh>
 #include <TC/Functional/Option.hh>
 #include <TC/IntTypes.hh>
 
@@ -116,14 +119,18 @@ public:
     /**
      * @brief Creates a new node and appends it to the last of the list
      */
-    void append(T const& value);
-    void append(T&& value);
+    void          append(T const& value);
+    void          append(T&& value);
+    ErrorOr<void> try_append(T const& value);
+    ErrorOr<void> try_append(T&& value);
 
     /**
      * @brief Creates a new node and prepends it to the first of the list
      */
-    void prepend(T const& value);
-    void prepend(T&& value);
+    void          prepend(T const& value);
+    void          prepend(T&& value);
+    ErrorOr<void> try_prepend(T const& value);
+    ErrorOr<void> try_prepend(T&& value);
 
     /**
      * @brief Removes the node referenced by the given iterator
@@ -228,13 +235,24 @@ void List<T>::clear() {
 
 template<typename T>
 void List<T>::append(T const& value) {
-    append(T{ value });
+    MUST(try_append(T{ value }));
 }
 
 template<typename T>
 void List<T>::append(T&& value) {
-    auto* new_node = new Node{ move(value) };
-    VERIFY_NOT_NULL(new_node);
+    MUST(try_append(move(value)));
+}
+
+template<typename T>
+ErrorOr<void> List<T>::try_append(T const& value) {
+    return try_append(value);
+}
+
+template<typename T>
+ErrorOr<void> List<T>::try_append(T&& value) {
+    auto new_node = new (nothrow) Node{ move(value) };
+    if ( new_node == nullptr )
+        return ENOMEM;
 
     if ( m_tail_node == nullptr )
         m_head_node = new_node;
@@ -245,17 +263,29 @@ void List<T>::append(T&& value) {
 
     m_tail_node = new_node;
     ++m_values_count;
+    return {};
 }
 
 template<typename T>
 void List<T>::prepend(T const& value) {
-    prepend(T{ value });
+    MUST(try_prepend(T{ value }));
 }
 
 template<typename T>
 void List<T>::prepend(T&& value) {
-    auto* new_node = new Node{ move(value) };
-    VERIFY_NOT_NULL(new_node);
+    MUST(try_prepend(move(value)));
+}
+
+template<typename T>
+ErrorOr<void> List<T>::try_prepend(T const& value) {
+    return try_prepend(T{ value });
+}
+
+template<typename T>
+ErrorOr<void> List<T>::try_prepend(T&& value) {
+    auto new_node = new (nothrow) Node{ move(value) };
+    if ( new_node == nullptr )
+        return ENOMEM;
 
     if ( m_head_node == nullptr )
         m_tail_node = new_node;
@@ -266,6 +296,7 @@ void List<T>::prepend(T&& value) {
 
     m_head_node = new_node;
     ++m_values_count;
+    return {};
 }
 
 template<typename T>

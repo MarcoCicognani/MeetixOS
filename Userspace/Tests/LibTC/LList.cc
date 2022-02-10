@@ -32,6 +32,30 @@ TEST_CASE(clear) {
     VERIFY_EQUAL(list.count(), 0);
 }
 
+TEST_CASE(try_append) {
+    List<int> list{};
+
+    auto error_or_void_1 = list.try_append(1);
+    VERIFY(error_or_void_1.is_value());
+
+    auto error_or_void_2 = list.try_append(2);
+    VERIFY(error_or_void_2.is_value());
+
+    auto error_or_void_3 = list.try_append(3);
+    VERIFY(error_or_void_3.is_value());
+
+    int  int_4           = 4;
+    auto error_or_void_4 = list.try_append(int_4);
+    VERIFY(error_or_void_4.is_value());
+
+    int  int_5           = 5;
+    auto error_or_void_5 = list.try_append(int_5);
+    VERIFY(error_or_void_5.is_value());
+
+    VERIFY_FALSE(list.is_empty());
+    VERIFY_EQUAL(list.count(), 5);
+}
+
 TEST_CASE(append) {
     class Object {
     public:
@@ -56,6 +80,30 @@ TEST_CASE(append) {
     list.append(Object{ 100 });
     list.append(Object{ 1000 });
     list.append(Object{ 10'000 });
+
+    VERIFY_FALSE(list.is_empty());
+    VERIFY_EQUAL(list.count(), 5);
+}
+
+TEST_CASE(try_prepend) {
+    List<int> list{};
+
+    auto error_or_void_1 = list.try_prepend(1);
+    VERIFY(error_or_void_1.is_value());
+
+    auto error_or_void_2 = list.try_prepend(2);
+    VERIFY(error_or_void_2.is_value());
+
+    auto error_or_void_3 = list.try_prepend(3);
+    VERIFY(error_or_void_3.is_value());
+
+    int  int_4           = 4;
+    auto error_or_void_4 = list.try_prepend(int_4);
+    VERIFY(error_or_void_4.is_value());
+
+    int  int_5           = 5;
+    auto error_or_void_5 = list.try_prepend(int_5);
+    VERIFY(error_or_void_5.is_value());
 
     VERIFY_FALSE(list.is_empty());
     VERIFY_EQUAL(list.count(), 5);
