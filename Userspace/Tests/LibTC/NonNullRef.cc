@@ -33,7 +33,9 @@ public:
         : m_value{ value } {
     }
 
-    ~Shared() override = default;
+    ~Shared() override {
+        s_destructor_was_called = true;
+    }
 
     void inc_value(usize inc) {
         m_value += inc;
@@ -43,23 +45,33 @@ public:
     }
 
     static void reset_no_ref_count_called_count() {
-        m_no_ref_count_called_count = 0;
+        s_no_ref_count_called_count = 0;
     }
     static usize no_ref_count_called_count() {
-        return m_no_ref_count_called_count;
+        return s_no_ref_count_called_count;
+    }
+
+    static void reset_destructor_was_called() {
+        s_destructor_was_called = false;
+    }
+    static bool destructor_was_called() {
+        return s_destructor_was_called;
     }
 
 protected:
     void on_no_ref_count() override {
-        ++m_no_ref_count_called_count;
+        ++s_no_ref_count_called_count;
     }
 
 private:
-    usize        m_value{ 0 };
-    static usize m_no_ref_count_called_count;
+    usize m_value{ 0 };
+
+    static usize s_no_ref_count_called_count;
+    static bool  s_destructor_was_called;
 };
 
-usize Shared::m_no_ref_count_called_count = 0;
+usize Shared::s_no_ref_count_called_count = 0;
+bool  Shared::s_destructor_was_called     = false;
 
 } /* namespace Object */
 
@@ -85,6 +97,7 @@ TEST_CASE(try_make_ref) {
 
 TEST_CASE(ref_count_copy) {
     Object::Shared::reset_no_ref_count_called_count();
+    Object::Shared::reset_destructor_was_called();
 
     {
         auto object_ref_512_1 = make_ref<Object::Shared>(512);
@@ -116,6 +129,7 @@ TEST_CASE(ref_count_copy) {
         VERIFY_EQUAL(object_ref_512_3.as_ptr(), object_ref_512_4.as_ptr());
     }
     VERIFY_EQUAL(Object::Shared::no_ref_count_called_count(), 1);
+    VERIFY(Object::Shared::destructor_was_called());
 }
 
 TEST_CASE(swap) {
