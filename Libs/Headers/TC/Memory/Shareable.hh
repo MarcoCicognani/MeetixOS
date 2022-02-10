@@ -21,37 +21,15 @@ namespace TC {
 namespace Memory::Details {
 
 struct PlainRefCountTrait {
-    static inline usize fetch_add(usize volatile* value, usize addition) {
-        auto old_value = load(value);
-
-        *value = old_value + addition;
-        return old_value;
-    }
-
-    static inline usize fetch_sub(usize volatile* value, usize subtraction) {
-        auto old_value = load(value);
-
-        *value = old_value - subtraction;
-        return old_value;
-    }
-
-    static inline usize load(usize volatile* value) {
-        return *value;
-    }
+    static usize fetch_add(usize volatile* value, usize addition);
+    static usize fetch_sub(usize volatile* value, usize subtraction);
+    static usize load(usize volatile* value);
 };
 
 class AtomicRefCountTrait {
-    static inline usize fetch_add(usize volatile* value, usize addition) {
-        return __atomic_fetch_add(value, addition, __ATOMIC_SEQ_CST);
-    }
-
-    static inline usize fetch_sub(usize volatile* value, usize subtraction) {
-        return __atomic_fetch_sub(value, subtraction, __ATOMIC_SEQ_CST);
-    }
-
-    static inline usize load(usize volatile* value) {
-        return __atomic_load_n(value, __ATOMIC_SEQ_CST);
-    }
+    static usize fetch_add(usize volatile* value, usize addition);
+    static usize fetch_sub(usize volatile* value, usize subtraction);
+    static usize load(usize volatile* value);
 };
 
 template<typename RefCountTrait>
@@ -60,20 +38,71 @@ struct Shareable {
     TC_DENY_MOVE(Shareable);
 
 public:
+    /**
+     * @brief Constructors
+     */
     Shareable() = default;
     virtual ~Shareable();
 
+    /**
+     * @brief Reference management
+     */
     void add_ref() const;
     bool dec_ref() const;
 
+    /**
+     * @brief Getters
+     */
     [[nodiscard]] usize ref_count() const;
 
 protected:
+    /**
+     * @brief Called before delete on no reference left
+     */
     virtual void on_no_ref_count();
 
 private:
     usize mutable m_ref_count{ 1 };
 };
+
+} /* namespace Memory::Details */
+
+using Shareable       = Memory::Details::Shareable<Memory::Details::PlainRefCountTrait>;
+using AtomicShareable = Memory::Details::Shareable<Memory::Details::AtomicRefCountTrait>;
+
+/* ---------- Follows Implementation ---------- */
+
+namespace Memory::Details {
+
+usize PlainRefCountTrait::fetch_add(usize volatile* value, usize addition) {
+    auto old_value = load(value);
+
+    *value = old_value + addition;
+    return old_value;
+}
+
+usize PlainRefCountTrait::fetch_sub(usize volatile* value, usize subtraction) {
+    auto old_value = load(value);
+
+    *value = old_value - subtraction;
+    return old_value;
+}
+
+usize PlainRefCountTrait::load(usize volatile* value) {
+    return *value;
+}
+
+usize AtomicRefCountTrait::fetch_add(usize volatile* value, usize addition) {
+    return __atomic_fetch_add(value, addition, __ATOMIC_SEQ_CST);
+}
+
+usize AtomicRefCountTrait::fetch_sub(usize volatile* value, usize subtraction) {
+    return __atomic_fetch_sub(value, subtraction, __ATOMIC_SEQ_CST);
+}
+
+usize AtomicRefCountTrait::load(usize volatile* value) {
+    return __atomic_load_n(value, __ATOMIC_SEQ_CST);
+}
 
 template<typename RefCountTrait>
 Shareable<RefCountTrait>::~Shareable() {
@@ -110,8 +139,4 @@ void Shareable<RefCountTrait>::on_no_ref_count() {
 }
 
 } /* namespace Memory::Details */
-
-using Shareable       = Memory::Details::Shareable<Memory::Details::PlainRefCountTrait>;
-using AtomicShareable = Memory::Details::Shareable<Memory::Details::AtomicRefCountTrait>;
-
 } /* namespace TC */

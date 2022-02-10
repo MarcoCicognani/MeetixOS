@@ -114,6 +114,14 @@ private:
     Option<T*> m_inner_option{};
 };
 
+} /* namespace Functional */
+
+using Functional::Option;
+
+/* ---------- Follows Implementation ---------- */
+
+namespace Functional {
+
 template<typename T>
 Option<T>::Option(T const& value)
     : m_is_present{ true } {
@@ -311,7 +319,4 @@ bool Option<T&>::is_present() const {
 }
 
 } /* namespace Functional */
-
-using Functional::Option;
-
 } /* namespace TC */

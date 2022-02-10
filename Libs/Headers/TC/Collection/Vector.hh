@@ -274,6 +274,107 @@ private:
     usize m_values_count{ 0 };
 };
 
+} /* namespace Collection */
+
+using Collection::Vector;
+
+/* ---------- Follows Implementation ---------- */
+
+namespace Collection {
+namespace Details {
+
+template<typename Collection, typename T>
+VectorIterator<Collection, T> VectorIterator<Collection, T>::begin(Collection& collection) {
+    return VectorIterator{ collection, 0 };
+}
+
+template<typename Collection, typename T>
+VectorIterator<Collection, T> VectorIterator<Collection, T>::end(Collection& collection) {
+    return VectorIterator{ collection, collection.count() };
+}
+
+template<typename Collection, typename T>
+VectorIterator<Collection, T>& VectorIterator<Collection, T>::operator++() {
+    ++m_index;
+    return *this;
+}
+
+template<typename Collection, typename T>
+VectorIterator<Collection, T> VectorIterator<Collection, T>::operator++(int) {
+    ++m_index;
+    return VectorIterator{ m_collection, m_index - 1 };
+}
+
+template<typename Collection, typename T>
+T& VectorIterator<Collection, T>::operator*() {
+    VERIFY_FALSE(is_end());
+    return m_collection->at(m_index);
+}
+
+template<typename Collection, typename T>
+T const& VectorIterator<Collection, T>::operator*() const {
+    VERIFY_FALSE(is_end());
+    return m_collection->at(m_index);
+}
+
+template<typename Collection, typename T>
+T* VectorIterator<Collection, T>::operator->() {
+    return &operator*();
+}
+
+template<typename Collection, typename T>
+T const* VectorIterator<Collection, T>::operator->() const {
+    return &operator*();
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::is_end() const {
+    return m_index == end(*m_collection).index();
+}
+
+template<typename Collection, typename T>
+usize VectorIterator<Collection, T>::index() const {
+    return m_index;
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::operator==(VectorIterator<Collection, T> const& rhs) const {
+    return m_collection == rhs.m_collection && m_index == rhs.m_index;
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::operator!=(VectorIterator<Collection, T> const& rhs) const {
+    return m_collection != rhs.m_collection || m_index != rhs.m_index;
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::operator<(VectorIterator<Collection, T> const& rhs) const {
+    return m_index < rhs.m_index;
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::operator>(VectorIterator<Collection, T> const& rhs) const {
+    return m_index > rhs.m_index;
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::operator<=(VectorIterator<Collection, T> const& rhs) const {
+    return m_index <= rhs.m_index;
+}
+
+template<typename Collection, typename T>
+bool VectorIterator<Collection, T>::operator>=(VectorIterator<Collection, T> const& rhs) const {
+    return m_index >= rhs.m_index;
+}
+
+template<typename Collection, typename T>
+VectorIterator<Collection, T>::VectorIterator(Collection& collection, usize index)
+    : m_collection{ &collection }
+    , m_index{ index } {
+}
+
+} /* namespace Details */
+
 template<typename T>
 Vector<T>::Vector(usize capacity) {
     ensure_capacity(capacity);
@@ -833,101 +934,5 @@ T* Vector<T>::data_slot(usize index) {
     return &m_data_storage[index];
 }
 
-namespace Details {
-
-template<typename Collection, typename T>
-VectorIterator<Collection, T> VectorIterator<Collection, T>::begin(Collection& collection) {
-    return VectorIterator{ collection, 0 };
-}
-
-template<typename Collection, typename T>
-VectorIterator<Collection, T> VectorIterator<Collection, T>::end(Collection& collection) {
-    return VectorIterator{ collection, collection.count() };
-}
-
-template<typename Collection, typename T>
-VectorIterator<Collection, T>& VectorIterator<Collection, T>::operator++() {
-    ++m_index;
-    return *this;
-}
-
-template<typename Collection, typename T>
-VectorIterator<Collection, T> VectorIterator<Collection, T>::operator++(int) {
-    ++m_index;
-    return VectorIterator{ m_collection, m_index - 1 };
-}
-
-template<typename Collection, typename T>
-T& VectorIterator<Collection, T>::operator*() {
-    VERIFY_FALSE(is_end());
-    return m_collection->at(m_index);
-}
-
-template<typename Collection, typename T>
-T const& VectorIterator<Collection, T>::operator*() const {
-    VERIFY_FALSE(is_end());
-    return m_collection->at(m_index);
-}
-
-template<typename Collection, typename T>
-T* VectorIterator<Collection, T>::operator->() {
-    return &operator*();
-}
-
-template<typename Collection, typename T>
-T const* VectorIterator<Collection, T>::operator->() const {
-    return &operator*();
-}
-
-template<typename Collection, typename T>
-bool VectorIterator<Collection, T>::is_end() const {
-    return m_index == end(*m_collection).index();
-}
-
-template<typename Collection, typename T>
-usize VectorIterator<Collection, T>::index() const {
-    return m_index;
-}
-
-template<typename Collection, typename T>
-bool VectorIterator<Collection, T>::operator==(VectorIterator<Collection, T> const& rhs) const {
-    return m_collection == rhs.m_collection && m_index == rhs.m_index;
-}
-
-template<typename Collection, typename T>
-bool VectorIterator<Collection, T>::operator!=(VectorIterator<Collection, T> const& rhs) const {
-    return m_collection != rhs.m_collection || m_index != rhs.m_index;
-}
-
-template<typename Collection, typename T>
-bool VectorIterator<Collection, T>::operator<(VectorIterator<Collection, T> const& rhs) const {
-    return m_index < rhs.m_index;
-}
-
-template<typename Collection, typename T>
-bool VectorIterator<Collection, T>::operator>(VectorIterator<Collection, T> const& rhs) const {
-    return m_index > rhs.m_index;
-}
-
-template<typename Collection, typename T>
-bool VectorIterator<Collection, T>::operator<=(VectorIterator<Collection, T> const& rhs) const {
-    return m_index <= rhs.m_index;
-}
-
-template<typename Collection, typename T>
-bool VectorIterator<Collection, T>::operator>=(VectorIterator<Collection, T> const& rhs) const {
-    return m_index >= rhs.m_index;
-}
-
-template<typename Collection, typename T>
-VectorIterator<Collection, T>::VectorIterator(Collection& collection, usize index)
-    : m_collection{ &collection }
-    , m_index{ index } {
-}
-
-} /* namespace Details */
 } /* namespace Collection */
-
-using Collection::Vector;
-
 } /* namespace TC */

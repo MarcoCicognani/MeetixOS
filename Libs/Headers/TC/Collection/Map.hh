@@ -172,6 +172,109 @@ private:
     usize                      m_values_count{ 0 };
 };
 
+} /* namespace Collection */
+
+using Collection::Map;
+
+/* ---------- Follows Implementation ---------- */
+
+namespace Collection {
+namespace Details {
+
+template<typename MainContainer, typename InnerContainer, typename T>
+MapIterator<MainContainer, InnerContainer, T>
+MapIterator<MainContainer, InnerContainer, T>::begin(MainContainer& main_container) {
+    usize first_level_index = 0;
+    for ( auto const& inner : main_container.data() ) {
+        if ( !inner.is_empty() )
+            break;
+
+        ++first_level_index;
+    }
+
+    return MapIterator{ main_container, first_level_index, main_container.data().at(first_level_index).begin() };
+}
+
+template<typename MainContainer, typename InnerContainer, typename T>
+MapIterator<MainContainer, InnerContainer, T>
+MapIterator<MainContainer, InnerContainer, T>::end(MainContainer& main_container) {
+    return MapIterator{ main_container, main_container.data().count() - 1, main_container.data().last().end() };
+}
+
+template<typename MainContainer, typename InnerContainer, typename T>
+MapIterator<MainContainer, InnerContainer, T>& MapIterator<MainContainer, InnerContainer, T>::operator++() {
+    ++m_nested_iterator;
+    if ( m_nested_iterator.is_end() ) {
+        /* find the next non-empty inner collector */
+        while ( ++m_first_level_index < m_main_container.data().count() ) {
+            auto& inner = m_main_container.data().at(m_first_level_index);
+
+            /* always assign the iterator even the <inner> is empty, since the operator!= and == of the linear
+             * iterator checks whether the source container is the same, and our end container is the last of
+             * the m_main_container.data() */
+            m_nested_iterator = inner.begin();
+            if ( !inner.is_empty() )
+                break;
+        }
+    }
+
+    return *this;
+}
+
+template<typename MainContainer, typename InnerContainer, typename T>
+MapIterator<MainContainer, InnerContainer, T> MapIterator<MainContainer, InnerContainer, T>::operator++(int) {
+    MapIterator it{ *this };
+
+    operator++();
+    return it;
+}
+
+template<typename MainContainer, typename InnerContainer, typename T>
+T& MapIterator<MainContainer, InnerContainer, T>::operator*() {
+    return *m_nested_iterator;
+}
+
+template<typename MainContainer, typename InnerContainer, typename T>
+T const& MapIterator<MainContainer, InnerContainer, T>::operator*() const {
+    return *m_nested_iterator;
+}
+
+template<typename MainContainer, typename InnerContainer, typename T>
+T* MapIterator<MainContainer, InnerContainer, T>::operator->() {
+    return &operator*();
+}
+
+template<typename MainContainer, typename InnerContainer, typename T>
+T const* MapIterator<MainContainer, InnerContainer, T>::operator->() const {
+    return &operator*();
+}
+
+template<typename MainContainer, typename InnerContainer, typename T>
+bool MapIterator<MainContainer, InnerContainer, T>::is_end() const {
+    return m_nested_iterator.is_end();
+}
+
+template<typename MainContainer, typename InnerContainer, typename T>
+bool MapIterator<MainContainer, InnerContainer, T>::operator==(const MapIterator& rhs) const {
+    return m_nested_iterator == rhs.m_nested_iterator;
+}
+
+template<typename MainContainer, typename InnerContainer, typename T>
+bool MapIterator<MainContainer, InnerContainer, T>::operator!=(const MapIterator& rhs) const {
+    return m_nested_iterator != rhs.m_nested_iterator;
+}
+
+template<typename MainContainer, typename InnerContainer, typename T>
+MapIterator<MainContainer, InnerContainer, T>::MapIterator(MainContainer&                    main_container,
+                                                           usize                             first_level_index,
+                                                           typename InnerContainer::Iterator nested_iterator)
+    : m_main_container{ main_container }
+    , m_first_level_index{ first_level_index }
+    , m_nested_iterator{ nested_iterator } {
+}
+
+} /* namespace Details */
+
 template<typename K, typename T, bool Ordered>
 Map<K, T, Ordered>::Map()
     : Map{ 128 } {
@@ -416,103 +519,5 @@ Option<const Pair<K, T>&> Map<K, T, Ordered>::find_pair_by_key(K const& key) con
     });
 }
 
-namespace Details {
-
-template<typename MainContainer, typename InnerContainer, typename T>
-MapIterator<MainContainer, InnerContainer, T>::MapIterator(MainContainer&                    main_container,
-                                                           usize                             first_level_index,
-                                                           typename InnerContainer::Iterator nested_iterator)
-    : m_main_container{ main_container }
-    , m_first_level_index{ first_level_index }
-    , m_nested_iterator{ nested_iterator } {
-}
-
-template<typename MainContainer, typename InnerContainer, typename T>
-MapIterator<MainContainer, InnerContainer, T>
-MapIterator<MainContainer, InnerContainer, T>::begin(MainContainer& main_container) {
-    usize first_level_index = 0;
-    for ( auto const& inner : main_container.data() ) {
-        if ( !inner.is_empty() )
-            break;
-
-        ++first_level_index;
-    }
-
-    return MapIterator{ main_container, first_level_index, main_container.data().at(first_level_index).begin() };
-}
-
-template<typename MainContainer, typename InnerContainer, typename T>
-MapIterator<MainContainer, InnerContainer, T>
-MapIterator<MainContainer, InnerContainer, T>::end(MainContainer& main_container) {
-    return MapIterator{ main_container, main_container.data().count() - 1, main_container.data().last().end() };
-}
-
-template<typename MainContainer, typename InnerContainer, typename T>
-MapIterator<MainContainer, InnerContainer, T>& MapIterator<MainContainer, InnerContainer, T>::operator++() {
-    ++m_nested_iterator;
-    if ( m_nested_iterator.is_end() ) {
-        /* find the next non-empty inner collector */
-        while ( ++m_first_level_index < m_main_container.data().count() ) {
-            auto& inner = m_main_container.data().at(m_first_level_index);
-
-            /* always assign the iterator even the <inner> is empty, since the operator!= and == of the linear
-             * iterator checks whether the source container is the same, and our end container is the last of
-             * the m_main_container.data() */
-            m_nested_iterator = inner.begin();
-            if ( !inner.is_empty() )
-                break;
-        }
-    }
-
-    return *this;
-}
-
-template<typename MainContainer, typename InnerContainer, typename T>
-MapIterator<MainContainer, InnerContainer, T> MapIterator<MainContainer, InnerContainer, T>::operator++(int) {
-    MapIterator it{ *this };
-
-    operator++();
-    return it;
-}
-
-template<typename MainContainer, typename InnerContainer, typename T>
-T& MapIterator<MainContainer, InnerContainer, T>::operator*() {
-    return *m_nested_iterator;
-}
-
-template<typename MainContainer, typename InnerContainer, typename T>
-T const& MapIterator<MainContainer, InnerContainer, T>::operator*() const {
-    return *m_nested_iterator;
-}
-
-template<typename MainContainer, typename InnerContainer, typename T>
-T* MapIterator<MainContainer, InnerContainer, T>::operator->() {
-    return &operator*();
-}
-
-template<typename MainContainer, typename InnerContainer, typename T>
-T const* MapIterator<MainContainer, InnerContainer, T>::operator->() const {
-    return &operator*();
-}
-
-template<typename MainContainer, typename InnerContainer, typename T>
-bool MapIterator<MainContainer, InnerContainer, T>::is_end() const {
-    return m_nested_iterator.is_end();
-}
-
-template<typename MainContainer, typename InnerContainer, typename T>
-bool MapIterator<MainContainer, InnerContainer, T>::operator==(const MapIterator& rhs) const {
-    return m_nested_iterator == rhs.m_nested_iterator;
-}
-
-template<typename MainContainer, typename InnerContainer, typename T>
-bool MapIterator<MainContainer, InnerContainer, T>::operator!=(const MapIterator& rhs) const {
-    return m_nested_iterator != rhs.m_nested_iterator;
-}
-
-} /* namespace Details */
 } /* namespace Collection */
-
-using Collection::Map;
-
 } /* namespace TC */

@@ -182,6 +182,100 @@ private:
     usize m_values_count{ 0 };
 };
 
+} /* namespace Collection */
+
+using Collection::List;
+
+/* ---------- Follows Implementation ---------- */
+
+namespace Collection {
+namespace Details {
+
+template<typename Collection, typename T>
+ListIterator<Collection, T>::ListIterator(Collection& collection)
+    : m_collection{ &collection } {
+}
+
+template<typename Collection, typename T>
+ListIterator<Collection, T>::ListIterator(Collection& collection, typename Collection::Node* node)
+    : m_collection{ &collection }
+    , m_current_node{ node } {
+}
+
+template<typename Collection, typename T>
+ListIterator<Collection, T>& ListIterator<Collection, T>::operator++() {
+    if ( m_current_node != nullptr )
+        m_current_node = m_current_node->m_next_node;
+    return *this;
+}
+
+template<typename Collection, typename T>
+ListIterator<Collection, T> ListIterator<Collection, T>::operator++(int) {
+    ListIterator it{ *this };
+
+    operator++();
+    return it;
+}
+
+template<typename Collection, typename T>
+T& ListIterator<Collection, T>::operator*() {
+    VERIFY_NOT_NULL(m_current_node);
+    return m_current_node->m_value;
+}
+
+template<typename Collection, typename T>
+T const& ListIterator<Collection, T>::operator*() const {
+    VERIFY_NOT_NULL(m_current_node);
+    return m_current_node->m_value;
+}
+
+template<typename Collection, typename T>
+T* ListIterator<Collection, T>::operator->() {
+    return &operator*();
+}
+
+template<typename Collection, typename T>
+T const* ListIterator<Collection, T>::operator->() const {
+    return &operator*();
+}
+
+template<typename Collection, typename T>
+ListIterator<Collection, T> ListIterator<Collection, T>::erase() {
+    ListIterator it{ *this };
+    ++it;
+
+    m_collection->erase(*this);
+    return it;
+}
+
+template<typename Collection, typename T>
+bool ListIterator<Collection, T>::is_end() const {
+    return m_current_node == nullptr;
+}
+
+template<typename Collection, typename T>
+bool ListIterator<Collection, T>::operator==(const ListIterator& rhs) const {
+    return m_current_node == rhs.m_current_node;
+}
+
+template<typename Collection, typename T>
+bool ListIterator<Collection, T>::operator!=(const ListIterator& rhs) const {
+    return m_current_node != rhs.m_current_node;
+}
+
+template<typename Collection, typename T>
+void ListIterator<Collection, T>::delete_node() {
+    delete m_current_node;
+    m_current_node = nullptr;
+}
+
+template<typename T>
+ListNode<T>::ListNode(T&& value)
+    : m_value{ move(value) } {
+}
+
+} /* namespace Details */
+
 template<typename T>
 List<T>::List(List&& rhs) noexcept
     : m_head_node{ exchange(rhs.m_head_node, nullptr) }
@@ -438,94 +532,5 @@ T const& List<T>::last() const {
     return m_tail_node->m_value;
 }
 
-namespace Details {
-
-template<typename Collection, typename T>
-ListIterator<Collection, T>::ListIterator(Collection& collection)
-    : m_collection{ &collection } {
-}
-
-template<typename Collection, typename T>
-ListIterator<Collection, T>::ListIterator(Collection& collection, typename Collection::Node* node)
-    : m_collection{ &collection }
-    , m_current_node{ node } {
-}
-
-template<typename Collection, typename T>
-ListIterator<Collection, T>& ListIterator<Collection, T>::operator++() {
-    if ( m_current_node != nullptr )
-        m_current_node = m_current_node->m_next_node;
-    return *this;
-}
-
-template<typename Collection, typename T>
-ListIterator<Collection, T> ListIterator<Collection, T>::operator++(int) {
-    ListIterator it{ *this };
-
-    operator++();
-    return it;
-}
-
-template<typename Collection, typename T>
-T& ListIterator<Collection, T>::operator*() {
-    VERIFY_NOT_NULL(m_current_node);
-    return m_current_node->m_value;
-}
-
-template<typename Collection, typename T>
-T const& ListIterator<Collection, T>::operator*() const {
-    VERIFY_NOT_NULL(m_current_node);
-    return m_current_node->m_value;
-}
-
-template<typename Collection, typename T>
-T* ListIterator<Collection, T>::operator->() {
-    return &operator*();
-}
-
-template<typename Collection, typename T>
-T const* ListIterator<Collection, T>::operator->() const {
-    return &operator*();
-}
-
-template<typename Collection, typename T>
-ListIterator<Collection, T> ListIterator<Collection, T>::erase() {
-    ListIterator it{ *this };
-    ++it;
-
-    m_collection->erase(*this);
-    return it;
-}
-
-template<typename Collection, typename T>
-bool ListIterator<Collection, T>::is_end() const {
-    return m_current_node == nullptr;
-}
-
-template<typename Collection, typename T>
-bool ListIterator<Collection, T>::operator==(const ListIterator& rhs) const {
-    return m_current_node == rhs.m_current_node;
-}
-
-template<typename Collection, typename T>
-bool ListIterator<Collection, T>::operator!=(const ListIterator& rhs) const {
-    return m_current_node != rhs.m_current_node;
-}
-
-template<typename Collection, typename T>
-void ListIterator<Collection, T>::delete_node() {
-    delete m_current_node;
-    m_current_node = nullptr;
-}
-
-template<typename T>
-ListNode<T>::ListNode(T&& value)
-    : m_value{ move(value) } {
-}
-
-} /* namespace Details */
 } /* namespace Collection */
-
-using Collection::List;
-
 } /* namespace TC */

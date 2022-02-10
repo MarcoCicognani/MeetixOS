@@ -77,20 +77,20 @@ private:
 };
 
 template<typename T, typename... Args>
-inline NonNullBox<T> make_box(Args&&... args) {
-    auto ptr = new (nothrow) T{ forward<Args>(args)... };
-    VERIFY_NOT_NULL(ptr);
-    return NonNullBox<T>{ NonNullBox<T>::Adopt, *ptr };
-}
+inline NonNullBox<T> make_box(Args&&... args);
 
 template<typename T, typename... Args>
-inline Functional::ErrorOr<NonNullBox<T>> try_make_box(Args&&... args) {
-    auto ptr = new (nothrow) T{ forward<Args>(args)... };
-    if ( ptr != nullptr )
-        return NonNullBox<T>{ NonNullBox<T>::Adopt, *ptr };
-    else
-        return ENOMEM;
-}
+inline Functional::ErrorOr<NonNullBox<T>> try_make_box(Args&&... args);
+
+} /* namespace Memory */
+
+using Memory::make_box;
+using Memory::NonNullBox;
+using Memory::try_make_box;
+
+/* ---------- Follows Implementation ---------- */
+
+namespace Memory {
 
 template<typename T>
 NonNullBox<T>::NonNullBox(AdoptTag, T& ref)
@@ -189,10 +189,21 @@ T const& NonNullBox<T>::as_ref() const {
     return *m_boxed_ptr;
 }
 
+template<typename T, typename... Args>
+NonNullBox<T> make_box(Args&&... args) {
+    auto ptr = new (nothrow) T{ forward<Args>(args)... };
+    VERIFY_NOT_NULL(ptr);
+    return NonNullBox<T>{ NonNullBox<T>::Adopt, *ptr };
+}
+
+template<typename T, typename... Args>
+inline Functional::ErrorOr<NonNullBox<T>> try_make_box(Args&&... args) {
+    auto ptr = new (nothrow) T{ forward<Args>(args)... };
+    if ( ptr != nullptr )
+        return NonNullBox<T>{ NonNullBox<T>::Adopt, *ptr };
+    else
+        return ENOMEM;
+}
+
 } /* namespace Memory */
-
-using Memory::make_box;
-using Memory::NonNullBox;
-using Memory::try_make_box;
-
 } /* namespace TC */

@@ -182,6 +182,14 @@ private:
     Option<E>  m_error_option{};
 };
 
+} /* namespace Functional */
+
+using Functional::Option;
+
+/* ---------- Follows Implementation ---------- */
+
+namespace Functional {
+
 template<typename T, typename E>
 Result<T, E>::Result(T const& value)
     : m_value_option{ value } {
@@ -437,7 +445,4 @@ bool Result<T&, E>::is_error() const {
 }
 
 } /* namespace Functional */
-
-using Functional::Result;
-
 } /* namespace TC */

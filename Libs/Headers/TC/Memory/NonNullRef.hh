@@ -78,20 +78,20 @@ private:
 };
 
 template<typename T, typename... Args>
-inline NonNullRef<T> make_ref(Args&&... args) {
-    auto ref_ptr = new (nothrow) T{ forward<Args>(args)... };
-    VERIFY_NOT_NULL(ref_ptr);
-    return NonNullRef<T>{ NonNullRef<T>::Adopt, *ref_ptr };
-}
+inline NonNullRef<T> make_ref(Args&&... args);
 
 template<typename T, typename... Args>
-inline ErrorOr<NonNullRef<T>> try_make_ref(Args&&... args) {
-    auto ref_ptr = new (nothrow) T{ forward<Args>(args)... };
-    if ( ref_ptr != nullptr )
-        return NonNullRef<T>{ NonNullRef<T>::Adopt, *ref_ptr };
-    else
-        return ENOMEM;
-}
+inline ErrorOr<NonNullRef<T>> try_make_ref(Args&&... args);
+
+} /* namespace Memory */
+
+using Memory::make_ref;
+using Memory::NonNullRef;
+using Memory::try_make_ref;
+
+/* ---------- Follows Implementation ---------- */
+
+namespace Memory {
 
 template<typename T>
 NonNullRef<T>::NonNullRef(NonNullRef::AdoptTag, T& ref)
@@ -223,10 +223,21 @@ T const& NonNullRef<T>::as_ref() const {
     return *m_shared_ptr;
 }
 
+template<typename T, typename... Args>
+inline NonNullRef<T> make_ref(Args&&... args) {
+    auto ref_ptr = new (nothrow) T{ forward<Args>(args)... };
+    VERIFY_NOT_NULL(ref_ptr);
+    return NonNullRef<T>{ NonNullRef<T>::Adopt, *ref_ptr };
+}
+
+template<typename T, typename... Args>
+inline ErrorOr<NonNullRef<T>> try_make_ref(Args&&... args) {
+    auto ref_ptr = new (nothrow) T{ forward<Args>(args)... };
+    if ( ref_ptr != nullptr )
+        return NonNullRef<T>{ NonNullRef<T>::Adopt, *ref_ptr };
+    else
+        return ENOMEM;
+}
+
 } /* namespace Memory */
-
-using Memory::make_ref;
-using Memory::NonNullRef;
-using Memory::try_make_ref;
-
 } /* namespace TC */

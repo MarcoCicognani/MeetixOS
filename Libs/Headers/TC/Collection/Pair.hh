@@ -45,6 +45,14 @@ private:
     T m_value{};
 };
 
+} /* namespace Collection */
+
+using Collection::Pair;
+
+/* ---------- Follows Implementation ---------- */
+
+namespace Collection {
+
 template<typename K, typename T>
 Pair<K, T>::Pair(K const& key, T const& value)
     : m_key{ key }
@@ -78,7 +86,4 @@ T const& Pair<K, T>::value() const {
 }
 
 } /* namespace Collection */
-
-using Collection::Pair;
-
 } /* namespace TC */
