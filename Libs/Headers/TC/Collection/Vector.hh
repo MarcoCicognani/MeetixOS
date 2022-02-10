@@ -100,7 +100,7 @@ public:
     /**
      * @brief Constructors
      */
-    explicit Vector();
+    explicit Vector() = default;
     explicit Vector(usize capacity);
     explicit Vector(AdoptTag, T* data_storage, usize size);
 
@@ -273,11 +273,6 @@ private:
     usize m_data_capacity{ 0 };
     usize m_values_count{ 0 };
 };
-
-template<typename T>
-Vector<T>::Vector()
-    : Vector(16) {
-}
 
 template<typename T>
 Vector<T>::Vector(usize capacity) {
@@ -672,7 +667,7 @@ ErrorOr<void> Vector<T>::try_ensure_capacity(usize capacity) {
         new_capacity = capacity + capacity / 4;
 
     /* allocate new memory and move the content into it */
-    auto new_data_storage = TRY(Memory::Raw::clean_alloc<T>(new_capacity));
+    auto new_data_storage = TRY(Memory::Raw::clean_alloc_array<T>(new_capacity));
     if constexpr ( Trait::TypeIntrinsics<T>::is_trivial() )
         __builtin_memmove(new_data_storage, m_data_storage, m_values_count * sizeof(T));
     else {
