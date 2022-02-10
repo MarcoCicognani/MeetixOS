@@ -13,10 +13,7 @@
 #pragma once
 
 #include <Api/Common.h>
-#include <TC/Cxx/Exchange.hh>
-#include <TC/Cxx/Forward.hh>
-#include <TC/Cxx/New.hh>
-#include <TC/Cxx/Swap.hh>
+#include <TC/Cxx.hh>
 #include <TC/DenyCopy.hh>
 #include <TC/Functional/ErrorOr.hh>
 #include <TC/Memory/NonNullRef.hh>

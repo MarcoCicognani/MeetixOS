@@ -11,7 +11,7 @@
  */
 
 #include <TC/Collection/Vector.hh>
-#include <TC/Cxx/Move.hh>
+#include <TC/Cxx.hh>
 #include <TC/IntTypes.hh>
 #include <TC/Memory/NonNullBox.hh>
 #include <UnitTest/Assertions.hh>

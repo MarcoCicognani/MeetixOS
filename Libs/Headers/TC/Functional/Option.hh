@@ -13,10 +13,7 @@
 #pragma once
 
 #include <TC/Assertions.hh>
-#include <TC/Cxx/Exchange.hh>
-#include <TC/Cxx/Move.hh>
-#include <TC/Cxx/New.hh>
-#include <TC/Cxx/NullPtr.hh>
+#include <TC/Cxx.hh>
 #include <TC/IntTypes.hh>
 
 namespace TC {

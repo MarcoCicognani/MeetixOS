@@ -14,11 +14,7 @@
 
 #include <Api/Common.h>
 #include <TC/Assertions.hh>
-#include <TC/Cxx/Exchange.hh>
-#include <TC/Cxx/Forward.hh>
-#include <TC/Cxx/Move.hh>
-#include <TC/Cxx/New.hh>
-#include <TC/Cxx/Swap.hh>
+#include <TC/Cxx.hh>
 #include <TC/Functional/ErrorOr.hh>
 
 namespace TC {

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <TC/Cxx/Move.hh>
+#include <TC/Cxx.hh>
 #include <TC/DenyCopy.hh>
 #include <TC/DenyMove.hh>
 #include <TC/IntTypes.hh>

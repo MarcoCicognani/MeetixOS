@@ -16,9 +16,7 @@
 #include <TC/Assertions.hh>
 #include <TC/Collection/Pair.hh>
 #include <TC/Collection/Vector.hh>
-#include <TC/Cxx/Exchange.hh>
-#include <TC/Cxx/Move.hh>
-#include <TC/Cxx/New.hh>
+#include <TC/Cxx.hh>
 #include <TC/Functional/ErrorOr.hh>
 #include <TC/Functional/Option.hh>
 #include <TC/Trait/TypeIntrinsics.hh>

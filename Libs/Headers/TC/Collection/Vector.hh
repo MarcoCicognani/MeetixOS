@@ -14,11 +14,7 @@
 
 #include <initializer_list>
 #include <TC/Assertions.hh>
-#include <TC/Cxx/Exchange.hh>
-#include <TC/Cxx/Forward.hh>
-#include <TC/Cxx/Move.hh>
-#include <TC/Cxx/New.hh>
-#include <TC/Cxx/Swap.hh>
+#include <TC/Cxx.hh>
 #include <TC/Functional/ErrorOr.hh>
 #include <TC/Functional/Must.hh>
 #include <TC/Functional/Try.hh>
