@@ -25,11 +25,23 @@ namespace TC::Memory::Raw {
 #ifdef IN_KERNEL
 
 template<typename T>
-Functional::ErrorOr<T*> clean_alloc(usize object_count) {
+ErrorOr<T*> clean_alloc_array(usize object_count) {
     auto start_ptr = KernelHeap::allocate(sizeof(T) * object_count);
     if ( start_ptr != nullptr ) {
-        __builtin_memset(start_ptr, sizeof(T), object_count);
+        __builtin_memset(start_ptr, 0, object_count * sizeof(T));
         return reinterpret_cast<T*>(start_ptr);
+    } else
+        return ENOMEM;
+}
+
+template<typename T>
+ErrorOr<T*> clean_alloc_object(usize custom_size = sizeof(T)) {
+    VERIFY_GREATER_EQUAL(custom_size, sizeof(T));
+
+    auto object_ptr = KernelHeap::allocate(custom_size);
+    if ( object_ptr != nullptr ) {
+        __builtin_memset(object_ptr, 0, custom_size);
+        return reinterpret_cast<T*>(object_ptr);
     } else
         return ENOMEM;
 }
@@ -42,10 +54,21 @@ void free_sized(T* object_start, usize) {
 #else
 
 template<typename T>
-Functional::ErrorOr<T*> clean_alloc(usize object_count) {
+ErrorOr<T*> clean_alloc_array(usize object_count) {
     auto start_ptr = reinterpret_cast<T*>(calloc(sizeof(T), object_count));
     if ( start_ptr != nullptr )
         return start_ptr;
+    else
+        return ENOMEM;
+}
+
+template<typename T>
+ErrorOr<T*> clean_alloc_object(usize custom_size = sizeof(T)) {
+    VERIFY_GREATER_EQUAL(custom_size, sizeof(T));
+
+    auto object_ptr = reinterpret_cast<T*>(calloc(custom_size, 1));
+    if ( object_ptr != nullptr )
+        return object_ptr;
     else
         return ENOMEM;
 }
