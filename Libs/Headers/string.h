@@ -21,11 +21,12 @@ extern "C" {
 
 /* ------------------------------------ C function prototypes ----------------------------------- */
 
-void* memcpy(void*, const void*, usize);
-void* memmove(void*, const void*, usize);
-void* memset(void*, int, usize);
-int   memcmp(const void*, const void*, usize);
-void* memchr(const void*, int, usize);
+void*       memcpy(void*, const void*, usize);
+void*       memmove(void*, const void*, usize);
+void*       memset(void*, int, usize);
+int         memcmp(const void*, const void*, usize);
+void*       memchr(const void*, int, usize);
+const void* memmem(const void*, usize, const void*, usize);
 
 char* strcpy(char*, const char*);
 char* strncpy(char*, const char*, usize);

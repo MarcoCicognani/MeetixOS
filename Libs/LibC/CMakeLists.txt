@@ -411,6 +411,7 @@ add_library(LibC
         string/memcpy.cc
         string/strdup.cc
         string/memset.cc
+        string/memmem.cc
         string/strncpy.cc
         string/strcpy.cc
         string/strlen.cc
