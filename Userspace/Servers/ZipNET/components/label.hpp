@@ -28,8 +28,8 @@
 #include <components/ColoredComponent.hpp>
 #include <components/component.hpp>
 #include <components/TitledComponent.hpp>
-#include <Graphics/Text/Alignment.hh>
-#include <Graphics/Text/Font.hh>
+#include <LibGraphics/Text/Alignment.hh>
+#include <LibGraphics/Text/Font.hh>
 
 /**
  *
@@ -50,9 +50,7 @@ private:
 
 public:
     Label_t();
-    virtual ~Label_t() {
-        delete font;
-    }
+    virtual ~Label_t() { delete font; }
 
     /*
      * Component
@@ -73,8 +71,7 @@ public:
     /*
      * colored component
      */
-    virtual void setColor(Graphics::Color::ArgbGradient color,
-                          Graphics::Color::ArgbGradient tltColor) {
+    virtual void setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor) {
         shapeColor = tltColor;
     }
 

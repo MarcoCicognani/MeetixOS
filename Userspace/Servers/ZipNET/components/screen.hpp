@@ -26,7 +26,7 @@
 #define SCREEN_HPP_
 
 #include <components/component.hpp>
-#include <Graphics/Metrics/Rectangle.hh>
+#include <LibGraphics/Metrics/Rectangle.hh>
 
 /**
  *
@@ -42,8 +42,7 @@ public:
     /**
      *
      */
-    virtual ~Screen_t() {
-    }
+    virtual ~Screen_t() {}
 
     /**
      * Overrides the default invalidation method. On the component, this method

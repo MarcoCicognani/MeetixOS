@@ -24,7 +24,7 @@
 
 #include "Video.hpp"
 
-#include <Graphics/Video.hh>
+#include <LibGraphics/Video.hh>
 #include <sstream>
 #include <stdint.h>
 #include <stdio.h>

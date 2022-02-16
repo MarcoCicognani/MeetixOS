@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <Graphics/Metrics/Dimension.hh>
 #include <GUI/About.hh>
 #include <GUI/Application.hh>
 #include <GUI/Component/Geoshape.hh>
 #include <GUI/Component/Label.hh>
 #include <GUI/Component/Window.hh>
+#include <LibGraphics/Metrics/Dimension.hh>
 #include <LibUtils/Environment.hh>
 
 // interface object for about

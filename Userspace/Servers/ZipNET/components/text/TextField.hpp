@@ -28,8 +28,8 @@
 #include <components/ColoredComponent.hpp>
 #include <components/text/TextComponent.hpp>
 #include <components/TitledComponent.hpp>
-#include <Graphics/Metrics/Insets.hh>
-#include <Graphics/Text/Layouter.hh>
+#include <LibGraphics/Metrics/Insets.hh>
+#include <LibGraphics/Text/Layouter.hh>
 #include <LibIO/Keyboard.hh>
 #include <list>
 #include <string>

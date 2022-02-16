@@ -13,7 +13,7 @@
 #pragma once
 
 #include <cstdint>
-#include <Graphics/Metrics/Point.hh>
+#include <LibGraphics/Metrics/Point.hh>
 
 namespace Graphics::Metrics {
 
@@ -29,8 +29,9 @@ public:
      */
     Dimension()                 = default;
     Dimension(const Dimension&) = default;
-    Dimension(i32 width, i32 height) : m_width{ width }, m_height{ height } {
-    }
+    Dimension(i32 width, i32 height)
+        : m_width{ width }
+        , m_height{ height } {}
 
     /**
      * @brief Assignment operators
@@ -40,42 +41,26 @@ public:
     /**
      * @brief Comparison operators
      */
-    bool operator==(const Dimension& rhs) const {
-        return m_width == rhs.m_width && m_height == rhs.m_height;
-    }
-    bool operator!=(const Dimension& p) const {
-        return !(*this == p);
-    }
+    bool operator==(const Dimension& rhs) const { return m_width == rhs.m_width && m_height == rhs.m_height; }
+    bool operator!=(const Dimension& p) const { return !(*this == p); }
 
     /**
      * @brief Arithmetic operators
      */
-    Point operator-(const Dimension& rhs) const {
-        return { m_width - rhs.m_width, m_height - rhs.m_height };
-    }
-    Point operator+(const Dimension& rhs) const {
-        return { m_width + rhs.m_width, m_height + rhs.m_height };
-    }
+    Point operator-(const Dimension& rhs) const { return { m_width - rhs.m_width, m_height - rhs.m_height }; }
+    Point operator+(const Dimension& rhs) const { return { m_width + rhs.m_width, m_height + rhs.m_height }; }
 
     /**
      * @brief Get/Set for m_width
      */
-    [[nodiscard]] i32 width() const {
-        return m_width;
-    }
-    void set_width(i32 width) {
-        m_width = width;
-    }
+    [[nodiscard]] i32 width() const { return m_width; }
+    void              set_width(i32 width) { m_width = width; }
 
     /**
      * @brief Get/Set for m_height
      */
-    [[nodiscard]] i32 height() const {
-        return m_height;
-    }
-    void set_height(i32 height) {
-        m_height = height;
-    }
+    [[nodiscard]] i32 height() const { return m_height; }
+    void              set_height(i32 height) { m_height = height; }
 
 private:
     i32 m_width{ 0 };

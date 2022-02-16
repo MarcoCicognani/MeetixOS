@@ -21,7 +21,7 @@
 #include <Api/utils/local.hpp>
 #include <cstring>
 #include <deque>
-#include <Graphics/Metrics/Dimension.hh>
+#include <LibGraphics/Metrics/Dimension.hh>
 #include <GUI/Application.hh>
 #include <GUI/Component/ActionComponent.hh>
 #include <GUI/Component/Canvas.hh>

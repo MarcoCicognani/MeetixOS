@@ -11,7 +11,7 @@
  */
 
 #include <fstream>
-#include <Graphics/Text/FontLoader.hh>
+#include <LibGraphics/Text/FontLoader.hh>
 
 namespace Graphics::Text::FontLoader {
 

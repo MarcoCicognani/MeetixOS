@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <Graphics/Video.hh>
+#include <LibGraphics/Video.hh>
 #include <LibUtils/Utils.hh>
 
 namespace Graphics::Video {

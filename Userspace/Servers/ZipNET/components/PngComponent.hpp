@@ -19,7 +19,7 @@
 #ifndef _PNG_COMPONENT_
 #define _PNG_COMPONENT_
 
-#include <Graphics/Context.hh>
+#include <LibGraphics/Context.hh>
 #include <string>
 #include <zipNET.hpp>
 
@@ -39,8 +39,7 @@ public:
     /**
      *	destructor
      */
-    virtual ~PngComponent_t() {
-    }
+    virtual ~PngComponent_t() {}
 
     /**
      *	interface method to set png image from string and position

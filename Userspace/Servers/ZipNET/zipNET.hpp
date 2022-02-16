@@ -32,7 +32,7 @@
 #include "interface/CommandMessageResponderThread.hpp"
 #include "output/VideoOutput.hpp"
 
-#include <Graphics/Context.hh>
+#include <LibGraphics/Context.hh>
 
 /**
  *
@@ -92,7 +92,6 @@ public:
      *
      */
     void triggerRender();
-
 };
 
 #endif

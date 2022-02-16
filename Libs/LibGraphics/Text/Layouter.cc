@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <Graphics/Text/Layouter.hh>
+#include <LibGraphics/Text/Layouter.hh>
 #include <LibUtils/Utils.hh>
 
 namespace Graphics::Text {

@@ -12,7 +12,7 @@
 
 #include <cmath>
 #include <cstdint>
-#include <Graphics/Cairo.hh>
+#include <LibGraphics/Cairo.hh>
 
 namespace Graphics::Cairo {
 
@@ -135,12 +135,7 @@ void blur_surface(cairo_surface_t* surface, double radius) {
 /*
  * create a cairo rectangle with smussed angles
  */
-void rounded_rectangle(cairo_t* cr,
-                       double   x,
-                       double   y,
-                       double   width,
-                       double   height,
-                       double   radius) {
+void rounded_rectangle(cairo_t* cr, double x, double y, double width, double height, double radius) {
     double degrees = M_PI / 180.0;
     cairo_new_sub_path(cr);
     cairo_arc(cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);

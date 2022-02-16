@@ -17,13 +17,14 @@
 #include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/map"
 #include "../../Api.h"
 #include "../../Api/utils/local.hpp"
-#include "../../Graphics/Metrics/Rectangle.hh"
 #include "../Application.hh"
 #include "../Listener/MouseListener.hpp"
 #include "../Properties.hh"
 #include "../Protocol.hh"
 #include "BoundsEventComponent.hh"
 #include "ComponentRegistry.hh"
+
+#include <LibGraphics/Metrics/Rectangle.hh>
 
 /**
  *
@@ -38,16 +39,17 @@ protected:
      *
      */
     Component(UiComponentID id, UiComponentType tp)
-        : m_component_id(id), type(tp), BoundsEventComponent(this, id) {
-    }
+        : m_component_id(id)
+        , type(tp)
+        , BoundsEventComponent(this, id) {}
 
     /**
      *
      */
     template<typename ComponentType>
     struct Concrete : ComponentType {
-        Concrete(UiComponentID id) : ComponentType(id) {
-        }
+        Concrete(UiComponentID id)
+            : ComponentType(id) {}
     };
 
     /**
@@ -71,8 +73,7 @@ protected:
         Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
         if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-            UiCreateComponentResponse* response
-                = (UiCreateComponentResponse*)MESSAGE_CONTENT(buffer());
+            UiCreateComponentResponse* response = (UiCreateComponentResponse*)MESSAGE_CONTENT(buffer());
 
             // create the component
             UiComponentID id = response->id;
@@ -154,7 +155,5 @@ public:
     /**
      *
      */
-    [[nodiscard]] inline UiComponentID id() const {
-        return this->m_component_id;
-    }
+    [[nodiscard]] inline UiComponentID id() const { return this->m_component_id; }
 };

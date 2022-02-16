@@ -16,11 +16,11 @@
 #include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/string"
 #include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/vector"
 #include "../Api.h"
-#include "../Graphics/Color.hh"
-#include "../Graphics/Metrics/Dimension.hh"
-#include "../Graphics/Metrics/Rectangle.hh"
-#include "../Graphics/Text/Alignment.hh"
 
+#include <LibGraphics/Color.hh>
+#include <LibGraphics/Metrics/Dimension.hh>
+#include <LibGraphics/Metrics/Rectangle.hh>
+#include <LibGraphics/Text/Alignment.hh>
 #include <LibIO/Keyboard.hh>
 
 // namespace GUI::Protocol {

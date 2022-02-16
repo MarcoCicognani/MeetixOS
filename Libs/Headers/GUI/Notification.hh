@@ -1,20 +1,21 @@
 /**
-* @brief
-* This file is part of the MeetiX Operating System.
-* Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
-*
-* @developers
-* Marco Cicognani (marco.cicognani@meetixos.org)
-*
-* @license
-* GNU General Public License version 3
-*/
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
 #pragma once
 
 #include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/string"
 #include "../Api.h"
-#include "../Graphics/Color.hh"
+
+#include <LibGraphics/Color.hh>
 
 // max length of title
 #define MAX_TITLE_LENGTH 512
@@ -28,8 +29,7 @@
 /*
  * message animation
  */
-enum class MessageAnimation_t : uint8_t
-{
+enum class MessageAnimation_t : uint8_t {
     DARKENING,
     SIDE_SCROLL,
 };
@@ -67,10 +67,8 @@ public:
      */
     static void send(const std::string& title, const std::string& message);
     static void send(const std::string& title, const std::string& message, uint32_t sleep);
-    static void send(const std::string&            title,
-                     const std::string&            message,
-                     uint32_t                      sleep,
-                     Graphics::Color::ArgbGradient color);
+    static void
+    send(const std::string& title, const std::string& message, uint32_t sleep, Graphics::Color::ArgbGradient color);
 
     /*
      * send message to notification thread of UI

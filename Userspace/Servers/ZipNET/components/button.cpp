@@ -26,14 +26,16 @@
 #include <components/window.hpp>
 #include <events/FocusEvent.hpp>
 #include <events/MouseEvent.hpp>
-#include <Graphics/Text/Alignment.hh>
+#include <LibGraphics/Text/Alignment.hh>
 #include <GUI/Properties.hh>
 #include <math.h>
 
 /**
  *
  */
-Button_t::Button_t() : insets(Graphics::Metrics::Insets(0, 0, 0, 0)), ActionComponent_t(this) {
+Button_t::Button_t()
+    : insets(Graphics::Metrics::Insets(0, 0, 0, 0))
+    , ActionComponent_t(this) {
     enabled    = true;
     pathToLoad = false;
 
@@ -129,8 +131,7 @@ void Button_t::PngAnimation(std::string              path,
 /**
  *
  */
-void Button_t::setColor(Graphics::Color::ArgbGradient color,
-                        Graphics::Color::ArgbGradient tltColor) {
+void Button_t::setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor) {
     shapeColor = color;
 
     label.setFontColor(tltColor);
@@ -161,8 +162,7 @@ bool Button_t::handle(Event_t& event) {
                 markFor(COMPONENT_REQUIREMENT_PAINT);
             }
 
-            else if ( mouseEvent->type == MOUSE_EVENT_RELEASE
-                      || mouseEvent->type == MOUSE_EVENT_DRAG_RELEASE ) {
+            else if ( mouseEvent->type == MOUSE_EVENT_RELEASE || mouseEvent->type == MOUSE_EVENT_DRAG_RELEASE ) {
                 state.pressed = false;
                 markFor(COMPONENT_REQUIREMENT_PAINT);
 

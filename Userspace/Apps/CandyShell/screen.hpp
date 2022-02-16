@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * *
  * * * * */
 
-#include <Graphics/Color.hh>
+#include <LibGraphics/Color.hh>
 #include <LibIO/Keyboard.hh>
 #include <stdint.h>
 #include <string>

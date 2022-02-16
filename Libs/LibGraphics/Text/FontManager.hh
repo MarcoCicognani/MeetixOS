@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <Graphics/Text/Font.hh>
-#include <Graphics/Text/FreeType.hh>
+#include <LibGraphics/Text/Font.hh>
+#include <LibGraphics/Text/FreeType.hh>
 #include <LibTasking/Lock.hh>
 #include <map>
 #include <string>

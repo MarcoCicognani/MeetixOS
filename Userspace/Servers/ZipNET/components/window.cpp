@@ -28,8 +28,8 @@
 #include <events/FocusEvent.hpp>
 #include <events/KeyEvent.hpp>
 #include <events/MouseEvent.hpp>
-#include <Graphics/Cairo.hh>
-#include <Graphics/Text/FontManager.hh>
+#include <LibGraphics/Cairo.hh>
+#include <LibGraphics/Text/FontManager.hh>
 #include <GUI/Properties.hh>
 #include <math.h>
 #include <LibUtils/Environment.hh>

@@ -25,9 +25,9 @@
 #include "Screen.hh"
 
 #include <cairo/cairo.h>
-#include <Graphics/Text/Font.hh>
-#include <Graphics/Text/FontLoader.hh>
-#include <Graphics/Text/Layouter.hh>
+#include <LibGraphics/Text/Font.hh>
+#include <LibGraphics/Text/FontLoader.hh>
+#include <LibGraphics/Text/Layouter.hh>
 #include <GUI/Application.hh>
 #include <GUI/Component/Button.hh>
 #include <GUI/Component/Canvas.hh>

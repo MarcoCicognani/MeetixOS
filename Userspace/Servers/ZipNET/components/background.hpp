@@ -26,7 +26,7 @@
 #define __BACKGROUND__
 
 #include <components/component.hpp>
-#include <Graphics/Metrics/Rectangle.hh>
+#include <LibGraphics/Metrics/Rectangle.hh>
 
 /**
  *
@@ -37,16 +37,14 @@ public:
      * Instantiates a background that spans over the given bounds.
      */
     Background_t(Graphics::Metrics::Rectangle bounds);
-    virtual ~Background_t() {
-    }
+    virtual ~Background_t() {}
 
     /**
      * Components
      */
     virtual void paint();
     virtual bool handle(Event_t& e);
-    virtual void setFocus(bool focus) {
-    }
+    virtual void setFocus(bool focus) {}
 
     /*
      * Background

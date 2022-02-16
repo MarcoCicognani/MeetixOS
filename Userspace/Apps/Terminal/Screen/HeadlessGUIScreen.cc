@@ -14,9 +14,9 @@
 
 #include <cassert>
 #include <cstring>
-#include <Graphics/Color.hh>
-#include <Graphics/Text/FontLoader.hh>
-#include <Graphics/Video.hh>
+#include <LibGraphics/Color.hh>
+#include <LibGraphics/Text/FontLoader.hh>
+#include <LibGraphics/Video.hh>
 #include <LibTasking/LockGuard.hh>
 
 bool HeadlessGUIScreen::init() {

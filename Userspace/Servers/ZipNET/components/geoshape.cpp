@@ -24,8 +24,8 @@
 #include <events/FocusEvent.hpp>
 #include <events/KeyEvent.hpp>
 #include <events/MouseEvent.hpp>
-#include <Graphics/Color.hh>
-#include <Graphics/Text/FontManager.hh>
+#include <LibGraphics/Color.hh>
+#include <LibGraphics/Text/FontManager.hh>
 #include <GUI/Properties.hh>
 #include <math.h>
 #include <zipNET.hpp>
@@ -58,8 +58,7 @@ void Geoshape_t::layout() {
 
     label.setBounds(Graphics::Metrics::Rectangle(6, 3, layoutBounds.width() - 30, 25));
 
-    panel.setBounds(
-        Graphics::Metrics::Rectangle(0, 0, layoutBounds.width(), layoutBounds.height()));
+    panel.setBounds(Graphics::Metrics::Rectangle(0, 0, layoutBounds.width(), layoutBounds.height()));
     panel.setBackground(Graphics::Color::as_argb(0, 0, 0, 0));
 }
 
@@ -146,8 +145,7 @@ void Geoshape_t::PngAnimation(std::string              path,
 /**
  *
  */
-void Geoshape_t::setColor(Graphics::Color::ArgbGradient color,
-                          Graphics::Color::ArgbGradient tltColor) {
+void Geoshape_t::setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor) {
     shapeColor = color;
 
     label.setFontColor(tltColor);

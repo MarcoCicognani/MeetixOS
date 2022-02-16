@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <Graphics/Text/FontManager.hh>
+#include <LibGraphics/Text/FontManager.hh>
 #include <LibTasking/LockGuard.hh>
 #include <LibUtils/Utils.hh>
 

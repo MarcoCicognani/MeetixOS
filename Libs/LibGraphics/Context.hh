@@ -13,10 +13,10 @@
 #pragma once
 
 #include <cstdint>
-#include <Graphics/Cairo.hh>
-#include <Graphics/Metrics/Dimension.hh>
-#include <Graphics/Metrics/Point.hh>
-#include <Graphics/Metrics/Rectangle.hh>
+#include <LibGraphics/Cairo.hh>
+#include <LibGraphics/Metrics/Dimension.hh>
+#include <LibGraphics/Metrics/Point.hh>
+#include <LibGraphics/Metrics/Rectangle.hh>
 #include <string>
 
 namespace Graphics {
@@ -41,37 +41,27 @@ public:
     /**
      * @brief Blit this context into the given context
      */
-    void blit_to(Context*                  other_ctx,
-                 const Metrics::Rectangle& absolute_clip,
-                 const Metrics::Point&     position);
+    void blit_to(Context* other_ctx, const Metrics::Rectangle& absolute_clip, const Metrics::Point& position);
 
     /**
      * @brief Returns the inner cairo-context
      */
-    [[nodiscard]] cairo_t* cairo_context() const {
-        return m_context;
-    }
+    [[nodiscard]] cairo_t* cairo_context() const { return m_context; }
 
     /**
      * @brief Returns the inner cairo-surface
      */
-    [[nodiscard]] cairo_surface_t* cairo_surface() const {
-        return m_surface;
-    }
+    [[nodiscard]] cairo_surface_t* cairo_surface() const { return m_surface; }
 
     /**
      * @brief Returns the width of the context's surface
      */
-    [[nodiscard]] u32 width() const {
-        return m_width;
-    }
+    [[nodiscard]] u32 width() const { return m_width; }
 
     /**
      * @brief Returns the height of the context's surface
      */
-    [[nodiscard]] u32 height() const {
-        return m_height;
-    }
+    [[nodiscard]] u32 height() const { return m_height; }
 
 private:
     u32              m_width{ 0 };

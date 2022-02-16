@@ -25,12 +25,14 @@
 #include <cairo/cairo.h>
 #include <components/label.hpp>
 #include <events/MouseEvent.hpp>
-#include <Graphics/Text/FontLoader.hh>
+#include <LibGraphics/Text/FontLoader.hh>
 
 /**
  *
  */
-Label_t::Label_t() : Component_t(true), alignment(Graphics::Text::Alignment::LEFT) {
+Label_t::Label_t()
+    : Component_t(true)
+    , alignment(Graphics::Text::Alignment::LEFT) {
     type = UI_COMPONENT_TYPE_LABEL;
     setFont(Graphics::Text::FontLoader::get("default"));
     shapeColor = Graphics::Color::as_rgb(0, 0, 0);

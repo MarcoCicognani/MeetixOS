@@ -12,8 +12,8 @@
 
 #include <cstring>
 #include <fstream>
-#include <Graphics/Text/Font.hh>
-#include <Graphics/Text/FontManager.hh>
+#include <LibGraphics/Text/Font.hh>
+#include <LibGraphics/Text/FontManager.hh>
 #include <sstream>
 #include <LibUtils/File.hh>
 #include <LibUtils/Utils.hh>

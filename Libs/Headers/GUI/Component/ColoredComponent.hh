@@ -14,10 +14,11 @@
 
 #include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdint"
 #include "../../Api.h"
-#include "../../Graphics/Color.hh"
 #include "../Application.hh"
 #include "../Protocol.hh"
 #include "Component.hh"
+
+#include <LibGraphics/Color.hh>
 
 /*
  *
@@ -27,10 +28,9 @@ private:
     uint32_t id;
 
 protected:
-    ColoredComponent(uint32_t id) : id(id) {
-    }
+    ColoredComponent(uint32_t id)
+        : id(id) {}
 
 public:
-    virtual bool set_color(Graphics::Color::ArgbGradient shapeColor,
-                          Graphics::Color::ArgbGradient titleColor);
+    virtual bool set_color(Graphics::Color::ArgbGradient shapeColor, Graphics::Color::ArgbGradient titleColor);
 };

@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <Graphics/Text/Font.hh>
+#include <LibGraphics/Text/Font.hh>
 #include <string>
 
 namespace Graphics::Text::FontLoader {

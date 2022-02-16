@@ -31,7 +31,7 @@
 #include <cstdio>
 #include <events/MouseEvent.hpp>
 #include <fstream>
-#include <Graphics/Metrics/Point.hh>
+#include <LibGraphics/Metrics/Point.hh>
 #include <GUI/Protocol.hh>
 #include <map>
 #include <sstream>

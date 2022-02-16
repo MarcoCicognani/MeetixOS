@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <Graphics/Metrics/Dimension.hh>
-#include <Graphics/Metrics/Point.hh>
-#include <Graphics/Metrics/Rectangle.hh>
-#include <Graphics/Text/Alignment.hh>
-#include <Graphics/Text/Font.hh>
+#include <LibGraphics/Metrics/Dimension.hh>
+#include <LibGraphics/Metrics/Point.hh>
+#include <LibGraphics/Metrics/Rectangle.hh>
+#include <LibGraphics/Text/Alignment.hh>
+#include <LibGraphics/Text/Font.hh>
 #include <vector>
 
 namespace Graphics::Text {
@@ -43,9 +43,12 @@ public:
                     const Graphics::Metrics::Point&     advance,
                     cairo_glyph_t*                      cairo_glyph,
                     i32                                 cairo_glyph_count)
-        : m_line{ line }, m_position{ position }, m_size{ size }, m_advance{ advance },
-          m_cairo_glyph{ cairo_glyph }, m_cairo_glyph_count{ cairo_glyph_count } {
-    }
+        : m_line{ line }
+        , m_position{ position }
+        , m_size{ size }
+        , m_advance{ advance }
+        , m_cairo_glyph{ cairo_glyph }
+        , m_cairo_glyph_count{ cairo_glyph_count } {}
 };
 
 /**
@@ -69,9 +72,11 @@ public:
              i32                                 glyph_count,
              cairo_text_cluster_t*               cairo_text_cluster,
              i32                                 cluster_count)
-        : m_text_bounds{ text_bounds }, m_cairo_glyph{ cairo_glyph }, m_glyph_count{ glyph_count },
-          m_cairo_text_cluster{ cairo_text_cluster }, m_cluster_count{ cluster_count } {
-    }
+        : m_text_bounds{ text_bounds }
+        , m_cairo_glyph{ cairo_glyph }
+        , m_glyph_count{ glyph_count }
+        , m_cairo_text_cluster{ cairo_text_cluster }
+        , m_cluster_count{ cluster_count } {}
 };
 
 /**
@@ -112,15 +117,9 @@ private:
      */
     Layouter() = default;
 
-    void right_align(Layouted*                     layouted_text,
-                     usize                         line,
-                     usize                         width,
-                     Graphics::Metrics::Rectangle& bounds);
+    void right_align(Layouted* layouted_text, usize line, usize width, Graphics::Metrics::Rectangle& bounds);
 
-    void center_align(Layouted*                     layouted_text,
-                      usize                         line,
-                      usize                         width,
-                      Graphics::Metrics::Rectangle& bounds);
+    void center_align(Layouted* layouted_text, usize line, usize width, Graphics::Metrics::Rectangle& bounds);
 };
 
 } /* namespace Graphics::Text */

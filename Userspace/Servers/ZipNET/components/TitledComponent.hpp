@@ -25,7 +25,7 @@
 #ifndef __TITLED_COMPONENT__
 #define __TITLED_COMPONENT__
 
-#include <Graphics/Text/Alignment.hh>
+#include <LibGraphics/Text/Alignment.hh>
 #include <string>
 
 /**
@@ -36,8 +36,7 @@ public:
     /**
      *
      */
-    virtual ~TitledComponent_t() {
-    }
+    virtual ~TitledComponent_t() {}
 
     /**
      *

@@ -28,8 +28,8 @@
 #include <components/BoundsEventComponent.hpp>
 #include <components/EventListenerInfo.hpp>
 #include <events/event.hpp>
-#include <Graphics/Context.hh>
-#include <Graphics/Metrics/Rectangle.hh>
+#include <LibGraphics/Context.hh>
+#include <LibGraphics/Metrics/Rectangle.hh>
 #include <GUI/Protocol.hh>
 #include <layout/LayoutManager.hpp>
 #include <map>

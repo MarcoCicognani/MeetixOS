@@ -25,9 +25,9 @@
 #ifndef __VIDEO_OUTPUT__
 #define __VIDEO_OUTPUT__
 
-#include <Graphics/Color.hh>
-#include <Graphics/Metrics/Dimension.hh>
-#include <Graphics/Metrics/Rectangle.hh>
+#include <LibGraphics/Color.hh>
+#include <LibGraphics/Metrics/Dimension.hh>
+#include <LibGraphics/Metrics/Rectangle.hh>
 
 /**
  * The video output is the abstract interface that the window server uses to
@@ -35,8 +35,7 @@
  */
 class VideoOutput_t {
 public:
-    virtual ~VideoOutput_t() {
-    }
+    virtual ~VideoOutput_t() {}
 
     /**
      * Initializes the video mode implementation.

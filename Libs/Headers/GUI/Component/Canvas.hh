@@ -13,9 +13,10 @@
 #pragma once
 
 #include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdint"
-#include "../../Graphics/Context.hh"
 #include "../Listener/CanvasBufferListener.hh"
 #include "Component.hh"
+
+#include <LibGraphics/Context.hh>
 
 /**
  *
@@ -45,9 +46,11 @@ protected:
      *
      */
     Canvas(uint32_t id)
-        : graphics(0), Component(id, UI_COMPONENT_TYPE_CANVAS), currentBuffer(0), nextBuffer(0),
-          userListener(0) {
-    }
+        : graphics(0)
+        , Component(id, UI_COMPONENT_TYPE_CANVAS)
+        , currentBuffer(0)
+        , nextBuffer(0)
+        , userListener(0) {}
 
 public:
     virtual ~Canvas();
@@ -75,7 +78,5 @@ public:
     /*
      *
      */
-    void set_buffer_listener(CanvasBufferListener* l) {
-        userListener = l;
-    }
+    void set_buffer_listener(CanvasBufferListener* l) { userListener = l; }
 };

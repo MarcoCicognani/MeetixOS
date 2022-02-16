@@ -32,8 +32,8 @@
 #include <components/label.hpp>
 #include <components/PngComponent.hpp>
 #include <components/TitledComponent.hpp>
-#include <Graphics/Metrics/Insets.hh>
-#include <Graphics/Text/Font.hh>
+#include <LibGraphics/Metrics/Insets.hh>
+#include <LibGraphics/Text/Font.hh>
 #include <string>
 
 /**
@@ -61,8 +61,7 @@ public:
      *
      */
     Button_t();
-    virtual ~Button_t() {
-    }
+    virtual ~Button_t() {}
 
     /*
      * Component
@@ -70,9 +69,7 @@ public:
     virtual void layout();
     virtual void paint();
     virtual bool handle(Event_t& e);
-    Label_t&     getLabel() {
-        return label;
-    }
+    Label_t&     getLabel() { return label; }
     virtual void setFocus(bool focus);
     virtual void handleBoundChange(Graphics::Metrics::Rectangle oldBounds);
     virtual bool getNumericProperty(int property, uint32_t* out);
@@ -99,8 +96,7 @@ public:
     /*
      * colored component
      */
-    virtual void setColor(Graphics::Color::ArgbGradient color,
-                          Graphics::Color::ArgbGradient tltColor);
+    virtual void setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor);
 };
 
 #endif

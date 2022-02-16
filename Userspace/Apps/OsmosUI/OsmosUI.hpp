@@ -19,7 +19,7 @@
 #ifndef _OsmosUI_
 #define _OsmosUI_
 
-#include <Graphics/Metrics/Dimension.hh>
+#include <LibGraphics/Metrics/Dimension.hh>
 #include <GUI/About.hh>
 #include <GUI/Application.hh>
 #include <GUI/ButtonList.hh>

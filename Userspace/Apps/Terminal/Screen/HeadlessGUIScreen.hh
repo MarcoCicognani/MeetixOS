@@ -15,10 +15,10 @@
 #include "Screen.hh"
 
 #include <cairo/cairo.h>
-#include <Graphics/Color.hh>
-#include <Graphics/Context.hh>
-#include <Graphics/Text/Font.hh>
-#include <Graphics/Video.hh>
+#include <LibGraphics/Color.hh>
+#include <LibGraphics/Context.hh>
+#include <LibGraphics/Text/Font.hh>
+#include <LibGraphics/Video.hh>
 #include <LibTasking/Lock.hh>
 #include <LibTasking/Thread.hh>
 #include <LibUtils/Utils.hh>

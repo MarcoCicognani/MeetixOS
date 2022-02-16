@@ -14,7 +14,7 @@
 
 #include <cairo/cairo-ft.h>
 #include <cairo/cairo.h>
-#include <Graphics/Text/FreeType.hh>
+#include <LibGraphics/Text/FreeType.hh>
 #include <map>
 #include <string>
 
@@ -51,23 +51,17 @@ public:
     /**
      * @brief Returns whether this font is correctly loaded
      */
-    [[nodiscard]] bool is_loaded() const {
-        return m_is_loaded;
-    }
+    [[nodiscard]] bool is_loaded() const { return m_is_loaded; }
 
     /**
      * @brief Returns the name of this font
      */
-    [[nodiscard]] const std::string& name() const {
-        return m_name;
-    }
+    [[nodiscard]] const std::string& name() const { return m_name; }
 
     /**
      * @brief Returns the cairo_font_face
      */
-    [[nodiscard]] cairo_font_face_t* cairo_font_face() const {
-        return m_cairo_font_face;
-    }
+    [[nodiscard]] cairo_font_face_t* cairo_font_face() const { return m_cairo_font_face; }
 
 private:
     u8*                m_data{ nullptr };

@@ -28,8 +28,8 @@
 #include <components/component.hpp>
 #include <components/text/CaretDirection.hpp>
 #include <components/text/move/CaretMoveStrategy.hpp>
-#include <Graphics/Metrics/Range.hh>
-#include <Graphics/Text/Font.hh>
+#include <LibGraphics/Metrics/Range.hh>
+#include <LibGraphics/Text/Font.hh>
 
 /**
  *
@@ -39,8 +39,7 @@ protected:
     CaretMoveStrategy_t* caretMoveStrategy;
 
 public:
-    virtual ~TextComponent_t() {
-    }
+    virtual ~TextComponent_t() {}
 
     /**
      *

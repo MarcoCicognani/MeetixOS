@@ -27,7 +27,7 @@
 
 #include "ConfigurationBasedVideoOutput.hpp"
 
-#include <Graphics/Video.hh>
+#include <LibGraphics/Video.hh>
 
 /**
  *

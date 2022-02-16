@@ -28,8 +28,8 @@
 #include <events/FocusEvent.hpp>
 #include <events/KeyEvent.hpp>
 #include <events/MouseEvent.hpp>
-#include <Graphics/Text/FontLoader.hh>
-#include <Graphics/Text/FontManager.hh>
+#include <LibGraphics/Text/FontLoader.hh>
+#include <LibGraphics/Text/FontManager.hh>
 #include <GUI/Properties.hh>
 #include <sstream>
 
@@ -37,10 +37,17 @@
  *
  */
 TextField_t::TextField_t()
-    : cursor(0), marker(0), scrollX(0), secure(false), focused(false),
-      visualStatus(TextFieldVisualStatus_t::NORMAL), alignment(Graphics::Text::Alignment::CENTER),
-      fontSize(14), textColor(Graphics::Color::as_rgb(0, 0, 0)),
-      insets(Graphics::Metrics::Insets(5, 5, 5, 5)), ghost(false) {
+    : cursor(0)
+    , marker(0)
+    , scrollX(0)
+    , secure(false)
+    , focused(false)
+    , visualStatus(TextFieldVisualStatus_t::NORMAL)
+    , alignment(Graphics::Text::Alignment::CENTER)
+    , fontSize(14)
+    , textColor(Graphics::Color::as_rgb(0, 0, 0))
+    , insets(Graphics::Metrics::Insets(5, 5, 5, 5))
+    , ghost(false) {
     caretMoveStrategy = DefaultCaretMoveStrategy_t::getInstance();
     type              = UI_COMPONENT_TYPE_TEXTFIELD;
 
@@ -82,15 +89,14 @@ void TextField_t::update() {
             visibleText = visibleText + "*";
     }
 
-    Graphics::Text::Layouter::instance().layout(
-        graphics.cairo_context(),
-        visibleText.c_str(),
-        font,
-        fontSize,
-        Graphics::Metrics::Rectangle(0, 0, bounds.width(), bounds.height()),
-        alignment,
-        viewModel,
-        false);
+    Graphics::Text::Layouter::instance().layout(graphics.cairo_context(),
+                                                visibleText.c_str(),
+                                                font,
+                                                fontSize,
+                                                Graphics::Metrics::Rectangle(0, 0, bounds.width(), bounds.height()),
+                                                alignment,
+                                                viewModel,
+                                                false);
     markFor(COMPONENT_REQUIREMENT_PAINT);
 }
 
@@ -138,16 +144,10 @@ void TextField_t::paint() {
         for ( auto& g : viewModel->m_positioned_glyphs ) {
             Graphics::Color::ArgbGradient color = textColor;
             if ( first != second && pos >= first && pos < second ) {
-                cairo_set_source_rgba(
-                    cr,
-                    ARGB_TO_CAIRO_PARAMS(Graphics::Color::as_argb(255, 0, 200, 0)));
+                cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(Graphics::Color::as_argb(255, 0, 200, 0)));
                 auto before = positionToCursorBounds(pos);
                 auto after  = positionToCursorBounds(pos + 1);
-                cairo_rectangle(cr,
-                                before.x(),
-                                before.y(),
-                                after.x() - before.x(),
-                                before.height());
+                cairo_rectangle(cr, before.x(), before.y(), after.x() - before.x(), before.height());
                 cairo_fill(cr);
 
                 color = Graphics::Color::as_argb(255, 255, 255, 255);
@@ -170,8 +170,7 @@ void TextField_t::paint() {
 
         cairo_save(cr);
         cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(color));
-        cairo_translate(cr,
-                        onView.x() - g.m_cairo_glyph->x,
+        cairo_translate(cr, onView.x() - g.m_cairo_glyph->x,
                         onView.y() - g.m_cairo_glyph->y); // TODO?
         cairo_glyph_path(cr, g.m_cairo_glyph, g.m_cairo_glyph_count);
         cairo_fill(cr);
@@ -201,8 +200,7 @@ void TextField_t::paint() {
 /**
  *
  */
-void TextField_t::setColor(Graphics::Color::ArgbGradient shapeColor,
-                           Graphics::Color::ArgbGradient titleColor) {
+void TextField_t::setColor(Graphics::Color::ArgbGradient shapeColor, Graphics::Color::ArgbGradient titleColor) {
     sColor    = shapeColor;
     textColor = titleColor;
 
@@ -391,10 +389,8 @@ bool TextField_t::handle(Event_t& event) {
             }
 
             else if ( mouseEvent->clickCount == 2 ) {
-                marker
-                    = caretMoveStrategy->calculateSkip(text, clickCursor, CaretDirection_t::LEFT);
-                cursor
-                    = caretMoveStrategy->calculateSkip(text, clickCursor, CaretDirection_t::RIGHT);
+                marker = caretMoveStrategy->calculateSkip(text, clickCursor, CaretDirection_t::LEFT);
+                cursor = caretMoveStrategy->calculateSkip(text, clickCursor, CaretDirection_t::RIGHT);
             }
 
             else {

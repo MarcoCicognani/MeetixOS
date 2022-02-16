@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <Graphics/Color.hh>
+#include <LibGraphics/Color.hh>
 
 namespace Graphics::Color {
 
