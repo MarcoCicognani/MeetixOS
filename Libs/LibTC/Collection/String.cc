@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -11,13 +11,13 @@
  */
 
 #include <ctype.h>
-#include <string.h>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringBuilder.hh>
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/Functional/Must.hh>
 #include <LibTC/Functional/Try.hh>
+#include <string.h>
 
 namespace TC::Collection {
 

@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -27,8 +27,7 @@ public:
     Thread() = default;
     Thread(const std::string& thread_name)
         : m_thread_id{ -1 }
-        , m_thread_name{ thread_name } {
-    }
+        , m_thread_name{ thread_name } {}
 
     virtual ~Thread();
 
@@ -40,9 +39,7 @@ public:
     /**
      * @brief Returns whether this thread is running
      */
-    [[nodiscard]] bool is_running() const {
-        return m_thread_id != -1;
-    }
+    [[nodiscard]] bool is_running() const { return m_thread_id != -1; }
 
 protected:
     /**

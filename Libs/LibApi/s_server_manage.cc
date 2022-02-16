@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -14,10 +14,8 @@
 
 #include <Api/User.h>
 
-ServerManageStatus s_server_manage(const char*         server_identifier,
-                                   ServerManageCommand manage_command,
-                                   void*               data_ptr,
-                                   usize               data_len) {
+ServerManageStatus
+s_server_manage(const char* server_identifier, ServerManageCommand manage_command, void* data_ptr, usize data_len) {
     SyscallServerManage callData;
     callData.identifier     = (char*)server_identifier;
     callData.buffer.command = manage_command;

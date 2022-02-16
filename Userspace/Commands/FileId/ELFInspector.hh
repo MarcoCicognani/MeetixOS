@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -17,8 +17,7 @@
 class ELFInspector : public Inspector {
 public:
     explicit ELFInspector(std::ifstream& stream)
-        : Inspector{ stream } {
-    }
+        : Inspector{ stream } {}
     ~ELFInspector() override = default;
 
     std::string inspection() override;

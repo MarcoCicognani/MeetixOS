@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -21,15 +21,12 @@
 #define __IS_CX(x)   (__IS_FP(x) && sizeof(x) == sizeof((x) + I))
 #define __IS_REAL(x) (__IS_FP(x) && 2 * sizeof(x) == sizeof((x) + I))
 
-#define __FLT(x) (__IS_REAL(x) && sizeof(x) == sizeof(float))
-#define __LDBL(x)                                                                                  \
-    (__IS_REAL(x) && sizeof(x) == sizeof(long double) && sizeof(long double) != sizeof(double))
+#define __FLT(x)  (__IS_REAL(x) && sizeof(x) == sizeof(float))
+#define __LDBL(x) (__IS_REAL(x) && sizeof(x) == sizeof(long double) && sizeof(long double) != sizeof(double))
 
-#define __FLTCX(x) (__IS_CX(x) && sizeof(x) == sizeof(float complex))
-#define __DBLCX(x) (__IS_CX(x) && sizeof(x) == sizeof(double complex))
-#define __LDBLCX(x)                                                                                \
-    (__IS_CX(x) && sizeof(x) == sizeof(long double complex)                                        \
-     && sizeof(long double) != sizeof(double))
+#define __FLTCX(x)  (__IS_CX(x) && sizeof(x) == sizeof(float complex))
+#define __DBLCX(x)  (__IS_CX(x) && sizeof(x) == sizeof(double complex))
+#define __LDBLCX(x) (__IS_CX(x) && sizeof(x) == sizeof(long double complex) && sizeof(long double) != sizeof(double))
 
 /* return type */
 
@@ -37,15 +34,14 @@
 #    define __type1(c, t)      __typeof__(*(0 ? (t*)0 : (void*)!(c)))
 #    define __type2(c, t1, t2) __typeof__(*(0 ? (__type1(c, t1)*)0 : (__type1(!(c), t2)*)0))
 #    define __RETCAST(x)       (__type2(__IS_FP(x), __typeof__(x), double))
-#    define __RETCAST_2(x, y)                                                                      \
-        (__type2(__IS_FP(x) && __IS_FP(y), __typeof__((x) + (y)), __typeof__((x) + (y) + 1.0)))
-#    define __RETCAST_3(x, y, z)                                                                   \
-        (__type2(__IS_FP(x) && __IS_FP(y) && __IS_FP(z),                                           \
-                 __typeof__((x) + (y) + (z)),                                                      \
+#    define __RETCAST_2(x, y)  (__type2(__IS_FP(x) && __IS_FP(y), __typeof__((x) + (y)), __typeof__((x) + (y) + 1.0)))
+#    define __RETCAST_3(x, y, z)                                                                                       \
+        (__type2(__IS_FP(x) && __IS_FP(y) && __IS_FP(z),                                                               \
+                 __typeof__((x) + (y) + (z)),                                                                          \
                  __typeof__((x) + (y) + (z) + 1.0)))
-#    define __RETCAST_REAL(x)                                                                      \
-        (__type2(__IS_FP(x) && sizeof((x) + I) == sizeof(float complex),                           \
-                 float,                                                                            \
+#    define __RETCAST_REAL(x)                                                                                          \
+        (__type2(__IS_FP(x) && sizeof((x) + I) == sizeof(float complex),                                               \
+                 float,                                                                                                \
                  __type2(sizeof((x) + 1.0 + I) == sizeof(double complex), double, long double)))
 #    define __RETCAST_CX(x) (__typeof__(__RETCAST(x) 0 + I))
 #else
@@ -60,49 +56,42 @@
 
 #define __tg_real_nocast(fun, x) (__FLT(x) ? fun##f(x) : __LDBL(x) ? fun##l(x) : fun(x))
 #define __tg_real(fun, x)        (__RETCAST(x) __tg_real_nocast(fun, x))
-#define __tg_real_2_1(fun, x, y)                                                                   \
-    (__RETCAST(x)(__FLT(x) ? fun##f(x, y) : __LDBL(x) ? fun##l(x, y) : fun(x, y)))
-#define __tg_real_2(fun, x, y)                                                                     \
-    (__RETCAST_2(x, y)(__FLT(x) && __FLT(y) ? fun##f(x, y)                                         \
-                       : __LDBL((x) + (y))  ? fun##l(x, y)                                         \
-                                            : fun(x, y)))
-#define __tg_complex(fun, x)                                                                       \
-    (__RETCAST_CX(x)(__FLTCX((x) + I) && __IS_FP(x) ? fun##f(x)                                    \
-                     : __LDBLCX((x) + I)            ? fun##l(x)                                    \
-                                                    : fun(x)))
-#define __tg_complex_retreal(fun, x)                                                               \
-    (__RETCAST_REAL(x)(__FLTCX((x) + I) && __IS_FP(x) ? fun##f(x)                                  \
-                       : __LDBLCX((x) + I)            ? fun##l(x)                                  \
-                                                      : fun(x)))
-#define __tg_real_complex(fun, x)                                                                  \
-    (__RETCAST(x)(__FLTCX(x)    ? c##fun##f(x)                                                     \
-                  : __DBLCX(x)  ? c##fun(x)                                                        \
-                  : __LDBLCX(x) ? c##fun##l(x)                                                     \
-                  : __FLT(x)    ? fun##f(x)                                                        \
-                  : __LDBL(x)   ? fun##l(x)                                                        \
+#define __tg_real_2_1(fun, x, y) (__RETCAST(x)(__FLT(x) ? fun##f(x, y) : __LDBL(x) ? fun##l(x, y) : fun(x, y)))
+#define __tg_real_2(fun, x, y)                                                                                         \
+    (__RETCAST_2(x, y)(__FLT(x) && __FLT(y) ? fun##f(x, y) : __LDBL((x) + (y)) ? fun##l(x, y) : fun(x, y)))
+#define __tg_complex(fun, x)                                                                                           \
+    (__RETCAST_CX(x)(__FLTCX((x) + I) && __IS_FP(x) ? fun##f(x) : __LDBLCX((x) + I) ? fun##l(x) : fun(x)))
+#define __tg_complex_retreal(fun, x)                                                                                   \
+    (__RETCAST_REAL(x)(__FLTCX((x) + I) && __IS_FP(x) ? fun##f(x) : __LDBLCX((x) + I) ? fun##l(x) : fun(x)))
+#define __tg_real_complex(fun, x)                                                                                      \
+    (__RETCAST(x)(__FLTCX(x)    ? c##fun##f(x)                                                                         \
+                  : __DBLCX(x)  ? c##fun(x)                                                                            \
+                  : __LDBLCX(x) ? c##fun##l(x)                                                                         \
+                  : __FLT(x)    ? fun##f(x)                                                                            \
+                  : __LDBL(x)   ? fun##l(x)                                                                            \
                                 : fun(x)))
-#define __tg_real_remquo(x, y, z)                                                                  \
-    (__RETCAST_2(x, y)(__FLT(x) && __FLT(y) ? remquof(x, y, z)                                     \
-                       : __LDBL((x) + (y))  ? remquol(x, y, z)                                     \
+#define __tg_real_remquo(x, y, z)                                                                                      \
+    (__RETCAST_2(x, y)(__FLT(x) && __FLT(y) ? remquof(x, y, z)                                                         \
+                       : __LDBL((x) + (y))  ? remquol(x, y, z)                                                         \
                                             : remquo(x, y, z)))
-#define __tg_real_fma(x, y, z)                                                                     \
-    (__RETCAST_3(x, y, z)(__FLT(x) && __FLT(y) && __FLT(z) ? fmaf(x, y, z)                         \
-                          : __LDBL((x) + (y) + (z))        ? fmal(x, y, z)                         \
+#define __tg_real_fma(x, y, z)                                                                                         \
+    (__RETCAST_3(x, y, z)(__FLT(x) && __FLT(y) && __FLT(z) ? fmaf(x, y, z)                                             \
+                          : __LDBL((x) + (y) + (z))        ? fmal(x, y, z)                                             \
                                                            : fma(x, y, z)))
-#define __tg_real_complex_pow(x, y)                                                                \
-    (__RETCAST_2(x, y)(__FLTCX((x) + (y)) && __IS_FP(x) && __IS_FP(y) ? cpowf(x, y)                \
-                       : __FLTCX((x) + (y))                           ? cpow(x, y)                 \
-                       : __DBLCX((x) + (y))                           ? cpow(x, y)                 \
-                       : __LDBLCX((x) + (y))                          ? cpowl(x, y)                \
-                       : __FLT(x) && __FLT(y)                         ? powf(x, y)                 \
-                       : __LDBL((x) + (y))                            ? powl(x, y)                 \
+#define __tg_real_complex_pow(x, y)                                                                                    \
+    (__RETCAST_2(x, y)(__FLTCX((x) + (y)) && __IS_FP(x) && __IS_FP(y) ? cpowf(x, y)                                    \
+                       : __FLTCX((x) + (y))                           ? cpow(x, y)                                     \
+                       : __DBLCX((x) + (y))                           ? cpow(x, y)                                     \
+                       : __LDBLCX((x) + (y))                          ? cpowl(x, y)                                    \
+                       : __FLT(x) && __FLT(y)                         ? powf(x, y)                                     \
+                       : __LDBL((x) + (y))                            ? powl(x, y)                                     \
                                                                       : pow(x, y)))
-#define __tg_real_complex_fabs(x)                                                                  \
-    (__RETCAST_REAL(x)(__FLTCX(x)    ? cabsf(x)                                                    \
-                       : __DBLCX(x)  ? cabs(x)                                                     \
-                       : __LDBLCX(x) ? cabsl(x)                                                    \
-                       : __FLT(x)    ? fabsf(x)                                                    \
-                       : __LDBL(x)   ? fabsl(x)                                                    \
+#define __tg_real_complex_fabs(x)                                                                                      \
+    (__RETCAST_REAL(x)(__FLTCX(x)    ? cabsf(x)                                                                        \
+                       : __DBLCX(x)  ? cabs(x)                                                                         \
+                       : __LDBLCX(x) ? cabsl(x)                                                                        \
+                       : __FLT(x)    ? fabsf(x)                                                                        \
+                       : __LDBL(x)   ? fabsl(x)                                                                        \
                                      : fabs(x)))
 
 #undef acos

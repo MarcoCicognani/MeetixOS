@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -17,9 +17,8 @@
 /**
  * @brief Shortcut to give to cairo argb params
  */
-#define ARGB_TO_CAIRO_PARAMS(argb)                                                                 \
-    Graphics::Color::red(argb), Graphics::Color::green(argb), Graphics::Color::blue(argb),         \
-        Graphics::Color::alpha(argb)
+#define ARGB_TO_CAIRO_PARAMS(argb)                                                                                     \
+    Graphics::Color::red(argb), Graphics::Color::green(argb), Graphics::Color::blue(argb), Graphics::Color::alpha(argb)
 
 namespace Graphics::Color {
 
@@ -33,8 +32,7 @@ using ArgbGradient = usize;
 /**
  * @brief Alpha channel gradients
  */
-enum AlphaGradient
-{
+enum AlphaGradient {
     ALPHA_OPAQUE,
     ALPHA_MASK,
     ALPHA_EMBEDDED,

@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -24,33 +24,23 @@ namespace Trait {
 
 template<typename T>
 struct TypeIntrinsics {
-    static constexpr bool is_trivial() {
-        return false;
-    }
+    static constexpr bool is_trivial() { return false; }
 };
 
 template<typename T>
     requires IsIntegral<T>
 struct TypeIntrinsics<T> {
-    static constexpr usize hash(T value) {
-        return integer_hash(value);
-    }
+    static constexpr usize hash(T value) { return integer_hash(value); }
 
-    static constexpr bool is_trivial() {
-        return true;
-    }
+    static constexpr bool is_trivial() { return true; }
 };
 
 template<typename T>
     requires IsPointer<T>
 struct TypeIntrinsics<T> {
-    static constexpr usize hash(T value) {
-        return pointer_hash(value);
-    }
+    static constexpr usize hash(T value) { return pointer_hash(value); }
 
-    static constexpr bool is_trivial() {
-        return true;
-    }
+    static constexpr bool is_trivial() { return true; }
 };
 
 } /* namespace Trait */

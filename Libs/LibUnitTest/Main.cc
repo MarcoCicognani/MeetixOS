@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
+#include <LibUnitTest/Suite.hh>
 #include <stdio.h>
 #include <stdlib.h>
-#include <LibUnitTest/Suite.hh>
 
 int main(int argc, char const* const* argv) {
     if ( argc == 0 || argv[0][0] == '\0' ) {

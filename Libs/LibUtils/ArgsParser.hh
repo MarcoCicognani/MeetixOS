@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -31,8 +31,7 @@ public:
     /**
      * @brief Describes how the parser must act when encounters an error
      */
-    enum class FailureBehavior
-    {
+    enum class FailureBehavior {
         PrintUsageAndExit,
         PrintUsage,
         Exit,
@@ -81,17 +80,12 @@ public:
     /**
      * @brief Constructors
      */
-    ArgsParser(const std::string_view& description,
-               u16                     version_major,
-               u16                     version_minor,
-               u16                     version_patch);
+    ArgsParser(const std::string_view& description, u16 version_major, u16 version_minor, u16 version_patch);
 
     /**
      * @brief Parses the command line given
      */
-    bool parse(int             argc,
-               const char**    argv,
-               FailureBehavior failure_behavior = FailureBehavior::PrintUsageAndExit);
+    bool parse(int argc, const char** argv, FailureBehavior failure_behavior = FailureBehavior::PrintUsageAndExit);
 
     /**
      * @brief Prints the program usage on the given stream
@@ -113,33 +107,19 @@ public:
                     const char*  long_name,
                     char         short_name,
                     const char*  value_name);
-    void add_option(u32&        value,
-                    const char* help_message,
-                    const char* long_name,
-                    char        short_name,
-                    const char* value_name);
-    void add_option(i32&        value,
-                    const char* help_message,
-                    const char* long_name,
-                    char        short_name,
-                    const char* value_name);
+    void
+    add_option(u32& value, const char* help_message, const char* long_name, char short_name, const char* value_name);
+    void
+    add_option(i32& value, const char* help_message, const char* long_name, char short_name, const char* value_name);
 
     /**
      * @brief Adds a positional argument to the parser
      */
     void add_positional_argument(PositionalArgument&& argument);
-    void add_positional_argument(std::string& value,
-                                 const char*  help_message,
-                                 const char*  name,
-                                 bool         is_required = true);
-    void add_positional_argument(u32&        value,
-                                 const char* help_message,
-                                 const char* name,
-                                 bool        is_required = true);
-    void add_positional_argument(i32&        value,
-                                 const char* help_message,
-                                 const char* name,
-                                 bool        is_required = true);
+    void
+    add_positional_argument(std::string& value, const char* help_message, const char* name, bool is_required = true);
+    void add_positional_argument(u32& value, const char* help_message, const char* name, bool is_required = true);
+    void add_positional_argument(i32& value, const char* help_message, const char* name, bool is_required = true);
     void add_positional_argument(std::vector<std::string>& value,
                                  const char*               help_message,
                                  const char*               name,
@@ -154,10 +134,8 @@ public:
 
 private:
     void construct_getopt_options(std::string& short_options, std::vector<option>& long_options);
-    bool parse_options(int                  argc,
-                       const char**         argv,
-                       const std::string&   short_options,
-                       std::vector<option>& long_options);
+    bool
+    parse_options(int argc, const char** argv, const std::string& short_options, std::vector<option>& long_options);
     bool count_cli_positional_arguments(int argc, u32 values_count_for_arg[]);
 
 private:

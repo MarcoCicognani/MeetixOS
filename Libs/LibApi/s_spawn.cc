@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -15,16 +15,12 @@
 #include <Api/User.h>
 #include <Api/utils/local.hpp>
 
-SpawnStatus
-s_spawn(const char* path, const char* args, const char* work_dir, SecurityLevel security_level) {
+SpawnStatus s_spawn(const char* path, const char* args, const char* work_dir, SecurityLevel security_level) {
     return s_spawn_poi(path, args, work_dir, security_level, nullptr, nullptr, nullptr);
 }
 
-SpawnStatus s_spawn_p(const char*   path,
-                      const char*   args,
-                      const char*   work_dir,
-                      SecurityLevel security_level,
-                      Pid*          out_pid) {
+SpawnStatus
+s_spawn_p(const char* path, const char* args, const char* work_dir, SecurityLevel security_level, Pid* out_pid) {
     return s_spawn_poi(path, args, work_dir, security_level, out_pid, nullptr, nullptr);
 }
 
@@ -62,8 +58,8 @@ SpawnStatus s_spawn_poi(const char*   path,
     auto request_buffer = Local{ new u8[message_len] };
 
     /* fill the request header */
-    auto request_ptr = request_buffer();
-    auto request_cmd = reinterpret_cast<SpawnCommandSpawnRequest*>(request_ptr);
+    auto request_ptr                        = request_buffer();
+    auto request_cmd                        = reinterpret_cast<SpawnCommandSpawnRequest*>(request_ptr);
     request_cmd->m_command_header.m_command = SPAWN_COMMAND_SPAWN_REQUEST;
     request_cmd->m_security_level           = security_level;
     request_cmd->m_path_len                 = path_len;
@@ -104,8 +100,7 @@ SpawnStatus s_spawn_poi(const char*   path,
         return SPAWN_STATUS_IO_ERROR;
 
     /* extract spawner response */
-    auto spawner_response
-        = reinterpret_cast<SpawnCommandSpawnResponse*>(MESSAGE_CONTENT(response_buffer()));
+    auto spawner_response = reinterpret_cast<SpawnCommandSpawnResponse*>(MESSAGE_CONTENT(response_buffer()));
     if ( spawner_response->m_spawn_status == SPAWN_STATUS_SUCCESSFUL ) {
         if ( out_pid )
             *out_pid = spawner_response->m_new_process_id;

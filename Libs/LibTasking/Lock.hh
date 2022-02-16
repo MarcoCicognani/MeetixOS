@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -27,9 +27,7 @@ public:
      * @brief Constructor and destructor
      */
     Lock() = default;
-    ~Lock() {
-        unlock();
-    }
+    ~Lock() { unlock(); }
 
     /**
      * @brief Locks the critical region
@@ -49,9 +47,7 @@ public:
     /**
      * @brief Returns whether the lock is in a locked state
      */
-    [[nodiscard]] bool is_locked() const {
-        return m_lock_atom;
-    }
+    [[nodiscard]] bool is_locked() const { return m_lock_atom; }
 
 private:
     bool m_lock_atom{ false };

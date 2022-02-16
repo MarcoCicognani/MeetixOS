@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -14,8 +14,7 @@
 
 #include <stdio.h>
 
-extern "C" int
-cbprintf(void* param, isize (*callback)(void*, const char*, usize), const char* format, ...) {
+extern "C" int cbprintf(void* param, isize (*callback)(void*, const char*, usize), const char* format, ...) {
     va_list va;
     va_start(va, format);
     auto res = vcbprintf(param, callback, format, va);

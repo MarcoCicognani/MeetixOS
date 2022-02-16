@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -19,10 +19,7 @@ void s_halt_machine(int mode) {
 
     SpawnerRequestHaltMachine request;
     request.m_command_header.m_command = mode;
-    s_send_message_t(spawnerTid,
-                     &request,
-                     sizeof(SpawnerRequestHaltMachine),
-                     s_get_message_tx_id());
+    s_send_message_t(spawnerTid, &request, sizeof(SpawnerRequestHaltMachine), s_get_message_tx_id());
 }
 
 void s_reboot_system() {

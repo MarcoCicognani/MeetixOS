@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -40,9 +40,7 @@ int fflush_write_unlocked(FILE* stream) {
     while ( done < total ) {
         /* call write implementation */
         auto written_bytes
-            = stream->m_impl_write(reinterpret_cast<void*>(stream->m_io_buffer + done),
-                                   total - done,
-                                   stream);
+            = stream->m_impl_write(reinterpret_cast<void*>(stream->m_io_buffer + done), total - done, stream);
 
         if ( !written_bytes ) {
             stream->m_flags |= FILE_FLAG_EOF;

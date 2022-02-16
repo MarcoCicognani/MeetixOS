@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -34,8 +34,7 @@ i64 s_flength_s(const char* path, bool follow_symlinks) {
 }
 
 i64 s_flength_ss(const char* path, bool follow_symlinks, FsLengthStatus* out_status) {
-    auto symlink_flag = follow_symlinks ? SYSCALL_FS_LENGTH_FOLLOW_SYMLINKS
-                                        : SYSCALL_FS_LENGTH_NOT_FOLLOW_SYMLINKS;
+    auto symlink_flag = follow_symlinks ? SYSCALL_FS_LENGTH_FOLLOW_SYMLINKS : SYSCALL_FS_LENGTH_NOT_FOLLOW_SYMLINKS;
 
     SyscallFsLength data{ symlink_flag | SYSCALL_FS_LENGTH_BY_PATH, path };
     do_syscall(SYSCALL_FS_LENGTH, (usize)&data);

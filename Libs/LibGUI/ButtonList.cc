@@ -1,21 +1,14 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
 #include <LibGUI/ButtonList.hh>
 
@@ -27,13 +20,11 @@ using namespace std;
 class GenericHandler : public ActionListener {
 public:
     // constructor, espected pointer to event function
-    GenericHandler(const std::function<void(void)>& handler) : handlerFunction(handler) {
-    }
+    GenericHandler(const std::function<void(void)>& handler)
+        : handlerFunction(handler) {}
 
     // ereditated function, called by event provider
-    virtual void handle_action() {
-        handlerFunction();
-    }
+    virtual void handle_action() { handlerFunction(); }
 
 private:
     std::function<void(void)> handlerFunction;
@@ -62,9 +53,7 @@ void ButtonList::add(const string& name, const std::function<void(void)>& btnEve
 /*
  * add method to add one button to list
  */
-void ButtonList::add(const string&                    name,
-                     Button*                          button,
-                     const std::function<void(void)>& btnEvent) {
+void ButtonList::add(const string& name, Button* button, const std::function<void(void)>& btnEvent) {
     // add parameters to internal maps
     buttons.insert({ name, button });
     handlers.insert({ name, new GenericHandler(btnEvent) });
@@ -161,9 +150,7 @@ void ButtonList::configure(const string& name, const Graphics::Metrics::Rectangl
 /*
  *
  */
-void ButtonList::configure(const string&                       name,
-                           const Graphics::Metrics::Rectangle& bounds,
-                           const string&                       title) {
+void ButtonList::configure(const string& name, const Graphics::Metrics::Rectangle& bounds, const string& title) {
     // call previous method
     configure(name, bounds);
 

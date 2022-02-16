@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -38,8 +38,11 @@ public:
 
         Info() = default;
         Info(i16 x, i16 y, bool button1, bool button2, bool button3)
-            : m_x{ x }, m_y{ y }, m_button1{ button1 }, m_button2{ button2 }, m_button3{ button3 } {
-        }
+            : m_x{ x }
+            , m_y{ y }
+            , m_button1{ button1 }
+            , m_button2{ button2 }
+            , m_button3{ button3 } {}
     };
 
     /**

@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -28,8 +28,7 @@ struct PThreadArgs {
     PThreadArgs(void* arg_ptr, pthread_t* pthread, PThreadFn user_routine)
         : m_arg_ptr{ arg_ptr }
         , m_pthread{ pthread }
-        , m_user_routine{ user_routine } {
-    }
+        , m_user_routine{ user_routine } {}
 };
 
 static A_NOINLINE void pthread_entry_point(PThreadArgs* pthread_args) {
@@ -37,10 +36,8 @@ static A_NOINLINE void pthread_entry_point(PThreadArgs* pthread_args) {
     delete pthread_args;
 }
 
-extern "C" int pthread_create(pthread_t*            pthread,
-                              const pthread_attr_t* pthread_attr,
-                              void* (*start_routine)(void*),
-                              void* arg_ptr) {
+extern "C" int
+pthread_create(pthread_t* pthread, const pthread_attr_t* pthread_attr, void* (*start_routine)(void*), void* arg_ptr) {
     if ( !pthread ) {
         errno = EINVAL;
         return -1;

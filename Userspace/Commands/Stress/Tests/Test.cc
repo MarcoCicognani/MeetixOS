@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -13,8 +13,8 @@
 #include "Tests/Test.hh"
 
 #include <iostream>
-#include <sstream>
 #include <LibUtils/Environment.hh>
+#include <sstream>
 
 namespace Tests {
 

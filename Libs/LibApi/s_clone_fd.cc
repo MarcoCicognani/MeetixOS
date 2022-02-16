@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -16,15 +16,11 @@ FileHandle s_clone_fd(FileHandle source_fd, Pid source_proc_id, Pid target_proc_
     return s_clone_fd_ts(source_fd, source_proc_id, -1, target_proc_id, 0);
 }
 
-FileHandle s_clone_fd_s(FileHandle       source_fd,
-                        Pid              source_proc_id,
-                        Pid              target_proc_id,
-                        FsCloneFdStatus* out_status) {
+FileHandle s_clone_fd_s(FileHandle source_fd, Pid source_proc_id, Pid target_proc_id, FsCloneFdStatus* out_status) {
     return s_clone_fd_ts(source_fd, source_proc_id, -1, target_proc_id, out_status);
 }
 
-FileHandle
-s_clone_fd_t(FileHandle source_fd, Pid source_proc_id, FileHandle target_fd, Pid target_proc_id) {
+FileHandle s_clone_fd_t(FileHandle source_fd, Pid source_proc_id, FileHandle target_fd, Pid target_proc_id) {
     return s_clone_fd_ts(source_fd, source_proc_id, target_fd, target_proc_id, 0);
 }
 

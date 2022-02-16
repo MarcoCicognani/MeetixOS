@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -23,8 +23,8 @@ public:
     virtual std::string inspection() = 0;
 
 protected:
-    explicit Inspector(std::ifstream& stream) : m_stream{ stream } {
-    }
+    explicit Inspector(std::ifstream& stream)
+        : m_stream{ stream } {}
 
 protected:
     std::ifstream& m_stream;

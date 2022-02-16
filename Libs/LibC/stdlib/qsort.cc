@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -24,8 +24,7 @@ static void swap(u8* x, u8* y, usize element_size) {
     }
 }
 
-static void
-sort(u8* arr, usize el_sz, int (*comparator)(const void*, const void*), usize begin, usize end) {
+static void sort(u8* arr, usize el_sz, int (*comparator)(const void*, const void*), usize begin, usize end) {
     if ( end > begin ) {
         auto pivot        = arr + begin;
         auto begin_offset = begin + el_sz;
@@ -48,9 +47,7 @@ sort(u8* arr, usize el_sz, int (*comparator)(const void*, const void*), usize be
     }
 }
 
-extern "C" void qsort(void* array,
-                      usize num_elements,
-                      usize element_size,
-                      int (*comparator)(const void*, const void*)) {
+extern "C" void
+qsort(void* array, usize num_elements, usize element_size, int (*comparator)(const void*, const void*)) {
     sort(reinterpret_cast<u8*>(array), element_size, comparator, 0, num_elements * element_size);
 }

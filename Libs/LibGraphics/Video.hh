@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -23,14 +23,12 @@ namespace Graphics::Video {
 /**
  * @brief Video driver commands
  */
-enum Command
-{ COMMAND_SET_MODE, };
+enum Command { COMMAND_SET_MODE, };
 
 /**
  * @brief Video driver requests statuses
  */
-enum SetModeStatus
-{
+enum SetModeStatus {
     SET_MODE_STATUS_SUCCESS,
     SET_MODE_STATUS_FAILED
 };
@@ -50,17 +48,12 @@ public:
      * @brief Constructors
      */
     ModeInfo() = default;
-    ModeInfo(u16   width,
-             u16   height,
-             u16   bit_per_pixel,
-             u16   bytes_per_scanline,
-             usize linear_framebuffer)
+    ModeInfo(u16 width, u16 height, u16 bit_per_pixel, u16 bytes_per_scanline, usize linear_framebuffer)
         : m_width{ width }
         , m_height{ height }
         , m_bit_per_pixel{ bit_per_pixel }
         , m_bytes_per_scanline{ bytes_per_scanline }
-        , m_linear_framebuffer{ linear_framebuffer } {
-    }
+        , m_linear_framebuffer{ linear_framebuffer } {}
 } A_PACKED;
 
 /**
@@ -75,8 +68,7 @@ public:
      */
     RequestHeader() = default;
     RequestHeader(Command command)
-        : m_command{ command } {
-    }
+        : m_command{ command } {}
 } A_PACKED;
 
 /**
@@ -97,8 +89,7 @@ public:
         : m_request_header{ command }
         , m_width{ width }
         , m_height{ height }
-        , m_bit_per_pixel{ bit_per_pixel } {
-    }
+        , m_bit_per_pixel{ bit_per_pixel } {}
 } A_PACKED;
 
 /**

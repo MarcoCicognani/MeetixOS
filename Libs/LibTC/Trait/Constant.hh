@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -22,13 +22,9 @@ struct Constant {
 
     static constexpr T value = v;
 
-    constexpr explicit operator ValueType() const {
-        return value;
-    }
+    constexpr explicit operator ValueType() const { return value; }
 
-    constexpr ValueType operator()() const {
-        return value;
-    }
+    constexpr ValueType operator()() const { return value; }
 };
 
 } /* namespace Trait */

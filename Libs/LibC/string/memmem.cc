@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <string.h>
 #include <LibTC/Collection/Vector.hh>
+#include <string.h>
 
 static void const* bitwise_memmem(void const* haystack, usize haystack_len, void const* needle, usize needle_len) {
     u64            lookup   = 0xfffffffe;

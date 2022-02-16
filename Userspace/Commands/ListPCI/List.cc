@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -85,11 +85,7 @@ static constexpr struct PCIClassMapping {
     { 0x06, 0x0A, 0x00, "Bridge Device", "InfiniBrand-to-PCI Host Bridge" },
     { 0x06, 0x80, 0x00, "Bridge Device", "Other" },
 
-    { 0x07,
-      0x00,
-      0x00,
-      "Simple Communications Controller",
-      "Generic XT-Compatible Serial Controller" },
+    { 0x07, 0x00, 0x00, "Simple Communications Controller", "Generic XT-Compatible Serial Controller" },
     { 0x07, 0x00, 0x01, "Simple Communications Controller", "16450-Compatible Serial Controller" },
     { 0x07, 0x00, 0x02, "Simple Communications Controller", "16550-Compatible Serial Controller" },
     { 0x07, 0x00, 0x03, "Simple Communications Controller", "16650-Compatible Serial Controller" },
@@ -152,11 +148,7 @@ static constexpr struct PCIClassMapping {
     { 0x0C, 0x02, 0x00, "Serial Bus Controller", "SSA" },
     { 0x0C, 0x03, 0x00, "Serial Bus Controller", "USB (Universal Host Controller Spec.)" },
     { 0x0C, 0x03, 0x10, "Serial Bus Controller", "USB (s_open Host Controller Spec.)" },
-    { 0x0C,
-      0x03,
-      0x20,
-      "Serial Bus Controller",
-      "USB2 Host Controller (Intel Enhanced Host Controller Interface)" },
+    { 0x0C, 0x03, 0x20, "Serial Bus Controller", "USB2 Host Controller (Intel Enhanced Host Controller Interface)" },
     { 0x0C, 0x03, 0x30, "Serial Bus Controller", "USB3 XHCI Controller" },
     { 0x0C, 0x03, 0x80, "Serial Bus Controller", "Unspecified USB Controller" },
     { 0x0C, 0x03, 0xFE, "Serial Bus Controller", "USB (Not Host Controller)" },
@@ -260,12 +252,9 @@ int list_pci_devices() {
         std::cout << std::setfill(' ');
         std::cout << std::hex << std::setw(WIDTH_BUS) << std::left << pci_device_header.m_dev_bus;
         std::cout << std::hex << std::setw(WIDTH_SLOT) << std::left << pci_device_header.m_dev_slot;
-        std::cout << std::hex << std::setw(WIDTH_FUNC) << std::left
-                  << pci_device_header.m_dev_function;
-        std::cout << std::hex << std::setw(WIDTH_VENDOR) << std::left
-                  << pci_device_header.m_vendor_id;
-        std::cout << std::hex << std::setw(WIDTH_DEV_ID) << std::left
-                  << pci_device_header.m_device_id;
+        std::cout << std::hex << std::setw(WIDTH_FUNC) << std::left << pci_device_header.m_dev_function;
+        std::cout << std::hex << std::setw(WIDTH_VENDOR) << std::left << pci_device_header.m_vendor_id;
+        std::cout << std::hex << std::setw(WIDTH_DEV_ID) << std::left << pci_device_header.m_device_id;
         std::cout << std::setw(WIDTH_CLASS) << class_name;
         std::cout << std::setw(WIDTH_SUB_CLASS) << subclass_name << std::endl;
     }

@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -16,8 +16,7 @@ FsDirectoryEntry* s_read_directory(FsDirectoryIterator* iterator) {
     return s_read_directory_s(iterator, nullptr);
 }
 
-FsDirectoryEntry* s_read_directory_s(FsDirectoryIterator*   iterator,
-                                     FsReadDirectoryStatus* out_status) {
+FsDirectoryEntry* s_read_directory_s(FsDirectoryIterator* iterator, FsReadDirectoryStatus* out_status) {
     SyscallFsReadDirectory data = { .m_directory_iterator = iterator };
     do_syscall(SYSCALL_FS_READ_DIRECTORY, (usize)&data);
 

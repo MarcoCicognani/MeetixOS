@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -12,11 +12,8 @@
 
 #include <Api/User.h>
 
-FsCreateNodeStatus s_fs_create_node(usize       parent,
-                                    const char* name,
-                                    FsNodeType  type,
-                                    usize       fs_id,
-                                    usize*      out_created_id) {
+FsCreateNodeStatus
+s_fs_create_node(usize parent, const char* name, FsNodeType type, usize fs_id, usize* out_created_id) {
     SyscallFsCreateNode data{ parent, name, type, fs_id };
     do_syscall(SYSCALL_FS_CREATE_NODE, (usize)&data);
 

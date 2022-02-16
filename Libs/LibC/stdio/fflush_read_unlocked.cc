@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -38,11 +38,10 @@ int fflush_read_unlocked(FILE* stream) {
     /* restore the position */
     auto res = 0;
     if ( current_position >= 0 ) {
-        auto buffered_bytes = stream->m_buffered_bytes_read - stream->m_buffered_bytes_read_offset;
-        auto restored_position
-            = static_cast<uintmax_t>(current_position) < static_cast<uintmax_t>(buffered_bytes)
-                ? 0
-                : current_position - buffered_bytes;
+        auto buffered_bytes    = stream->m_buffered_bytes_read - stream->m_buffered_bytes_read_offset;
+        auto restored_position = static_cast<uintmax_t>(current_position) < static_cast<uintmax_t>(buffered_bytes)
+                                   ? 0
+                                   : current_position - buffered_bytes;
 
         if ( stream->m_impl_seek(stream, restored_position, SEEK_SET) < 0 )
             stream->m_flags |= FILE_FLAG_ERROR;

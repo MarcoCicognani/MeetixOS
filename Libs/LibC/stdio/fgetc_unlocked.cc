@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -51,9 +51,8 @@ int fgetc_unlocked(FILE* stream) {
             unget_space = 0;
 
         /* fill buffer with data from stream backend */
-        auto read_bytes = stream->m_impl_read(stream->m_io_buffer + unget_space,
-                                              stream->m_io_buffer_len - unget_space,
-                                              stream);
+        auto read_bytes
+            = stream->m_impl_read(stream->m_io_buffer + unget_space, stream->m_io_buffer_len - unget_space, stream);
         if ( !read_bytes ) {
             stream->m_flags |= FILE_FLAG_EOF;
             return EOF;

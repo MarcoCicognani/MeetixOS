@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -24,6 +24,5 @@ extern "C" sig_handler_t signal(int sig, sig_handler_t sig_handler) {
         sig_handler = sig_handler_SIG_IGN;
     }
 
-    return reinterpret_cast<sig_handler_t>(
-        s_register_signal_handler(sig, reinterpret_cast<void*>(sig_handler)));
+    return reinterpret_cast<sig_handler_t>(s_register_signal_handler(sig, reinterpret_cast<void*>(sig_handler)));
 }

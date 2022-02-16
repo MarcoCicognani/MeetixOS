@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -12,9 +12,9 @@
 
 #include "MemoryUsage.hh"
 
-#include <LibIO/Shell.hh>
 #include <iomanip>
 #include <iostream>
+#include <LibIO/Shell.hh>
 
 #define MEMORY_USAGE_HEADER      "Memory Usage ["
 #define MEMORY_USAGE_HEADER_LEN  sizeof(MEMORY_USAGE_HEADER)

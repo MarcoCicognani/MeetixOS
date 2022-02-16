@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -17,29 +17,29 @@
 #include <cstring>
 #include <libgen.h>
 
-#define SKIP_WHITESPACE(pos)                                                                       \
-    do {                                                                                           \
-        while ( *pos && isspace(*pos) )                                                            \
-            ++pos;                                                                                 \
+#define SKIP_WHITESPACE(pos)                                                                                           \
+    do {                                                                                                               \
+        while ( *pos && isspace(*pos) )                                                                                \
+            ++pos;                                                                                                     \
     } while ( 0 )
 
-#define SKIP_ARGUMENT(pos)                                                                         \
-    do {                                                                                           \
-        auto instr = false;                                                                        \
-        auto esc   = false;                                                                        \
-        while ( *pos ) {                                                                           \
-            if ( *pos == '"' && !esc ) {                                                           \
-                instr = !instr;                                                                    \
-                esc   = false;                                                                     \
-            } else if ( *pos == '\\' && !esc )                                                     \
-                esc = true;                                                                        \
-            else if ( isspace(*pos) && !instr && !esc )                                            \
-                break;                                                                             \
-            else                                                                                   \
-                esc = false;                                                                       \
-                                                                                                   \
-            ++pos;                                                                                 \
-        }                                                                                          \
+#define SKIP_ARGUMENT(pos)                                                                                             \
+    do {                                                                                                               \
+        auto instr = false;                                                                                            \
+        auto esc   = false;                                                                                            \
+        while ( *pos ) {                                                                                               \
+            if ( *pos == '"' && !esc ) {                                                                               \
+                instr = !instr;                                                                                        \
+                esc   = false;                                                                                         \
+            } else if ( *pos == '\\' && !esc )                                                                         \
+                esc = true;                                                                                            \
+            else if ( isspace(*pos) && !instr && !esc )                                                                \
+                break;                                                                                                 \
+            else                                                                                                       \
+                esc = false;                                                                                           \
+                                                                                                                       \
+            ++pos;                                                                                                     \
+        }                                                                                                              \
     } while ( 0 )
 
 static char* get_executable_name() {

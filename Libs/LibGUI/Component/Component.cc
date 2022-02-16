@@ -1,21 +1,14 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
 #include <Api.h>
 #include <LibGUI/Component/Component.hh>
@@ -41,7 +34,7 @@ void Component::remove_from_wm_registry() {
 
     UiRemoveComponentRequest request;
     request.header.m_command = UI_PROTOCOL_REMOVE_COMPONENT;
-    request.id        = this->m_component_id;
+    request.id               = this->m_component_id;
     s_send_message_t(UiDelegateTid, &request, sizeof(UiRemoveComponentRequest), tx);
 }
 
@@ -57,8 +50,8 @@ bool Component::add_child(Component* c) {
 
     UiComponentAddChildRequest request;
     request.header.m_command = UI_PROTOCOL_ADD_COMPONENT;
-    request.parent    = this->m_component_id;
-    request.child     = c->m_component_id;
+    request.parent           = this->m_component_id;
+    request.child            = c->m_component_id;
     s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentAddChildRequest), tx);
 
     // read response
@@ -66,8 +59,7 @@ bool Component::add_child(Component* c) {
     uint8_t buffer[bufferSize];
 
     if ( s_receive_message_t(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-        UiComponentAddChildResponse* response
-            = (UiComponentAddChildResponse*)MESSAGE_CONTENT(buffer);
+        UiComponentAddChildResponse* response = (UiComponentAddChildResponse*)MESSAGE_CONTENT(buffer);
         if ( response->status == UI_PROTOCOL_SUCCESS )
             return true;
     }
@@ -87,8 +79,8 @@ bool Component::set_bounds(Graphics::Metrics::Rectangle rect) {
 
     UiComponentSetBoundsRequest request;
     request.header.m_command = UI_PROTOCOL_SET_BOUNDS;
-    request.id        = this->m_component_id;
-    request.bounds    = rect;
+    request.id               = this->m_component_id;
+    request.bounds           = rect;
     s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentSetBoundsRequest), tx);
 
     // read response
@@ -96,8 +88,7 @@ bool Component::set_bounds(Graphics::Metrics::Rectangle rect) {
     Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
     if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-        UiComponentSetBoundsResponse* response
-            = (UiComponentSetBoundsResponse*)MESSAGE_CONTENT(buffer());
+        UiComponentSetBoundsResponse* response = (UiComponentSetBoundsResponse*)MESSAGE_CONTENT(buffer());
 
         if ( response->status == UI_PROTOCOL_SUCCESS )
             return true;
@@ -118,7 +109,7 @@ Graphics::Metrics::Rectangle Component::bounds() {
 
     UiComponentGetBoundsRequest request;
     request.header.m_command = UI_PROTOCOL_GET_BOUNDS;
-    request.id        = this->m_component_id;
+    request.id               = this->m_component_id;
     s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentGetBoundsRequest), tx);
 
     // read response
@@ -126,8 +117,7 @@ Graphics::Metrics::Rectangle Component::bounds() {
     Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
     if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-        UiComponentGetBoundsResponse* response
-            = (UiComponentGetBoundsResponse*)MESSAGE_CONTENT(buffer());
+        UiComponentGetBoundsResponse* response = (UiComponentGetBoundsResponse*)MESSAGE_CONTENT(buffer());
 
         if ( response->status == UI_PROTOCOL_SUCCESS )
             return response->bounds;
@@ -148,8 +138,8 @@ bool Component::set_visible(bool visible) {
 
     UiComponentSetVisibleRequest request;
     request.header.m_command = UI_PROTOCOL_SET_VISIBLE;
-    request.id        = this->m_component_id;
-    request.visible   = visible;
+    request.id               = this->m_component_id;
+    request.visible          = visible;
     s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentSetVisibleRequest), tx);
 
     // read response
@@ -157,8 +147,7 @@ bool Component::set_visible(bool visible) {
     uint8_t buffer[bufferSize];
 
     if ( s_receive_message_t(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-        UiComponentSetVisibleResponse* response
-            = (UiComponentSetVisibleResponse*)MESSAGE_CONTENT(buffer);
+        UiComponentSetVisibleResponse* response = (UiComponentSetVisibleResponse*)MESSAGE_CONTENT(buffer);
         if ( response->status == UI_PROTOCOL_SUCCESS )
             return true;
     }
@@ -178,8 +167,8 @@ bool Component::set_focus(bool focus) {
 
     UiComponentFocusRequest request;
     request.header.m_command = UI_PROTOCOL_SET_FOCUS;
-    request.id        = this->m_component_id;
-    request.focus     = focus;
+    request.id               = this->m_component_id;
+    request.focus            = focus;
     s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentFocusRequest), tx);
 
     // read response
@@ -207,13 +196,13 @@ bool Component::set_numeric_property(int property, uint32_t value) {
 
     UiComponentSetNumericPropertyRequest request;
     request.header.m_command = UI_PROTOCOL_SET_NUMERIC_PROPERTY;
-    request.id        = this->m_component_id;
-    request.property  = property;
-    request.value     = value;
+    request.id               = this->m_component_id;
+    request.property         = property;
+    request.value            = value;
     s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentSetNumericPropertyRequest), tx);
 
     // read response
-    size_t bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetNumericPropertyResponse);
+    size_t         bufferSize = sizeof(MessageHeader) + sizeof(UiComponentSetNumericPropertyResponse);
     Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
     if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
@@ -239,12 +228,12 @@ bool Component::get_numeric_property(int property, uint32_t* out) {
 
     UiComponentGetNumericPropertyRequest request;
     request.header.m_command = UI_PROTOCOL_GET_NUMERIC_PROPERTY;
-    request.id        = this->m_component_id;
-    request.property  = property;
+    request.id               = this->m_component_id;
+    request.property         = property;
     s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentGetNumericPropertyRequest), tx);
 
     // read response
-    size_t bufferSize = sizeof(MessageHeader) + sizeof(UiComponentGetNumericPropertyResponse);
+    size_t         bufferSize = sizeof(MessageHeader) + sizeof(UiComponentGetNumericPropertyResponse);
     Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
     if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
@@ -279,9 +268,9 @@ bool Component::set_listener(UiComponentEventType eventType, Listener* listener)
 
     UiComponentSetListenerRequest request;
     request.header.m_command = UI_PROTOCOL_SET_LISTENER;
-    request.id           = this->m_component_id;
-    request.targetThread = UiEventDispatcherTid;
-    request.eventType    = eventType;
+    request.id               = this->m_component_id;
+    request.targetThread     = UiEventDispatcherTid;
+    request.eventType        = eventType;
     s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentSetListenerRequest), tx);
 
     // read response
@@ -289,8 +278,7 @@ bool Component::set_listener(UiComponentEventType eventType, Listener* listener)
     uint8_t buffer[bufferSize];
 
     if ( s_receive_message_t(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-        UiComponentSetListenerResponse* response
-            = (UiComponentSetListenerResponse*)MESSAGE_CONTENT(buffer);
+        UiComponentSetListenerResponse* response = (UiComponentSetListenerResponse*)MESSAGE_CONTENT(buffer);
         if ( response->status == UI_PROTOCOL_SUCCESS )
             return true;
     }

@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -218,9 +218,7 @@ void OptionsParser::shift_argv() {
     auto  new_argv = const_cast<char**>(m_argv);
 
     std::memcpy(buffer, &new_argv[m_arg_index], sizeof(char*) * m_consumed_arguments);
-    std::memmove(&new_argv[optind + m_consumed_arguments],
-                 &new_argv[optind],
-                 sizeof(char*) * (m_arg_index - optind));
+    std::memmove(&new_argv[optind + m_consumed_arguments], &new_argv[optind], sizeof(char*) * (m_arg_index - optind));
     std::memcpy(&new_argv[optind], buffer, sizeof(char*) * m_consumed_arguments);
 }
 

@@ -1,21 +1,14 @@
-/*********************************************************************************
- * MeetiX OS By MeetiX OS Project [Marco Cicognani]                               *
- * 																			     *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU General Public License                    *
- * as published by the Free Software Foundation; either version 2				 *
- * of the License, or (char *argumentat your option) any later version.			 *
- *																				 *
- * This program is distributed in the hope that it will be useful,				 *
- * but WITHout ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 				 *
- * GNU General Public License for more details.
- **
- *																				 *
- * You should have received a copy of the GNU General Public License				 *
- * along with this program; if not, write to the Free Software                    *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
- **********************************************************************************/
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
 
 #include <Api.h>
 #include <LibGUI/Component/Canvas.hh>
@@ -49,7 +42,7 @@ CanvasBufferInfo Canvas::buffer_info() {
 
         UiComponentCanvasAckBufferRequest request;
         request.header.m_command = UI_PROTOCOL_CANVAS_ACK_BUFFER_REQUEST;
-        request.id        = this->m_component_id;
+        request.id               = this->m_component_id;
         s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentCanvasAckBufferRequest), tx);
 
         nextBuffer = 0;
@@ -60,8 +53,7 @@ CanvasBufferInfo Canvas::buffer_info() {
 
     else {
         // return buffer
-        info.buffer
-            = (Graphics::Color::ArgbGradient*)(currentBuffer + UI_CANVAS_SHARED_MEMORY_HEADER_SIZE);
+        info.buffer = (Graphics::Color::ArgbGradient*)(currentBuffer + UI_CANVAS_SHARED_MEMORY_HEADER_SIZE);
         auto header = (UiCanvasSharedMemoryHeader*)currentBuffer;
         info.width  = header->paintableWidth;
         info.height = header->paintableHeight;
@@ -112,6 +104,6 @@ void Canvas::blit(Graphics::Metrics::Rectangle rect) {
 
     UiComponentCanvasBlitRequest request;
     request.header.m_command = UI_PROTOCOL_CANVAS_BLIT;
-    request.id        = this->m_component_id;
+    request.id               = this->m_component_id;
     s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentCanvasBlitRequest), tx);
 }

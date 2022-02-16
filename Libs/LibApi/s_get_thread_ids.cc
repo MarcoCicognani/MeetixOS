@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -13,9 +13,7 @@
 #include <Api/User.h>
 
 usize s_get_thread_ids(Tid* buffer, usize buffer_len) {
-    return s_get_thread_ids_t(buffer,
-                              buffer_len,
-                              THREAD_TYPE_MAIN | THREAD_TYPE_VM86 | THREAD_TYPE_SUB);
+    return s_get_thread_ids_t(buffer, buffer_len, THREAD_TYPE_MAIN | THREAD_TYPE_VM86 | THREAD_TYPE_SUB);
 }
 
 usize s_get_thread_ids_t(Tid* buffer, usize buffer_len, ThreadType thread_type) {

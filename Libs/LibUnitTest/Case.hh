@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -16,8 +16,7 @@
     class TestCaseImpl##name : public UnitTest::Case {                                                                 \
     public:                                                                                                            \
         TestCaseImpl##name()                                                                                           \
-            : UnitTest::Case{ #name, false } {                                                                         \
-        }                                                                                                              \
+            : UnitTest::Case{ #name, false } {}                                                                        \
                                                                                                                        \
         ~TestCaseImpl##name() override = default;                                                                      \
                                                                                                                        \
@@ -32,8 +31,7 @@
     class BenchmarkCaseImpl##name : public UnitTest::Case {                                                            \
     public:                                                                                                            \
         BenchmarkCaseImpl##name()                                                                                      \
-            : UnitTest::Case{ #name, true } {                                                                          \
-        }                                                                                                              \
+            : UnitTest::Case{ #name, true } {}                                                                         \
                                                                                                                        \
         ~BenchmarkCaseImpl##name() override = default;                                                                 \
                                                                                                                        \

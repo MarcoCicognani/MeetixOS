@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -15,14 +15,12 @@
 
 namespace RTC {
 
-enum
-{
+enum {
     PORT_IDX  = 0x70,
     PORT_DATA = 0x71
 };
 
-enum
-{
+enum {
     REG_SEC      = 0x0, /* 00-59 */
     REG_MIN      = 0x2, /* 00-59 */
     REG_HOUR     = 0x4, /* 00-23 */

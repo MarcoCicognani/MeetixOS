@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -13,30 +13,19 @@
 #include <Api/User.h>
 
 MessageReceiveStatus s_receive_message(void* buffer, usize buffer_len) {
-    return s_receive_message_tmb(buffer,
-                                 buffer_len,
-                                 MESSAGE_TRANSACTION_NONE,
-                                 MESSAGE_RECEIVE_MODE_BLOCKING,
-                                 nullptr);
+    return s_receive_message_tmb(buffer, buffer_len, MESSAGE_TRANSACTION_NONE, MESSAGE_RECEIVE_MODE_BLOCKING, nullptr);
 }
 
-MessageReceiveStatus
-s_receive_message_m(void* buffer, usize buffer_len, MessageReceiveMode receive_mode) {
-    return s_receive_message_tmb(buffer,
-                                 buffer_len,
-                                 MESSAGE_TRANSACTION_NONE,
-                                 receive_mode,
-                                 nullptr);
+MessageReceiveStatus s_receive_message_m(void* buffer, usize buffer_len, MessageReceiveMode receive_mode) {
+    return s_receive_message_tmb(buffer, buffer_len, MESSAGE_TRANSACTION_NONE, receive_mode, nullptr);
 }
 
 MessageReceiveStatus s_receive_message_t(void* buffer, usize buffer_len, MessageTransaction tx) {
     return s_receive_message_tmb(buffer, buffer_len, tx, MESSAGE_RECEIVE_MODE_BLOCKING, nullptr);
 }
 
-MessageReceiveStatus s_receive_message_tm(void*              buffer,
-                                          usize              buffer_len,
-                                          MessageTransaction tx,
-                                          MessageReceiveMode receive_mode) {
+MessageReceiveStatus
+s_receive_message_tm(void* buffer, usize buffer_len, MessageTransaction tx, MessageReceiveMode receive_mode) {
     return s_receive_message_tmb(buffer, buffer_len, tx, receive_mode, nullptr);
 }
 

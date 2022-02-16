@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -75,8 +75,7 @@ public:
      */
     Directory(const std::string& path, const std::string& order)
         : m_path{ path }
-        , m_sort_order{ from_string(order) } {
-    }
+        , m_sort_order{ from_string(order) } {}
 
     /**
      * @brief Reads all the entries into the directory open

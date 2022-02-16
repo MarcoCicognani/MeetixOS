@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -154,8 +154,8 @@ void RamdiskWriter::write_recursive(const std::string& base_path,
     auto       entry_id    = m_next_id++;
 
 #ifdef _DEBUG
-    std::cout << "-- Packing: " << (is_file ? "File" : "Dir ") << " with ID: " << std::setfill('0')
-              << std::setw(3) << entry_id << ": '" << path << std::endl;
+    std::cout << "-- Packing: " << (is_file ? "File" : "Dir ") << " with ID: " << std::setfill('0') << std::setw(3)
+              << entry_id << ": '" << path << std::endl;
 #endif
 
     /* skip root entry */
@@ -222,8 +222,7 @@ void RamdiskWriter::write_recursive(const std::string& base_path,
                                 entry_id,
                                 true);
             } else if ( dir_entry.is_directory() ) {
-                if ( dir_entry.path().filename().string() != "."
-                     && dir_entry.path().filename().string() != ".." ) {
+                if ( dir_entry.path().filename().string() != "." && dir_entry.path().filename().string() != ".." ) {
                     write_recursive(base_path,
                                     dir_entry.path().string(),
                                     dir_entry.path().filename().string(),

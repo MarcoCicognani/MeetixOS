@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -50,12 +50,8 @@ Tid s_create_thread_ds(void* func_ptr, void* data, CreateThreadStatus* out_statu
     return s_create_thread_dns(func_ptr, data, nullptr, out_status);
 }
 
-Tid s_create_thread_dns(void*               func_ptr,
-                        void*               data,
-                        const char*         name,
-                        CreateThreadStatus* out_status) {
-    SyscallCreateThread call_data
-        = { reinterpret_cast<void*>(thread_entry_point), func_ptr, data, name };
+Tid s_create_thread_dns(void* func_ptr, void* data, const char* name, CreateThreadStatus* out_status) {
+    SyscallCreateThread call_data = { reinterpret_cast<void*>(thread_entry_point), func_ptr, data, name };
     do_syscall(SYSCALL_THREAD_CREATE, (usize)&call_data);
 
     if ( out_status )

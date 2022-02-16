@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -99,9 +99,7 @@ extern "C" {
 #define isunordered(x, y) (isnan((x)) ? ((void)(y), 1) : isnan((y)))
 
 #define __ISREL_DEF(rel, op, type)                                                                                     \
-    static __inline int __is##rel(type __x, type __y) {                                                                \
-        return !isunordered(__x, __y) && __x op __y;                                                                   \
-    }
+    static __inline int __is##rel(type __x, type __y) { return !isunordered(__x, __y) && __x op __y; }
 
 #define __tg_pred_2(x, y, p)                                                                                           \
     (sizeof((x) + (y)) == sizeof(float) ? p##f(x, y) : sizeof((x) + (y)) == sizeof(double) ? p(x, y) : p##l(x, y))

@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -26,8 +26,8 @@
 #define LENGTH_t       7
 #define LENGTH_L       8
 
-#define CHOMP_CHAR()                                                                               \
-    if ( !*++s )                                                                                   \
+#define CHOMP_CHAR()                                                                                                   \
+    if ( !*++s )                                                                                                       \
         return written;
 
 extern "C" {
@@ -57,10 +57,7 @@ static usize integer_to_string(char* out, uintmax_t value, uintmax_t base, const
     return count;
 }
 
-int vcbprintf(void* param,
-              isize (*callback)(void*, const char*, usize),
-              const char* format,
-              va_list     arg_list) {
+int vcbprintf(void* param, isize (*callback)(void*, const char*, usize), const char* format, va_list arg_list) {
     auto s       = format;
     auto written = 0;
 
@@ -287,15 +284,12 @@ int vcbprintf(void* param,
                         digits = "0123456789";
                     }
 
-                    auto len = integer_to_string(number_buffer,
-                                                 (is_negative ? -((intmax_t)value) : value),
-                                                 base,
-                                                 digits);
+                    auto len
+                        = integer_to_string(number_buffer, (is_negative ? -((intmax_t)value) : value), base, digits);
 
                     /* check for additional */
                     auto additional_len = 0;
-                    if ( flag_always_prepend_sign || flag_always_prepend_space_plus_sign
-                         || is_negative ) {
+                    if ( flag_always_prepend_sign || flag_always_prepend_space_plus_sign || is_negative ) {
                         ++additional_len; /* +/-/space */
                     }
                     if ( flag_force_0x_or_dec && (specifier == 'x' || specifier == 'X') ) {
@@ -422,17 +416,14 @@ int vcbprintf(void* param,
                     uintmax_t value_fractional = (uintmax_t)value_fractional_d;
 
                     /* write number in temporary buffer */
-                    usize len_int
-                        = integer_to_string(number_buffer, value_integer, 10, "0123456789");
-                    size_t len_fract
-                        = integer_to_string(precision_buffer, value_fractional, 10, "0123456789");
+                    usize  len_int   = integer_to_string(number_buffer, value_integer, 10, "0123456789");
+                    size_t len_fract = integer_to_string(precision_buffer, value_fractional, 10, "0123456789");
                     if ( len_fract > precision )
                         len_fract = precision;
 
                     /* check for additional */
                     int additional_len = 0;
-                    if ( flag_always_prepend_sign || flag_always_prepend_space_plus_sign
-                         || is_negative ) {
+                    if ( flag_always_prepend_sign || flag_always_prepend_space_plus_sign || is_negative ) {
                         ++additional_len; /* +/-/space */
                     }
 
@@ -503,8 +494,7 @@ int vcbprintf(void* param,
                         written += len_fract;
 
                         /* write precision filling zeroes */
-                        for ( size_t i = 0; i < (len_fract == 0 ? 1 : precision - len_fract);
-                              ++i ) {
+                        for ( size_t i = 0; i < (len_fract == 0 ? 1 : precision - len_fract); ++i ) {
                             if ( callback(param, "0", 1) != 1 )
                                 return -1;
                             ++written;
