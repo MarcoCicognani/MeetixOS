@@ -20,7 +20,8 @@
 #include "../Graphics/Metrics/Dimension.hh"
 #include "../Graphics/Metrics/Rectangle.hh"
 #include "../Graphics/Text/Alignment.hh"
-#include "../IO/Keyboard.hh"
+
+#include <LibIO/Keyboard.hh>
 
 // namespace GUI::Protocol {
 
@@ -37,8 +38,7 @@ using UiListenerID  = isize;
 /*
  * A protocol message always starts with the header, the message m_command
  */
-enum UiProtocolCommandID
-{
+enum UiProtocolCommandID {
     UI_PROTOCOL_INITIALIZATION,
     UI_PROTOCOL_CREATE_COMPONENT,
     UI_PROTOCOL_REMOVE_COMPONENT,
@@ -71,8 +71,7 @@ enum UiProtocolCommandID
 /*
  * Common status for requests
  */
-enum UiProtocolStatus
-{
+enum UiProtocolStatus {
     UI_PROTOCOL_SUCCESS,
     UI_PROTOCOL_FAIL
 };
@@ -80,8 +79,7 @@ enum UiProtocolStatus
 /*
  * Component types
  */
-enum UiComponentType
-{
+enum UiComponentType {
     UI_COMPONENT_TYPE_WINDOW,
     UI_COMPONENT_TYPE_BUTTON,
     UI_COMPONENT_TYPE_LABEL,
@@ -93,8 +91,7 @@ enum UiComponentType
 /*
  * Types of events that can be listened to
  */
-enum UiComponentEventType
-{
+enum UiComponentEventType {
     UI_COMPONENT_EVENT_TYPE_ACTION,
     UI_COMPONENT_EVENT_TYPE_BOUNDS,
     UI_COMPONENT_EVENT_TYPE_CANVAS_WFA, // "wait for acknowledge"-event
@@ -106,8 +103,7 @@ enum UiComponentEventType
 /*
  *
  */
-enum UiLayoutManager
-{
+enum UiLayoutManager {
     UI_LAYOUT_MANAGER_GRID,
     UI_LAYOUT_MANAGER_FLOW
 };
@@ -353,9 +349,8 @@ typedef struct {
     bool     is_ready;
 } A_PACKED UiCanvasSharedMemoryHeader;
 
-#define UI_CANVAS_SHARED_MEMORY_HEADER_SIZE                                                        \
-    ((sizeof(UiCanvasSharedMemoryHeader) - sizeof(UiCanvasSharedMemoryHeader) % sizeof(Address))   \
-     + sizeof(Address))
+#define UI_CANVAS_SHARED_MEMORY_HEADER_SIZE                                                                            \
+    ((sizeof(UiCanvasSharedMemoryHeader) - sizeof(UiCanvasSharedMemoryHeader) % sizeof(Address)) + sizeof(Address))
 
 /*
  * Request to register the desktop m_canvas
@@ -558,8 +553,7 @@ static constexpr MouseButton MOUSE_BUTTON_1    = 1;
 static constexpr MouseButton MOUSE_BUTTON_2    = 2;
 static constexpr MouseButton MOUSE_BUTTON_3    = 4;
 
-enum MouseEventType
-{
+enum MouseEventType {
     MOUSE_EVENT_NONE,
     MOUSE_EVENT_MOVE,
     MOUSE_EVENT_PRESS,

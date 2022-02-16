@@ -12,8 +12,8 @@
 
 #include <Api.h>
 #include <fstream>
-#include <IO/Input.hh>
-#include <IO/Keyboard.hh>
+#include <LibIO/Input.hh>
+#include <LibIO/Keyboard.hh>
 #include <map>
 #include <string>
 #include <Utils/PropertyFileParser.hh>
@@ -163,9 +163,7 @@ bool Keyboard::load_scancode_layout(const std::string& iso) {
         }
 
         if ( entry.second.empty() )
-            Utils::log("Could not map scancode %i, key name '%s' is not known",
-                       scancode,
-                       entry.second.c_str());
+            Utils::log("Could not map scancode %i, key name '%s' is not known", scancode, entry.second.c_str());
         else
             m_scancode_layout[scancode] = entry.second;
     }
@@ -229,9 +227,7 @@ bool Keyboard::load_conversion_layout(const std::string& iso) {
 
                     c = static_cast<char>(num);
                 } else {
-                    Utils::log("skipping value '%s' in key %s, illegal format",
-                               value.c_str(),
-                               key_name.c_str());
+                    Utils::log("skipping value '%s' in key %s, illegal format", value.c_str(), key_name.c_str());
                     continue;
                 }
             }

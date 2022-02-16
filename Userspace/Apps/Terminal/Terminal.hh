@@ -17,7 +17,7 @@
 
 #include <algorithm>
 #include <Api.h>
-#include <IO/Shell.hh>
+#include <LibIO/Shell.hh>
 #include <LibTasking/Lock.hh>
 #include <LibTasking/Thread.hh>
 

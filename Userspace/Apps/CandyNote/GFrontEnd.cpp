@@ -18,7 +18,7 @@
 
 #include "GFrontEnd.hpp"
 
-#include <IO/Keyboard.hh>
+#include <LibIO/Keyboard.hh>
 #include <LibTasking/Lock.hh>
 
 Window*    window;

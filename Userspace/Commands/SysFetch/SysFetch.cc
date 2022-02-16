@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <IO/Shell.hh>
+#include <LibIO/Shell.hh>
 #include <iostream>
 #include <Utils/ArgsParser.hh>
 #include <Utils/Environment.hh>

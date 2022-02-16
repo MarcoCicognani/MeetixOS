@@ -19,7 +19,7 @@
 #ifndef _BackEnd_H_
 #define _BackEnd_H_
 
-#include <IO/Keyboard.hh>
+#include <LibIO/Keyboard.hh>
 #include <string>
 
 using namespace std;
@@ -27,8 +27,7 @@ using namespace std;
 class FrontEnd {
 public:
     // Distructor
-    ~FrontEnd() {
-    }
+    ~FrontEnd() {}
 
     virtual void clean() = 0;
 

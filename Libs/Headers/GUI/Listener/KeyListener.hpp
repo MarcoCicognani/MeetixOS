@@ -13,8 +13,9 @@
 #pragma once
 
 #include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdint"
-#include "../../IO/Keyboard.hh"
 #include "Listener.hh"
+
+#include <LibIO/Keyboard.hh>
 
 /**
  *
@@ -23,8 +24,8 @@ struct KeyEvent {
     IO::Keyboard::InfoBasic m_info_basic{};
 
     KeyEvent() = default;
-    KeyEvent(const IO::Keyboard::InfoBasic& info_basic) : m_info_basic{ info_basic } {
-    }
+    KeyEvent(const IO::Keyboard::InfoBasic& info_basic)
+        : m_info_basic{ info_basic } {}
 };
 
 /**

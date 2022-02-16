@@ -27,10 +27,10 @@
 #include "CandyShell.hpp"
 
 #include <Api.h>
-#include <IO/Keyboard.hh>
+#include <LibIO/Keyboard.hh>
+#include <LibTasking/Lock.hh>
 #include <list>
 #include <string.h>
-#include <LibTasking/Lock.hh>
 
 bool     paintIsFresh = false;
 bool     cursorBlink  = false;

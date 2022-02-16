@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <IO/Input.hh>
+#include <LibIO/Input.hh>
 #include <LibTasking/LockGuard.hh>
 #include <Utils/Utils.hh>
 

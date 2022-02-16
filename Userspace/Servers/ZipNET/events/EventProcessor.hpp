@@ -28,8 +28,8 @@
 #include <deque>
 #include <GUI/Protocol.hh>
 #include <interface/CommandMessageResponderThread.hpp>
-#include <IO/Keyboard.hh>
-#include <IO/Mouse.hh>
+#include <LibIO/Keyboard.hh>
+#include <LibIO/Mouse.hh>
 
 using namespace std;
 
@@ -55,9 +55,7 @@ public:
     void bufferCommandMessage(void* commandMessage);
 
     void process();
-    void processCommand(Tid                       senderTid,
-                        UiMessageHeader*          requestHeader,
-                        CommandMessageResponse_t& responseOut);
+    void processCommand(Tid senderTid, UiMessageHeader* requestHeader, CommandMessageResponse_t& responseOut);
 
     void translateKeyEvent(IO::Keyboard::Info& info);
     void processMouseState();

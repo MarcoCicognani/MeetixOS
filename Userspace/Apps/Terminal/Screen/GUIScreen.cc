@@ -25,7 +25,7 @@
 #include "GUIScreen.hh"
 
 #include <Api.h>
-#include <IO/Keyboard.hh>
+#include <LibIO/Keyboard.hh>
 #include <list>
 #include <string.h>
 #include <LibTasking/Lock.hh>

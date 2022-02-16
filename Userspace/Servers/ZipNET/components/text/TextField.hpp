@@ -30,15 +30,14 @@
 #include <components/TitledComponent.hpp>
 #include <Graphics/Metrics/Insets.hh>
 #include <Graphics/Text/Layouter.hh>
-#include <IO/Keyboard.hh>
+#include <LibIO/Keyboard.hh>
 #include <list>
 #include <string>
 
 /**
  *
  */
-enum class TextFieldVisualStatus_t : uint8_t
-{
+enum class TextFieldVisualStatus_t : uint8_t {
     NORMAL,
     HOVERED
 };
@@ -94,40 +93,29 @@ public:
     /**
      * text component
      */
-    virtual void setCursor(int pos);
-    virtual int  getCursor() {
-        return cursor;
-    }
-    virtual void setMarker(int pos);
-    virtual int  getMarker() {
-        return marker;
-    }
+    virtual void                     setCursor(int pos);
+    virtual int                      getCursor() { return cursor; }
+    virtual void                     setMarker(int pos);
+    virtual int                      getMarker() { return marker; }
     virtual Graphics::Metrics::Range getSelectedRange();
     virtual void                     setGhostText(std::string text);
     virtual void                     setText(std::string text);
-    virtual std::string              getText() {
-        return text;
-    }
+    virtual std::string              getText() { return text; }
 
     /**
      * titled component
      */
-    virtual void setTitle(std::string title) {
-        setText(title);
-    }
-    virtual std::string getTitle() {
-        return getText();
-    }
-    virtual void setFont(Graphics::Text::Font* f);
-    virtual void setTitleFont(std::string fontName);
-    virtual void setFontSize(int size);
-    virtual void setTitleAlignment(Graphics::Text::Alignment alignment);
+    virtual void        setTitle(std::string title) { setText(title); }
+    virtual std::string getTitle() { return getText(); }
+    virtual void        setFont(Graphics::Text::Font* f);
+    virtual void        setTitleFont(std::string fontName);
+    virtual void        setFontSize(int size);
+    virtual void        setTitleAlignment(Graphics::Text::Alignment alignment);
 
     /**
      * colored component
      */
-    virtual void setColor(Graphics::Color::ArgbGradient ShapeColor,
-                          Graphics::Color::ArgbGradient titleColor);
+    virtual void setColor(Graphics::Color::ArgbGradient ShapeColor, Graphics::Color::ArgbGradient titleColor);
 
     /**
      * textfield

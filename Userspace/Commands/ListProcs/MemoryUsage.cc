@@ -12,7 +12,7 @@
 
 #include "MemoryUsage.hh"
 
-#include <IO/Shell.hh>
+#include <LibIO/Shell.hh>
 #include <iomanip>
 #include <iostream>
 
@@ -29,8 +29,7 @@ std::string memory_usage_bar() {
     ss << MEMORY_USAGE_HEADER;
 
     /* calculate the available shell width for the bar */
-    auto shell_width = IO::Shell::instance().dimension().m_width - MEMORY_USAGE_HEADER_LEN
-                     - MEMORY_USAGE_TRAILER_LEN;
+    auto shell_width = IO::Shell::instance().dimension().m_width - MEMORY_USAGE_HEADER_LEN - MEMORY_USAGE_TRAILER_LEN;
 
     /* show the bar with the memory usage */
     auto used_mem         = system_info.m_memory_total_amount - system_info.m_memory_free_amount;

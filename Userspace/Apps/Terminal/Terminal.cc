@@ -17,7 +17,7 @@
 #include "Screen/HeadlessScreen.hh"
 
 #include <csignal>
-#include <IO/Shell.hh>
+#include <LibIO/Shell.hh>
 #include <LibTasking/LockGuard.hh>
 #include <unistd.h>
 #include <Utils/ArgsParser.hh>

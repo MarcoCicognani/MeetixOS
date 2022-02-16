@@ -13,7 +13,7 @@
 #pragma once
 
 #include <cstdint>
-#include <IO/Keyboard.hh>
+#include <LibIO/Keyboard.hh>
 #include <string>
 
 typedef u8 ScreenColor;
@@ -70,19 +70,11 @@ public:
 
     virtual void set_cursor_visible(bool visible) = 0;
 
-    [[nodiscard]] ScreenColor color_foreground() const {
-        return m_color_foreground;
-    }
-    void set_color_foreground(int c) {
-        m_color_foreground = c;
-    }
+    [[nodiscard]] ScreenColor color_foreground() const { return m_color_foreground; }
+    void                      set_color_foreground(int c) { m_color_foreground = c; }
 
-    [[nodiscard]] ScreenColor color_background() const {
-        return m_color_background;
-    }
-    void set_color_background(int c) {
-        m_color_background = c;
-    }
+    [[nodiscard]] ScreenColor color_background() const { return m_color_background; }
+    void                      set_color_background(int c) { m_color_background = c; }
 
 private:
     ScreenColor m_color_foreground{ SC_WHITE };

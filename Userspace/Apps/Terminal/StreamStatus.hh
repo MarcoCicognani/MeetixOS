@@ -12,10 +12,9 @@
 
 #pragma once
 
-#include <IO/Shell.hh>
+#include <LibIO/Shell.hh>
 
-enum class TerminalStreamStatus
-{
+enum class TerminalStreamStatus {
     Text,
     LastWasEsc,
     WithinVT100,

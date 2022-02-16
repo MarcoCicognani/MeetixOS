@@ -26,7 +26,7 @@
 #define __KEY_EVENT__
 
 #include <events/event.hpp>
-#include <IO/Keyboard.hh>
+#include <LibIO/Keyboard.hh>
 #include <stdint.h>
 
 /**

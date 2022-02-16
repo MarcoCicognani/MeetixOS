@@ -23,7 +23,7 @@
  * * * * */
 
 #include <Graphics/Color.hh>
-#include <IO/Keyboard.hh>
+#include <LibIO/Keyboard.hh>
 #include <stdint.h>
 #include <string>
 
@@ -44,8 +44,7 @@
  */
 class Screen {
 public:
-    virtual ~Screen() {
-    }
+    virtual ~Screen() {}
 
     virtual void clean()      = 0;
     virtual void deactivate() = 0;
@@ -56,20 +55,17 @@ public:
     virtual void backspace()               = 0;
     virtual void cleanLine(int lineLength) = 0;
     virtual void write(std::string                   message,
-                       Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255),
+                       Graphics::Color::ArgbGradient color   = Graphics::Color::as_rgb(255, 255, 255),
                        bool                          visible = true)
         = 0;
-    virtual void
-    writeChar(char c, Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255))
-        = 0;
-    virtual void updateCursor() = 0;
+    virtual void writeChar(char c, Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255)) = 0;
+    virtual void updateCursor()                                                                                  = 0;
 
     virtual bool setColor(std::string color) = 0;
 
     virtual IO::Keyboard::Info readInput(bool* cancelCondition) = 0;
 
-    virtual void workingDirectoryChanged(std::string str) {
-    }
+    virtual void workingDirectoryChanged(std::string str) {}
 };
 
 #endif

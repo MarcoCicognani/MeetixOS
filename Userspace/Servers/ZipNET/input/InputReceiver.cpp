@@ -26,8 +26,8 @@
 
 #include <Api.h>
 #include <components/cursor.hpp>
-#include <IO/Keyboard.hh>
-#include <IO/Mouse.hh>
+#include <LibIO/Keyboard.hh>
+#include <LibIO/Mouse.hh>
 
 /**
  *

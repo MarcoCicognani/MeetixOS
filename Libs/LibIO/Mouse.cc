@@ -11,8 +11,8 @@
  */
 
 #include <Api.h>
-#include <IO/Input.hh>
-#include <IO/Mouse.hh>
+#include <LibIO/Input.hh>
+#include <LibIO/Mouse.hh>
 
 namespace IO {
 

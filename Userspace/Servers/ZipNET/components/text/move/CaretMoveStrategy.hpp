@@ -26,7 +26,7 @@
 #define __CARET_MOVE_STRATEGY__
 
 #include <components/text/CaretDirection.hpp>
-#include <IO/Keyboard.hh>
+#include <LibIO/Keyboard.hh>
 
 class TextComponent_t;
 
@@ -35,15 +35,12 @@ class TextComponent_t;
  */
 class CaretMoveStrategy_t {
 public:
-    virtual ~CaretMoveStrategy_t() {
-    }
+    virtual ~CaretMoveStrategy_t() {}
 
     /**
      *
      */
-    virtual void
-    moveCaret(TextComponent_t* component, CaretDirection_t direction, IO::Keyboard::Info& keyInfo)
-        = 0;
+    virtual void moveCaret(TextComponent_t* component, CaretDirection_t direction, IO::Keyboard::Info& keyInfo) = 0;
 
     /**
      *

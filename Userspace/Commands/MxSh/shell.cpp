@@ -27,7 +27,7 @@
 
 #include <Api/utils/local.hpp>
 #include <cstdio>
-#include <IO/Shell.hh>
+#include <LibIO/Shell.hh>
 #include <iostream>
 #include <string>
 
@@ -242,8 +242,7 @@ void run_command(const std::string& line, const std::string_view& cwd) {
             s_pipe_s(&outPipeW, &outPipeR, &pipeStat);
 
             if ( pipeStat != FS_PIPE_SUCCESSFUL ) {
-                std::cerr << "failed to create output pipe when spawning '" << call->program << "'"
-                          << std::endl;
+                std::cerr << "failed to create output pipe when spawning '" << call->program << "'" << std::endl;
                 // TODO clean up pipes?
                 success = false;
                 break;
@@ -305,8 +304,7 @@ void run_command(const std::string& line, const std::string_view& cwd) {
             else if ( status == SPAWN_STATUS_IO_ERROR )
                 std::cout << call->program << ": command not found" << std::endl;
             else
-                std::cout << call->program << ": unknown error during program execution"
-                          << std::endl;
+                std::cout << call->program << ": unknown error during program execution" << std::endl;
             std::cout << (char)27 << "[0m";
             std::flush(std::cout);
             break;

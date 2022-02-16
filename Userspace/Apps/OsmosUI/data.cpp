@@ -24,7 +24,7 @@
 #include <fstream>
 #include <GUI/About.hh>
 #include <GUI/ButtonMenu.hh>
-#include <IO/Keyboard.hh>
+#include <LibIO/Keyboard.hh>
 #include <list>
 #include <map>
 #include <new>
@@ -105,8 +105,7 @@ bool OsmosUI::init() {
 /**
  *	configure layout of UI with configuration file and provided resolution
  */
-void OsmosUI::configureUi(std::string                  pathToConfiguration,
-                          Graphics::Metrics::Dimension resolution) {
+void OsmosUI::configureUi(std::string pathToConfiguration, Graphics::Metrics::Dimension resolution) {
     // copy to internal resolution provided dimension
     this->resolution = resolution;
 
@@ -126,8 +125,7 @@ void OsmosUI::configureUi(std::string                  pathToConfiguration,
 
     // creating bar
     mainBar = Geoshape::create();
-    mainBar->set_color(Graphics::Color::as_argb(150, 0, 0, 0),
-                       Graphics::Color::as_argb(255, 255, 255, 255));
+    mainBar->set_color(Graphics::Color::as_argb(150, 0, 0, 0), Graphics::Color::as_argb(255, 255, 255, 255));
     mainBar->set_listener(UI_COMPONENT_EVENT_TYPE_KEY, new InputKeyListener());
 
     if ( configuration["UiStyle"] == "GNOME" ) {
@@ -141,8 +139,7 @@ void OsmosUI::configureUi(std::string                  pathToConfiguration,
 
     else if ( configuration["UiStyle"] == "KDE" ) {
         // set bounds
-        mainBar->set_bounds(
-            Graphics::Metrics::Rectangle(0, resolution.height() - 30, resolution.width(), 30));
+        mainBar->set_bounds(Graphics::Metrics::Rectangle(0, resolution.height() - 30, resolution.width(), 30));
 
         // if mode is kde deactivate candydock thread if is active
         if ( configuration["CandyDockThread"] == "true" )
@@ -162,19 +159,16 @@ static void startEvent() {
         pressed = true;
 
         if ( loggedUser == "admin" )
-            menuButton->set_color(Graphics::Color::as_argb(255, 255, 10, 10),
-                                  Graphics::Color::as_argb(255, 0, 0, 0));
+            menuButton->set_color(Graphics::Color::as_argb(255, 255, 10, 10), Graphics::Color::as_argb(255, 0, 0, 0));
         else
-            menuButton->set_color(Graphics::Color::as_argb(255, 10, 255, 10),
-                                  Graphics::Color::as_argb(255, 0, 0, 0));
+            menuButton->set_color(Graphics::Color::as_argb(255, 10, 255, 10), Graphics::Color::as_argb(255, 0, 0, 0));
 
         menuTab->set_visible(true);
     }
 
     else {
         pressed = false;
-        menuButton->set_color(Graphics::Color::as_argb(255, 10, 200, 10),
-                              Graphics::Color::as_argb(255, 0, 0, 0));
+        menuButton->set_color(Graphics::Color::as_argb(255, 10, 200, 10), Graphics::Color::as_argb(255, 0, 0, 0));
         menuTab->set_visible(false);
     }
 }
@@ -209,11 +203,9 @@ void OsmosUI::setMenuTab() {
     menuTab->set_visible(pressed);
 
     if ( loggedUser == "admin" )
-        menuTab->set_color(Graphics::Color::as_argb(150, 0, 0, 0),
-                           Graphics::Color::as_argb(255, 255, 0, 0));
+        menuTab->set_color(Graphics::Color::as_argb(150, 0, 0, 0), Graphics::Color::as_argb(255, 255, 0, 0));
     else
-        menuTab->set_color(Graphics::Color::as_argb(150, 0, 0, 0),
-                           Graphics::Color::as_argb(255, 0, 255, 0));
+        menuTab->set_color(Graphics::Color::as_argb(150, 0, 0, 0), Graphics::Color::as_argb(255, 0, 255, 0));
 
     // get username
     loggedUser = Utils::Environment::logged_user();
@@ -311,15 +303,15 @@ std::map<string, string> createMenuConfiguration() {
         // if read is successful
         if ( stat == FS_READ_DIRECTORY_SUCCESSFUL ) {
             // if node exist and it isn't a system application
-            if ( node && strcmp(node->m_name, "OsmosUI") != 0
-                 && strcmp(node->m_name, "MXLogin") != 0 && strcmp(node->m_name, "zipNET") != 0 ) {
+            if ( node && strcmp(node->m_name, "OsmosUI") != 0 && strcmp(node->m_name, "MXLogin") != 0
+                 && strcmp(node->m_name, "zipNET") != 0 ) {
                 // create configuration line
                 string name = string(node->m_name);
 
                 // create streamer to create argument
                 stringstream arg;
-                arg << basedir << node->m_name << "/Bin/" << node->m_name << '&' << basedir
-                    << node->m_name << "/Resources/Icons/Desktop.png";
+                arg << basedir << node->m_name << "/Bin/" << node->m_name << '&' << basedir << node->m_name
+                    << "/Resources/Icons/Desktop.png";
 
                 // store into map
                 configuration.insert(make_pair(name, arg.str()));
@@ -412,20 +404,13 @@ void OsmosUI::mainLoop() {
     if ( configuration["TaskManagerThread"] == "true" )
         UI::register_task_manager(taskLabel, taskLabel->bounds());
     if ( configuration["HourManagerThread"] == "true" )
-        threads.push_back(s_create_thread_dn((void*)&SecondaryThread::HourManagerThread,
-                                             (void*)hourLabel,
-                                             "hourmgr"));
+        threads.push_back(s_create_thread_dn((void*)&SecondaryThread::HourManagerThread, (void*)hourLabel, "hourmgr"));
     if ( configuration["MemoryUsageThread"] == "true" )
-        threads.push_back(s_create_thread_dn((void*)&SecondaryThread::MemoryUsageThread,
-                                             (void*)memLabel,
-                                             "memusage"));
+        threads.push_back(s_create_thread_dn((void*)&SecondaryThread::MemoryUsageThread, (void*)memLabel, "memusage"));
     if ( configuration["OsmosUIDockThread"] == "true" )
-        threads.push_back(s_create_thread_dn((void*)&SecondaryThread::OsmosUIDockThread,
-                                             (void*)&resolution,
-                                             "dock"));
+        threads.push_back(s_create_thread_dn((void*)&SecondaryThread::OsmosUIDockThread, (void*)&resolution, "dock"));
     if ( configuration["NotificationThread"] == "true" )
-        threads.push_back(
-            s_create_thread_n((void*)&SecondaryThread::NotificationThread, "notifier"));
+        threads.push_back(s_create_thread_n((void*)&SecondaryThread::NotificationThread, "notifier"));
 
     // main loop of gui
     while ( _continue ) {
