@@ -45,7 +45,7 @@ BreakAfterJavaFieldAnnotations: true
 ColumnLimit: 120
 Cpp11BracedListStyle: false
 EmptyLineBeforeAccessModifier: Always
-IncludeBlocks: Regroup
+IncludeBlocks: Preserve
 IndentCaseLabels: true
 IndentCaseBlocks: false
 IndentPPDirectives: AfterHash
