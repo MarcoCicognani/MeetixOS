@@ -13,4 +13,4 @@
 set(SOURCES
         ListPCI.cc
         List.cc)
-add_command(ListPCI)
+add_meetix_command(ListPCI)

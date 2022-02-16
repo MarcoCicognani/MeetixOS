@@ -11,5 +11,5 @@
 #
 
 set(SOURCES SysFetch.cc)
-add_command(SysFetch)
+add_meetix_command(SysFetch)
 target_link_libraries(SysFetch LibIO LibTasking)

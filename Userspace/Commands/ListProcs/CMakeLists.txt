@@ -13,5 +13,5 @@
 set(SOURCES
         ListProcs.cc
         MemoryUsage.cc)
-add_command(ListProcs)
+add_meetix_command(ListProcs)
 target_link_libraries(ListProcs LibIO LibTasking)

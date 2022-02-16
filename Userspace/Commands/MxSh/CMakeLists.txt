@@ -17,5 +17,5 @@ set(SOURCES
         mxscript.cpp
         parser.cpp
         shell.cpp)
-add_command(MxSh)
+add_meetix_command(MxSh)
 target_link_libraries(MxSh LibIO LibTasking)

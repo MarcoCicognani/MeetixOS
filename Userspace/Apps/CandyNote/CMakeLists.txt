@@ -14,4 +14,4 @@ set(SOURCES
         CandyNote.cpp
         GFrontEnd.cpp
         TFrontEnd.cpp)
-add_application(CandyNote)
+add_meetix_application(CandyNote)

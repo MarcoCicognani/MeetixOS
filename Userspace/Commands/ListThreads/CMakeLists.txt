@@ -11,5 +11,5 @@
 #
 
 set(SOURCES ListThreads.cc)
-add_command(ListThreads)
+add_meetix_command(ListThreads)
 target_link_libraries(ListThreads LibTasking)

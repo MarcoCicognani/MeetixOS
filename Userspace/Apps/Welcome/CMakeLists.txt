@@ -11,4 +11,4 @@
 #
 
 set(SOURCES Welcome.cpp)
-add_application(Welcome)
+add_meetix_application(Welcome)

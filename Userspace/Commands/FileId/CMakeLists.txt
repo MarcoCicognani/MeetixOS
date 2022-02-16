@@ -16,4 +16,4 @@ set(SOURCES
         ELFInspector.cc
         ShellInspector.cc
         TextInspector.cc)
-add_command(FileId)
+add_meetix_command(FileId)

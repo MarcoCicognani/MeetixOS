@@ -11,4 +11,4 @@
 #
 
 set(SOURCES Gurf.cpp)
-add_application(Gurf)
+add_meetix_application(Gurf)

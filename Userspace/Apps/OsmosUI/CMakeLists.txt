@@ -17,4 +17,4 @@ set(SOURCES
         dock.cpp
         notifier.cpp
         OsmosUI.cpp)
-add_application(OsmosUI)
+add_meetix_application(OsmosUI)

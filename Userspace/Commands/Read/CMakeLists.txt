@@ -11,5 +11,5 @@
 #
 
 set(SOURCES Read.cc)
-add_command(Read)
+add_meetix_command(Read)
 target_link_libraries(Read LibIO LibTasking)

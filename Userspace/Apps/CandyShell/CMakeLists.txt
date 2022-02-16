@@ -16,4 +16,4 @@ set(SOURCES
         HeadlessScreen.cpp
         history.cpp
         login.cpp)
-add_application(CandyShell)
+add_meetix_application(CandyShell)

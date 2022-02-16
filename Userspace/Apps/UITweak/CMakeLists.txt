@@ -11,4 +11,4 @@
 #
 
 set(SOURCES UITweak.cpp)
-add_application(UITweak)
+add_meetix_application(UITweak)

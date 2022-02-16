@@ -11,4 +11,4 @@
 #
 
 set(SOURCES Exec.cpp)
-add_application(Exec)
+add_meetix_application(Exec)

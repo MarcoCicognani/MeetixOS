@@ -11,4 +11,4 @@
 #
 
 set(SOURCES MXLogin.cpp)
-add_application(MXLogin)
+add_meetix_application(MXLogin)

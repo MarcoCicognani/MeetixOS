@@ -14,4 +14,4 @@ set(SOURCES
         CpuDetect.cc
         AMD.cc
         Intel.cc)
-add_command(CpuDetect)
+add_meetix_command(CpuDetect)

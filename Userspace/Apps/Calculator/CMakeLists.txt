@@ -11,4 +11,4 @@
 #
 
 set(SOURCES Calculator.cpp)
-add_application(Calculator)
+add_meetix_application(Calculator)

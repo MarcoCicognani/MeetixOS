@@ -10,7 +10,7 @@
 # GNU General Public License version 3
 #
 
-function(add_application APP_NAME)
+function(add_meetix_application APP_NAME)
     add_executable(${APP_NAME} ${SOURCES})
     target_include_directories(${APP_NAME} PRIVATE . ${TOOLCHAIN_INCLUDE}/freetype2)
     target_include_directories(${APP_NAME} PRIVATE .)
@@ -18,14 +18,14 @@ function(add_application APP_NAME)
     install(TARGETS ${APP_NAME} DESTINATION Apps/${APP_NAME}/Bin)
 endfunction()
 
-function(add_command COMMAND_NAME)
+function(add_meetix_command COMMAND_NAME)
     add_executable(${COMMAND_NAME} ${SOURCES})
     target_include_directories(${COMMAND_NAME} PRIVATE .)
     target_link_libraries(${COMMAND_NAME} LibApi LibC LibUtils)
     install(TARGETS ${COMMAND_NAME} DESTINATION Bins)
 endfunction()
 
-function(add_test TEST_NAME)
+function(add_meetix_unit_test TEST_NAME)
     add_executable(${TEST_NAME} ${TEST_NAME}.cc)
     target_include_directories(${TEST_NAME} PRIVATE .)
     target_link_libraries(${TEST_NAME} LibApi LibC LibTC LibUnitTest)

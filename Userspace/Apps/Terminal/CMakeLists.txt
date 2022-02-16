@@ -15,4 +15,4 @@ set(SOURCES
         Screen/GUIScreen.cc
         Screen/HeadlessScreen.cc
         Screen/HeadlessGUIScreen.cc)
-add_application(Terminal)
+add_meetix_application(Terminal)

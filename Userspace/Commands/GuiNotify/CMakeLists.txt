@@ -11,5 +11,5 @@
 #
 
 set(SOURCES GuiNotify.cc)
-add_command(GuiNotify)
+add_meetix_command(GuiNotify)
 target_link_libraries(GuiNotify LibGUI LibGraphics LibTasking LibUtils)

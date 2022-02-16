@@ -11,4 +11,4 @@
 #
 
 set(SOURCES Write.cc)
-add_command(Write)
+add_meetix_command(Write)

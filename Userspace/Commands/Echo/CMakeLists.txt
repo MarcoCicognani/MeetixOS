@@ -11,4 +11,4 @@
 #
 
 set(SOURCES Echo.cc)
-add_command(Echo)
+add_meetix_command(Echo)

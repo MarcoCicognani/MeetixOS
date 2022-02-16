@@ -21,4 +21,4 @@ set(SOURCES
         Tests/Threads/Native.cc
         Tests/Threads/POSIX.cc
         Tests/Manager.cc)
-add_command(Stress)
+add_meetix_command(Stress)

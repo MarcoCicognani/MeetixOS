@@ -11,4 +11,4 @@
 #
 
 set(SOURCES Copy.cc)
-add_command(Copy)
+add_meetix_command(Copy)

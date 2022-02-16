@@ -11,5 +11,5 @@
 #
 
 set(SOURCES Login.cc)
-add_command(Login)
+add_meetix_command(Login)
 target_link_libraries(Login LibIO LibTasking)

@@ -11,4 +11,4 @@
 #
 
 set(SOURCES Kill.cc)
-add_command(Kill)
+add_meetix_command(Kill)

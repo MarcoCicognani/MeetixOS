@@ -11,4 +11,4 @@
 #
 
 set(SOURCES Find.cc)
-add_command(Find)
+add_meetix_command(Find)

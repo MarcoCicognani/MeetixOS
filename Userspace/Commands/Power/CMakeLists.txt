@@ -11,4 +11,4 @@
 #
 
 set(SOURCES Power.cc)
-add_command(Power)
+add_meetix_command(Power)

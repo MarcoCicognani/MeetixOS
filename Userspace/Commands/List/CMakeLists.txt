@@ -13,4 +13,4 @@
 set(SOURCES
         Directory.cc
         List.cc)
-add_command(List)
+add_meetix_command(List)

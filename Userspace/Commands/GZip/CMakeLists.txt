@@ -11,5 +11,5 @@
 #
 
 set(SOURCES GZip.cc)
-add_command(GZip)
+add_meetix_command(GZip)
 target_link_libraries(GZip LibZ)

@@ -11,4 +11,4 @@
 #
 
 set(SOURCES Idle.cc)
-add_command(Idle)
+add_meetix_command(Idle)
