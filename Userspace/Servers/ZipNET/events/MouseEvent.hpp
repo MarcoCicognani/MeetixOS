@@ -27,7 +27,7 @@
 
 #include <events/event.hpp>
 #include <events/locatable.hpp>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Protocol.hh>
 
 /**
  *
@@ -35,8 +35,10 @@
 class MouseEvent_t : public Event_t,
                      public Locatable_t {
 public:
-    MouseEvent_t() : type(MOUSE_EVENT_NONE), buttons(MOUSE_BUTTON_NONE), clickCount(0) {
-    }
+    MouseEvent_t()
+        : type(MOUSE_EVENT_NONE)
+        , buttons(MOUSE_BUTTON_NONE)
+        , clickCount(0) {}
 
     MouseEventType type;
     MouseButton    buttons;

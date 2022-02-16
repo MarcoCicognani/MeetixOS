@@ -30,15 +30,15 @@
 #include <LibGraphics/Text/Font.hh>
 #include <LibGraphics/Text/FontLoader.hh>
 #include <LibGraphics/Text/Layouter.hh>
-#include <GUI/Application.hh>
-#include <GUI/Component/Button.hh>
-#include <GUI/Component/Canvas.hh>
-#include <GUI/Component/Label.hh>
-#include <GUI/Component/TextField.hh>
-#include <GUI/Component/Window.hh>
-#include <GUI/Listener/ActionListener.hh>
-#include <GUI/Listener/FocusListener.hh>
-#include <GUI/Listener/KeyListener.hpp>
+#include <LibGUI/Application.hh>
+#include <LibGUI/Component/Button.hh>
+#include <LibGUI/Component/Canvas.hh>
+#include <LibGUI/Component/Label.hh>
+#include <LibGUI/Component/TextField.hh>
+#include <LibGUI/Component/Window.hh>
+#include <LibGUI/Listener/ActionListener.hh>
+#include <LibGUI/Listener/FocusListener.hh>
+#include <LibGUI/Listener/KeyListener.hpp>
 #include <LibTasking/Lock.hh>
 #include <LibUtils/Utils.hh>
 

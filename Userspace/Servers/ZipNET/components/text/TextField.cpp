@@ -30,7 +30,7 @@
 #include <events/MouseEvent.hpp>
 #include <LibGraphics/Text/FontLoader.hh>
 #include <LibGraphics/Text/FontManager.hh>
-#include <GUI/Properties.hh>
+#include <LibGUI/Properties.hh>
 #include <sstream>
 
 /**

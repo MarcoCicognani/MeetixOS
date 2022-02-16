@@ -17,13 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <GUI/Component/ColoredComponent.hh>
+#include <LibGUI/Component/ColoredComponent.hh>
 
 /*
  *
  */
-bool ColoredComponent::set_color(Graphics::Color::ArgbGradient shapeColor,
-                                Graphics::Color::ArgbGradient titleColor) {
+bool ColoredComponent::set_color(Graphics::Color::ArgbGradient shapeColor, Graphics::Color::ArgbGradient titleColor) {
     if ( !UiInitialized )
         return false;
 
@@ -31,9 +30,9 @@ bool ColoredComponent::set_color(Graphics::Color::ArgbGradient shapeColor,
 
     UiComponentColor request;
     request.header.m_command = UI_PROTOCOL_SET_COMPONENT_COLOR;
-    request.id         = this->id;
-    request.shapeColor = shapeColor;
-    request.titleColor = titleColor;
+    request.id               = this->id;
+    request.shapeColor       = shapeColor;
+    request.titleColor       = titleColor;
 
     s_send_message_t(UiDelegateTid, &request, sizeof(UiComponentColor), tx);
 

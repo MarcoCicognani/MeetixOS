@@ -26,7 +26,7 @@
 #define __BOUNDS_EVENT_COMPONENT__
 
 #include <Api.h>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Protocol.hh>
 #include <list>
 #include <string>
 
@@ -43,14 +43,13 @@ public:
     /**
      *
      */
-    BoundsEventComponent_t(Component_t* self) : self(self) {
-    }
+    BoundsEventComponent_t(Component_t* self)
+        : self(self) {}
 
     /**
      *
      */
-    virtual ~BoundsEventComponent_t() {
-    }
+    virtual ~BoundsEventComponent_t() {}
 
     /**
      *

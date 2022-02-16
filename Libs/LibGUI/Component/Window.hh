@@ -12,12 +12,12 @@
 
 #pragma once
 
-#include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdint"
-#include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/list"
-#include "ColoredComponent.hh"
-#include "Component.hh"
-#include "ImageComponent.hh"
-#include "TitledComponent.hh"
+#include <cstdint>
+#include <LibGUI/Component/ColoredComponent.hh>
+#include <LibGUI/Component/Component.hh>
+#include <LibGUI/Component/ImageComponent.hh>
+#include <LibGUI/Component/TitledComponent.hh>
+#include <list>
 
 /**
  *
@@ -31,9 +31,10 @@ protected:
      *
      */
     Window(uint32_t id)
-        : Component(id, UI_COMPONENT_TYPE_WINDOW), TitledComponent(id), ImageComponent(id),
-          ColoredComponent(id) {
-    }
+        : Component(id, UI_COMPONENT_TYPE_WINDOW)
+        , TitledComponent(id)
+        , ImageComponent(id)
+        , ColoredComponent(id) {}
 
 public:
     ~Window() override = default;

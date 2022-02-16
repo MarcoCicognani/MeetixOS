@@ -12,16 +12,15 @@
 
 #pragma once
 
-#include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/climits"
-#include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/string"
-#include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/vector"
-#include "../Api.h"
-
+#include <Api.h>
+#include <climits>
 #include <LibGraphics/Color.hh>
 #include <LibGraphics/Metrics/Dimension.hh>
 #include <LibGraphics/Metrics/Rectangle.hh>
 #include <LibGraphics/Text/Alignment.hh>
 #include <LibIO/Keyboard.hh>
+#include <string>
+#include <vector>
 
 // namespace GUI::Protocol {
 

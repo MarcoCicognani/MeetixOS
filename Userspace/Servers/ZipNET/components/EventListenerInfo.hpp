@@ -26,7 +26,7 @@
 #define __EVENT_LISTENER_INFO__
 
 #include <Api.h>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Protocol.hh>
 #include <list>
 #include <string>
 

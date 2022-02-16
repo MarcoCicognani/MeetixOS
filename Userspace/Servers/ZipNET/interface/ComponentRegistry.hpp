@@ -27,9 +27,9 @@
 
 #include <components/component.hpp>
 #include <components/window.hpp>
-#include <GUI/Protocol.hh>
-#include <list>
+#include <LibGUI/Protocol.hh>
 #include <LibTasking/Thread.hh>
+#include <list>
 
 using namespace std;
 

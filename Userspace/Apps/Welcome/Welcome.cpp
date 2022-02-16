@@ -17,12 +17,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
 #include <Api.h>
-#include <GUI/Application.hh>
-#include <GUI/Component/Button.hh>
-#include <GUI/Component/Geoshape.hh>
-#include <GUI/Component/Label.hh>
-#include <GUI/Component/Window.hh>
-#include <GUI/Listener/ActionListener.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/Component/Button.hh>
+#include <LibGUI/Component/Geoshape.hh>
+#include <LibGUI/Component/Label.hh>
+#include <LibGUI/Component/Window.hh>
+#include <LibGUI/Listener/ActionListener.hh>
 #include <LibUtils/Environment.hh>
 
 // ui style, i change the presentation in base the style

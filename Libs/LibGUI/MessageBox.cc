@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <GUI/Application.hh>
-#include <GUI/ButtonList.hh>
-#include <GUI/MessageBox.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/ButtonList.hh>
+#include <LibGUI/MessageBox.hh>
 
 /*
  * screen components

@@ -12,11 +12,10 @@
 
 #pragma once
 
-#include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdint"
-#include "../Listener/CanvasBufferListener.hh"
-#include "Component.hh"
-
+#include <cstdint>
 #include <LibGraphics/Context.hh>
+#include <LibGUI/Component/Component.hh>
+#include <LibGUI/Listener/CanvasBufferListener.hh>
 
 /**
  *

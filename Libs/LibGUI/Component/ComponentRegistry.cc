@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <GUI/Component/Component.hh>
-#include <GUI/Component/ComponentRegistry.hh>
+#include <LibGUI/Component/Component.hh>
+#include <LibGUI/Component/ComponentRegistry.hh>
 #include <LibTasking/LockGuard.hh>
 #include <ranges>
 

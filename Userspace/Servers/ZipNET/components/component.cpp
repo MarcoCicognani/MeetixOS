@@ -30,7 +30,7 @@
 #include <events/KeyEvent.hpp>
 #include <events/locatable.hpp>
 #include <events/MouseEvent.hpp>
-#include <GUI/Properties.hh>
+#include <LibGUI/Properties.hh>
 #include <layout/FlowLayoutManager.hpp>
 #include <layout/GridLayoutManager.hpp>
 #include <ranges>

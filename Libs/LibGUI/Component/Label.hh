@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdint"
-#include "ColoredComponent.hh"
-#include "Component.hh"
-#include "TitledComponent.hh"
+#include <cstdint>
+#include <LibGUI/Component/ColoredComponent.hh>
+#include <LibGUI/Component/Component.hh>
+#include <LibGUI/Component/TitledComponent.hh>
 
 /**
  *
@@ -28,8 +28,9 @@ protected:
      *
      */
     Label(uint32_t id)
-        : Component(id, UI_COMPONENT_TYPE_LABEL), TitledComponent(id), ColoredComponent(id) {
-    }
+        : Component(id, UI_COMPONENT_TYPE_LABEL)
+        , TitledComponent(id)
+        , ColoredComponent(id) {}
 
 public:
     ~Label() override = default;

@@ -31,8 +31,8 @@
 #include <components/panel.hpp>
 #include <components/PngComponent.hpp>
 #include <components/TitledComponent.hpp>
-#include <GUI/Properties.hh>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Properties.hh>
+#include <LibGUI/Protocol.hh>
 
 /**
  * constants for border sizes
@@ -43,8 +43,7 @@
 /**
  * modes used when resizing windows
  */
-enum WindowResizeMode
-{
+enum WindowResizeMode {
     RESIZE_MODE_NONE,
     RESIZE_MODE_MOVE,
     RESIZE_MODE_TOP,
@@ -91,22 +90,18 @@ private:
 public:
     Window_t();
 
-    virtual ~Window_t() {
-    }
+    virtual ~Window_t() {}
 
     /**
      *
      */
-    Panel_t* getPanel() {
-        return &panel;
-    }
+    Panel_t* getPanel() { return &panel; }
 
     /**
      * component
      */
     virtual void setFocus(bool focus);
-    virtual void addChild(Component_t*          component,
-                          ChildComponentRefType ref_type = ChildComponentRefType::Default);
+    virtual void addChild(Component_t* component, ChildComponentRefType ref_type = ChildComponentRefType::Default);
     virtual void layout();
     virtual void paint();
 
@@ -122,8 +117,7 @@ public:
     /**
      * color component
      */
-    virtual void setColor(Graphics::Color::ArgbGradient color,
-                          Graphics::Color::ArgbGradient tltColor);
+    virtual void setColor(Graphics::Color::ArgbGradient color, Graphics::Color::ArgbGradient tltColor);
 
     /**
      *
@@ -139,13 +133,10 @@ public:
     virtual void        setTitle(std::string title);
     virtual std::string getTitle();
     virtual void        setTitleFont(std::string fontName);
-    virtual void        setFontSize(int size) {
-    }
-    virtual void setTitleAlignment(Graphics::Text::Alignment alignment);
+    virtual void        setFontSize(int size) {}
+    virtual void        setTitleAlignment(Graphics::Text::Alignment alignment);
 
-    bool isWindow() const override {
-        return true;
-    }
+    bool isWindow() const override { return true; }
 
     /**
      *

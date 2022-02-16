@@ -26,7 +26,7 @@
 #define __ACTION_COMPONENT__
 
 #include <Api.h>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Protocol.hh>
 #include <list>
 #include <string>
 
@@ -38,8 +38,7 @@ class ActionComponent_t;
  */
 class InternalActionHandler_t {
 public:
-    virtual ~InternalActionHandler_t() {
-    }
+    virtual ~InternalActionHandler_t() {}
     virtual void handle(ActionComponent_t* source) = 0;
 };
 
@@ -57,14 +56,14 @@ public:
     /**
      *
      */
-    ActionComponent_t(Component_t* self) : self(self), internalHandler(nullptr) {
-    }
+    ActionComponent_t(Component_t* self)
+        : self(self)
+        , internalHandler(nullptr) {}
 
     /**
      *
      */
-    virtual ~ActionComponent_t() {
-    }
+    virtual ~ActionComponent_t() {}
 
     /**
      *

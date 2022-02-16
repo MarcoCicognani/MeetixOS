@@ -26,7 +26,7 @@
 #define __EVENT_PROCESSOR__
 
 #include <deque>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Protocol.hh>
 #include <interface/CommandMessageResponderThread.hpp>
 #include <LibIO/Keyboard.hh>
 #include <LibIO/Mouse.hh>

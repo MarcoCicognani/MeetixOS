@@ -12,19 +12,18 @@
 
 #pragma once
 
-#include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdint"
-#include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdio"
-#include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/map"
-#include "../../Api.h"
-#include "../../Api/utils/local.hpp"
-#include "../Application.hh"
-#include "../Listener/MouseListener.hpp"
-#include "../Properties.hh"
-#include "../Protocol.hh"
-#include "BoundsEventComponent.hh"
-#include "ComponentRegistry.hh"
-
+#include <Api.h>
+#include <Api/utils/local.hpp>
+#include <cstdint>
+#include <cstdio>
 #include <LibGraphics/Metrics/Rectangle.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/Component/BoundsEventComponent.hh>
+#include <LibGUI/Component/ComponentRegistry.hh>
+#include <LibGUI/Listener/MouseListener.hpp>
+#include <LibGUI/Properties.hh>
+#include <LibGUI/Protocol.hh>
+#include <map>
 
 /**
  *

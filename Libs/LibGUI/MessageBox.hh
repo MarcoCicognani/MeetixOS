@@ -12,17 +12,16 @@
 
 #pragma once
 
-#include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/string"
-#include "Component/Button.hh"
-#include "Component/Label.hh"
-#include "Component/Window.hh"
-#include "Listener/ActionListener.hh"
+#include <LibGUI/Component/Button.hh>
+#include <LibGUI/Component/Label.hh>
+#include <LibGUI/Component/Window.hh>
+#include <LibGUI/Listener/ActionListener.hh>
+#include <string>
 
 /*
  * pressed button
  */
-enum PressedButton
-{
+enum PressedButton {
     BUTTON_NONE,
     BUTTON_OKAY,
     BUTTON_CANCEL,

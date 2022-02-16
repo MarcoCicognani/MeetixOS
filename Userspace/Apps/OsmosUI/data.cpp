@@ -22,8 +22,8 @@
 #include <cstring>
 #include <fcntl.h>
 #include <fstream>
-#include <GUI/About.hh>
-#include <GUI/ButtonMenu.hh>
+#include <LibGUI/About.hh>
+#include <LibGUI/ButtonMenu.hh>
 #include <LibIO/Keyboard.hh>
 #include <list>
 #include <map>

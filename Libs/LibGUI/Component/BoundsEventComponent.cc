@@ -18,10 +18,10 @@
  **********************************************************************************/
 
 #include <Api.h>
-#include <GUI/Application.hh>
-#include <GUI/Component/BoundsEventComponent.hh>
-#include <GUI/Component/Component.hh>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/Component/BoundsEventComponent.hh>
+#include <LibGUI/Component/Component.hh>
+#include <LibGUI/Protocol.hh>
 #include <stdio.h>
 
 /**

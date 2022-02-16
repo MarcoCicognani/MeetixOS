@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdint"
-#include "../Protocol.hh"
+#include <cstdint>
+#include <LibGUI/Protocol.hh>
 
 /**
  *

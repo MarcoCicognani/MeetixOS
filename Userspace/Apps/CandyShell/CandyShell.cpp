@@ -30,7 +30,7 @@
 #include <Api.h>
 #include <dirent.h>
 #include <fstream>
-#include <GUI/Application.hh>
+#include <LibGUI/Application.hh>
 #include <iomanip>
 #include <iostream>
 #include <LibIO/Keyboard.hh>

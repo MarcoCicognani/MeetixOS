@@ -26,7 +26,7 @@
 #include <events/MouseEvent.hpp>
 #include <LibGraphics/Color.hh>
 #include <LibGraphics/Text/FontManager.hh>
-#include <GUI/Properties.hh>
+#include <LibGUI/Properties.hh>
 #include <math.h>
 #include <zipNET.hpp>
 

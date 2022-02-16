@@ -26,14 +26,14 @@
 
 #include <algorithm>
 #include <fstream>
-#include <GUI/Application.hh>
-#include <GUI/ButtonList.hh>
-#include <GUI/Component/Button.hh>
-#include <GUI/Component/Geoshape.hh>
-#include <GUI/Component/Label.hh>
-#include <GUI/Component/TextField.hh>
-#include <GUI/Component/Window.hh>
-#include <GUI/Listener/ActionListener.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/ButtonList.hh>
+#include <LibGUI/Component/Button.hh>
+#include <LibGUI/Component/Geoshape.hh>
+#include <LibGUI/Component/Label.hh>
+#include <LibGUI/Component/TextField.hh>
+#include <LibGUI/Component/Window.hh>
+#include <LibGUI/Listener/ActionListener.hh>
 #include <sstream>
 #include <stdlib.h>
 
@@ -62,14 +62,10 @@ public:
     int number;
 
     //
-    NumPressActionListener(int num) {
-        this->number = num;
-    }
+    NumPressActionListener(int num) { this->number = num; }
 
     //
-    virtual void handle_action() {
-        padButtonPressed(number);
-    }
+    virtual void handle_action() { padButtonPressed(number); }
 };
 
 /**
@@ -81,14 +77,10 @@ public:
     int command;
 
     //
-    CommandPressActionListener(int com) {
-        this->command = com;
-    }
+    CommandPressActionListener(int com) { this->command = com; }
 
     //
-    virtual void handle_action() {
-        commandPressed(command);
-    }
+    virtual void handle_action() { commandPressed(command); }
 };
 
 /**
@@ -103,8 +95,7 @@ int main(int argc, char* argv[]) {
         // configure window
         window = Window::create();
         window->set_bounds(Graphics::Metrics::Rectangle(70, 70, 195, 300));
-        window->set_color(Graphics::Color::as_rgb(0, 180, 0),
-                          Graphics::Color::as_argb(255, 255, 255, 255));
+        window->set_color(Graphics::Color::as_rgb(0, 180, 0), Graphics::Color::as_argb(255, 255, 255, 255));
         window->set_title("Calculator");
         window->set_resizable(false);
         window->on_close([] { blocker = false; });
@@ -113,8 +104,7 @@ int main(int argc, char* argv[]) {
         display = Textfield::create();
         display->set_title("0");
         display->set_bounds(Graphics::Metrics::Rectangle(10, 10, 150, 30));
-        display->set_color(Graphics::Color::as_argb(120, 0, 0, 0),
-                           Graphics::Color::as_rgb(255, 255, 255));
+        display->set_color(Graphics::Color::as_argb(120, 0, 0, 0), Graphics::Color::as_rgb(255, 255, 255));
         window->add_child(display);
 
         // add to list buttons

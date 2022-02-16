@@ -17,12 +17,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
 #include <Api.h>
-#include <GUI/Application.hh>
-#include <GUI/ButtonList.hh>
-#include <GUI/Component/Geoshape.hh>
-#include <GUI/Component/Label.hh>
-#include <GUI/Component/Window.hh>
-#include <GUI/Notification.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/ButtonList.hh>
+#include <LibGUI/Component/Geoshape.hh>
+#include <LibGUI/Component/Label.hh>
+#include <LibGUI/Component/Window.hh>
+#include <LibGUI/Notification.hh>
 #include <libgen.h>
 #include <string.h>
 #include <string>
@@ -163,10 +163,7 @@ int main(int argc, char* argv[]) {
         auto resolution = UI::screen_dimension();
 
         // set bounds
-        Graphics::Metrics::Rectangle bounds(resolution.width() / 2 - 400,
-                                            resolution.height() / 2 - 300,
-                                            820,
-                                            655);
+        Graphics::Metrics::Rectangle bounds(resolution.width() / 2 - 400, resolution.height() / 2 - 300, 820, 655);
         window->set_bounds(bounds);
         title->set_bounds(Graphics::Metrics::Rectangle(0, 0, 800, 30));
         pngPanel->set_bounds(Graphics::Metrics::Rectangle(30, 30, 740, 540));

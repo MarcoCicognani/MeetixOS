@@ -18,9 +18,9 @@
  **********************************************************************************/
 
 #include <Api.h>
-#include <GUI/Component/Button.hh>
-#include <GUI/Properties.hh>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Component/Button.hh>
+#include <LibGUI/Properties.hh>
+#include <LibGUI/Protocol.hh>
 
 /**
  *

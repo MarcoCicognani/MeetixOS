@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdint"
-#include "Listener.hh"
+#include <cstdint>
+#include <LibGUI/Listener/Listener.hh>
 
 class Component;
 
@@ -24,15 +24,14 @@ class CanvasWfaListener : public Listener {
 public:
     Canvas* m_canvas;
 
-    CanvasWfaListener(Canvas* canvas) : m_canvas{ canvas } {
-    }
+    CanvasWfaListener(Canvas* canvas)
+        : m_canvas{ canvas } {}
 
     ~CanvasWfaListener() override = default;
 
     void process(UiComponentEventHeader* header) override {
         if ( header->type == UI_COMPONENT_EVENT_TYPE_CANVAS_WFA ) {
-            m_canvas->acknowledge_new_buffer(
-                reinterpret_cast<UiComponentCanvasWfaEvent*>(header)->newBufferAddress);
+            m_canvas->acknowledge_new_buffer(reinterpret_cast<UiComponentCanvasWfaEvent*>(header)->newBufferAddress);
         }
     }
 };

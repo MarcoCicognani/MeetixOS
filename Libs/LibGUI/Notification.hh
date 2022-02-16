@@ -12,10 +12,9 @@
 
 #pragma once
 
-#include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/string"
-#include "../Api.h"
-
+#include <Api.h>
 #include <LibGraphics/Color.hh>
+#include <string>
 
 // max length of title
 #define MAX_TITLE_LENGTH 512

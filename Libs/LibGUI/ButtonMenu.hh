@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/vector"
-#include "ButtonList.hh"
+#include <LibGUI/ButtonList.hh>
+#include <vector>
 
 /*
  *	this class provide a more complex list for button, is a simple way
@@ -75,8 +75,7 @@ public:
     void create(const std::string& pathToConfiguration, const Graphics::Metrics::Rectangle& bounds);
 
     // create menu from map configuration
-    void create(const std::map<std::string, std::string>& configuration,
-                const Graphics::Metrics::Rectangle&       bounds);
+    void create(const std::map<std::string, std::string>& configuration, const Graphics::Metrics::Rectangle& bounds);
 
     // set size of menu
     inline void setBounds(const Graphics::Metrics::Rectangle& bounds);
@@ -85,7 +84,5 @@ public:
     void show(Geoshape* where);
 
     // menu on desire Window form
-    inline void show(Window* where) {
-        buttons.show(where);
-    }
+    inline void show(Window* where) { buttons.show(where); }
 };

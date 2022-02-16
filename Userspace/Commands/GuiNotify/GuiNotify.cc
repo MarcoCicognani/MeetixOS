@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <GUI/Application.hh>
-#include <GUI/Notification.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/Notification.hh>
 #include <iostream>
 #include <string>
 #include <LibUtils/ArgsParser.hh>

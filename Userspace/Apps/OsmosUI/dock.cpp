@@ -19,7 +19,7 @@
 #include "OsmosUI.hpp"
 #include "SecondaryThread.hpp"
 
-#include <GUI/ButtonList.hh>
+#include <LibGUI/ButtonList.hh>
 #include <LibUtils/Environment.hh>
 
 using namespace std;

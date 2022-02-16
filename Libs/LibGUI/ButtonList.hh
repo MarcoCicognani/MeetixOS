@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/functional"
-#include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/string"
-#include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/unordered_map"
-#include "../Api.h"
-#include "Component/Button.hh"
-#include "Component/Geoshape.hh"
-#include "Component/Window.hh"
+#include <Api.h>
+#include <functional>
+#include <LibGUI/Component/Button.hh>
+#include <LibGUI/Component/Geoshape.hh>
+#include <LibGUI/Component/Window.hh>
+#include <string>
+#include <unordered_map>
 
 /*
  * container class to create button list
@@ -26,8 +26,7 @@
 class ButtonList {
 public:
     // constructors
-    ButtonList() {
-    }
+    ButtonList() {}
     ButtonList(const std::string& name, Button* button, const std::function<void(void)>& handler) {
         add(name, button, handler);
     }
@@ -48,9 +47,7 @@ public:
 
     // overloaded configure method, each method provide different combination of parameters
     void configure(const std::string& name, const Graphics::Metrics::Rectangle& bounds);
-    void configure(const std::string&                  name,
-                   const Graphics::Metrics::Rectangle& bounds,
-                   const std::string&                  title);
+    void configure(const std::string& name, const Graphics::Metrics::Rectangle& bounds, const std::string& title);
     void configure(const std::string&                  name,
                    const Graphics::Metrics::Rectangle& bounds,
                    const std::string&                  title,

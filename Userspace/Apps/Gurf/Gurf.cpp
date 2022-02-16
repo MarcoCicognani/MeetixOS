@@ -16,11 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <GUI/Application.hh>
-#include <GUI/ButtonList.hh>
-#include <GUI/Component/Geoshape.hh>
-#include <GUI/Component/Label.hh>
-#include <GUI/Component/Window.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/ButtonList.hh>
+#include <LibGUI/Component/Geoshape.hh>
+#include <LibGUI/Component/Label.hh>
+#include <LibGUI/Component/Window.hh>
 #include <stdlib.h>
 #include <LibTasking/Timer.hh>
 #include <LibUtils/TimeSpan.hh>

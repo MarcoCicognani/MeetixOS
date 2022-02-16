@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/string"
-#include "../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/vector"
-#include "Protocol.hh"
+#include <LibGUI/Protocol.hh>
+#include <string>
+#include <vector>
 
 class Listener;
 class Component;

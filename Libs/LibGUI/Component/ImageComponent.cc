@@ -18,7 +18,7 @@
  **********************************************************************************/
 
 #include <cstring>
-#include <GUI/Component/ImageComponent.hh>
+#include <LibGUI/Component/ImageComponent.hh>
 
 /**
  *
@@ -39,7 +39,7 @@ bool ImageComponent::set_image(std::string path, Graphics::Metrics::Point pngPos
 
     UiComponentSetupPng request;
     request.header.m_command = UI_PROTOCOL_SET_PNG;
-    request.id        = this->id;
+    request.id               = this->id;
     memcpy(request.pathToPng, path.c_str(), pathLen);
     request.pathToPng[pathLen] = 0;
     request.pngPosition        = pngPosition;
@@ -51,8 +51,7 @@ bool ImageComponent::set_image(std::string path, Graphics::Metrics::Point pngPos
     uint8_t buffer[bufferSize];
 
     if ( s_receive_message_t(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-        UiComponentSetupPngResponse* response
-            = (UiComponentSetupPngResponse*)MESSAGE_CONTENT(buffer);
+        UiComponentSetupPngResponse* response = (UiComponentSetupPngResponse*)MESSAGE_CONTENT(buffer);
         if ( response->status == UI_PROTOCOL_SUCCESS )
             return true;
     }

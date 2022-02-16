@@ -24,7 +24,7 @@
 
 #include "RegistrationThread.hpp"
 
-#include <GUI/Protocol.hh>
+#include <LibGUI/Protocol.hh>
 #include <interface/ApplicationExitCleanupThread.hpp>
 #include <interface/CommandMessageReceiverThread.hpp>
 #include <LibUtils/Utils.hh>

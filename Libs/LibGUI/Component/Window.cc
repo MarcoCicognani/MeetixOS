@@ -18,10 +18,10 @@
  **********************************************************************************/
 
 #include <Api.h>
-#include <GUI/Application.hh>
-#include <GUI/Component/Window.hh>
-#include <GUI/Properties.hh>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/Component/Window.hh>
+#include <LibGUI/Properties.hh>
+#include <LibGUI/Protocol.hh>
 
 /**
  *
@@ -31,13 +31,9 @@ private:
     void (*stdFunctionToClose)();
 
 public:
-    WindowCloseListener(void (*func)()) {
-        stdFunctionToClose = func;
-    }
+    WindowCloseListener(void (*func)()) { stdFunctionToClose = func; }
 
-    virtual void process(UiComponentEventHeader* header) {
-        stdFunctionToClose();
-    }
+    virtual void process(UiComponentEventHeader* header) { stdFunctionToClose(); }
 };
 
 /**

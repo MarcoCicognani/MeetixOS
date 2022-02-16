@@ -33,7 +33,7 @@
 #include <events/FocusEvent.hpp>
 #include <events/KeyEvent.hpp>
 #include <events/MouseEvent.hpp>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Protocol.hh>
 #include <interface/ComponentRegistry.hpp>
 #include <interface/TaskManagerThread.hpp>
 #include <layout/GridLayoutManager.hpp>

@@ -20,13 +20,13 @@
 
 #include <cstring>
 #include <fstream>
-#include <GUI/Application.hh>
-#include <GUI/Component/Button.hh>
-#include <GUI/Component/Geoshape.hh>
-#include <GUI/Component/Label.hh>
-#include <GUI/Component/TextField.hh>
-#include <GUI/Component/Window.hh>
-#include <GUI/Listener/ActionListener.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/Component/Button.hh>
+#include <LibGUI/Component/Geoshape.hh>
+#include <LibGUI/Component/Label.hh>
+#include <LibGUI/Component/TextField.hh>
+#include <LibGUI/Component/Window.hh>
+#include <LibGUI/Listener/ActionListener.hh>
 #include <iomanip>
 #include <LibUtils/Environment.hh>
 #include <LibUtils/PropertyFileParser.hh>

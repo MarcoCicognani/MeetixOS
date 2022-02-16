@@ -18,9 +18,9 @@
  **********************************************************************************/
 
 #include <Api.h>
-#include <GUI/Component/Canvas.hh>
-#include <GUI/Listener/CanvasWFAListener.hh>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Component/Canvas.hh>
+#include <LibGUI/Listener/CanvasWFAListener.hh>
+#include <LibGUI/Protocol.hh>
 
 /**
  *

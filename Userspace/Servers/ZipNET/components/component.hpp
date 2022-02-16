@@ -30,7 +30,7 @@
 #include <events/event.hpp>
 #include <LibGraphics/Context.hh>
 #include <LibGraphics/Metrics/Rectangle.hh>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Protocol.hh>
 #include <layout/LayoutManager.hpp>
 #include <map>
 #include <stdio.h>

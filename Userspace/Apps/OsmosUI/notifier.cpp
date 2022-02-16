@@ -18,8 +18,8 @@
 
 #include "SecondaryThread.hpp"
 
-#include <GUI/Component/ComponentRegistry.hh>
-#include <GUI/Notification.hh>
+#include <LibGUI/Component/ComponentRegistry.hh>
+#include <LibGUI/Notification.hh>
 #include <LibUtils/Environment.hh>
 
 using namespace std;

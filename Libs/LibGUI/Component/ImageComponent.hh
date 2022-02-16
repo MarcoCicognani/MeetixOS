@@ -12,25 +12,33 @@
 
 #pragma once
 
-#include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdint"
-#include "../../Api.h"
-#include "../Application.hh"
-#include "../Protocol.hh"
-#include "Component.hh"
-
+#include <Api.h>
+#include <cstdint>
 #include <LibGraphics/Color.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/Component/Component.hh>
+#include <LibGUI/Protocol.hh>
 
 /*
  *
  */
-class ColoredComponent {
+class ImageComponent {
 private:
+    /**
+     *
+     */
     uint32_t id;
 
 protected:
-    ColoredComponent(uint32_t id)
+    /**
+     *
+     */
+    ImageComponent(uint32_t id)
         : id(id) {}
 
 public:
-    virtual bool set_color(Graphics::Color::ArgbGradient shapeColor, Graphics::Color::ArgbGradient titleColor);
+    /**
+     *
+     */
+    virtual bool set_image(std::string path, Graphics::Metrics::Point pngPosition);
 };

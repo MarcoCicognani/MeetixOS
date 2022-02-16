@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <Api/Common.h>
 #include <cstdint>
 #include <map>
 #include <sstream>
@@ -42,11 +43,12 @@ public:
          */
         InfoBasic() = default;
         InfoBasic(bool pressed, bool ctrl, bool alt, bool shift, u8 scancode)
-            : m_is_pressed{ pressed }, m_ctrl{ ctrl }, m_alt{ alt }, m_shift{ shift }, m_scancode{
-                  scancode
-              } {
-        }
-    };
+            : m_is_pressed{ pressed }
+            , m_ctrl{ ctrl }
+            , m_alt{ alt }
+            , m_shift{ shift }
+            , m_scancode{ scancode } {}
+    } A_PACKED;
 
     /**
      * @brief Extended key-pressed information
@@ -60,13 +62,12 @@ public:
          */
         Info() = default;
         Info(bool pressed, bool ctrl, bool alt, bool shift, u8 scancode)
-            : InfoBasic(pressed, ctrl, alt, shift, scancode) {
-        }
+            : InfoBasic(pressed, ctrl, alt, shift, scancode) {}
         Info(const std::string& key, bool pressed, bool ctrl, bool alt, bool shift, u8 scancode)
-            : InfoBasic{ pressed, ctrl, alt, shift, scancode }, m_key{ key } {
-        }
-        Info(const InfoBasic& basic) : InfoBasic{ basic } {
-        }
+            : InfoBasic{ pressed, ctrl, alt, shift, scancode }
+            , m_key{ key } {}
+        Info(const InfoBasic& basic)
+            : InfoBasic{ basic } {}
 
         /**
          * @brief operator less overload
@@ -130,9 +131,7 @@ public:
     /**
      * @brief Returns the name of the current loaded layout
      */
-    [[nodiscard]] const std::string& current_layout() const {
-        return m_current_layout;
-    }
+    [[nodiscard]] const std::string& current_layout() const { return m_current_layout; }
 
 private:
     Keyboard() = default;

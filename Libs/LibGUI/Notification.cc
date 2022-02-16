@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <GUI/Application.hh>
-#include <GUI/Notification.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/Notification.hh>
 #include <stdio.h>
 #include <string.h>
 
@@ -33,11 +33,7 @@ void Notification::send(const std::string& title, const std::string& message) {
  * redirect
  */
 void Notification::send(const std::string& title, const std::string& message, uint32_t sleep) {
-    send(title,
-         message,
-         sleep,
-         Graphics::Color::as_rgb(255, 255, 255),
-         MessageAnimation_t::DARKENING);
+    send(title, message, sleep, Graphics::Color::as_rgb(255, 255, 255), MessageAnimation_t::DARKENING);
 }
 
 /*

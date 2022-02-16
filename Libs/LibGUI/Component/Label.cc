@@ -18,8 +18,8 @@
  **********************************************************************************/
 
 #include <Api.h>
-#include <GUI/Component/Label.hh>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Component/Label.hh>
+#include <LibGUI/Protocol.hh>
 
 /**
  *

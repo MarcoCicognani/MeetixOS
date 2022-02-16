@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * */
 
-#include <GUI/Protocol.hh>
+#include <LibGUI/Protocol.hh>
 #include <interface/CommandMessageReceiverThread.hpp>
 #include <stdio.h>
 #include <string.h>

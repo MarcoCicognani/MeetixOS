@@ -20,9 +20,9 @@
 #include <Api.h>
 #include <Api/utils/local.hpp>
 #include <cstring>
-#include <GUI/Application.hh>
-#include <GUI/Component/TitledComponent.hh>
-#include <GUI/Protocol.hh>
+#include <LibGUI/Application.hh>
+#include <LibGUI/Component/TitledComponent.hh>
+#include <LibGUI/Protocol.hh>
 
 /**
  *

@@ -19,7 +19,7 @@
 
 #include <fstream>
 #include <functional>
-#include <GUI/ButtonMenu.hh>
+#include <LibGUI/ButtonMenu.hh>
 #include <LibUtils/PropertyFileParser.hh>
 
 using namespace std;

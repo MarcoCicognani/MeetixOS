@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdint"
-#include "../../Api.h"
-#include "../Listener/BoundsListener.hh"
-#include "../Protocol.hh"
+#include <Api.h>
+#include <cstdint>
+#include <LibGUI/Listener/BoundsListener.hh>
+#include <LibGUI/Protocol.hh>
 
 /**
  * Component that is capable of receiving bounds events
@@ -27,8 +27,9 @@ private:
 protected:
     Component* self;
 
-    BoundsEventComponent(Component* self, UiComponentID id) : self(self), id(id) {
-    }
+    BoundsEventComponent(Component* self, UiComponentID id)
+        : self(self)
+        , id(id) {}
 
 public:
     virtual ~BoundsEventComponent() = default;

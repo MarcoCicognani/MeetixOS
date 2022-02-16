@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/cstdint"
-#include "../../Api.h"
-#include "../Protocol.hh"
+#include <Api.h>
+#include <cstdint>
+#include <LibGUI/Protocol.hh>
 
 /**
  *
@@ -24,8 +24,8 @@ private:
     uint32_t id;
 
 protected:
-    TitledComponent(uint32_t id) : id(id) {
-    }
+    TitledComponent(uint32_t id)
+        : id(id) {}
 
 public:
     /**
