@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <TC/Assertions.hh>
-#include <TC/Cxx.hh>
+#include <LibTC/Assertions.hh>
+#include <LibTC/Cxx.hh>
 
 namespace TC::Memory {
 

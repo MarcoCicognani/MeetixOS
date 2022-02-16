@@ -11,21 +11,21 @@
  */
 
 #include <ctype.h>
+#include <LibTC/Assertions.hh>
+#include <LibTC/Collection/String.hh>
+#include <LibTC/Collection/StringView.hh>
+#include <LibTC/Cxx.hh>
+#include <LibTC/Functional/Must.hh>
+#include <LibTC/Functional/Try.hh>
+#include <LibTC/Trait/NumericLimits.hh>
 #include <string.h>
-#include <TC/Assertions.hh>
-#include <TC/Collection/String.hh>
-#include <TC/Collection/StringView.hh>
-#include <TC/Cxx.hh>
-#include <TC/Functional/Must.hh>
-#include <TC/Functional/Try.hh>
-#include <TC/Trait/NumericLimits.hh>
 
 namespace TC::Collection {
 
-constexpr StringView::StringView(char const* str, usize count)
-    : m_chars_ptr{ str }
-    , m_chars_count{ count } {
-}
+// constexpr StringView::StringView(char const* str, usize count)
+//     : m_chars_ptr{ str }
+//     , m_chars_count{ count } {
+// }
 
 StringView::StringView(String const& string)
     : StringView{ string.as_cstr(), string.len() } {

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <TC/Hashing/Integer.hh>
+#include <LibTC/Hashing/Integer.hh>
 
 namespace TC::Hashing {
 

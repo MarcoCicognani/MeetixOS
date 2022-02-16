@@ -10,11 +10,11 @@
  * GNU General Public License version 3
  */
 
-#include <TC/Collection/StringStorage.hh>
-#include <TC/Collection/StringView.hh>
-#include <TC/Functional/Must.hh>
-#include <TC/Functional/Try.hh>
-#include <TC/Memory/Raw.hh>
+#include <LibTC/Collection/StringStorage.hh>
+#include <LibTC/Collection/StringView.hh>
+#include <LibTC/Functional/Must.hh>
+#include <LibTC/Functional/Try.hh>
+#include <LibTC/Memory/Raw.hh>
 
 namespace TC::Collection {
 

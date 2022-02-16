@@ -10,13 +10,18 @@
  * GNU General Public License version 3
  */
 
-#include <LibTC/Hashing/Integer.hh>
-#include <LibTC/Hashing/Pointer.hh>
+#pragma once
 
-namespace TC::Hashing {
+#include <LibTC/Trait/IsSame.hh>
 
-usize pointer_hash(void const* value) {
-    return integer_hash(reinterpret_cast<u64>(value));
-}
+namespace TC {
+namespace Trait {
 
-} /* namespace TC::Hashing */
+template<typename T, typename... Ts>
+concept In = (IsSame<T, Ts> || ...);
+
+} /* namespace Trait */
+
+using Trait::In;
+
+} /* namespace TC */

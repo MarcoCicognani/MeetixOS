@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <TC/Collection/StringBuilder.hh>
-#include <TC/Functional/Must.hh>
-#include <TC/Functional/Try.hh>
+#include <LibTC/Collection/StringBuilder.hh>
+#include <LibTC/Functional/Must.hh>
+#include <LibTC/Functional/Try.hh>
 
 namespace TC::Collection {
 

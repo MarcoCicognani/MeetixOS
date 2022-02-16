@@ -10,13 +10,17 @@
  * GNU General Public License version 3
  */
 
-#include <LibTC/Hashing/Integer.hh>
-#include <LibTC/Hashing/Pointer.hh>
+#pragma once
 
-namespace TC::Hashing {
+#include <LibTC/Trait/Constant.hh>
 
-usize pointer_hash(void const* value) {
-    return integer_hash(reinterpret_cast<u64>(value));
-}
+namespace TC {
+namespace Trait {
 
-} /* namespace TC::Hashing */
+using TrueType = Constant<bool, true>;
+
+} /* namespace Trait */
+
+using Trait::TrueType;
+
+} /* namespace TC */

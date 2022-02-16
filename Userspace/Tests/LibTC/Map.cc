@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <TC/Collection/Map.hh>
-#include <TC/Cxx.hh>
+#include <LibTC/Collection/Map.hh>
+#include <LibTC/Cxx.hh>
 #include <UnitTest/Assertions.hh>
 #include <UnitTest/Case.hh>
 
@@ -47,12 +47,9 @@ TEST_CASE(insert_and_access) {
     public:
         Object() = default;
         explicit Object(usize value)
-            : m_value{ value } {
-        }
+            : m_value{ value } {}
 
-        [[nodiscard]] usize value() const {
-            return m_value;
-        }
+        [[nodiscard]] usize value() const { return m_value; }
 
         bool operator==(Object const&) const = default;
 
@@ -92,12 +89,9 @@ TEST_CASE(insert_and_access_unordered) {
     public:
         Object() = default;
         explicit Object(usize value)
-            : m_value{ value } {
-        }
+            : m_value{ value } {}
 
-        [[nodiscard]] usize value() const {
-            return m_value;
-        }
+        [[nodiscard]] usize value() const { return m_value; }
 
         bool operator==(Object const&) const = default;
 

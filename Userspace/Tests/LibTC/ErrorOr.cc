@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <TC/Functional/ErrorOr.hh>
+#include <LibTC/Functional/ErrorOr.hh>
 #include <UnitTest/Assertions.hh>
 #include <UnitTest/Case.hh>
 

@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <TC/Collection/List.hh>
-#include <TC/Cxx.hh>
+#include <LibTC/Collection/List.hh>
+#include <LibTC/Cxx.hh>
 #include <UnitTest/Assertions.hh>
 #include <UnitTest/Case.hh>
 
@@ -61,12 +61,9 @@ TEST_CASE(append) {
     public:
         Object() = default;
         explicit Object(usize value)
-            : m_value{ value } {
-        }
+            : m_value{ value } {}
 
-        [[nodiscard]] usize value() const {
-            return m_value;
-        }
+        [[nodiscard]] usize value() const { return m_value; }
 
     private:
         usize m_value{ 0 };
@@ -114,12 +111,9 @@ TEST_CASE(prepend) {
     public:
         Object() = default;
         explicit Object(usize value)
-            : m_value{ value } {
-        }
+            : m_value{ value } {}
 
-        [[nodiscard]] usize value() const {
-            return m_value;
-        }
+        [[nodiscard]] usize value() const { return m_value; }
 
     private:
         usize m_value{ 0 };
@@ -159,16 +153,11 @@ TEST_CASE(erase_if) {
         Object() = default;
         explicit Object(usize value, char cc)
             : m_value{ value }
-            , m_cc{ cc } {
-        }
+            , m_cc{ cc } {}
 
-        [[nodiscard]] usize value() const {
-            return m_value;
-        }
+        [[nodiscard]] usize value() const { return m_value; }
 
-        [[nodiscard]] char cc() const {
-            return m_cc;
-        }
+        [[nodiscard]] char cc() const { return m_cc; }
 
     private:
         usize m_value{ 0 };
@@ -221,16 +210,11 @@ TEST_CASE(find_if) {
     public:
         Object() = default;
         explicit Object(usize value)
-            : m_value{ value } {
-        }
+            : m_value{ value } {}
 
-        [[nodiscard]] usize value() const {
-            return m_value;
-        }
+        [[nodiscard]] usize value() const { return m_value; }
 
-        void set_value(usize new_value) {
-            m_value = new_value;
-        }
+        void set_value(usize new_value) { m_value = new_value; }
 
         [[nodiscard]] bool operator==(Object const&) const = default;
 

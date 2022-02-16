@@ -10,13 +10,19 @@
  * GNU General Public License version 3
  */
 
-#include <LibTC/Hashing/Integer.hh>
-#include <LibTC/Hashing/Pointer.hh>
+#pragma once
 
-namespace TC::Hashing {
+#include <errno.h>
+#include <LibTC/Functional/Result.hh>
 
-usize pointer_hash(void const* value) {
-    return integer_hash(reinterpret_cast<u64>(value));
-}
+namespace TC {
+namespace Functional {
 
-} /* namespace TC::Hashing */
+template<typename T>
+using ErrorOr = Result<T, OSError>;
+
+} /* namespace Functional */
+
+using Functional::ErrorOr;
+
+} /* namespace TC */

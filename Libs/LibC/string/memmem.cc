@@ -11,7 +11,7 @@
  */
 
 #include <string.h>
-#include <TC/Collection/Vector.hh>
+#include <LibTC/Collection/Vector.hh>
 
 static void const* bitwise_memmem(void const* haystack, usize haystack_len, void const* needle, usize needle_len) {
     u64            lookup   = 0xfffffffe;

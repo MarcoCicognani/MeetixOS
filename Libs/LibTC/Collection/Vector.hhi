@@ -12,10 +12,12 @@
 
 #pragma once
 
-#include <TC/Assertions.hh>
-#include <TC/Cxx.hh>
-#include <TC/Memory/Raw.hh>
-#include <TC/Trait/TypeIntrinsics.hh>
+#include <LibTC/Assertions.hh>
+#include <LibTC/Cxx.hh>
+#include <LibTC/Functional/Must.hh>
+#include <LibTC/Functional/Try.hh>
+#include <LibTC/Memory/Raw.hh>
+#include <LibTC/Trait/TypeIntrinsics.hh>
 
 namespace TC::Collection {
 namespace Details {

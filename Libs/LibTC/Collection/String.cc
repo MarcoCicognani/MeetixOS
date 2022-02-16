@@ -12,12 +12,12 @@
 
 #include <ctype.h>
 #include <string.h>
-#include <TC/Collection/String.hh>
-#include <TC/Collection/StringBuilder.hh>
-#include <TC/Collection/StringView.hh>
-#include <TC/Cxx.hh>
-#include <TC/Functional/Must.hh>
-#include <TC/Functional/Try.hh>
+#include <LibTC/Collection/String.hh>
+#include <LibTC/Collection/StringBuilder.hh>
+#include <LibTC/Collection/StringView.hh>
+#include <LibTC/Cxx.hh>
+#include <LibTC/Functional/Must.hh>
+#include <LibTC/Functional/Try.hh>
 
 namespace TC::Collection {
 

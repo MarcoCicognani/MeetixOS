@@ -10,10 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <TC/Collection/Vector.hh>
-#include <TC/Cxx.hh>
-#include <TC/IntTypes.hh>
-#include <TC/Memory/NonNullBox.hh>
+#include <LibTC/Collection/Vector.hh>
+#include <LibTC/Cxx.hh>
+#include <LibTC/IntTypes.hh>
+#include <LibTC/Memory/NonNullBox.hh>
 #include <UnitTest/Assertions.hh>
 #include <UnitTest/Case.hh>
 
@@ -26,16 +26,11 @@ TEST_CASE(make_box) {
     public:
         Object() = default;
         explicit Object(usize value)
-            : m_value{ value } {
-        }
+            : m_value{ value } {}
 
-        ~Object() {
-            s_destructor_called = true;
-        }
+        ~Object() { s_destructor_called = true; }
 
-        [[nodiscard]] usize value() const {
-            return m_value;
-        }
+        [[nodiscard]] usize value() const { return m_value; }
 
     private:
         usize m_value{ 0 };
@@ -59,9 +54,7 @@ public:
         m_values[1] = 0xdeadbeef;
     }
 
-    [[nodiscard]] u64 const* values() const {
-        return m_values;
-    }
+    [[nodiscard]] u64 const* values() const { return m_values; }
 
 private:
     u64 m_values[SIZE]{ 0 };
@@ -97,12 +90,9 @@ TEST_CASE(move) {
     public:
         Object() = default;
         explicit Object(usize value)
-            : m_value{ value } {
-        }
+            : m_value{ value } {}
 
-        [[nodiscard]] usize value() const {
-            return m_value;
-        }
+        [[nodiscard]] usize value() const { return m_value; }
 
         static NonNullBox<int> make_int_box() {
             auto int_box = make_box<int>(512);

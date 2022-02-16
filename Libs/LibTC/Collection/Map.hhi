@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <TC/Assertions.hh>
-#include <TC/Cxx.hh>
-#include <TC/Trait/TypeIntrinsics.hh>
+#include <LibTC/Assertions.hh>
+#include <LibTC/Cxx.hh>
+#include <LibTC/Trait/TypeIntrinsics.hh>
 
 namespace TC::Collection {
 namespace Details {

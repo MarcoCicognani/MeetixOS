@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <TC/Collection/String.hh>
-#include <TC/Collection/StringView.hh>
-#include <TC/Cxx.hh>
+#include <LibTC/Collection/String.hh>
+#include <LibTC/Collection/StringView.hh>
+#include <LibTC/Cxx.hh>
 #include <UnitTest/Assertions.hh>
 #include <UnitTest/Case.hh>
 

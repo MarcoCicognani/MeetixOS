@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <TC/Assertions.hh>
+#include <LibTC/Assertions.hh>
 
 namespace TC::Functional {
 

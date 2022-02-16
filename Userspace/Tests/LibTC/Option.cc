@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <TC/Functional/Option.hh>
+#include <LibTC/Functional/Option.hh>
 #include <UnitTest/Assertions.hh>
 #include <UnitTest/Case.hh>
 

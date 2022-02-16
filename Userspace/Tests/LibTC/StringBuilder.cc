@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <TC/Collection/StringBuilder.hh>
+#include <LibTC/Collection/StringBuilder.hh>
 #include <UnitTest/Assertions.hh>
 #include <UnitTest/Case.hh>
 

@@ -49,7 +49,7 @@
 #include "video/ConsoleVideo.hpp"
 #include "video/PrettyBoot.hpp"
 
-#include <TC/Prelude.hh>
+#include <LibTC/Prelude.hh>
 
 // scoping of static internal kernel class properties
 AddressRangePool* EvaKernel::evaKernelRangePool;

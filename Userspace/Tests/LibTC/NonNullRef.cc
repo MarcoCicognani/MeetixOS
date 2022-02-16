@@ -10,12 +10,12 @@
  * GNU General Public License version 3
  */
 
-#include <TC/Cxx.hh>
-#include <TC/DenyCopy.hh>
-#include <TC/DenyMove.hh>
-#include <TC/IntTypes.hh>
-#include <TC/Memory/NonNullRef.hh>
-#include <TC/Memory/Shareable.hh>
+#include <LibTC/Cxx.hh>
+#include <LibTC/DenyCopy.hh>
+#include <LibTC/DenyMove.hh>
+#include <LibTC/IntTypes.hh>
+#include <LibTC/Memory/NonNullRef.hh>
+#include <LibTC/Memory/Shareable.hh>
 #include <UnitTest/Assertions.hh>
 #include <UnitTest/Case.hh>
 
@@ -30,38 +30,21 @@ class Shared : public Shareable {
 public:
     Shared() = default;
     explicit Shared(usize value)
-        : m_value{ value } {
-    }
+        : m_value{ value } {}
 
-    ~Shared() override {
-        s_destructor_was_called = true;
-    }
+    ~Shared() override { s_destructor_was_called = true; }
 
-    void inc_value(usize inc) {
-        m_value += inc;
-    }
-    [[nodiscard]] usize value() const {
-        return m_value;
-    }
+    void                inc_value(usize inc) { m_value += inc; }
+    [[nodiscard]] usize value() const { return m_value; }
 
-    static void reset_no_ref_count_called_count() {
-        s_no_ref_count_called_count = 0;
-    }
-    static usize no_ref_count_called_count() {
-        return s_no_ref_count_called_count;
-    }
+    static void  reset_no_ref_count_called_count() { s_no_ref_count_called_count = 0; }
+    static usize no_ref_count_called_count() { return s_no_ref_count_called_count; }
 
-    static void reset_destructor_was_called() {
-        s_destructor_was_called = false;
-    }
-    static bool destructor_was_called() {
-        return s_destructor_was_called;
-    }
+    static void reset_destructor_was_called() { s_destructor_was_called = false; }
+    static bool destructor_was_called() { return s_destructor_was_called; }
 
 protected:
-    void on_no_ref_count() override {
-        ++s_no_ref_count_called_count;
-    }
+    void on_no_ref_count() override { ++s_no_ref_count_called_count; }
 
 private:
     usize m_value{ 0 };

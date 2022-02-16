@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <TC/Collection/Pair.hh>
-#include <TC/Cxx.hh>
+#include <LibTC/Collection/Pair.hh>
+#include <LibTC/Cxx.hh>
 
 namespace TC::Collection {
 

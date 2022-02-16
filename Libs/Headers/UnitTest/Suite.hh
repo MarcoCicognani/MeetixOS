@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <TC/Collection/Vector.hh>
+#include <LibTC/Collection/Vector.hh>
 #include <UnitTest/Case.hh>
 
 namespace UnitTest {

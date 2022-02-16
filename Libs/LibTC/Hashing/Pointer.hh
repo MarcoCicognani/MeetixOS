@@ -10,13 +10,17 @@
  * GNU General Public License version 3
  */
 
-#include <LibTC/Hashing/Integer.hh>
-#include <LibTC/Hashing/Pointer.hh>
+#pragma once
 
-namespace TC::Hashing {
+#include <LibTC/IntTypes.hh>
 
-usize pointer_hash(void const* value) {
-    return integer_hash(reinterpret_cast<u64>(value));
-}
+namespace TC {
+namespace Hashing {
 
-} /* namespace TC::Hashing */
+usize pointer_hash(void const* value);
+
+} /* namespace Hashing */
+
+using Hashing::pointer_hash;
+
+} /* namespace TC */
