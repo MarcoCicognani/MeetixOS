@@ -12,14 +12,11 @@
 
 #pragma once
 
-#include <Api/Common.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* ------------------------------------------ C defines ----------------------------------------- */
 
 #define _U 01   /* Upper case */
 #define _L 02   /* Lower case */
@@ -101,8 +98,6 @@ static inline int __inline_toupper(int c) {
     else
         return c;
 }
-
-/* ------------------------------------ C function prototypes ----------------------------------- */
 
 int isalnum(int);
 int isalpha(int);
