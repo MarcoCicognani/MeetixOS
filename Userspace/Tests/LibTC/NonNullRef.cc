@@ -16,8 +16,8 @@
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Memory/NonNullRef.hh>
 #include <LibTC/Memory/Shareable.hh>
-#include <UnitTest/Assertions.hh>
-#include <UnitTest/Case.hh>
+#include <LibUnitTest/Assertions.hh>
+#include <LibUnitTest/Case.hh>
 
 using namespace TC;
 
@@ -59,7 +59,7 @@ bool  Shared::s_destructor_was_called     = false;
 } /* namespace Object */
 
 TEST_CASE(make_ref) {
-    auto object_ref = make_ref<Object::Shared>(512);
+    auto object_ref = make_ref<Object::Shared>(512UL);
     VERIFY_EQUAL(object_ref->value(), 512);
     VERIFY_EQUAL(object_ref->ref_count(), 1);
 
@@ -68,7 +68,7 @@ TEST_CASE(make_ref) {
 }
 
 TEST_CASE(try_make_ref) {
-    auto error_or_object_ref = try_make_ref<Object::Shared>(4096);
+    auto error_or_object_ref = try_make_ref<Object::Shared>(4096UL);
     VERIFY(error_or_object_ref.is_value());
     VERIFY_EQUAL(error_or_object_ref.value()->value(), 4096);
     VERIFY_EQUAL(error_or_object_ref.value()->ref_count(), 1);
@@ -83,7 +83,7 @@ TEST_CASE(ref_count_copy) {
     Object::Shared::reset_destructor_was_called();
 
     {
-        auto object_ref_512_1 = make_ref<Object::Shared>(512);
+        auto object_ref_512_1 = make_ref<Object::Shared>(512UL);
         VERIFY_EQUAL(object_ref_512_1->value(), 512);
         VERIFY_EQUAL(object_ref_512_1->ref_count(), 1);
 
@@ -116,11 +116,11 @@ TEST_CASE(ref_count_copy) {
 }
 
 TEST_CASE(swap) {
-    auto object_ref_512 = make_ref<Object::Shared>(512);
+    auto object_ref_512 = make_ref<Object::Shared>(512UL);
     VERIFY_EQUAL(object_ref_512->value(), 512);
     VERIFY_EQUAL(object_ref_512->ref_count(), 1);
 
-    auto object_ref_768 = make_ref<Object::Shared>(768);
+    auto object_ref_768 = make_ref<Object::Shared>(768UL);
     VERIFY_EQUAL(object_ref_768->value(), 768);
     VERIFY_EQUAL(object_ref_768->ref_count(), 1);
 
@@ -136,7 +136,7 @@ TEST_CASE(ref_count_into_vector) {
     Object::Shared::reset_no_ref_count_called_count();
 
     {
-        auto object_ref = make_ref<Object::Shared>(512);
+        auto object_ref = make_ref<Object::Shared>(512UL);
 
         Vector<NonNullRef<Object::Shared>> vector_1{};
         Vector<NonNullRef<Object::Shared>> vector_2{};

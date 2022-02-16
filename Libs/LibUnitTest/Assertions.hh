@@ -12,8 +12,8 @@
 
 #pragma once
 
+#include <LibUnitTest/Suite.hh>
 #include <stdio.h>
-#include <UnitTest/Suite.hh>
 
 #undef VERIFY
 #undef VERIFY_EQUAL

@@ -12,8 +12,8 @@
 
 #include <LibTC/Collection/List.hh>
 #include <LibTC/Cxx.hh>
-#include <UnitTest/Assertions.hh>
-#include <UnitTest/Case.hh>
+#include <LibUnitTest/Assertions.hh>
+#include <LibUnitTest/Case.hh>
 
 using namespace TC;
 

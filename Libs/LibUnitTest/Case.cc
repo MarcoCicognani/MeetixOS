@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <UnitTest/Case.hh>
-#include <UnitTest/Suite.hh>
+#include <LibUnitTest/Case.hh>
+#include <LibUnitTest/Suite.hh>
 
 namespace UnitTest {
 

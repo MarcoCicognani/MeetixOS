@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <UnitTest/Suite.hh>
+#include <LibUnitTest/Suite.hh>
 
 int main(int argc, char const* const* argv) {
     if ( argc == 0 || argv[0][0] == '\0' ) {

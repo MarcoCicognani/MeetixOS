@@ -14,8 +14,8 @@
 #include <LibTC/Cxx.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Memory/NonNullBox.hh>
-#include <UnitTest/Assertions.hh>
-#include <UnitTest/Case.hh>
+#include <LibUnitTest/Assertions.hh>
+#include <LibUnitTest/Case.hh>
 
 using namespace TC;
 
@@ -37,12 +37,12 @@ TEST_CASE(make_box) {
     };
 
     {
-        auto object_box = make_box<Object>(512);
+        auto object_box = make_box<Object>(512UL);
         VERIFY_EQUAL(object_box->value(), 512);
     }
     VERIFY(s_destructor_called);
 
-    auto int_box = make_box<int>(0xcafebabe);
+    auto int_box = make_box<u32>(0xcafebabe);
     VERIFY_EQUAL(int_box.as_ref(), 0xcafebabe);
 }
 
@@ -104,7 +104,7 @@ TEST_CASE(move) {
         usize m_value{ 0 };
     };
 
-    auto object_box = make_box<Object>(512);
+    auto object_box = make_box<Object>(512UL);
     VERIFY_EQUAL(object_box->value(), 512);
 
     NonNullBox object_box_2 = move(object_box);

@@ -13,7 +13,7 @@
 #include <Api/User.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <UnitTest/Suite.hh>
+#include <LibUnitTest/Suite.hh>
 
 namespace UnitTest {
 
