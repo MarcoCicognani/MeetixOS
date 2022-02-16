@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <TC/Trait/Constant.hh>
-
 namespace TC {
 namespace Trait {
 

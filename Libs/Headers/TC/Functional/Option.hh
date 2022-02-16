@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <TC/Assertions.hh>
 #include <TC/Cxx.hh>
 #include <TC/IntTypes.hh>
 

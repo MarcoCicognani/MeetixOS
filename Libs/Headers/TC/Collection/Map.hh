@@ -13,13 +13,10 @@
 #pragma once
 
 #include <initializer_list>
-#include <TC/Assertions.hh>
 #include <TC/Collection/Pair.hh>
 #include <TC/Collection/Vector.hh>
-#include <TC/Cxx.hh>
 #include <TC/Functional/ErrorOr.hh>
 #include <TC/Functional/Option.hh>
-#include <TC/Trait/TypeIntrinsics.hh>
 
 namespace TC {
 namespace Collection {

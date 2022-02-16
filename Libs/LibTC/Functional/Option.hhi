@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <TC/Assertions.hh>
+
 namespace TC::Functional {
 
 template<typename T>
@@ -23,7 +25,7 @@ Option<T>::Option(T const& value)
 template<typename T>
 Option<T>::Option(T&& value)
     : m_is_present{ true } {
-    new (&m_data_storage) T{ Cxx::move(value) };
+    new (&m_data_storage) T{ move(value) };
 }
 
 template<typename T>
@@ -37,7 +39,7 @@ template<typename T>
 Option<T>::Option(Option&& rhs) noexcept
     : m_is_present{ rhs.m_is_present } {
     if ( m_is_present )
-        new (&m_data_storage) T{ Cxx::move(rhs.unwrap()) };
+        new (&m_data_storage) T{ move(rhs.unwrap()) };
 }
 
 template<typename T>
@@ -110,7 +112,7 @@ T const& Option<T>::value_or(T const& default_value) const {
 
 template<typename T>
 T Option<T>::unwrap() {
-    T moved_value{ Cxx::move(value()) };
+    T moved_value{ move(value()) };
     reset();
     return moved_value;
 }
@@ -152,7 +154,7 @@ Option<T&>::Option(T const& value)
 
 template<typename T>
 Option<T&>::Option(T&& value)
-    : m_inner_option{ const_cast<T*>(&Cxx::move(value)) } {
+    : m_inner_option{ const_cast<T*>(&move(value)) } {
 }
 
 template<typename T>
@@ -163,7 +165,7 @@ Option<T&>& Option<T&>::operator=(T const& value) {
 
 template<typename T>
 Option<T&>& Option<T&>::operator=(T&& value) {
-    m_inner_option = &Cxx::move(value);
+    m_inner_option = &move(value);
     return *this;
 }
 
@@ -181,7 +183,7 @@ Option<T&>& Option<T&>::operator=(Option const& rhs) {
 
 template<typename T>
 Option<T&>& Option<T&>::operator=(Option&& rhs) noexcept {
-    m_inner_option = Cxx::move(rhs.m_inner_option);
+    m_inner_option = move(rhs.m_inner_option);
     return *this;
 }
 

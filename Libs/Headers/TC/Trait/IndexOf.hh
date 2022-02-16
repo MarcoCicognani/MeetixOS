@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <TC/IntTypes.hh>
 #include <TC/Trait/Constant.hh>
 #include <TC/Trait/IsSame.hh>
 
@@ -25,19 +26,19 @@ struct IndexOf {
 };
 
 template<typename TQuery>
-struct IndexOf<TQuery> : Constant<int, -1> {
+struct IndexOf<TQuery> : Constant<i32, -1> {
     /* Empty Body */
 };
 
 template<typename TQuery, typename TFirst, typename... Ts>
-struct IndexOf<TQuery, TFirst, Ts...> : Constant<int, IsSame<TQuery, TFirst> ? 0 : IndexOf<TQuery, Ts...>::value + 1> {
+struct IndexOf<TQuery, TFirst, Ts...> : Constant<i32, IsSame<TQuery, TFirst> ? 0 : IndexOf<TQuery, Ts...>::value + 1> {
     /* Empty Body */
 };
 
 } /* namespace Details */
 
 template<typename TQuery, typename... Ts>
-inline constexpr int IndexOf = Details::IndexOf<TQuery, Ts...>::value;
+inline constexpr i32 IndexOf = Details::IndexOf<TQuery, Ts...>::value;
 
 } /* namespace Trait */
 

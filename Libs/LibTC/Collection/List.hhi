@@ -12,6 +12,10 @@
 
 #pragma once
 
+#include <TC/Assertions.hh>
+#include <TC/Cxx.hh>
+#include <TC/Functional/Must.hh>
+
 namespace TC::Collection {
 namespace Details {
 

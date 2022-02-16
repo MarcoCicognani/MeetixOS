@@ -12,6 +12,9 @@
 
 #pragma once
 
+#include <TC/Assertions.hh>
+#include <TC/Cxx.hh>
+
 namespace TC::Memory {
 
 template<typename T>

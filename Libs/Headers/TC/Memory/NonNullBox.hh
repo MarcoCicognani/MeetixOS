@@ -13,10 +13,8 @@
 #pragma once
 
 #include <Api/Common.h>
-#include <TC/Cxx.hh>
 #include <TC/DenyCopy.hh>
 #include <TC/Functional/ErrorOr.hh>
-#include <TC/Memory/NonNullRef.hh>
 
 namespace TC {
 namespace Memory {

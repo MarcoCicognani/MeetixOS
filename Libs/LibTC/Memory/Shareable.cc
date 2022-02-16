@@ -10,8 +10,7 @@
  * GNU General Public License version 3
  */
 
-#pragma once
-
+#include <TC/Assertions.hh>
 #include <TC/Memory/Shareable.hh>
 
 namespace TC::Memory {

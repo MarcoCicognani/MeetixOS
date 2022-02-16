@@ -12,7 +12,9 @@
 
 #pragma once
 
-#include <TC/Collection/Map.hh>
+#include <TC/Assertions.hh>
+#include <TC/Cxx.hh>
+#include <TC/Trait/TypeIntrinsics.hh>
 
 namespace TC::Collection {
 namespace Details {

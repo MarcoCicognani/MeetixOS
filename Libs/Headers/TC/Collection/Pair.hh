@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <TC/Cxx.hh>
-
 namespace TC {
 namespace Collection {
 
@@ -26,8 +24,8 @@ public:
     Pair() = default;
     Pair(K const& key, T const& value);
     Pair(K&& key, T&& value);
-    Pair(Pair const&)     = default;
-    Pair(Pair&&) noexcept = default;
+    Pair(Pair const&) = default;
+    Pair(Pair&& rhs) noexcept;
 
     ~Pair() = default;
 

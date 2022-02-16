@@ -12,6 +12,9 @@
 
 #pragma once
 
+#include <TC/Collection/Pair.hh>
+#include <TC/Cxx.hh>
+
 namespace TC::Collection {
 
 template<typename K, typename T>
@@ -24,6 +27,12 @@ template<typename K, typename T>
 Pair<K, T>::Pair(K&& key, T&& value)
     : m_key{ move(key) }
     , m_value{ move(value) } {
+}
+
+template<typename K, typename T>
+Pair<K, T>::Pair(Pair&& rhs) noexcept
+    : m_key{ move(rhs.m_key) }
+    , m_value{ move(rhs.m_value) } {
 }
 
 template<typename K, typename T>

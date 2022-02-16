@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <TC/Assertions.hh>
 #include <TC/DenyCopy.hh>
 #include <TC/DenyMove.hh>
 #include <TC/IntTypes.hh>

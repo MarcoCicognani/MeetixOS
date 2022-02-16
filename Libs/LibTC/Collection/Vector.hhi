@@ -12,7 +12,10 @@
 
 #pragma once
 
-#include <TC/Trait/IsSame.hh>
+#include <TC/Assertions.hh>
+#include <TC/Cxx.hh>
+#include <TC/Memory/Raw.hh>
+#include <TC/Trait/TypeIntrinsics.hh>
 
 namespace TC::Collection {
 namespace Details {

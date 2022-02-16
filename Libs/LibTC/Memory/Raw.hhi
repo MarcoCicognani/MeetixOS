@@ -12,6 +12,12 @@
 
 #pragma once
 
+#ifdef IN_KERNEL
+#    include <memory/KernelHeap.hpp>
+#else
+#    include <malloc.h>
+#endif
+
 namespace TC::Memory::Raw {
 
 #ifdef IN_KERNEL

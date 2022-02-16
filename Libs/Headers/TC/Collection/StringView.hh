@@ -15,6 +15,7 @@
 #include <TC/Collection/Vector.hh>
 #include <TC/Functional/ErrorOr.hh>
 #include <TC/Functional/Option.hh>
+#include <TC/IntTypes.hh>
 
 namespace TC {
 namespace Collection {
