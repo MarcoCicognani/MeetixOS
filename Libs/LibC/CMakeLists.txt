@@ -452,22 +452,8 @@ add_library(LibC
         dirent/closedir.cc
         dirent/opendir.cc
         dirent/readdir.cc
-        cc_abi_support.cc
-        ctype/isalpha.cc
-        ctype/isxdigit.cc
-        ctype/iscntrl.cc
-        ctype/isupper.cc
-        ctype/isgraph.cc
-        ctype/toupper.cc
-        ctype/isdigit.cc
-        ctype/isspace.cc
-        ctype/tolower.cc
-        ctype/islower.cc
-        ctype/isblank.cc
-        ctype/ispunct.cc
-        ctype/isprint.cc
-        ctype/isalnum.cc
-        ctype/isascii.cc
+        abi_support.cc
+        ctype.cc
         time/ctime.cc
         time/difftime.cc
         time/mktime.cc
@@ -477,7 +463,7 @@ add_library(LibC
         time/localtime.cc
         time/strftime.cc
         time/time.cc
-        assert/assert_failed.cc
+        assert.cc
         errno/errno.cc
         locale/localeconv.cc
         locale/setlocale.cc
@@ -584,7 +570,8 @@ add_library(LibC
         pthread/pthread_join.cc
         pthread/pthread_self.cc
         pthread/pthread_kill.cc
-        pthread/pthread_exit.cc ctype/ctype.cc ctype/toascii.cc sys/stat/fchmod.cc)
+        pthread/pthread_exit.cc
+        sys/stat/fchmod.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 
