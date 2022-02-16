@@ -10,10 +10,13 @@
 # GNU General Public License version 3
 #
 
-add_test(ErrorOr)
-add_test(LList)
-add_test(Map)
-add_test(Option)
-add_test(Vector)
-add_test(NonNullBox)
-add_test(NonNullRef)
+add_meetix_unit_test(ErrorOr)
+add_meetix_unit_test(LList)
+add_meetix_unit_test(Map)
+add_meetix_unit_test(NonNullBox)
+add_meetix_unit_test(NonNullRef)
+add_meetix_unit_test(Option)
+add_meetix_unit_test(String)
+add_meetix_unit_test(StringBuilder)
+add_meetix_unit_test(StringView)
+add_meetix_unit_test(Vector)

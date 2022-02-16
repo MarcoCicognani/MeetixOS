@@ -22,6 +22,11 @@ struct MakeSigned {
 };
 
 template<>
+struct MakeSigned<char> {
+    using Type = signed char;
+};
+
+template<>
 struct MakeSigned<unsigned char> {
     using Type = signed char;
 };

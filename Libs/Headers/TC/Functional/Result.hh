@@ -43,6 +43,11 @@ public:
     Result& operator=(Result&&) noexcept = default;
 
     /**
+     * @brief Swaps this result with another
+     */
+    void swap(Result& rhs) noexcept;
+
+    /**
      * @brief Returns the reference to the result value
      */
     T&       value();
@@ -90,6 +95,11 @@ public:
 
     Result& operator=(Result const&) = default;
     Result& operator=(Result&&) noexcept = default;
+
+    /**
+     * @brief Swaps this result with another
+     */
+    void swap(Result& rhs) noexcept;
 
     /**
      * @brief Returns the reference to the result value
@@ -152,6 +162,11 @@ public:
 
     Result& operator=(Result const&) = default;
     Result& operator=(Result&&) noexcept = default;
+
+    /**
+     * @brief Swaps this result with another
+     */
+    void swap(Result& rhs) noexcept;
 
     /**
      * @brief Returns the reference to the result value

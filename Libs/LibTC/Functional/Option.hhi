@@ -1,3 +1,17 @@
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
+
+#pragma once
+
 namespace TC::Functional {
 
 template<typename T>
@@ -33,17 +47,15 @@ Option<T>::~Option() {
 
 template<typename T>
 Option<T>& Option<T>::operator=(T const& value) {
-    reset();
-    m_is_present = true;
-    new (&m_data_storage) T{ value };
+    Option option{ value };
+    swap(option);
     return *this;
 }
 
 template<typename T>
 Option<T>& Option<T>::operator=(T&& value) {
-    reset();
-    m_is_present = true;
-    new (&m_data_storage) T{ Cxx::move(value) };
+    Option option{ move(value) };
+    swap(option);
     return *this;
 }
 
@@ -58,32 +70,34 @@ Option<T>& Option<T>::operator=(Option const& rhs) {
     if ( this == &rhs )
         return *this;
 
-    reset();
-    m_is_present = rhs.m_is_present;
-    new (&m_data_storage) T{ rhs.value() };
+    Option option{ rhs };
+    swap(option);
     return *this;
 }
 
 template<typename T>
 Option<T>& Option<T>::operator=(Option&& rhs) noexcept {
-    reset();
-    m_is_present = Cxx::exchange(rhs.m_is_present, false);
-    new (&m_data_storage) T{ Cxx::move(rhs.value()) };
+    Option option{ move(rhs) };
+    swap(option);
     return *this;
+}
+
+template<typename T>
+void Option<T>::swap(Option& rhs) noexcept {
+    Cxx::swap(m_is_present, rhs.m_is_present);
+    Cxx::swap(storage_as_ref(), rhs.storage_as_ref());
 }
 
 template<typename T>
 T& Option<T>::value() {
     VERIFY(is_present());
-
-    return *__builtin_launder(reinterpret_cast<T*>(&m_data_storage));
+    return storage_as_ref();
 }
 
 template<typename T>
 T const& Option<T>::value() const {
     VERIFY(is_present());
-
-    return *__builtin_launder(reinterpret_cast<T const*>(&m_data_storage));
+    return storage_as_ref();
 }
 
 template<typename T>
@@ -122,6 +136,16 @@ bool Option<T>::is_present() const {
 }
 
 template<typename T>
+T& Option<T>::storage_as_ref() {
+    return *__builtin_launder(reinterpret_cast<T*>(m_data_storage));
+}
+
+template<typename T>
+T const& Option<T>::storage_as_ref() const {
+    return *__builtin_launder(reinterpret_cast<T const*>(m_data_storage));
+}
+
+template<typename T>
 Option<T&>::Option(T const& value)
     : m_inner_option{ const_cast<T*>(&value) } {
 }
@@ -132,7 +156,7 @@ Option<T&>::Option(T&& value)
 }
 
 template<typename T>
-Option<T&>& Option<T&>::operator=(const T& value) {
+Option<T&>& Option<T&>::operator=(T const& value) {
     m_inner_option = &value;
     return *this;
 }
@@ -150,7 +174,7 @@ Option<T&>& Option<T&>::operator=(Cxx::nullptr_t) {
 }
 
 template<typename T>
-Option<T&>& Option<T&>::operator=(const Option& rhs) {
+Option<T&>& Option<T&>::operator=(Option const& rhs) {
     m_inner_option = rhs.m_inner_option;
     return *this;
 }
@@ -159,6 +183,11 @@ template<typename T>
 Option<T&>& Option<T&>::operator=(Option&& rhs) noexcept {
     m_inner_option = Cxx::move(rhs.m_inner_option);
     return *this;
+}
+
+template<typename T>
+void Option<T&>::swap(Option& rhs) noexcept {
+    m_inner_option.swap(rhs.m_inner_option);
 }
 
 template<typename T>

@@ -10,38 +10,52 @@
  * GNU General Public License version 3
  */
 
+#pragma once
+
 #include <TC/Memory/Shareable.hh>
 
-namespace TC::Memory::Details {
+namespace TC::Memory {
 
-usize PlainRefCountTrait::fetch_add(usize volatile* value, usize addition) {
-    usize old_value = load(value);
-
-    *value = old_value + addition;
-    return old_value;
+Shareable::~Shareable() {
+    VERIFY_EQUAL(ref_atomic_load(), 0);
 }
 
-usize PlainRefCountTrait::fetch_sub(usize volatile* value, usize subtraction) {
-    usize old_value = load(value);
-
-    *value = old_value - subtraction;
-    return old_value;
+void Shareable::add_ref() const {
+    auto old_ref_count = ref_atomic_add();
+    VERIFY_GREATER(old_ref_count, 0);
 }
 
-usize PlainRefCountTrait::load(usize volatile* value) {
-    return *value;
+bool Shareable::dec_ref() const {
+    auto old_ref_count = ref_atomic_sub();
+    VERIFY_GREATER_EQUAL(old_ref_count, 1);
+
+    if ( old_ref_count - 1 == 0 ) {
+        auto* self = const_cast<Shareable*>(this);
+        self->on_no_ref_count();
+        delete this;
+        return true;
+    }
+    return false;
 }
 
-usize AtomicRefCountTrait::fetch_add(usize volatile* value, usize addition) {
-    return __atomic_fetch_add(value, addition, __ATOMIC_SEQ_CST);
+usize Shareable::ref_count() const {
+    return ref_atomic_load();
 }
 
-usize AtomicRefCountTrait::fetch_sub(usize volatile* value, usize subtraction) {
-    return __atomic_fetch_sub(value, subtraction, __ATOMIC_SEQ_CST);
+void Shareable::on_no_ref_count() {
+    /* default implementation */
 }
 
-usize AtomicRefCountTrait::load(usize volatile* value) {
-    return __atomic_load_n(value, __ATOMIC_SEQ_CST);
+usize Shareable::ref_atomic_load() const {
+    return __atomic_load_n(&m_ref_count, __ATOMIC_SEQ_CST);
 }
 
-} /* namespace TC::Memory::Details */
+usize Shareable::ref_atomic_add() const {
+    return __atomic_fetch_add(&m_ref_count, 1, __ATOMIC_SEQ_CST);
+}
+
+usize Shareable::ref_atomic_sub() const {
+    return __atomic_fetch_sub(&m_ref_count, 1, __ATOMIC_SEQ_CST);
+}
+
+} /* namespace TC::Memory */

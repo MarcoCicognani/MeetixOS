@@ -16,6 +16,10 @@
 #include <TC/Collection/List.hh>
 #include <TC/Collection/Map.hh>
 #include <TC/Collection/Pair.hh>
+#include <TC/Collection/String.hh>
+#include <TC/Collection/StringBuilder.hh>
+#include <TC/Collection/StringStorage.hh>
+#include <TC/Collection/StringView.hh>
 #include <TC/Collection/Vector.hh>
 #include <TC/Cxx.hh>
 #include <TC/DenyCopy.hh>
@@ -57,6 +61,7 @@
 #include <TC/Trait/MakeSigned.hh>
 #include <TC/Trait/MakeUnsigned.hh>
 #include <TC/Trait/Max.hh>
+#include <TC/Trait/NumericLimits.hh>
 #include <TC/Trait/RemoveConst.hh>
 #include <TC/Trait/RemoveConstVolatile.hh>
 #include <TC/Trait/RemovePointer.hh>

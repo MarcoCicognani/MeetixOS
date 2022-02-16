@@ -18,22 +18,9 @@
 #include <TC/IntTypes.hh>
 
 namespace TC {
-namespace Memory::Details {
+namespace Memory {
 
-struct PlainRefCountTrait {
-    static usize fetch_add(usize volatile* value, usize addition);
-    static usize fetch_sub(usize volatile* value, usize subtraction);
-    static usize load(usize volatile* value);
-};
-
-class AtomicRefCountTrait {
-    static usize fetch_add(usize volatile* value, usize addition);
-    static usize fetch_sub(usize volatile* value, usize subtraction);
-    static usize load(usize volatile* value);
-};
-
-template<typename RefCountTrait>
-struct Shareable {
+class Shareable {
     TC_DENY_COPY(Shareable);
     TC_DENY_MOVE(Shareable);
 
@@ -62,14 +49,16 @@ protected:
     virtual void on_no_ref_count();
 
 private:
+    usize ref_atomic_load() const;
+    usize ref_atomic_add() const;
+    usize ref_atomic_sub() const;
+
+private:
     usize mutable m_ref_count{ 1 };
 };
 
-} /* namespace Memory::Details */
+} /* namespace Memory */
 
-using Shareable       = Memory::Details::Shareable<Memory::Details::PlainRefCountTrait>;
-using AtomicShareable = Memory::Details::Shareable<Memory::Details::AtomicRefCountTrait>;
+using Shareable = Memory::Shareable;
 
 } /* namespace TC */
-
-#include <../LibTC/Memory/Shareable.hhi>

@@ -10,4 +10,11 @@
 # GNU General Public License version 3
 #
 
-add_library(LibTC STATIC Hashing/Integer.cc Hashing/Pointer.cc)
+add_library(LibTC STATIC
+        Collection/String.cc
+        Collection/StringBuilder.cc
+        Collection/StringStorage.cc
+        Collection/StringView.cc
+        Hashing/Integer.cc
+        Hashing/Pointer.cc
+        Memory/Shareable.cc)

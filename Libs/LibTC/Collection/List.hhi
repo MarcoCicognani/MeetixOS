@@ -1,3 +1,17 @@
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
+
+#pragma once
+
 namespace TC::Collection {
 namespace Details {
 
@@ -342,4 +356,4 @@ T const& List<T>::last() const {
     return m_tail_node->m_value;
 }
 
-} /* namespace TC::Collection */
+} // namespace TC::Collection

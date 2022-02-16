@@ -40,6 +40,11 @@ public:
     Option& operator=(Option&& rhs) noexcept;
 
     /**
+     * @brief Swaps this Option with another
+     */
+    void swap(Option& rhs) noexcept;
+
+    /**
      * @brief Returns a reference to the value from this option
      */
     T&       value();
@@ -61,6 +66,10 @@ public:
      * @brief Returns whether the value is present
      */
     [[nodiscard]] bool is_present() const;
+
+private:
+    T&       storage_as_ref();
+    T const& storage_as_ref() const;
 
 private:
     bool m_is_present{ false };
@@ -86,6 +95,11 @@ public:
     Option& operator=(Cxx::nullptr_t);
     Option& operator=(Option const& rhs);
     Option& operator=(Option&& rhs) noexcept;
+
+    /**
+     * @brief Swaps this Option with another
+     */
+    void swap(Option& rhs) noexcept;
 
     /**
      * @brief Returns a reference to the value from this option

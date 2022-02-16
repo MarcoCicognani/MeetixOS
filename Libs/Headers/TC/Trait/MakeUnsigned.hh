@@ -22,6 +22,11 @@ struct MakeUnsigned {
 };
 
 template<>
+struct MakeUnsigned<char> {
+    using Type = unsigned char;
+};
+
+template<>
 struct MakeUnsigned<signed char> {
     using Type = unsigned char;
 };

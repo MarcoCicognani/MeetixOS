@@ -1,3 +1,17 @@
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
+
+#pragma once
+
 namespace TC::Functional {
 
 template<typename T, typename E>
@@ -22,38 +36,36 @@ Result<T, E>::Result(E&& error)
 
 template<typename T, typename E>
 Result<T, E>& Result<T, E>::operator=(T const& value) {
-    m_value_option.reset();
-    m_error_option.reset();
-
-    m_value_option = value;
+    Result result{ value };
+    swap(result);
     return *this;
 }
 
 template<typename T, typename E>
 Result<T, E>& Result<T, E>::operator=(T&& value) {
-    m_value_option.reset();
-    m_error_option.reset();
-
-    m_value_option = Cxx::move(value);
+    Result result{ move(value) };
+    swap(result);
     return *this;
 }
 
 template<typename T, typename E>
 Result<T, E>& Result<T, E>::operator=(E const& error) {
-    m_value_option.reset();
-    m_error_option.reset();
-
-    m_error_option = error;
+    Result result{ error };
+    swap(result);
     return *this;
 }
 
 template<typename T, typename E>
 Result<T, E>& Result<T, E>::operator=(E&& error) {
-    m_value_option.reset();
-    m_error_option.reset();
-
-    m_error_option = Cxx::move(error);
+    Result result{ move(error) };
+    swap(result);
     return *this;
+}
+
+template<typename T, typename E>
+void Result<T, E>::swap(Result& rhs) noexcept {
+    m_value_option.swap(rhs.m_value_option);
+    m_error_option.swap(rhs.m_error_option);
 }
 
 template<typename T, typename E>
@@ -108,14 +120,21 @@ Result<void, E>::Result(E&& error)
 
 template<typename E>
 Result<void, E>& Result<void, E>::operator=(E const& error) {
-    m_error_option = error;
+    Result result{ error };
+    swap(result);
     return *this;
 }
 
 template<typename E>
 Result<void, E>& Result<void, E>::operator=(E&& error) {
-    m_error_option = Cxx::move(error);
+    Result result{ move(error) };
+    swap(result);
     return *this;
+}
+
+template<typename E>
+void Result<void, E>::swap(Result& rhs) noexcept {
+    m_error_option.swap(rhs.m_error_option);
 }
 
 template<typename E>
@@ -175,43 +194,41 @@ Result<T&, E>::Result(E const& error)
 
 template<typename T, typename E>
 Result<T&, E>::Result(E&& error)
-    : m_value_option{ Cxx::move(error) } {
+    : m_error_option{ Cxx::move(error) } {
 }
 
 template<typename T, typename E>
 Result<T&, E>& Result<T&, E>::operator=(T const& value) {
-    m_value_option.reset();
-    m_error_option.reset();
-
-    m_value_option = value;
+    Result result{ value };
+    swap(result);
     return *this;
 }
 
 template<typename T, typename E>
 Result<T&, E>& Result<T&, E>::operator=(T&& value) {
-    m_value_option.reset();
-    m_error_option.reset();
-
-    m_value_option = Cxx::move(value);
+    Result result{ move(value) };
+    swap(result);
     return *this;
 }
 
 template<typename T, typename E>
 Result<T&, E>& Result<T&, E>::operator=(E const& error) {
-    m_value_option.reset();
-    m_error_option.reset();
-
-    m_error_option = error;
+    Result result{ error };
+    swap(result);
     return *this;
 }
 
 template<typename T, typename E>
 Result<T&, E>& Result<T&, E>::operator=(E&& error) {
-    m_value_option.reset();
-    m_error_option.reset();
-
-    m_error_option = Cxx::move(error);
+    Result result{ move(error) };
+    swap(result);
     return *this;
+}
+
+template<typename T, typename E>
+void Result<T&, E>::swap(Result& rhs) noexcept {
+    m_value_option.swap(rhs.m_value_option);
+    m_error_option.swap(rhs.m_error_option);
 }
 
 template<typename T, typename E>
