@@ -20,7 +20,7 @@
 #define _TASK_MANAGER_THREAD_
 
 #include <components/label.hpp>
-#include <Tasking/Thread.hh>
+#include <LibTasking/Thread.hh>
 
 /*
  *

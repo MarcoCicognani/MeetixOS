@@ -25,7 +25,7 @@
 #include "ComponentRegistry.hpp"
 
 #include <map>
-#include <Tasking/LockGuard.hh>
+#include <LibTasking/LockGuard.hh>
 
 using namespace std;
 
@@ -91,8 +91,7 @@ void ComponentRegistry::cleanup_process(Pid pid) {
         for ( auto& entry : *components ) {
             auto component = entry.second;
             if ( component
-                 && std::find(components_list.begin(), components_list.end(), component)
-                        == components_list.end() ) {
+                 && std::find(components_list.begin(), components_list.end(), component) == components_list.end() ) {
                 components_list.push_back(component);
             }
         }
@@ -122,8 +121,7 @@ void ComponentRegistry::remove_process_components(Pid                      pid,
                                                   Component_t*             component,
                                                   std::list<Component_t*>& removed_components) {
     // Never remove twice
-    if ( std::find(removed_components.begin(), removed_components.end(), component)
-         != removed_components.end() ) {
+    if ( std::find(removed_components.begin(), removed_components.end(), component) != removed_components.end() ) {
         return;
     }
 

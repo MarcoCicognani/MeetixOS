@@ -39,7 +39,7 @@
 #include <GUI/Listener/KeyListener.hpp>
 #include <list>
 #include <map>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 #include <Utils/Utils.hh>
 
 /**
@@ -114,7 +114,7 @@ private:
     /**
      * paint routine
      */
-    static void       paintEntry(GUIScreen* screen);
+    static void                    paintEntry(GUIScreen* screen);
     [[noreturn]] [[noreturn]] void paint();
 
     /**

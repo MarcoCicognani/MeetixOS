@@ -13,7 +13,7 @@
 #include "HeadlessScreen.hh"
 
 #include <cstring>
-#include <Tasking/LockGuard.hh>
+#include <LibTasking/LockGuard.hh>
 #include <Utils/Utils.hh>
 
 IO::Keyboard::Info HeadlessScreen::read_input() {
@@ -141,9 +141,7 @@ void HeadlessScreen::normalize() {
         auto line_bytes  = SCREEN_WIDTH * 2;
         auto screen_size = SCREEN_HEIGHT * line_bytes;
 
-        std::memcpy(m_output_current,
-                    &m_output_current[SCREEN_WIDTH * 2],
-                    screen_size - line_bytes);
+        std::memcpy(m_output_current, &m_output_current[SCREEN_WIDTH * 2], screen_size - line_bytes);
 
         for ( auto i = 0; i < SCREEN_WIDTH * 2; i += 2 ) {
             m_output_current[screen_size - line_bytes + i]     = ' ';

@@ -18,22 +18,18 @@
 #include <algorithm>
 #include <Api.h>
 #include <IO/Shell.hh>
-#include <Tasking/Lock.hh>
-#include <Tasking/Thread.hh>
+#include <LibTasking/Lock.hh>
+#include <LibTasking/Thread.hh>
 
 class Terminal {
-    enum class HeadLessMode
-    {
+    enum class HeadLessMode {
         Gui,
         Text,
         None
     };
 
     static HeadLessMode from_string(std::string headless_mode) {
-        std::transform(headless_mode.begin(),
-                       headless_mode.end(),
-                       headless_mode.begin(),
-                       ::tolower);
+        std::transform(headless_mode.begin(), headless_mode.end(), headless_mode.begin(), ::tolower);
 
         if ( headless_mode == "gui" )
             return HeadLessMode::Gui;
@@ -48,8 +44,7 @@ class Terminal {
         OutputRoutineThread(bool is_error, Terminal* terminal)
             : Tasking::Thread{ is_error ? "ErrOutput" : "StdOutput" }
             , m_is_error{ is_error }
-            , m_terminal{ terminal } {
-        }
+            , m_terminal{ terminal } {}
         ~OutputRoutineThread() override = default;
 
     protected:
@@ -65,8 +60,7 @@ public:
      * @brief Constructor
      */
     Terminal(const std::string& headless_mode)
-        : m_headless_mode{ (from_string(headless_mode)) } {
-    }
+        : m_headless_mode{ (from_string(headless_mode)) } {}
     ~Terminal() {
         delete m_std_out_thread;
         delete m_err_out_thread;

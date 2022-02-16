@@ -11,7 +11,7 @@
  */
 
 #include <Graphics/Text/FontManager.hh>
-#include <Tasking/LockGuard.hh>
+#include <LibTasking/LockGuard.hh>
 #include <Utils/Utils.hh>
 
 namespace Graphics::Text {

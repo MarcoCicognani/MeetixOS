@@ -12,7 +12,7 @@
 
 #include <Api.h>
 #include <IO/Input.hh>
-#include <Tasking/LockGuard.hh>
+#include <LibTasking/LockGuard.hh>
 #include <Utils/Utils.hh>
 
 namespace IO {
@@ -43,7 +43,7 @@ bool Input::register_self() {
 
     /* request to the driver to register us */
     RegisterRequest request;
-    auto send_status = s_send_message_t(driver_id, &request, sizeof(RegisterRequest), message_tx);
+    auto            send_status = s_send_message_t(driver_id, &request, sizeof(RegisterRequest), message_tx);
     if ( send_status != MESSAGE_SEND_STATUS_SUCCESSFUL ) {
         Utils::log("Input driver registration error: failed to send registration request message");
         return false;
@@ -54,8 +54,7 @@ bool Input::register_self() {
     u8   buffer[buffer_len];
     auto recv_status = s_receive_message_t(buffer, buffer_len, message_tx);
     if ( recv_status != MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-        Utils::log(
-            "Input driver registration error: failed to receive registration response message");
+        Utils::log("Input driver registration error: failed to receive registration response message");
         return false;
     }
 

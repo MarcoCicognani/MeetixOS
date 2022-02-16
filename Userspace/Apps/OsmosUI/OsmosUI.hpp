@@ -33,15 +33,14 @@
 #include <GUI/MessageBox.hh>
 #include <map>
 #include <math.h>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 
 /*
  *
  */
 class OsmosUI {
 public:
-    OsmosUI() {
-    }
+    OsmosUI() {}
     ~OsmosUI();
 
     // initialize UI
@@ -57,8 +56,7 @@ public:
     void mainLoop();
 
 private:
-    enum UiStyle_t
-    {
+    enum UiStyle_t {
         GNOME,
         KDE,
     };

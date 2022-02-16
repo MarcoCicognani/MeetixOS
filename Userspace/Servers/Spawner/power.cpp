@@ -19,9 +19,9 @@
 #include "Power.hpp"
 
 #include <Api/utils/local.hpp>
+#include <LibTasking/Tasking.hh>
 #include <signal.h>
 #include <stdio.h>
-#include <Tasking/Tasking.hh>
 
 /**
  *

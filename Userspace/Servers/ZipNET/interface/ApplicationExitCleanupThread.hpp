@@ -26,7 +26,7 @@
 #define __INTERFACE_COMMAND_APPLICATION_EXIT_CLEANUP_THREAD__
 
 #include <interface/CommandMessageReceiverThread.hpp>
-#include <Tasking/Thread.hh>
+#include <LibTasking/Thread.hh>
 
 /**
  *
@@ -43,8 +43,7 @@ public:
     ApplicationExitCleanupThread(Pid pid, CommandMessageReceiverThread* commandReceiver)
         : Tasking::Thread{}
         , pid(pid)
-        , commandReceiver(commandReceiver) {
-    }
+        , commandReceiver(commandReceiver) {}
 
     /**
      *

@@ -19,8 +19,8 @@
 #include <Graphics/Context.hh>
 #include <Graphics/Text/Font.hh>
 #include <Graphics/Video.hh>
-#include <Tasking/Lock.hh>
-#include <Tasking/Thread.hh>
+#include <LibTasking/Lock.hh>
+#include <LibTasking/Thread.hh>
 #include <Utils/Utils.hh>
 
 class HeadlessGUIScreen : public Screen {
@@ -28,14 +28,11 @@ class HeadlessGUIScreen : public Screen {
     public:
         PainterThread(HeadlessGUIScreen& gui_screen)
             : Tasking::Thread{ "GUIPainter" }
-            , m_gui_screen{ gui_screen } {
-        }
+            , m_gui_screen{ gui_screen } {}
         ~PainterThread() override = default;
 
     protected:
-        void run() override {
-            m_gui_screen.paint();
-        }
+        void run() override { m_gui_screen.paint(); }
 
     private:
         HeadlessGUIScreen& m_gui_screen;
@@ -59,12 +56,9 @@ class HeadlessGUIScreen : public Screen {
         RasterCell(char c, ScreenColor background, ScreenColor foreground)
             : m_char{ c }
             , m_background{ screen_color_to_argb(background) }
-            , m_foreground{ screen_color_to_argb(foreground) } {
-        }
+            , m_foreground{ screen_color_to_argb(foreground) } {}
 
-        operator bool() const {
-            return m_char != '\0';
-        }
+        operator bool() const { return m_char != '\0'; }
     };
 
 public:

@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 
 namespace Tasking {
 
@@ -23,13 +23,12 @@ namespace Tasking {
  */
 class LockGuard {
 public:
-    LockGuard(Lock& lock) : m_lock{ lock } {
+    LockGuard(Lock& lock)
+        : m_lock{ lock } {
         m_lock.lock();
     }
 
-    ~LockGuard() {
-        m_lock.unlock();
-    }
+    ~LockGuard() { m_lock.unlock(); }
 
 private:
     Lock& m_lock;

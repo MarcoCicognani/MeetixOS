@@ -19,7 +19,7 @@
 #include "GFrontEnd.hpp"
 
 #include <IO/Keyboard.hh>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 
 Window*    window;
 Textfield* textBox;
@@ -33,10 +33,8 @@ void GraphicFrontEnd_t::initialize() {
     auto resolution = UI::screen_dimension();
 
     window = Window::create();
-    window->set_bounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 200,
-                                                    resolution.height() / 2 - 300,
-                                                    400,
-                                                    600));
+    window->set_bounds(
+        Graphics::Metrics::Rectangle(resolution.width() / 2 - 200, resolution.height() / 2 - 300, 400, 600));
     window->set_title("CandyNote");
     window->set_visible(true);
 

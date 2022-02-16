@@ -34,7 +34,7 @@
 #include <layout/LayoutManager.hpp>
 #include <map>
 #include <stdio.h>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 #include <vector>
 
 using namespace std;
@@ -43,8 +43,7 @@ using namespace std;
 class Window_t;
 class Component_t;
 
-enum class ChildComponentRefType
-{
+enum class ChildComponentRefType {
     Default,
     Internal
 };
@@ -88,7 +87,7 @@ private:
     Graphics::Metrics::Rectangle bounds{};
     Component_t*                 parent{ nullptr };
     Tasking::Lock                m_children_lock{};
-    vector<ChildComponentRef>   children{};
+    vector<ChildComponentRef>    children{};
 
     Graphics::Metrics::Dimension minimumSize;
     Graphics::Metrics::Dimension preferredSize;
@@ -123,8 +122,7 @@ public:
         , childRequirements(COMPONENT_REQUIREMENT_ALL)
         , parent(nullptr)
         , layoutManager(nullptr)
-        , BoundsEventComponent_t(this) {
-    }
+        , BoundsEventComponent_t(this) {}
 
     /**
      * Destroys the component
@@ -134,39 +132,29 @@ public:
     /**
      *
      */
-    void setZIndex(int zIndex) {
-        this->zIndex = zIndex;
-    }
+    void setZIndex(int zIndex) { this->zIndex = zIndex; }
 
     /**
      * Returns a Pointer to the components graphics
      */
-    Graphics::Context* getGraphics() {
-        return &graphics;
-    }
+    Graphics::Context* getGraphics() { return &graphics; }
 
     /**
      * Returns the components parent
      *
      * @return the components parent
      */
-    Component_t* getParent() {
-        return parent;
-    }
+    Component_t* getParent() { return parent; }
 
     /**
      *
      */
-    vector<ChildComponentRef>& getChildren() {
-        return children;
-    }
+    vector<ChildComponentRef>& getChildren() { return children; }
 
     /**
      *
      */
-    bool isVisible() const {
-        return visible;
-    }
+    bool isVisible() const { return visible; }
 
     /**
      *
@@ -181,8 +169,7 @@ public:
     /**
      *
      */
-    virtual void setFocus(bool focus) {
-    }
+    virtual void setFocus(bool focus) {}
 
     /**
      * Sets the bounds of the component and recreates its graphics buffer.
@@ -196,9 +183,7 @@ public:
      *
      * @return the bounds
      */
-    Graphics::Metrics::Rectangle getBounds() const {
-        return bounds;
-    }
+    Graphics::Metrics::Rectangle getBounds() const { return bounds; }
 
     /**
      *
@@ -208,9 +193,7 @@ public:
     /**
      *
      */
-    virtual Graphics::Metrics::Dimension getPreferredSize() {
-        return preferredSize;
-    }
+    virtual Graphics::Metrics::Dimension getPreferredSize() { return preferredSize; }
 
     /**
      *
@@ -220,9 +203,7 @@ public:
     /**
      *
      */
-    Graphics::Metrics::Dimension getMinimumSize() const {
-        return minimumSize;
-    }
+    Graphics::Metrics::Dimension getMinimumSize() const { return minimumSize; }
 
     /**
      *
@@ -232,9 +213,7 @@ public:
     /**
      *
      */
-    Graphics::Metrics::Dimension getMaximumSize() const {
-        return maximumSize;
-    }
+    Graphics::Metrics::Dimension getMaximumSize() const { return maximumSize; }
 
     /**
      * This method is used to blit the component and all of its children
@@ -243,17 +222,14 @@ public:
      * @param absClip	absolute bounds that may not be exceeded
      * @param position	absolute screen position to blit to
      */
-    void blit(Graphics::Context*           out,
-              Graphics::Metrics::Rectangle absClip,
-              Graphics::Metrics::Point     position);
+    void blit(Graphics::Context* out, Graphics::Metrics::Rectangle absClip, Graphics::Metrics::Point position);
 
     /**
      * Adds the given component as a child to this component
      *
      * @param comp	the component to add
      */
-    virtual void addChild(Component_t*          comp,
-                          ChildComponentRefType ref_type = ChildComponentRefType::Default);
+    virtual void addChild(Component_t* comp, ChildComponentRefType ref_type = ChildComponentRefType::Default);
 
     /**
      * Removes the given component from this component
@@ -276,9 +252,7 @@ public:
      */
     virtual Window_t* getWindow();
 
-    [[nodiscard]] virtual bool isWindow() const {
-        return false;
-    }
+    [[nodiscard]] virtual bool isWindow() const { return false; }
 
     /**
      * Brings this component to the front
@@ -309,8 +283,7 @@ public:
     /**
      *
      */
-    virtual void
-    handleBoundChange(Graphics::Metrics::Rectangle oldBounds) { /* May be implemented by subtypes */
+    virtual void handleBoundChange(Graphics::Metrics::Rectangle oldBounds) { /* May be implemented by subtypes */
     }
 
     /**
@@ -321,9 +294,7 @@ public:
     /**
      *
      */
-    LayoutManager_t* getLayoutManager() const {
-        return layoutManager;
-    }
+    LayoutManager_t* getLayoutManager() const { return layoutManager; }
 
     /**
      * Marks the given area as dirty so it is copied to the framebuffer
@@ -335,9 +306,7 @@ public:
     /**
      * Marks the entire component as dirty
      */
-    virtual void markDirty() {
-        markDirty(Graphics::Metrics::Rectangle(0, 0, bounds.width(), bounds.height()));
-    }
+    virtual void markDirty() { markDirty(Graphics::Metrics::Rectangle(0, 0, bounds.width(), bounds.height())); }
 
     bool getChildReference(Component_t* child, ChildComponentRef& out);
 
@@ -413,9 +382,7 @@ public:
     /**
      *
      */
-    inline int getComponentType() {
-        return type;
-    }
+    inline int getComponentType() { return type; }
 };
 
 #endif

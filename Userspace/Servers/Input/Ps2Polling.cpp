@@ -25,7 +25,7 @@
 #include "Input.hpp"
 
 #include <Api.h>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 #include <Utils/Utils.hh>
 
 #if DRIVER_OPERATION_MODE == DRIVER_OPERATION_MODE_POLLING

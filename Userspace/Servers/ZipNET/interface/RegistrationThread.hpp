@@ -25,7 +25,7 @@
 #ifndef __INTERFACE_REGISTRATION_THREAD__
 #define __INTERFACE_REGISTRATION_THREAD__
 
-#include <Tasking/Thread.hh>
+#include <LibTasking/Thread.hh>
 
 /**
  *

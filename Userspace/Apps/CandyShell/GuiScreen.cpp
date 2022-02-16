@@ -30,7 +30,7 @@
 #include <IO/Keyboard.hh>
 #include <list>
 #include <string.h>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 
 bool     paintIsFresh = false;
 bool     cursorBlink  = false;
@@ -67,12 +67,9 @@ public:
     Canvas* localCanvas;
 
     CanvasResizeBoundsListener(Canvas* canvas)
-        : localCanvas(canvas) {
-    }
+        : localCanvas(canvas) {}
 
-    virtual void handle_bounds_changed(Graphics::Metrics::Rectangle bounds) {
-        paintIsFresh = false;
-    }
+    virtual void handle_bounds_changed(Graphics::Metrics::Rectangle bounds) { paintIsFresh = false; }
 };
 
 /*
@@ -80,9 +77,7 @@ public:
  */
 class CanvasBufferListener_t : public CanvasBufferListener {
 public:
-    virtual void handle_buffer_changed() {
-        paintIsFresh = false;
-    }
+    virtual void handle_buffer_changed() { paintIsFresh = false; }
 };
 
 /*
@@ -129,16 +124,12 @@ void GUIScreen::initialize() {
 
     window->set_bounds_listener(new CanvasResizeBoundsListener(canvas));
 
-    auto resolution   = UI::screen_dimension();
-    auto windowBounds = Graphics::Metrics::Rectangle(resolution.width() / 2 - 275,
-                                                     resolution.height() / 2 - 175,
-                                                     550,
-                                                     350);
+    auto resolution = UI::screen_dimension();
+    auto windowBounds
+        = Graphics::Metrics::Rectangle(resolution.width() / 2 - 275, resolution.height() / 2 - 175, 550, 350);
     window->set_bounds(windowBounds);
-    window->set_color(Graphics::Color::as_argb(100, 0, 0, 0),
-                      Graphics::Color::as_argb(255, 255, 255, 255));
-    canvas->set_bounds(
-        Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
+    window->set_color(Graphics::Color::as_argb(100, 0, 0, 0), Graphics::Color::as_argb(255, 255, 255, 255));
+    canvas->set_bounds(Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
 
     canvas->set_listener(UI_COMPONENT_EVENT_TYPE_KEY, new InputKeyListener());
     canvas->set_buffer_listener(new CanvasBufferListener_t());
@@ -177,8 +168,7 @@ void GUIScreen::blinkCursorThread() {
 
     while ( true ) {
         windowBounds = window->bounds();
-        canvas->set_bounds(
-            Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
+        canvas->set_bounds(Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
 
         cr = getGraphics();
         if ( !cr ) {
@@ -231,9 +221,7 @@ void GUIScreen::blinkCursorThread() {
 
             cairo_save(cr);
             cairo_set_source_rgba(cr, ARGB_TO_CAIRO_PARAMS(colors[i]));
-            cairo_translate(cr,
-                            g.m_position.x() - g.m_cairo_glyph->x,
-                            yOffset + g.m_position.y() - g.m_cairo_glyph->y);
+            cairo_translate(cr, g.m_position.x() - g.m_cairo_glyph->x, yOffset + g.m_position.y() - g.m_cairo_glyph->y);
             cairo_glyph_path(cr, g.m_cairo_glyph, g.m_cairo_glyph_count);
             cairo_fill(cr);
             cairo_restore(cr);
@@ -276,12 +264,12 @@ cairo_t* GUIScreen::getGraphics() {
         if ( existingContext != 0 )
             cairo_destroy(existingContext);
 
-        existingSurface = cairo_image_surface_create_for_data(
-            (uint8_t*)bufferInfo.buffer,
-            CAIRO_FORMAT_ARGB32,
-            bufferInfo.width,
-            bufferInfo.height,
-            cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, bufferInfo.width));
+        existingSurface
+            = cairo_image_surface_create_for_data((uint8_t*)bufferInfo.buffer,
+                                                  CAIRO_FORMAT_ARGB32,
+                                                  bufferInfo.width,
+                                                  bufferInfo.height,
+                                                  cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, bufferInfo.width));
         existingSurfaceBuffer = bufferInfo.buffer;
         existingContext       = cairo_create(existingSurface);
     }

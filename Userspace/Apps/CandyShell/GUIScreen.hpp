@@ -39,7 +39,7 @@
 #include <GUI/Listener/ActionListener.hh>
 #include <GUI/Listener/FocusListener.hh>
 #include <GUI/Listener/KeyListener.hpp>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 #include <Utils/Utils.hh>
 
 using namespace std;
@@ -72,8 +72,8 @@ public:
     GUIScreen();
     ~GUIScreen();
 
-    static void paintEntry();
-    [[noreturn]] void        paint();
+    static void       paintEntry();
+    [[noreturn]] void paint();
 
     void clean();
     void deactivate();
@@ -88,8 +88,7 @@ public:
     void write(string                        message,
                Graphics::Color::ArgbGradient color   = Graphics::Color::as_rgb(255, 255, 255),
                bool                          visible = true);
-    void writeChar(char                          c,
-                   Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255));
+    void writeChar(char c, Graphics::Color::ArgbGradient color = Graphics::Color::as_rgb(255, 255, 255));
     void updateCursor();
 
     IO::Keyboard::Info readInput(bool* cancelCondition);

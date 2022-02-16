@@ -13,7 +13,7 @@
 #pragma once
 
 #include <cstdint>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 
 #define INPUT_DRIVER_IDENTIFIER "Input"
 
@@ -88,16 +88,12 @@ public:
     /**
      * @brief Returns whether register_self() was already called
      */
-    [[nodiscard]] bool is_registered() const {
-        return m_is_registered;
-    }
+    [[nodiscard]] bool is_registered() const { return m_is_registered; }
 
     /**
      * @brief Returns the reference to the shared memory area with the Input driver
      */
-    [[nodiscard]] SharedArea& shared_area() {
-        return *m_shared_area;
-    }
+    [[nodiscard]] SharedArea& shared_area() { return *m_shared_area; }
 
 private:
     Input() = default;

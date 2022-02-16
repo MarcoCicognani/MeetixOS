@@ -29,7 +29,7 @@
 #include <components/window.hpp>
 #include <GUI/Protocol.hh>
 #include <list>
-#include <Tasking/Thread.hh>
+#include <LibTasking/Thread.hh>
 
 using namespace std;
 
@@ -52,9 +52,7 @@ public:
 private:
     ComponentRegistry() = default;
 
-    void remove_process_components(Pid                      pid,
-                                   Component_t*             component,
-                                   std::list<Component_t*>& removed_components);
+    void remove_process_components(Pid pid, Component_t* component, std::list<Component_t*>& removed_components);
 
     map<UiComponentID, Component_t*>           m_registry{};
     map<Pid, map<UiComponentID, Component_t*>> m_components_by_process{};

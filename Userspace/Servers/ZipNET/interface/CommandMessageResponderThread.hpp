@@ -26,8 +26,8 @@
 #define __INTERFACE_COMMAND_MESSAGE_RESPONDER_THREAD__
 
 #include <deque>
-#include <Tasking/Lock.hh>
-#include <Tasking/Thread.hh>
+#include <LibTasking/Lock.hh>
+#include <LibTasking/Thread.hh>
 
 /**
  *

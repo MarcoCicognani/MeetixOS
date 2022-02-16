@@ -14,9 +14,9 @@
 
 #include <Graphics/Text/Font.hh>
 #include <Graphics/Text/FreeType.hh>
+#include <LibTasking/Lock.hh>
 #include <map>
 #include <string>
-#include <Tasking/Lock.hh>
 
 namespace Graphics::Text {
 
@@ -35,10 +35,7 @@ public:
     /**
      * @brief Creates and registers a new font with the given parameters
      */
-    bool create_font(const std::string& name,
-                     u8*                source,
-                     usize              len,
-                     Font::Style        style = Font::Style::NORMAL);
+    bool create_font(const std::string& name, u8* source, usize len, Font::Style style = Font::Style::NORMAL);
 
     /**
      * @brief Returns the registered font which corresponds to the given name
@@ -53,9 +50,7 @@ public:
     /**
      * @brief Returns the freetype2 library handle
      */
-    [[nodiscard]] FT_Library freetype_library() const {
-        return m_freetype_library;
-    }
+    [[nodiscard]] FT_Library freetype_library() const { return m_freetype_library; }
 
 private:
     FontManager();

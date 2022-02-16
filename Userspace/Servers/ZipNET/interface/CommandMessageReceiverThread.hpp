@@ -25,7 +25,7 @@
 #ifndef __INTERFACE_COMMAND_MESSAGE_RECEIVER_THREAD__
 #define __INTERFACE_COMMAND_MESSAGE_RECEIVER_THREAD__
 
-#include <Tasking/Thread.hh>
+#include <LibTasking/Thread.hh>
 
 /**
  *

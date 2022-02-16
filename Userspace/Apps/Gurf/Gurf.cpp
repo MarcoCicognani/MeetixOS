@@ -22,7 +22,7 @@
 #include <GUI/Component/Label.hh>
 #include <GUI/Component/Window.hh>
 #include <stdlib.h>
-#include <Tasking/Timer.hh>
+#include <LibTasking/Timer.hh>
 #include <Utils/TimeSpan.hh>
 #include <vector>
 
@@ -50,8 +50,7 @@ int  _clicked  = 0;
 int  _level    = 1;
 
 // button flags color
-enum ButtonColor_t
-{
+enum ButtonColor_t {
     RED,
     GREEN,
     BLUE,
@@ -64,8 +63,8 @@ enum ButtonColor_t
 class ButtonEvent : public ActionListener {
 public:
     // constructor
-    ButtonEvent(ButtonColor_t color) : color(color) {
-    }
+    ButtonEvent(ButtonColor_t color)
+        : color(color) {}
 
     // event method
     virtual void handle_action() {

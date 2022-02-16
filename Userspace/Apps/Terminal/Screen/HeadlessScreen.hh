@@ -14,7 +14,7 @@
 
 #include "Screen.hh"
 
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 
 #define SCREEN_WIDTH  80
 #define SCREEN_HEIGHT 25

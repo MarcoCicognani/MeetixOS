@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 #include <Utils/Utils.hh>
 
 /**
@@ -98,17 +98,12 @@ int main() {
             // share area with requester
             Pid                    requesterPid = s_get_pid_for_tid(mes->m_sender_tid);
             IO::Input::SharedArea* sharedInTarget
-                = (IO::Input::SharedArea*)s_share_mem((void*)sharedArea,
-                                                      sizeof(IO::Input::SharedArea),
-                                                      requesterPid);
+                = (IO::Input::SharedArea*)s_share_mem((void*)sharedArea, sizeof(IO::Input::SharedArea), requesterPid);
 
             // send response
             IO::Input::RegisterResponse response;
             response.m_shared_area = sharedInTarget;
-            s_send_message_t(mes->m_sender_tid,
-                             &response,
-                             sizeof(IO::Input::RegisterResponse),
-                             mes->m_transaction);
+            s_send_message_t(mes->m_sender_tid, &response, sizeof(IO::Input::RegisterResponse), mes->m_transaction);
         }
     }
 }

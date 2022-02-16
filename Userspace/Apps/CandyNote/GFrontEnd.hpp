@@ -37,7 +37,7 @@
 #include <GUI/Listener/KeyListener.hpp>
 #include <GUI/MessageBox.hh>
 #include <list>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 #include <Utils/Utils.hh>
 
 using namespace std;

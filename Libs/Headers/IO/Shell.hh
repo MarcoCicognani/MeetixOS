@@ -13,7 +13,7 @@
 #pragma once
 
 #include <Api.h>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 
 #define SHELL_STREAM_CONTROL_MAX_PARAMETERS 4
 
@@ -145,8 +145,7 @@ public:
     /**
      * @brief Terminal modes
      */
-    enum Mode
-    {
+    enum Mode {
         MODE_DEFAULT,
         MODE_RAW,
         MODE_CBREAK
@@ -163,8 +162,7 @@ public:
         CursorPosition() = default;
         CursorPosition(int x, int y)
             : m_x{ x }
-            , m_y{ y } {
-        }
+            , m_y{ y } {}
     };
 
     /**
@@ -178,8 +176,7 @@ public:
         Dimension() = default;
         Dimension(int width, int height)
             : m_width{ width }
-            , m_height{ height } {
-        }
+            , m_height{ height } {}
     };
 
 public:

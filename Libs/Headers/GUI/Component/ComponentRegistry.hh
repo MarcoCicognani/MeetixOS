@@ -13,8 +13,9 @@
 #pragma once
 
 #include "../../../../Toolchain/Local/i686-pc-meetix/include/c++/11.2.0/map"
-#include "../../Tasking/Lock.hh"
 #include "../Protocol.hh"
+
+#include <LibTasking/Lock.hh>
 
 // forward declaration
 class Component;

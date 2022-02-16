@@ -17,7 +17,7 @@
 #include <Graphics/Color.hh>
 #include <Graphics/Text/FontLoader.hh>
 #include <Graphics/Video.hh>
-#include <Tasking/LockGuard.hh>
+#include <LibTasking/LockGuard.hh>
 
 bool HeadlessGUIScreen::init() {
     auto mode_is_set = Graphics::Video::set_mode(1024, 768, 32, m_vbe_mode_info);

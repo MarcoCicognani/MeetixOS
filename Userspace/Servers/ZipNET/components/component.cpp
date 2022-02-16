@@ -34,7 +34,7 @@
 #include <layout/FlowLayoutManager.hpp>
 #include <layout/GridLayoutManager.hpp>
 #include <ranges>
-#include <Tasking/LockGuard.hh>
+#include <LibTasking/LockGuard.hh>
 
 /**
  *

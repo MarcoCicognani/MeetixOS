@@ -44,7 +44,7 @@
 #include <cairo/cairo.h>
 #include <iostream>
 #include <map>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 #include <Utils/Environment.hh>
 #include <Utils/Utils.hh>
 
@@ -88,8 +88,7 @@ void ZipNET::launch() {
     std::string keyLayout = "it-EU";
     Utils::log("loading keyboard layout '%s'", keyLayout.c_str());
     if ( !IO::Keyboard::instance().load_layout(keyLayout) )
-        Utils::log("failed to load keyboard layout '%s', no keyboard input available",
-                   keyLayout.c_str());
+        Utils::log("failed to load keyboard layout '%s', no keyboard input available", keyLayout.c_str());
 
     // create the cursor
     loadCursor();
@@ -138,8 +137,7 @@ void ZipNET::launch() {
 
     s_create_thread_n((void*)lockCheck, "lockCheck");
 
-    Cursor::instance().nextPosition
-        = Graphics::Metrics::Point(screenBounds.width() / 2, screenBounds.height() / 2);
+    Cursor::instance().nextPosition = Graphics::Metrics::Point(screenBounds.width() / 2, screenBounds.height() / 2);
 
     // initially set rendering atom
     renderAtom = true;
@@ -179,11 +177,10 @@ void ZipNET::launch() {
  *
  */
 void ZipNET::blit(Graphics::Context* graphics) {
-    auto resolution = videoOutput->getResolution();
-    auto screenBounds
-        = Graphics::Metrics::Rectangle{ 0, 0, resolution.width(), resolution.height() };
-    auto buffer = reinterpret_cast<Graphics::Color::ArgbGradient*>(
-        cairo_image_surface_get_data(graphics->cairo_surface()));
+    auto resolution   = videoOutput->getResolution();
+    auto screenBounds = Graphics::Metrics::Rectangle{ 0, 0, resolution.width(), resolution.height() };
+    auto buffer
+        = reinterpret_cast<Graphics::Color::ArgbGradient*>(cairo_image_surface_get_data(graphics->cairo_surface()));
 
     // get invalid output
     auto invalid = screen->grabInvalid();

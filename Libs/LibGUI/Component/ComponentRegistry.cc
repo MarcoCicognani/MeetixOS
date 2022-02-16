@@ -19,8 +19,8 @@
 
 #include <GUI/Component/Component.hh>
 #include <GUI/Component/ComponentRegistry.hh>
+#include <LibTasking/LockGuard.hh>
 #include <ranges>
-#include <Tasking/LockGuard.hh>
 
 ComponentRegistry& ComponentRegistry::instance() {
     static ComponentRegistry* s_instance = nullptr;

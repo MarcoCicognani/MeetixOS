@@ -11,8 +11,8 @@
  */
 
 #include <Api.h>
-#include <Tasking/Thread.hh>
-#include <Tasking/Timer.hh>
+#include <LibTasking/Thread.hh>
+#include <LibTasking/Timer.hh>
 
 namespace Tasking {
 
@@ -21,18 +21,13 @@ public:
     TimerThread(const Utils::TimeSpan& time_span, std::function<void()>& function)
         : Tasking::Thread{}
         , m_time_span{ time_span }
-        , m_function{ function } {
-    }
+        , m_function{ function } {}
 
     virtual ~TimerThread() = default;
 
-    void stop() {
-        m_lock.lock();
-    }
+    void stop() { m_lock.lock(); }
 
-    void restart() {
-        m_lock.unlock();
-    }
+    void restart() { m_lock.unlock(); }
 
 protected:
     [[noreturn]] void run() override {

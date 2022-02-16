@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 
 namespace Tasking {
 

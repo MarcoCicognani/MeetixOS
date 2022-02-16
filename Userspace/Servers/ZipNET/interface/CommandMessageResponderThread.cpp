@@ -25,7 +25,7 @@
 #include <Api.h>
 #include <events/EventProcessor.hpp>
 #include <interface/CommandMessageResponderThread.hpp>
-#include <Tasking/LockGuard.hh>
+#include <LibTasking/LockGuard.hh>
 #include <zipNET.hpp>
 
 /**
@@ -42,10 +42,7 @@
         while ( !buffer.empty() ) {
             // get reference to response from the queue
             CommandMessageResponse_t& response = buffer.back();
-            s_send_message_t(response.target,
-                             response.message,
-                             response.length,
-                             response.transaction);
+            s_send_message_t(response.target, response.message, response.length, response.transaction);
 
             // delete message buffer
             delete (MessageHeader*)response.message;

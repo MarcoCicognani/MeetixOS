@@ -11,7 +11,7 @@
  */
 
 #include <Api.h>
-#include <Tasking/Thread.hh>
+#include <LibTasking/Thread.hh>
 
 namespace Tasking {
 
@@ -25,8 +25,7 @@ void Thread::execute_run(Thread* thread) {
 }
 
 Tid Thread::start() {
-    m_thread_id
-        = s_create_thread_dn(reinterpret_cast<void*>(execute_run), this, m_thread_name.c_str());
+    m_thread_id = s_create_thread_dn(reinterpret_cast<void*>(execute_run), this, m_thread_name.c_str());
     return m_thread_id;
 }
 

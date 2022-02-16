@@ -28,7 +28,7 @@
 #include <IO/Keyboard.hh>
 #include <list>
 #include <string.h>
-#include <Tasking/Lock.hh>
+#include <LibTasking/Lock.hh>
 
 GUIScreen* instance;
 
@@ -40,12 +40,9 @@ public:
     GUIScreen* screen;
 
     CanvasResizeBoundsListener_t(GUIScreen* screen)
-        : screen(screen) {
-    }
+        : screen(screen) {}
 
-    virtual void handle_bounds_changed(Graphics::Metrics::Rectangle bounds) {
-        screen->updateVisibleBufferSize();
-    }
+    virtual void handle_bounds_changed(Graphics::Metrics::Rectangle bounds) { screen->updateVisibleBufferSize(); }
 };
 
 /**
@@ -60,8 +57,7 @@ public:
      *
      */
     InputKeyListener_t(GUIScreen* screen)
-        : screen(screen) {
-    }
+        : screen(screen) {}
 
     /**
      *
@@ -83,8 +79,7 @@ public:
      *
      */
     CanvasBufferListener_t(GUIScreen* screen)
-        : screen(screen) {
-    }
+        : screen(screen) {}
 
     /**
      *
@@ -107,8 +102,7 @@ public:
      *
      */
     TerminalFocusListener_t(GUIScreen* screen)
-        : screen(screen) {
-    }
+        : screen(screen) {}
 
     /**
      *
@@ -159,8 +153,7 @@ bool GUIScreen::init() {
 
     window = Window::create();
     window->set_title("CandyTerminal");
-    window->set_color(Graphics::Color::as_argb(100, 0, 0, 0),
-                      Graphics::Color::as_argb(255, 255, 255, 255));
+    window->set_color(Graphics::Color::as_argb(100, 0, 0, 0), Graphics::Color::as_argb(255, 255, 255, 255));
     window->on_close(exitTerminalEntry);
 
     canvas = Canvas::create();
@@ -169,8 +162,7 @@ bool GUIScreen::init() {
 
     auto windowBounds = Graphics::Metrics::Rectangle(200, 200, 600, 480);
     window->set_bounds(windowBounds);
-    canvas->set_bounds(
-        Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
+    canvas->set_bounds(Graphics::Metrics::Rectangle(0, 0, windowBounds.width(), windowBounds.height()));
 
     canvas->set_buffer_listener(new CanvasBufferListener_t(this));
     canvas->set_bounds_listener(new CanvasResizeBoundsListener_t(this));
@@ -228,15 +220,15 @@ CharLayout* GUIScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
     CharLayout*                layout = new CharLayout();
     cairo_text_cluster_flags_t clusterFlags;
     cairo_status_t             stat = cairo_scaled_font_text_to_glyphs(scaledFace,
-                                                                       0,
-                                                                       0,
-                                                                       cbuf,
-                                                                       1,
-                                                                       &layout->glyphBuffer,
-                                                                       &layout->glyphCount,
-                                                                       &layout->clusterBuffer,
-                                                                       &layout->clusterCount,
-                                                                       &clusterFlags);
+                                                           0,
+                                                           0,
+                                                           cbuf,
+                                                           1,
+                                                           &layout->glyphBuffer,
+                                                           &layout->glyphCount,
+                                                           &layout->clusterBuffer,
+                                                           &layout->clusterCount,
+                                                           &clusterFlags);
 
     if ( stat == CAIRO_STATUS_SUCCESS ) {
         charLayoutCache[c] = layout;
@@ -309,12 +301,8 @@ CharLayout* GUIScreen::getCharLayout(cairo_scaled_font_t* scaledFace, char c) {
                         else
                             cairo_set_source_rgba(cr, 1, 1, 1, 1);
 
-                        cairo_translate(cr,
-                                        x * charWidth + padding,
-                                        (y + 1) * charHeight + padding);
-                        cairo_glyph_path(cr,
-                                         charLayout->glyphBuffer,
-                                         charLayout->clusterBuffer[0].num_glyphs);
+                        cairo_translate(cr, x * charWidth + padding, (y + 1) * charHeight + padding);
+                        cairo_glyph_path(cr, charLayout->glyphBuffer, charLayout->clusterBuffer[0].num_glyphs);
                         cairo_fill(cr);
                         cairo_restore(cr);
                     }
@@ -348,12 +336,12 @@ cairo_t* GUIScreen::getGraphics() {
         if ( existingContext )
             cairo_destroy(existingContext);
 
-        existingSurface = cairo_image_surface_create_for_data(
-            (uint8_t*)bufferInfo.buffer,
-            CAIRO_FORMAT_ARGB32,
-            bufferInfo.width,
-            bufferInfo.height,
-            cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, bufferInfo.width));
+        existingSurface
+            = cairo_image_surface_create_for_data((uint8_t*)bufferInfo.buffer,
+                                                  CAIRO_FORMAT_ARGB32,
+                                                  bufferInfo.width,
+                                                  bufferInfo.height,
+                                                  cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, bufferInfo.width));
         existingSurfaceBuffer = bufferInfo.buffer;
         existingContext       = cairo_create(existingSurface);
     }
@@ -518,8 +506,7 @@ void GUIScreen::updateVisibleBufferSize() {
     if ( requiredHeight < charHeight )
         requiredHeight = charHeight;
 
-    if ( !rasterBuffer
-         || (rasterSize.width() < requiredWidth || rasterSize.height() < requiredHeight) ) {
+    if ( !rasterBuffer || (rasterSize.width() < requiredWidth || rasterSize.height() < requiredHeight) ) {
         rasterLock.lock();
 
         uint8_t* oldBuffer     = rasterBuffer;
@@ -534,8 +521,7 @@ void GUIScreen::updateVisibleBufferSize() {
         if ( oldBuffer ) {
             for ( int y = 0; y < oldBufferSize.height(); y++ )
                 for ( int x = 0; x < oldBufferSize.width(); x++ )
-                    rasterBuffer[y * rasterSize.width() + x]
-                        = oldBuffer[y * oldBufferSize.width() + x];
+                    rasterBuffer[y * rasterSize.width() + x] = oldBuffer[y * oldBufferSize.width() + x];
 
             delete oldBuffer;
         }
