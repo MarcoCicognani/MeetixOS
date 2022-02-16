@@ -18,8 +18,8 @@
 
 #include "OsmosUI.hpp"
 
-#include <Utils/Environment.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/Environment.hh>
+#include <LibUtils/Utils.hh>
 
 /**
  *	main of application

@@ -14,10 +14,10 @@
 #include <Api/utils/local.hpp>
 #include <cassert>
 #include <fstream>
+#include <LibUtils/Environment.hh>
+#include <LibUtils/PropertyFileParser.hh>
+#include <LibUtils/Utils.hh>
 #include <sstream>
-#include <Utils/Environment.hh>
-#include <Utils/PropertyFileParser.hh>
-#include <Utils/Utils.hh>
 
 #define SHELL_PATH "/Bins/MxSh"
 
@@ -46,8 +46,7 @@ void set(const std::string& key, const std::string& value) {
     s_get_working_directory(work_dir());
 
     // exec shell
-    auto spawn_status
-        = s_spawn(SHELL_PATH, ss.str().c_str(), work_dir(), SECURITY_LEVEL_APPLICATION);
+    auto spawn_status = s_spawn(SHELL_PATH, ss.str().c_str(), work_dir(), SECURITY_LEVEL_APPLICATION);
     if ( spawn_status != SPAWN_STATUS_SUCCESSFUL )
         log("setEnvVar: failed to spawn Shell process");
 }

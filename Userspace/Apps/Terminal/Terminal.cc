@@ -20,8 +20,8 @@
 #include <LibIO/Shell.hh>
 #include <LibTasking/LockGuard.hh>
 #include <unistd.h>
-#include <Utils/ArgsParser.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/ArgsParser.hh>
+#include <LibUtils/Utils.hh>
 
 #define V_MAJOR 0
 #define V_MINOR 0

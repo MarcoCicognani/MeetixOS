@@ -40,7 +40,7 @@
 #include <GUI/Listener/FocusListener.hh>
 #include <GUI/Listener/KeyListener.hpp>
 #include <LibTasking/Lock.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 using namespace std;
 

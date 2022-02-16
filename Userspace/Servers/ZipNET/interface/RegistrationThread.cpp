@@ -27,7 +27,7 @@
 #include <GUI/Protocol.hh>
 #include <interface/ApplicationExitCleanupThread.hpp>
 #include <interface/CommandMessageReceiverThread.hpp>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 /**
  *
@@ -54,8 +54,7 @@
 
             // create a thread that cleans up the ui when the client thread exits
             auto cleanup
-                = new ApplicationExitCleanupThread(s_get_pid_for_tid(requestMessage->m_sender_tid),
-                                                   communicator);
+                = new ApplicationExitCleanupThread(s_get_pid_for_tid(requestMessage->m_sender_tid), communicator);
             auto cleanerTid = cleanup->start();
 
             // send response

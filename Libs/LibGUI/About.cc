@@ -23,7 +23,7 @@
 #include <GUI/Component/Geoshape.hh>
 #include <GUI/Component/Label.hh>
 #include <GUI/Component/Window.hh>
-#include <Utils/Environment.hh>
+#include <LibUtils/Environment.hh>
 
 // interface object for about
 static Window*   about;
@@ -46,9 +46,8 @@ static void close() {
  */
 void about_os() {
     // get resolution
-    auto rs = UI::screen_dimension();
-    auto wBounds
-        = Graphics::Metrics::Rectangle(rs.width() / 2 - 175, rs.height() / 2 - 115, 350, 230);
+    auto rs      = UI::screen_dimension();
+    auto wBounds = Graphics::Metrics::Rectangle(rs.width() / 2 - 175, rs.height() / 2 - 115, 350, 230);
 
     // create and setup window
     about = Window::create();
@@ -62,8 +61,7 @@ void about_os() {
     panel = Geoshape::create();
     about->add_child(panel);
     panel->set_bounds(Graphics::Metrics::Rectangle(0, 0, 350, 230));
-    panel->set_image("/Apps/OsmosUI/Resources/Icons/OSLogo_hdpi.png",
-                     Graphics::Metrics::Point(70, 50));
+    panel->set_image("/Apps/OsmosUI/Resources/Icons/OSLogo_hdpi.png", Graphics::Metrics::Point(70, 50));
 
     // create and configure first line of about text
     line1 = Label::create();

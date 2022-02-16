@@ -26,7 +26,7 @@
 
 #include <Api.h>
 #include <LibTasking/Lock.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 #if DRIVER_OPERATION_MODE == DRIVER_OPERATION_MODE_POLLING
 

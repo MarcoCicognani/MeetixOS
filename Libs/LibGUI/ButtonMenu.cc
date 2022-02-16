@@ -20,7 +20,7 @@
 #include <fstream>
 #include <functional>
 #include <GUI/ButtonMenu.hh>
-#include <Utils/PropertyFileParser.hh>
+#include <LibUtils/PropertyFileParser.hh>
 
 using namespace std;
 
@@ -104,8 +104,7 @@ string ButtonMenu::parseCurrent(const pair<string, string>& current) {
         command = current.second;
 
     // add button to list
-    buttons.add(current.first,
-                [command]() { s_spawn(command.c_str(), "", "/", SECURITY_LEVEL_APPLICATION); });
+    buttons.add(current.first, [command]() { s_spawn(command.c_str(), "", "/", SECURITY_LEVEL_APPLICATION); });
 
     // return icon path
     return icon;
@@ -137,8 +136,7 @@ void ButtonMenu::configureCurrent(const pair<string, string>& current, int index
 /*
  * create menu
  */
-void ButtonMenu::create(const string&                       pathToConfiguration,
-                        const Graphics::Metrics::Rectangle& bounds) {
+void ButtonMenu::create(const string& pathToConfiguration, const Graphics::Metrics::Rectangle& bounds) {
     getMapFromPath(pathToConfiguration);
     setBounds(bounds);
     configure();
@@ -147,8 +145,7 @@ void ButtonMenu::create(const string&                       pathToConfiguration,
 /*
  *	create menu
  */
-void ButtonMenu::create(const map<string, string>&          configuration,
-                        const Graphics::Metrics::Rectangle& bounds) {
+void ButtonMenu::create(const map<string, string>& configuration, const Graphics::Metrics::Rectangle& bounds) {
     cfg = configuration;
     setBounds(bounds);
     configure();

@@ -11,7 +11,7 @@
  */
 
 #include <Graphics/Text/Layouter.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 namespace Graphics::Text {
 
@@ -60,15 +60,15 @@ void Layouter::layout(cairo_t*                     cr,
 
     cairo_text_cluster_flags_t cairo_text_cluster_flags;
     auto                       cairo_status = cairo_scaled_font_text_to_glyphs(cairo_scaled_face,
-                                                                               0,
-                                                                               0,
-                                                                               text,
-                                                                               static_cast<int>(text_len),
-                                                                               &layout->m_cairo_glyph,
-                                                                               &layout->m_glyph_count,
-                                                                               &layout->m_cairo_text_cluster,
-                                                                               &layout->m_cluster_count,
-                                                                               &cairo_text_cluster_flags);
+                                                         0,
+                                                         0,
+                                                         text,
+                                                         static_cast<int>(text_len),
+                                                         &layout->m_cairo_glyph,
+                                                         &layout->m_glyph_count,
+                                                         &layout->m_cairo_text_cluster,
+                                                         &layout->m_cluster_count,
+                                                         &cairo_text_cluster_flags);
 
     /* destroy previous buffer */
     if ( previous_glyph_buffer && layout->m_cairo_glyph != previous_glyph_buffer )
@@ -112,9 +112,7 @@ void Layouter::layout(cairo_t*                     cr,
                 is_newline = true;
 
             /* wouldn't match in line or is break character? Start next line */
-            if ( is_newline
-                 || (break_on_overflow
-                     && (x + positioned_glyph.m_size.width() > bounds.width())) ) {
+            if ( is_newline || (break_on_overflow && (x + positioned_glyph.m_size.width() > bounds.width())) ) {
                 if ( is_newline )
                     invisible = true;
                 if ( alignment == Alignment::RIGHT )
@@ -191,10 +189,7 @@ void Layouter::destroy_layout(Layouted* layouted_text) {
     delete layouted_text;
 }
 
-void Layouter::right_align(Layouted*                     text,
-                           usize                         line,
-                           usize                         width,
-                           Graphics::Metrics::Rectangle& bounds) {
+void Layouter::right_align(Layouted* text, usize line, usize width, Graphics::Metrics::Rectangle& bounds) {
     auto difference = bounds.width() - bounds.x() - width;
     for ( auto& p_glyph : text->m_positioned_glyphs ) {
         if ( p_glyph.m_line == line )
@@ -202,10 +197,7 @@ void Layouter::right_align(Layouted*                     text,
     }
 }
 
-void Layouter::center_align(Layouted*                     text,
-                            usize                         line,
-                            usize                         width,
-                            Graphics::Metrics::Rectangle& bounds) {
+void Layouter::center_align(Layouted* text, usize line, usize width, Graphics::Metrics::Rectangle& bounds) {
     auto difference = (bounds.width() - bounds.x()) / 2 - width / 2;
     for ( auto& p_glyph : text->m_positioned_glyphs ) {
         if ( p_glyph.m_line == line )

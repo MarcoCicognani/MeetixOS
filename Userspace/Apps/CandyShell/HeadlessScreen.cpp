@@ -25,8 +25,8 @@
 #include "HeadlessScreen.hpp"
 
 #include <Api.h>
+#include <LibUtils/Utils.hh>
 #include <string.h>
-#include <Utils/Utils.hh>
 
 static uint8_t* outputVideoDirect = (uint8_t*)VIDEO_MEMORY;
 static uint32_t screenIdCounter   = 0;
@@ -35,13 +35,13 @@ static uint32_t screenIdCounter   = 0;
  *
  */
 HeadlessScreen::HeadlessScreen() {
-    id            = screenIdCounter++;
-    outputBuffer  = new uint8_t[SCREEN_WIDTH * SCREEN_HEIGHT * 2];
+    id               = screenIdCounter++;
+    outputBuffer     = new uint8_t[SCREEN_WIDTH * SCREEN_HEIGHT * 2];
     m_output_current = outputBuffer;
 
-    m_offset        = 0;
+    m_offset         = 0;
     m_active_proc_id = 0;
-    lock            = false;
+    lock             = false;
     clean();
 }
 
@@ -55,7 +55,7 @@ void HeadlessScreen::clean() {
         outputBuffer[off + 1] = (uint8_t)Graphics::Color::as_rgb(0, 0, 0);
     }
     m_offset = 0;
-    lock   = false;
+    lock     = false;
 }
 
 /**
@@ -65,7 +65,7 @@ void HeadlessScreen::activate() {
     s_atomic_lock(&lock);
     memcpy((uint8_t*)VIDEO_MEMORY, outputBuffer, SCREEN_HEIGHT * SCREEN_WIDTH * 2);
     m_output_current = outputVideoDirect;
-    lock          = false;
+    lock             = false;
 }
 
 /*
@@ -92,7 +92,7 @@ void HeadlessScreen::deactivate() {
     s_atomic_lock(&lock);
     memcpy(outputBuffer, (uint8_t*)VIDEO_MEMORY, SCREEN_HEIGHT * SCREEN_WIDTH * 2);
     m_output_current = outputBuffer;
-    lock          = false;
+    lock             = false;
 }
 
 /**
@@ -142,7 +142,7 @@ void HeadlessScreen::backspace() {
     m_output_current[m_offset++] = ' ';
     ++m_offset; // keep color
     m_offset = m_offset - 2;
-    lock   = false;
+    lock     = false;
 }
 
 /**
@@ -187,9 +187,8 @@ void HeadlessScreen::normalize() {
         memcpy(m_output_current, &m_output_current[SCREEN_WIDTH * 2], screenSize - lineBytes);
 
         for ( uint32_t i = 0; i < SCREEN_WIDTH * 2; i += 2 ) {
-            m_output_current[screenSize - lineBytes + i] = ' ';
-            m_output_current[screenSize - lineBytes + i + 1]
-                = (uint8_t)Graphics::Color::as_rgb(0, 0, 0);
+            m_output_current[screenSize - lineBytes + i]     = ' ';
+            m_output_current[screenSize - lineBytes + i + 1] = (uint8_t)Graphics::Color::as_rgb(0, 0, 0);
         }
     }
 }

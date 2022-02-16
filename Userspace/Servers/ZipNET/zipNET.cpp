@@ -45,8 +45,8 @@
 #include <iostream>
 #include <map>
 #include <LibTasking/Lock.hh>
-#include <Utils/Environment.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/Environment.hh>
+#include <LibUtils/Utils.hh>
 
 // global instance of ZipNET class
 static ZipNET* server;

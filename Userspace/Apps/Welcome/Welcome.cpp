@@ -23,11 +23,10 @@
 #include <GUI/Component/Label.hh>
 #include <GUI/Component/Window.hh>
 #include <GUI/Listener/ActionListener.hh>
-#include <Utils/Environment.hh>
+#include <LibUtils/Environment.hh>
 
 // ui style, i change the presentation in base the style
-enum class UiStyle_t : uint8_t
-{
+enum class UiStyle_t : uint8_t {
     KDE,
     GNOME
 };
@@ -71,8 +70,7 @@ static std::string rg5[5];
  */
 void fillPresentation() {
     // fill the first lines
-    rg1[0] = "Hi " + Utils::Environment::get("USER") + " welcome to MeetiX OS "
-           + Utils::Environment::get("VERSION");
+    rg1[0] = "Hi " + Utils::Environment::get("USER") + " welcome to MeetiX OS " + Utils::Environment::get("VERSION");
     rg1[1] = "Okay, we can begin";
     rg1[2] = "";
     rg1[3] = "The graphic terminal CandyShell allows you to interact more deeply with the system";
@@ -124,9 +122,8 @@ static void showPage(int index) {
             backGround->set_image("/app/welcome/deps/icon/arrow_up.png",
                                   Graphics::Metrics::Point(resolution.width() / 2 - 53, 0));
         else
-            backGround->set_image(
-                "/app/welcome/deps/icon/arrow_down.png",
-                Graphics::Metrics::Point(resolution.width() / 2 - 53, resolution.height() - 230));
+            backGround->set_image("/app/welcome/deps/icon/arrow_down.png",
+                                  Graphics::Metrics::Point(resolution.width() / 2 - 53, resolution.height() - 230));
 
         lb1->set_title(rg1[index]);
         lb2->set_title(rg2[index]);
@@ -138,9 +135,8 @@ static void showPage(int index) {
     else if ( index == 2 ) {
         mainWindow->set_bounds(windowDimension);
         if ( style == UiStyle_t::GNOME )
-            backGround->set_image(
-                "/app/welcome/deps/icon/arrow_down.png",
-                Graphics::Metrics::Point(resolution.width() / 2 - 53, resolution.height() - 300));
+            backGround->set_image("/app/welcome/deps/icon/arrow_down.png",
+                                  Graphics::Metrics::Point(resolution.width() / 2 - 53, resolution.height() - 300));
         lb1->set_title(rg1[index]);
         lb2->set_title(rg2[index]);
         lb3->set_title(rg3[index]);
@@ -151,17 +147,15 @@ static void showPage(int index) {
     else if ( index == 3 ) {
         mainWindow->set_bounds(windowDimension);
         if ( style == UiStyle_t::GNOME )
-            backGround->set_image(
-                "/app/welcome/deps/icon/arrow_down.png",
-                Graphics::Metrics::Point(resolution.width() / 2 - 200, resolution.height() - 300));
+            backGround->set_image("/app/welcome/deps/icon/arrow_down.png",
+                                  Graphics::Metrics::Point(resolution.width() / 2 - 200, resolution.height() - 300));
         lb1->set_title(rg1[index]);
         lb2->set_title(rg2[index]);
         lb3->set_title(rg3[index]);
         lb4->set_title(rg4[index]);
         lb5->set_title(rg5[index]);
 
-        nextButton->set_color(Graphics::Color::as_argb(180, 0, 200, 0),
-                              Graphics::Color::as_rgb(0, 0, 0));
+        nextButton->set_color(Graphics::Color::as_argb(180, 0, 200, 0), Graphics::Color::as_rgb(0, 0, 0));
         nextButton->set_title("Next");
     }
 
@@ -191,9 +185,7 @@ static void showPage(int index) {
  */
 class ButtonNextListener : public ActionListener {
 public:
-    virtual void handle_action() {
-        showPage(++page);
-    }
+    virtual void handle_action() { showPage(++page); }
 };
 
 /*
@@ -201,9 +193,7 @@ public:
  */
 class ButtonPrevListener : public ActionListener {
 public:
-    virtual void handle_action() {
-        showPage(--page);
-    }
+    virtual void handle_action() { showPage(--page); }
 };
 
 /*
@@ -213,11 +203,9 @@ int main(int argc, char* argv[]) {
     // open comunication with the window server
     if ( UI::open() == UI_OPEN_STATUS_SUCCESSFUL ) {
         // get screen resolution and set window resolution
-        resolution      = UI::screen_dimension();
-        windowDimension = Graphics::Metrics::Rectangle(resolution.width() / 2 - 375,
-                                                       resolution.height() / 2 - 225,
-                                                       750,
-                                                       450);
+        resolution = UI::screen_dimension();
+        windowDimension
+            = Graphics::Metrics::Rectangle(resolution.width() / 2 - 375, resolution.height() / 2 - 225, 750, 450);
 
         // get the style from environment
         style = Utils::Environment::get("UISTYLE") == "KDE" ? UiStyle_t::KDE : UiStyle_t::GNOME;
@@ -227,13 +215,11 @@ int main(int argc, char* argv[]) {
 
         // setting background geoshape
         backGround = Geoshape::create();
-        backGround->set_bounds(Graphics::Metrics::Rectangle(
-            0,
-            style == UiStyle_t::KDE ? 0 : 30,
-            resolution.width(),
-            resolution.height() - (style == UiStyle_t::KDE ? 30 : 94)));
-        backGround->set_color(Graphics::Color::as_argb(120, 0, 0, 0),
-                              Graphics::Color::as_rgb(255, 255, 255));
+        backGround->set_bounds(Graphics::Metrics::Rectangle(0,
+                                                            style == UiStyle_t::KDE ? 0 : 30,
+                                                            resolution.width(),
+                                                            resolution.height() - (style == UiStyle_t::KDE ? 30 : 94)));
+        backGround->set_color(Graphics::Color::as_argb(120, 0, 0, 0), Graphics::Color::as_rgb(255, 255, 255));
 
         // set frontend window
         mainWindow = Window::create();
@@ -278,10 +264,8 @@ int main(int argc, char* argv[]) {
 
         // configuring button
         nextButton = Button::create();
-        nextButton->set_bounds(
-            Graphics::Metrics::Rectangle(windowDimension.width() / 2 - 200, 300, 400, 30));
-        nextButton->set_color(Graphics::Color::as_argb(180, 0, 200, 0),
-                              Graphics::Color::as_rgb(0, 0, 0));
+        nextButton->set_bounds(Graphics::Metrics::Rectangle(windowDimension.width() / 2 - 200, 300, 400, 30));
+        nextButton->set_color(Graphics::Color::as_argb(180, 0, 200, 0), Graphics::Color::as_rgb(0, 0, 0));
 
         nextButton->set_title("Next");
         nextButton->set_action_listener(new ButtonNextListener());
@@ -289,10 +273,8 @@ int main(int argc, char* argv[]) {
 
         // configuring button
         PrevButton = Button::create();
-        PrevButton->set_bounds(
-            Graphics::Metrics::Rectangle(windowDimension.width() / 2 - 200, 350, 400, 30));
-        PrevButton->set_color(Graphics::Color::as_argb(180, 0, 200, 0),
-                              Graphics::Color::as_rgb(0, 0, 0));
+        PrevButton->set_bounds(Graphics::Metrics::Rectangle(windowDimension.width() / 2 - 200, 350, 400, 30));
+        PrevButton->set_color(Graphics::Color::as_argb(180, 0, 200, 0), Graphics::Color::as_rgb(0, 0, 0));
 
         PrevButton->set_title("Previous");
         PrevButton->set_action_listener(new ButtonPrevListener());

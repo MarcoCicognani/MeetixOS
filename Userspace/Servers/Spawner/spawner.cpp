@@ -32,10 +32,10 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <Utils/Arguments.hh>
-#include <Utils/Environment.hh>
-#include <Utils/File.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/Arguments.hh>
+#include <LibUtils/Environment.hh>
+#include <LibUtils/File.hh>
+#include <LibUtils/Utils.hh>
 #include <vector>
 
 /**
@@ -102,16 +102,12 @@ void init() {
         auto commandHeader = (SpawnCommandHeader*)MESSAGE_CONTENT(header);
 
         if ( commandHeader->m_command == SPAWN_COMMAND_SPAWN_REQUEST )
-            processSpawnRequest((SpawnCommandSpawnRequest*)commandHeader,
-                                header->m_sender_tid,
-                                header->m_transaction);
+            processSpawnRequest((SpawnCommandSpawnRequest*)commandHeader, header->m_sender_tid, header->m_transaction);
         else if ( commandHeader->m_command == SPAWN_COMMAND_SHUTDOWN_MACHINE
                   || commandHeader->m_command == SPAWN_COMMAND_REBOOT_MACHINE )
             processHaltMachine(commandHeader->m_command);
         else
-            protocolError("received unknown command: code %i, task %i",
-                          commandHeader->m_command,
-                          header->m_sender_tid);
+            protocolError("received unknown command: code %i, task %i", commandHeader->m_command, header->m_sender_tid);
     }
 }
 
@@ -149,17 +145,17 @@ void processSpawnRequest(SpawnCommandSpawnRequest* request, Tid requester, Messa
     FileHandle  oFdErr;
     Pid         requesterPid = s_get_pid_for_tid(requester);
     SpawnStatus spawnStatus  = spawn(path,
-                                     args,
-                                     workdir,
-                                     secLvl,
-                                     requesterPid,
-                                     &oPid,
-                                     &oFdInw,
-                                     &oFdOutr,
-                                     &oFdErr,
-                                     request->m_stdin,
-                                     request->m_stdout,
-                                     request->m_stderr);
+                                    args,
+                                    workdir,
+                                    secLvl,
+                                    requesterPid,
+                                    &oPid,
+                                    &oFdInw,
+                                    &oFdOutr,
+                                    &oFdErr,
+                                    request->m_stdin,
+                                    request->m_stdout,
+                                    request->m_stderr);
 
     // send response
     SpawnCommandSpawnResponse response;
@@ -174,12 +170,7 @@ void processSpawnRequest(SpawnCommandSpawnRequest* request, Tid requester, Messa
 /**
  *
  */
-bool createPipe(Pid         thisPid,
-                Pid         requesterPid,
-                Pid         targetPid,
-                FileHandle  source,
-                FileHandle* out,
-                FileHandle  target) {
+bool createPipe(Pid thisPid, Pid requesterPid, Pid targetPid, FileHandle source, FileHandle* out, FileHandle target) {
     FileHandle created = FD_NONE;
     if ( source == FD_NONE ) {
         // create pipe
@@ -332,14 +323,7 @@ SpawnStatus spawn(const char*   path,
     }
 
     // setup standard I/O
-    if ( !setupStdio(targetPid,
-                     requesterPid,
-                     outStdin,
-                     outStdout,
-                     outStderr,
-                     inStdin,
-                     inStdout,
-                     inStderr) )
+    if ( !setupStdio(targetPid, requesterPid, outStdin, outStdout, outStderr, inStdin, inStdout, inStderr) )
         klog("unable to setup stdio for process %i", targetPid);
 
     // perform loading

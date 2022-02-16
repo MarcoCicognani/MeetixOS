@@ -28,7 +28,7 @@
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <Utils/PropertyFileParser.hh>
+#include <LibUtils/PropertyFileParser.hh>
 
 /*
  * class that provide basic interpretation commands
@@ -36,9 +36,7 @@
  */
 class MXinterpreter {
 public:
-    MXinterpreter(Environment* env) {
-        variables = env;
-    }
+    MXinterpreter(Environment* env) { variables = env; }
 
     // interpret script, espected parsed document
     void interpret(LsDocument* script);

@@ -12,7 +12,7 @@
 
 #include <Graphics/Text/FontManager.hh>
 #include <LibTasking/LockGuard.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 namespace Graphics::Text {
 

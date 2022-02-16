@@ -20,7 +20,7 @@
 
 #include <GUI/Component/ComponentRegistry.hh>
 #include <GUI/Notification.hh>
-#include <Utils/Environment.hh>
+#include <LibUtils/Environment.hh>
 
 using namespace std;
 
@@ -50,8 +50,7 @@ static void showPopupAnimation(Geoshape* popup, MessageAnimation_t animation, bo
     else if ( animation == MessageAnimation_t::SIDE_SCROLL ) {
         // get bounds from popup
         auto bounds = popup->bounds();
-        popup->set_color(Graphics::Color::as_argb(150, 0, 0, 0),
-                         Graphics::Color::as_argb(255, 255, 255, 255));
+        popup->set_color(Graphics::Color::as_argb(150, 0, 0, 0), Graphics::Color::as_argb(255, 255, 255, 255));
 
         // set limits with bolean flag
         int start = first ? bounds.x() + bounds.width() : bounds.x();
@@ -85,8 +84,7 @@ static void showOnScreen(Notification_t* msg) {
                             static_cast<i32>(yPos),
                             static_cast<i32>(boxWidth),
                             static_cast<i32>(boxheight) });
-        messageContenitor->set_bounds(
-            { 0, 0, static_cast<i32>(boxWidth), static_cast<i32>(boxheight) });
+        messageContenitor->set_bounds({ 0, 0, static_cast<i32>(boxWidth), static_cast<i32>(boxheight) });
 
         // set title
         popup->set_title(msg->title);

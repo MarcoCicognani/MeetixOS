@@ -12,7 +12,7 @@
 
 #include <Api.h>
 #include <Graphics/Video.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 namespace Graphics::Video {
 
@@ -29,7 +29,7 @@ bool set_mode(u16 width, u16 height, u8 bpp, ModeInfo& mode_info) {
 
     /* request to the driver to set the requested mode */
     SetModeRequest request{ COMMAND_SET_MODE, width, height, bpp };
-    auto send_status = s_send_message_t(driver_id, &request, sizeof(SetModeRequest), message_tx);
+    auto           send_status = s_send_message_t(driver_id, &request, sizeof(SetModeRequest), message_tx);
     if ( send_status != MESSAGE_SEND_STATUS_SUCCESSFUL ) {
         Utils::log("Video driver communication error: failed to send set-mode request message");
         return false;

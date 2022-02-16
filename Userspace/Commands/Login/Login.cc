@@ -14,9 +14,9 @@
 #include <fstream>
 #include <LibIO/Shell.hh>
 #include <iostream>
-#include <Utils/ArgsParser.hh>
-#include <Utils/Environment.hh>
-#include <Utils/PropertyFileParser.hh>
+#include <LibUtils/ArgsParser.hh>
+#include <LibUtils/Environment.hh>
+#include <LibUtils/PropertyFileParser.hh>
 
 #define V_MAJOR 0
 #define V_MINOR 0

@@ -12,8 +12,8 @@
 
 #include <LibIO/Shell.hh>
 #include <iostream>
-#include <Utils/ArgsParser.hh>
-#include <Utils/Environment.hh>
+#include <LibUtils/ArgsParser.hh>
+#include <LibUtils/Environment.hh>
 
 #define V_MAJOR 0
 #define V_MINOR 0

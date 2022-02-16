@@ -14,15 +14,12 @@
 #include <getopt.h>
 #include <iomanip>
 #include <iostream>
+#include <LibUtils/ArgsParser.hh>
 #include <map>
-#include <Utils/ArgsParser.hh>
 
 namespace Utils {
 
-ArgsParser::ArgsParser(const std::string_view& description,
-                       u16                     version_major,
-                       u16                     version_minor,
-                       u16                     version_patch)
+ArgsParser::ArgsParser(const std::string_view& description, u16 version_major, u16 version_minor, u16 version_patch)
     : m_program_description{ description } {
     add_option(m_show_help, "Shows this help", "help", '?');
     add_option(m_show_version, "Shows program version", "version", 'v');
@@ -34,11 +31,9 @@ ArgsParser::ArgsParser(const std::string_view& description,
 
 bool ArgsParser::parse(int argc, const char** argv, FailureBehavior failure_behavior) {
     auto fail = [this, argv, failure_behavior]() {
-        if ( failure_behavior == FailureBehavior::PrintUsageAndExit
-             || failure_behavior == FailureBehavior::PrintUsage )
+        if ( failure_behavior == FailureBehavior::PrintUsageAndExit || failure_behavior == FailureBehavior::PrintUsage )
             print_usage(std::cerr, argv[0]);
-        if ( failure_behavior == FailureBehavior::Exit
-             || failure_behavior == FailureBehavior::PrintUsageAndExit )
+        if ( failure_behavior == FailureBehavior::Exit || failure_behavior == FailureBehavior::PrintUsageAndExit )
             exit(EXIT_FAILURE);
     };
 
@@ -60,15 +55,13 @@ bool ArgsParser::parse(int argc, const char** argv, FailureBehavior failure_beha
     /* print version or help if are requested */
     if ( m_show_version ) {
         print_version(std::cout);
-        if ( failure_behavior == FailureBehavior::Exit
-             || failure_behavior == FailureBehavior::PrintUsageAndExit )
+        if ( failure_behavior == FailureBehavior::Exit || failure_behavior == FailureBehavior::PrintUsageAndExit )
             exit(EXIT_SUCCESS);
         return false;
     }
     if ( m_show_help ) {
         print_usage(std::cout, argv[0]);
-        if ( failure_behavior == FailureBehavior::Exit
-             || failure_behavior == FailureBehavior::PrintUsageAndExit )
+        if ( failure_behavior == FailureBehavior::Exit || failure_behavior == FailureBehavior::PrintUsageAndExit )
             exit(EXIT_SUCCESS);
         return false;
     }
@@ -187,10 +180,7 @@ void ArgsParser::add_option(ArgsParser::Option&& option) {
     m_options.push_back(std::move(option));
 }
 
-void ArgsParser::add_option(bool&       value,
-                            const char* help_message,
-                            const char* long_name,
-                            char        short_name) {
+void ArgsParser::add_option(bool& value, const char* help_message, const char* long_name, char short_name) {
     Option option{ false,
                    std::string_view{ help_message },
                    std::string_view{ long_name },
@@ -273,33 +263,25 @@ void ArgsParser::add_positional_argument(std::string& value,
     add_positional_argument(std::move(positional_arg));
 }
 
-void ArgsParser::add_positional_argument(u32&        value,
-                                         const char* help_message,
-                                         const char* name,
-                                         bool        is_required) {
+void ArgsParser::add_positional_argument(u32& value, const char* help_message, const char* name, bool is_required) {
     PositionalArgument positional_arg{ std::string_view{ help_message },
                                        std::string_view{ name },
                                        static_cast<u32>(is_required ? 1 : 0),
                                        1,
                                        [&value](const char* raw_str) {
-                                           value = static_cast<u32>(
-                                               std::strtol(raw_str, nullptr, 10));
+                                           value = static_cast<u32>(std::strtol(raw_str, nullptr, 10));
                                            return true;
                                        } };
     add_positional_argument(std::move(positional_arg));
 }
 
-void ArgsParser::add_positional_argument(i32&        value,
-                                         const char* help_message,
-                                         const char* name,
-                                         bool        is_required) {
+void ArgsParser::add_positional_argument(i32& value, const char* help_message, const char* name, bool is_required) {
     PositionalArgument positional_arg{ std::string_view{ help_message },
                                        std::string_view{ name },
                                        static_cast<u32>(is_required ? 1 : 0),
                                        1,
                                        [&value](const char* raw_str) {
-                                           value = static_cast<i32>(
-                                               std::strtol(raw_str, nullptr, 10));
+                                           value = static_cast<i32>(std::strtol(raw_str, nullptr, 10));
                                            return true;
                                        } };
     add_positional_argument(std::move(positional_arg));
@@ -320,8 +302,7 @@ void ArgsParser::add_positional_argument(std::vector<std::string>& value,
     add_positional_argument(std::move(positional_arg));
 }
 
-void ArgsParser::construct_getopt_options(std::string&         short_options,
-                                          std::vector<option>& long_options) {
+void ArgsParser::construct_getopt_options(std::string& short_options, std::vector<option>& long_options) {
     static const option null_longopt{ nullptr, 0, nullptr, 0 };
 
     if ( m_stop_on_first_non_option )
@@ -356,8 +337,7 @@ bool ArgsParser::parse_options(int                  argc,
     /* parse the options */
     while ( true ) {
         /* obtain the next option */
-        auto option_id
-            = getopt_long(argc, argv, short_options.c_str(), long_options.data(), nullptr);
+        auto option_id = getopt_long(argc, argv, short_options.c_str(), long_options.data(), nullptr);
         if ( option_id == EOF )
             break;
         else if ( option_id == '?' )
@@ -410,8 +390,7 @@ bool ArgsParser::count_cli_positional_arguments(int argc, u32 values_count_for_a
 
         /* calculate how many arguments this argument could accept */
         auto extra_values_for_arg
-            = std::min(positional_arg.m_max_values - positional_arg.m_min_values,
-                       extra_values_to_distribute);
+            = std::min(positional_arg.m_max_values - positional_arg.m_min_values, extra_values_to_distribute);
 
         /* update counters */
         values_count_for_arg[i] += extra_values_for_arg;

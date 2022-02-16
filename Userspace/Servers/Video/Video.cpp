@@ -29,7 +29,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 /**
  *
@@ -94,10 +94,7 @@ bool setVideoMode(uint32_t mode, bool flatFrameBuffer) {
 /**
  *
  */
-bool setVideoMode(uint32_t       wantedWidth,
-                  uint32_t       wantedHeight,
-                  uint32_t       wantedBpp,
-                  VesaVideoInfo& result) {
+bool setVideoMode(uint32_t wantedWidth, uint32_t wantedHeight, uint32_t wantedBpp, VesaVideoInfo& result) {
     bool successful  = false;
     bool debugOutput = false;
 
@@ -160,17 +157,14 @@ bool setVideoMode(uint32_t       wantedWidth,
                 continue;
 
             // Check if it's matching better
-            uint32_t resolution     = modeInfoBlock->resolutionX * modeInfoBlock->resolutionY;
-            uint32_t resolutionDiff = (resolution > wantedResolution)
-                                        ? (resolution - wantedResolution)
-                                        : (wantedResolution - resolution);
-            uint32_t depthDiff      = (modeInfoBlock->bpp > wantedBpp)
-                                        ? (modeInfoBlock->bpp - wantedBpp)
-                                        : (wantedBpp - modeInfoBlock->bpp);
+            uint32_t resolution = modeInfoBlock->resolutionX * modeInfoBlock->resolutionY;
+            uint32_t resolutionDiff
+                = (resolution > wantedResolution) ? (resolution - wantedResolution) : (wantedResolution - resolution);
+            uint32_t depthDiff = (modeInfoBlock->bpp > wantedBpp) ? (modeInfoBlock->bpp - wantedBpp)
+                                                                  : (wantedBpp - modeInfoBlock->bpp);
 
             if ( resolutionDiff < bestFoundResolutionDiff
-                 || (resolutionDiff == bestFoundResolutionDiff
-                     && depthDiff < bestFoundDepthDiff) ) {
+                 || (resolutionDiff == bestFoundResolutionDiff && depthDiff < bestFoundDepthDiff) ) {
                 bestMatchingMode        = mode;
                 bestFoundDepthDiff      = depthDiff;
                 bestFoundResolutionDiff = resolutionDiff;
@@ -200,8 +194,7 @@ bool setVideoMode(uint32_t       wantedWidth,
                 if ( couldReloadModeInfo ) {
                     // Create MMIO mapping
                     void* area = s_map_mmio((void*)modeInfoBlock->lfbPhysicalBase,
-                                            modeInfoBlock->linBytesPerScanline
-                                                * modeInfoBlock->resolutionY);
+                                            modeInfoBlock->linBytesPerScanline * modeInfoBlock->resolutionY);
 
                     // Write out
                     result.resolutionX      = modeInfoBlock->resolutionX;
@@ -265,7 +258,7 @@ int main() {
                 uint32_t lfbSize                  = result.bytesPerScanline * result.resolutionY;
                 void*    addressInRequestersSpace = s_share_mem(result.lfb, lfbSize, requester);
 
-                response.m_mode_status = Graphics::Video::SET_MODE_STATUS_SUCCESS;
+                response.m_mode_status                    = Graphics::Video::SET_MODE_STATUS_SUCCESS;
                 response.m_mode_info.m_linear_framebuffer = (uint32_t)addressInRequestersSpace;
                 response.m_mode_info.m_width              = result.resolutionX;
                 response.m_mode_info.m_height             = result.resolutionY;
@@ -288,8 +281,7 @@ int main() {
 
         else {
             std::stringstream ukn;
-            ukn << "received unknown command " << vbeheader->m_command << " from task "
-                << header->m_sender_tid;
+            ukn << "received unknown command " << vbeheader->m_command << " from task " << header->m_sender_tid;
             Utils::log(ukn.str());
         }
     }

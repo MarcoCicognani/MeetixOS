@@ -40,7 +40,7 @@
 #include <list>
 #include <map>
 #include <LibTasking/Lock.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 /**
  * Used to cache information about the layout of a specific character.

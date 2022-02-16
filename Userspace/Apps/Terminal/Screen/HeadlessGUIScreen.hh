@@ -21,7 +21,7 @@
 #include <Graphics/Video.hh>
 #include <LibTasking/Lock.hh>
 #include <LibTasking/Thread.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 class HeadlessGUIScreen : public Screen {
     class PainterThread : public Tasking::Thread {

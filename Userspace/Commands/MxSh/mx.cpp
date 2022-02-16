@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include <map>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 using namespace std;
 
@@ -107,8 +107,7 @@ void MXShell::startRoutine() {
     else if ( mode == SHELL_MODE_HELP || mode == SHELL_MODE_HELP_SHORT )
         explainHelp();
     else if ( mode == SHELL_MODE_VERSION || mode == SHELL_MODE_VERSION_SHORT )
-        cout << "MeetiX OS Shell Version: " << VERSION_MAJOR << VERSION_MINOR << VERSION_PATCH
-             << endl;
+        cout << "MeetiX OS Shell Version: " << VERSION_MAJOR << VERSION_MINOR << VERSION_PATCH << endl;
     else if ( mode == SHELL_MODE_NULL )
         cerr << "Invalid mode argument provided" << endl;
 }

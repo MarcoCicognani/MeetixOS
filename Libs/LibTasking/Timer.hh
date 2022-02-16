@@ -15,7 +15,7 @@
 #include <functional>
 #include <string>
 #include <LibTasking/Lock.hh>
-#include <Utils/TimeSpan.hh>
+#include <LibUtils/TimeSpan.hh>
 
 namespace Tasking {
 

@@ -38,7 +38,7 @@
 #include <GUI/MessageBox.hh>
 #include <list>
 #include <LibTasking/Lock.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 using namespace std;
 

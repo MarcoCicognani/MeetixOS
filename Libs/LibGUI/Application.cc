@@ -31,7 +31,7 @@
 #include <map>
 #include <sstream>
 #include <stdio.h>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 /**
  * Global ready indicator
@@ -62,8 +62,7 @@ UiOpenStatus UI::open() {
     }
 
     // start event dispatcher
-    UiEventDispatcherTid
-        = s_create_thread_n((void*)&event_dispatch_thread, "UI::event_dispatch_thread");
+    UiEventDispatcherTid = s_create_thread_n((void*)&event_dispatch_thread, "UI::event_dispatch_thread");
 
     // send initialization request
     MessageTransaction initTx = s_get_message_tx_id();
@@ -75,8 +74,7 @@ UiOpenStatus UI::open() {
     // receive initialization response
     uint32_t       responseBufferSize = sizeof(MessageHeader) + sizeof(UiInitializeResponse);
     Local<uint8_t> responseBuffer(new uint8_t[responseBufferSize]);
-    if ( s_receive_message_t(responseBuffer(), responseBufferSize, initTx)
-         != MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
+    if ( s_receive_message_t(responseBuffer(), responseBufferSize, initTx) != MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
         Utils::log("failed to communicate with the window server");
         return UI_OPEN_STATUS_COMMUNICATION_FAILED;
     }
@@ -125,8 +123,7 @@ UiCloseStatus UI::close() {
 
     // get the message
     if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-        UiRemoveComponentMapResponse* response
-            = (UiRemoveComponentMapResponse*)MESSAGE_CONTENT(buffer());
+        UiRemoveComponentMapResponse* response = (UiRemoveComponentMapResponse*)MESSAGE_CONTENT(buffer());
 
         // close only if response from ZipNET is succeded
         if ( response->status == UI_PROTOCOL_SUCCESS ) {
@@ -224,8 +221,7 @@ bool UI::set_mouse_cursor(std::string name) {
     uint8_t buffer[bufferSize];
 
     if ( s_receive_message_t(buffer, bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-        UiSetMouseCursorFormResponse* response
-            = (UiSetMouseCursorFormResponse*)MESSAGE_CONTENT(buffer);
+        UiSetMouseCursorFormResponse* response = (UiSetMouseCursorFormResponse*)MESSAGE_CONTENT(buffer);
         if ( response->status == UI_PROTOCOL_SUCCESS )
             return true;
     }
@@ -273,7 +269,7 @@ bool UI::register_desktop_canvas(Canvas* c) {
     // send registration request
     UiRegisterDesktopCanvasRequest request;
     request.header.m_command = UI_PROTOCOL_REGISTER_DESKTOP_CANVAS;
-    request.canvasID  = c->id();
+    request.canvasID         = c->id();
     s_send_message_t(UiDelegateTid, &request, sizeof(UiRegisterDesktopCanvasRequest), tx);
 
     // read response
@@ -281,8 +277,7 @@ bool UI::register_desktop_canvas(Canvas* c) {
     Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
     if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-        UiRegisterDesktopCanvasResponse* response
-            = (UiRegisterDesktopCanvasResponse*)MESSAGE_CONTENT(buffer());
+        UiRegisterDesktopCanvasResponse* response = (UiRegisterDesktopCanvasResponse*)MESSAGE_CONTENT(buffer());
 
         if ( response->status == UI_PROTOCOL_SUCCESS )
             return true;
@@ -303,8 +298,8 @@ bool UI::register_task_manager(Component* where, const Graphics::Metrics::Rectan
     // send registration
     UiRegisterTaskManagerRequest request;
     request.header.m_command = UI_PROTOCOL_REGISTER_TASK_MANAGER;
-    request.id        = where->id();
-    request.bounds    = bounds;
+    request.id               = where->id();
+    request.bounds           = bounds;
     s_send_message_t(UiDelegateTid, &request, sizeof(UiRegisterTaskManagerRequest), tx);
 
     // read response
@@ -312,8 +307,7 @@ bool UI::register_task_manager(Component* where, const Graphics::Metrics::Rectan
     Local<uint8_t> buffer(new uint8_t[bufferSize]);
 
     if ( s_receive_message_t(buffer(), bufferSize, tx) == MESSAGE_RECEIVE_STATUS_SUCCESSFUL ) {
-        UiRegisterTaskManagerResponse* response
-            = (UiRegisterTaskManagerResponse*)MESSAGE_CONTENT(buffer());
+        UiRegisterTaskManagerResponse* response = (UiRegisterTaskManagerResponse*)MESSAGE_CONTENT(buffer());
 
         if ( response->status == UI_PROTOCOL_SUCCESS )
             return true;

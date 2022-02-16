@@ -20,7 +20,7 @@
 #include "SecondaryThread.hpp"
 
 #include <GUI/ButtonList.hh>
-#include <Utils/Environment.hh>
+#include <LibUtils/Environment.hh>
 
 using namespace std;
 
@@ -33,19 +33,13 @@ void SecondaryThread::OsmosUIDockThread(const Graphics::Metrics::Dimension& reso
 
     // create dock geoshape
     Geoshape* dock = Geoshape::create();
-    dock->set_bounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 197,
-                                                  resolution.height() - 64,
-                                                  394,
-                                                  64));
+    dock->set_bounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 197, resolution.height() - 64, 394, 64));
     dock->set_color(Graphics::Color::as_argb(120, 0, 0, 0), Graphics::Color::as_argb(255, 0, 0, 0));
 
     // creating button and add to list
     dockButtons = new ButtonList();
     dockButtons->add("shell", [] {
-        s_spawn("/app/CandyShell/bin/CandyShell",
-                "",
-                "/app/CandyShell/",
-                SECURITY_LEVEL_APPLICATION);
+        s_spawn("/app/CandyShell/bin/CandyShell", "", "/app/CandyShell/", SECURITY_LEVEL_APPLICATION);
     });
     dockButtons->configure("shell",
                            Graphics::Metrics::Rectangle(30, 7, 48, 48),
@@ -57,10 +51,7 @@ void SecondaryThread::OsmosUIDockThread(const Graphics::Metrics::Dimension& reso
 
     // creating button and add to list
     dockButtons->add("calculator", [] {
-        s_spawn("/app/calculator/bin/calculator",
-                "",
-                "/app/calculator/",
-                SECURITY_LEVEL_APPLICATION);
+        s_spawn("/app/calculator/bin/calculator", "", "/app/calculator/", SECURITY_LEVEL_APPLICATION);
     });
     dockButtons->configure("calculator",
                            Graphics::Metrics::Rectangle(125, 7, 48, 48),

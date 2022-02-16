@@ -14,7 +14,7 @@
 
 #include <cstring>
 #include <LibTasking/LockGuard.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/Utils.hh>
 
 IO::Keyboard::Info HeadlessScreen::read_input() {
     return IO::Keyboard::instance().read();

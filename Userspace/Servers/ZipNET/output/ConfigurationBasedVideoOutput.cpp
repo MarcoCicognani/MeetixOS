@@ -28,7 +28,7 @@
 #include <iostream>
 #include <map>
 #include <sstream>
-#include <Utils/PropertyFileParser.hh>
+#include <LibUtils/PropertyFileParser.hh>
 
 using namespace std;
 
@@ -66,8 +66,7 @@ bool ConfigurationBasedVideoOutput_t::initialize() {
 
     // check settings
     if ( !width || !height || !bpp ) {
-        cerr << "invalid configuration. width: " << width << ", height: " << height
-             << ", bpp: " << bpp << endl;
+        cerr << "invalid configuration. width: " << width << ", height: " << height << ", bpp: " << bpp << endl;
         return false;
     }
 

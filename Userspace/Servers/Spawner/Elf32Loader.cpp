@@ -26,7 +26,7 @@
 
 #include <cstdio>
 #include <cstring>
-#include <Utils/File.hh>
+#include <LibUtils/File.hh>
 
 /**
  *
@@ -139,11 +139,7 @@ LoaderStatus Elf32Loader::loadTlsSegment(Elf32Phdr* phdr) {
 
     else {
         // call kernel to write TLS
-        if ( s_write_tls_master_for_process(procIdent,
-                                            tlsContent,
-                                            numBytesCopy,
-                                            numBytesZero,
-                                            alignment) )
+        if ( s_write_tls_master_for_process(procIdent, tlsContent, numBytesCopy, numBytesZero, alignment) )
             result = LS_SUCCESSFUL;
 
         else {
@@ -197,10 +193,7 @@ LoaderStatus Elf32Loader::loadLoadSegment(Elf32Phdr* phdr) {
         }
 
         // Read file to memory
-        if ( !Utils::File::read_bytes(file,
-                                      phdr->p_offset + offsetInFile,
-                                      &area[copyOffsetInArea],
-                                      copyAmount) ) {
+        if ( !Utils::File::read_bytes(file, phdr->p_offset + offsetInFile, &area[copyOffsetInArea], copyAmount) ) {
             klog("unable to read LOAD segment");
             return LS_IO_ERROR;
         }

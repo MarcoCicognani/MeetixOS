@@ -25,8 +25,8 @@
 #include <Api.h>
 #include <components/cursor.hpp>
 #include <events/MouseEvent.hpp>
-#include <Utils/PropertyFileParser.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/PropertyFileParser.hh>
+#include <LibUtils/Utils.hh>
 #include <zipNET.hpp>
 
 Cursor& Cursor::instance() {
@@ -104,17 +104,15 @@ bool Cursor::load(const std::string& cursor_path) {
     cursor_config.surface = cairo_image_surface_create_from_png(cursor_image_path.c_str());
     if ( cursor_config.surface == nullptr ) {
         std::stringstream out;
-        out << "failed to load cursor image at " << cursor_image_path << " for configuration "
-            << cursor_path;
+        out << "failed to load cursor image at " << cursor_image_path << " for configuration " << cursor_path;
         Utils::log(out.str());
 
         return false;
     }
 
-    cursor_config.hitpoint = Graphics::Metrics::Point(hPointX, hPointY);
-    cursor_config.size
-        = Graphics::Metrics::Dimension(cairo_image_surface_get_width(cursor_config.surface),
-                                       cairo_image_surface_get_height(cursor_config.surface));
+    cursor_config.hitpoint     = Graphics::Metrics::Point(hPointX, hPointY);
+    cursor_config.size         = Graphics::Metrics::Dimension(cairo_image_surface_get_width(cursor_config.surface),
+                                                      cairo_image_surface_get_height(cursor_config.surface));
     cursorConfigurations[name] = cursor_config;
     return true;
 }

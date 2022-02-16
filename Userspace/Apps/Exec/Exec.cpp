@@ -25,7 +25,7 @@
 #include <GUI/Listener/ActionListener.hh>
 #include <GUI/MessageBox.hh>
 #include <sstream>
-#include <Utils/Environment.hh>
+#include <LibUtils/Environment.hh>
 
 using namespace std;
 
@@ -60,14 +60,12 @@ public:
                 string arg = content.substr(space + 1);
 
                 // exec
-                if ( s_spawn(app.c_str(), arg.c_str(), "/", SECURITY_LEVEL_APPLICATION)
-                     != SPAWN_STATUS_SUCCESSFUL )
+                if ( s_spawn(app.c_str(), arg.c_str(), "/", SECURITY_LEVEL_APPLICATION) != SPAWN_STATUS_SUCCESSFUL )
                     MessageBox::show("Unable to exec " + app, "Exec");
             }
 
             // only exec provided name
-            else if ( s_spawn(content.c_str(), "", "/", SECURITY_LEVEL_APPLICATION)
-                      != SPAWN_STATUS_SUCCESSFUL )
+            else if ( s_spawn(content.c_str(), "", "/", SECURITY_LEVEL_APPLICATION) != SPAWN_STATUS_SUCCESSFUL )
                 MessageBox::show("Unable to exec " + content, "Exec");
 
             // set title
@@ -87,10 +85,8 @@ int main(int argc, char* argv[]) {
 
         // configuring window
         window = Window::create();
-        window->set_bounds(Graphics::Metrics::Rectangle(resolution.width() / 2 - 125,
-                                                        resolution.height() / 2 - 75,
-                                                        273,
-                                                        132));
+        window->set_bounds(
+            Graphics::Metrics::Rectangle(resolution.width() / 2 - 125, resolution.height() / 2 - 75, 273, 132));
         window->set_title("Exec");
         window->on_close([] { lock = false; });
 
@@ -105,8 +101,7 @@ int main(int argc, char* argv[]) {
         launch = Button::create();
         launch->set_bounds(Graphics::Metrics::Rectangle(0, 50, 250, 30));
         launch->set_title("Run");
-        launch->set_color(Graphics::Color::as_argb(180, 0, 200, 0),
-                          Graphics::Color::as_rgb(0, 0, 0));
+        launch->set_color(Graphics::Color::as_argb(180, 0, 200, 0), Graphics::Color::as_rgb(0, 0, 0));
         launch->set_action_listener(new ExecButtonHandler());
         window->add_child(launch);
 

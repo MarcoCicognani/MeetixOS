@@ -15,8 +15,8 @@
 #include <Graphics/Text/Font.hh>
 #include <Graphics/Text/FontManager.hh>
 #include <sstream>
-#include <Utils/File.hh>
-#include <Utils/Utils.hh>
+#include <LibUtils/File.hh>
+#include <LibUtils/Utils.hh>
 
 namespace Graphics::Text {
 

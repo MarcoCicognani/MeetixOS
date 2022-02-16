@@ -23,7 +23,7 @@
 #include <GUI/Component/Window.hh>
 #include <stdlib.h>
 #include <LibTasking/Timer.hh>
-#include <Utils/TimeSpan.hh>
+#include <LibUtils/TimeSpan.hh>
 #include <vector>
 
 // timer object

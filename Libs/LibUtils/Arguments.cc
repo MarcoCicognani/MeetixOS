@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
+#include <LibUtils/Arguments.hh>
 #include <sstream>
-#include <Utils/Arguments.hh>
 
 namespace Utils::Arguments {
 
