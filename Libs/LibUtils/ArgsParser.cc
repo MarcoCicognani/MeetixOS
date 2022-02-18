@@ -10,12 +10,12 @@
  * GNU General Public License version 3
  */
 
-#include <cstdlib>
 #include <getopt.h>
 #include <iomanip>
 #include <iostream>
 #include <LibUtils/ArgsParser.hh>
 #include <map>
+#include <stdlib.h>
 
 namespace Utils {
 
