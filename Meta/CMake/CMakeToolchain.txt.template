@@ -33,9 +33,10 @@ set(CMAKE_ASM_NASM_COMPILE_OBJECT "${CMAKE_ASM_NASM_COMPILER} -f elf -o <OBJECT>
 #
 # C/C++ Flags
 #
-add_compile_options(-fdiagnostics-color=always)
 add_compile_options(-m32)
+add_compile_options(-fdiagnostics-color=always)
 add_compile_options(-Wno-literal-suffix)
+add_compile_options(-Wdouble-promotion)
 
 #
 # C/C++ Release Flags
@@ -64,3 +65,5 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
 include_directories("${TOOLCHAIN_INCLUDE}")
 include_directories("${CMAKE_SOURCE_DIR}/Libs")
+include_directories("${CMAKE_SOURCE_DIR}/Libs/LibC")
+include_directories("${CMAKE_SOURCE_DIR}/Libs/LibMath")
