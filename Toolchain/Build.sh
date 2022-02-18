@@ -15,7 +15,8 @@ SKIP_LAST_CLEAN=0
 TARGET=i686-pc-meetix
 
 # Construct directory names
-TOOLCHAIN_PREFIX="$(pwd)/Local"
+REPO_ROOT="$(realpath ..)"
+TOOLCHAIN_PREFIX="$REPO_ROOT/Toolchain/Local"
 TARBALLS_DIR=Tarballs
 BUILD_DIR=Build
 
@@ -88,8 +89,10 @@ require_tool g++
 require_tool patch
 require_tool wget
 require_tool tar
+require_tool make
 require_tool cmake
 require_tool ninja
+require_tool install
 require_tool grub-mkrescue
 require_tool xorriso
 
@@ -99,8 +102,8 @@ echo "Building toolchain into ${GREEN}$(realpath $BUILD_DIR)${RESET}"
 mkdir -p $BUILD_DIR $TARBALLS_DIR || exit 1
 
 dir_push $TARBALLS_DIR
-    build_step "Download/$GCC_UNPACKED"      wget -N $BINUTILS_REMOTE || exit 1
-    build_step "Download/$BINUTILS_UNPACKED" wget -N $GCC_REMOTE      || exit 1
+    build_step "Download/$BINUTILS_UNPACKED" wget -N $BINUTILS_REMOTE || exit 1
+    build_step "Download/$GCC_UNPACKED"      wget -N $GCC_REMOTE      || exit 1
 dir_pop
 
 # Print some information and create devel directory
@@ -129,7 +132,7 @@ dir_push ..
     dir_push Build/Release/Meta/Tools/RamdiskWriter
         build_step "Tool/RamdiskWriter" \
             cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../../../../../Meta/Tools/RamdiskWriter || exit 1
-        build_step "Tool/RamdiskWriter" ninja || exit 1
+        build_step "Tool/RamdiskWriter" ninja install || exit 1
     dir_pop
 dir_pop
 
@@ -150,6 +153,14 @@ dir_push $BUILD_BINUTILS
     build_step "Binutils/Build"   make $MAKE_JOBS all     || exit 1
     build_step "Binutils/Install" make $MAKE_JOBS install || exit 1
 dir_pop
+
+# ----------------------------------------- Script Code: OS Headers Install ------------------------------------------ #
+
+LIB_HEADERS=$(find "$REPO_ROOT/Libs/LibApi" "$REPO_ROOT/Libs/LibC" "$REPO_ROOT/Libs/LibMath" -name '*.h')
+for header in $LIB_HEADERS; do
+    target=$(echo "$header" | sed -e "s@$REPO_ROOT/Libs/LibApi/@@" -e "s@$REPO_ROOT/Libs/LibC/@@" -e "s@$REPO_ROOT/Libs/LibMath/@@")
+    build_step "OS/Headers Install" install -D "$header" "$TOOLCHAIN_PREFIX/include/$target" || exit 1
+done
 
 # ---------------------------------------------- Script Code: GCC Build ---------------------------------------------- #
 
@@ -179,6 +190,11 @@ dir_pop
 export CFLAGS=""
 export CXXFLAGS=""
 
+# ------------------------------------------ Script Code: Remove OS Headers ------------------------------------------ #
+
+# TODO uncomment this when all the userspace is free from the libstdc++ headers
+# build_step "OS/Headers Uninstall" rm -vrf "$TOOLCHAIN_PREFIX/include/*"
+
 # ------------------------------------ Scrip Code: CMake Toolchains Configuration ------------------------------------ #
 
 dir_push ../Meta
@@ -193,9 +209,10 @@ dir_push ../Build/Release
               -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchain.txt \
               -DCMAKE_BUILD_TYPE=Release                      \
               ../.. || exit 1
-    build_step "Libs/CRTs"      ninja crt0 crti crtn || exit 1
-    build_step "Libs/LibApi"    ninja LibApi         || exit 1
-    build_step "Libs/LibC"      ninja LibC           || exit 1
+    build_step "Libs/CRTs"    ninja crt0 crti crtn || exit 1
+    build_step "Libs/LibApi"  ninja LibApi         || exit 1
+    build_step "Libs/LibC"    ninja LibC           || exit 1
+    build_step "Libs/LibMath" ninja LibMath        || exit 1
 dir_pop
 
 # ---------------------------------------- Script Code: Third Party Libs Build --------------------------------------- #
