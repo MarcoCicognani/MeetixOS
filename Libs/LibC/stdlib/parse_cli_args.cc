@@ -13,9 +13,9 @@
 #include <Api.h>
 #include <cctype>
 #include <cerrno>
-#include <cstdlib>
 #include <cstring>
 #include <libgen.h>
+#include <stdlib.h>
 
 #define SKIP_WHITESPACE(pos)                                                                                           \
     do {                                                                                                               \

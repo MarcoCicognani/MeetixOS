@@ -172,11 +172,11 @@ typedef uint8_t  u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
-#ifdef __cplusplus
+//#ifdef __cplusplus
 typedef long unsigned int usize;
-#else
-typedef unsigned int usize;
-#endif
+//#else
+// typedef unsigned int usize;
+//#endif
 
 /**
  * @brief MeetiX specific signed integer types
@@ -185,11 +185,11 @@ typedef int8_t  i8;
 typedef int16_t i16;
 typedef int32_t i32;
 typedef int64_t i64;
-#ifdef __cplusplus
+//#ifdef __cplusplus
 typedef long signed int isize;
-#else
-typedef signed int   isize;
-#endif
+//#else
+// typedef signed int   isize;
+//#endif
 
 #ifdef __cplusplus
 }

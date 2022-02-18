@@ -37,8 +37,19 @@ extern "C" {
 #define TMP_MAX   FOPEN_MAX
 #define L_tmpnam  PATH_MAX
 
+#ifdef SEEK_CUR
+#    undef SEEK_CUR
+#endif
 #define SEEK_CUR 1
+
+#ifdef SEEK_END
+#    undef SEEK_END
+#endif
 #define SEEK_END 2
+
+#ifdef SEEK_SET
+#    undef SEEK_SET
+#endif
 #define SEEK_SET 3
 
 extern FILE* g_stderr_ptr;

@@ -29,7 +29,7 @@
 #define SCHAR_MIN         (-128)
 #define SCHAR_MAX         127
 #define UCHAR_MAX         255
-#define SHRT_MAX          32768
+#define SHRT_MAX          32767
 #define SHRT_MIN          (-SHRT_MAX - 1)
 #define USHRT_MAX         65535
 #define LONG_MAX          2147483647L
