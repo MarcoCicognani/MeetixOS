@@ -1412,7 +1412,7 @@ double trunc(double x) noexcept {
 }
 
 float truncf(float x) noexcept {
-    if ( fabsf(x) < MAXFLOAT ) {
+    if ( fabsf(x) < static_cast<float>(MAXFLOAT) ) {
         u64 temp;
         asm("fisttpq %[temp]\n"
             "fildq %[temp]"
