@@ -12,6 +12,7 @@
 
 add_library(LibC
         STATIC
+        fenv.cc
         stdio/rewind.cc
         stdio/parse_mode_flags.cc
         stdio/ftell.cc
