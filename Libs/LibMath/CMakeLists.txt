@@ -14,5 +14,5 @@ add_library(LibMath STATIC math.cc)
 
 add_custom_command(
         TARGET LibMath
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibMath> ${TOOLCHAIN_ROOT}/lib/libm.a
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibMath> ${TOOLCHAIN_LIB}/libm.a
 )

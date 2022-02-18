@@ -35,7 +35,7 @@ set(CMAKE_ASM_NASM_COMPILE_OBJECT "${CMAKE_ASM_NASM_COMPILER} -f elf -o <OBJECT>
 #
 add_compile_options(-m32)
 add_compile_options(-fdiagnostics-color=always)
-add_compile_options(-Wno-literal-suffix)
+#add_compile_options(-Wno-literal-suffix) TODO implement dlmalloc.cc and re-introduce this (remove from LibTC/Collection/StringView.hh GCC diagnostic)
 add_compile_options(-Wdouble-promotion)
 
 #

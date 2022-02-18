@@ -93,5 +93,5 @@ add_library(LibApi
         do_syscall.cc s_get_date_time.cc)
 add_custom_command(
         TARGET LibApi
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibApi> ${TOOLCHAIN_ROOT}/lib/libapi.a
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibApi> ${TOOLCHAIN_LIB}/libapi.a
 )

@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <cmath>
 #include <cstdint>
 #include <LibGraphics/Cairo.hh>
+#include <math.h>
 
 namespace Graphics::Cairo {
 

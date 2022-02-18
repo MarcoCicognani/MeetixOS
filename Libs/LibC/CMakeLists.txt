@@ -219,5 +219,5 @@ add_library(LibC
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 add_custom_command(
         TARGET LibC
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibC> ${TOOLCHAIN_ROOT}/lib/libc.a
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibC> ${TOOLCHAIN_LIB}/libc.a
 )
