@@ -7,10 +7,14 @@ RESET=$(tput sgr0)
 
 PACKAGE=$1
 SOURCE_DIR=$(realpath ..)
+LIBS_DIR="$SOURCE_DIR/Libs"
 BUILD_ROOT="$SOURCE_DIR/Build/Ports"
 TOOLCHAIN_ROOT="$SOURCE_DIR/Toolchain/Local"
-MEETIX_LIBC_DIR="$SOURCE_DIR/Build/Release/Libs/LibC"
-MEETIX_EXTRA_LIBS="-lLibC -lsupc++ -lstdc++"
+
+MEETIX_EXTRA_INCLUDES="-I$LIBS_DIR -I$LIBS_DIR/LibApi -I$LIBS_DIR/LibC -I$LIBS_DIR/LibMath"
+MEETIX_EXTRA_LINK_DIRS="-L$SOURCE_DIR/Build/Release/Libs/LibC -L$SOURCE_DIR/Build/Release/Libs/LibMath"
+MEETIX_EXTRA_LIBS="-lLibC -lLibMath -lstdc++"
+
 BUILD_IN_SOURCE_DIR=0
 
 # Fails with the given error message and exits

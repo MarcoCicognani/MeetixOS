@@ -7,9 +7,9 @@ port_unpack() {
 }
 
 port_build() {
-    CPPFLAGS="-I$TOOLCHAIN_ROOT/include" \
-    LDFLAGS="-L$MEETIX_LIBC_DIR"         \
-    LIBS="$MEETIX_EXTRA_LIBS"            \
+    CPPFLAGS="$MEETIX_EXTRA_INCLUDES" \
+    LDFLAGS="$MEETIX_EXTRA_LINK_DIRS" \
+    LIBS="$MEETIX_EXTRA_LIBS"         \
         ../$UNPACKED_DIR/configure --host=i686-pc-meetix --prefix="$TOOLCHAIN_ROOT" || exit 1
 
     make -j$BUILD_JOBS install || exit 1

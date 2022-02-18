@@ -8,10 +8,11 @@ port_unpack() {
 }
 
 port_build() {
-    local TEST_LDFLAGS="-L$MEETIX_LIBC_DIR $MEETIX_EXTRA_LIBS -L. libz.a"
+    local TEST_LDFLAGS="$MEETIX_EXTRA_LINK_DIRS $MEETIX_EXTRA_LIBS -L. libz.a"
 
-    CC=i686-pc-meetix-gcc \
-    AR=i686-pc-meetix-ar  \
+    CC=i686-pc-meetix-gcc           \
+    AR=i686-pc-meetix-ar            \
+    CFLAGS="$MEETIX_EXTRA_INCLUDES" \
         ../$UNPACKED_DIR/configure --static --prefix="$TOOLCHAIN_ROOT" || exit 1
 
     make -j$BUILD_JOBS TEST_LDFLAGS="$TEST_LDFLAGS" install || exit 1
