@@ -10,7 +10,7 @@
 # GNU General Public License version 3
 #
 
-add_library(LibMath STATIC math_new.cc)
+add_library(LibMath STATIC math.cc)
 
 add_custom_command(
         TARGET LibMath

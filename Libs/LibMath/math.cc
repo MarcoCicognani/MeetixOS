@@ -17,7 +17,9 @@
 #include <fenv.h>
 #include <LibTC/Assertions.hh>
 #include <LibTC/IntTypes.hh>
-#include <math_new.h>
+#include <math.h>
+
+namespace Details {
 
 template<usize>
 constexpr double e_to_power();
@@ -68,7 +70,7 @@ constexpr usize product_odd<1>() {
 
 template<usize value>
 constexpr usize product_odd() {
-    return value * product_odd<value - 2>();
+    return value * Details::product_odd<value - 2>();
 }
 
 template<typename T>
@@ -160,7 +162,7 @@ union FloatExtractor<float> {
 };
 
 template<typename T>
-static T internal_to_integer(T x, RoundingMode rounding_mode) {
+static T to_integer(T x, Details::RoundingMode rounding_mode) {
     if ( !isfinite(x) )
         return x;
 
@@ -197,18 +199,18 @@ static T internal_to_integer(T x, RoundingMode rounding_mode) {
 
     bool should_round = false;
     switch ( rounding_mode ) {
-        case RoundingMode::ToEven:
+        case Details::RoundingMode::ToEven:
             should_round = has_half_fraction;
             break;
-        case RoundingMode::Up:
+        case Details::RoundingMode::Up:
             if ( !extractor.m_sign )
                 should_round = has_nonhalf_fraction || has_half_fraction;
             break;
-        case RoundingMode::Down:
+        case Details::RoundingMode::Down:
             if ( extractor.m_sign )
                 should_round = has_nonhalf_fraction || has_half_fraction;
             break;
-        case RoundingMode::ToZero:
+        case Details::RoundingMode::ToZero:
             break;
     }
 
@@ -223,7 +225,7 @@ static T internal_to_integer(T x, RoundingMode rounding_mode) {
 }
 
 template<typename T>
-static T internal_nextafter(T x, bool up) {
+static T nextafter(T x, bool up) {
     if ( !isfinite(x) )
         return x;
 
@@ -287,7 +289,7 @@ static T internal_nextafter(T x, bool up) {
 }
 
 template<typename T>
-static int internal_ilogb(T x) noexcept {
+static int ilogb(T x) noexcept {
     if ( x == 0 )
         return FP_ILOGB0;
     if ( isnan(x) )
@@ -304,8 +306,8 @@ static int internal_ilogb(T x) noexcept {
 }
 
 template<typename T>
-static T internal_modf(T x, T* intpart) noexcept {
-    auto integer_part = internal_to_integer(x, RoundingMode::ToZero);
+static T modf(T x, T* intpart) noexcept {
+    auto integer_part = Details::to_integer(x, Details::RoundingMode::ToZero);
     *intpart          = integer_part;
     auto fraction     = x - integer_part;
     if ( signbit(fraction) != signbit(x) )
@@ -314,7 +316,7 @@ static T internal_modf(T x, T* intpart) noexcept {
 }
 
 template<typename T>
-static T internal_scalbn(T x, int exponent) noexcept {
+static T scalbn(T x, int exponent) noexcept {
     if ( x == 0 || !isfinite(x) || isnan(x) || exponent == 0 )
         return x;
 
@@ -339,7 +341,7 @@ static T internal_scalbn(T x, int exponent) noexcept {
 }
 
 template<typename T>
-static T internal_copysign(T x, T y) noexcept {
+static T copysign(T x, T y) noexcept {
     using Extractor = FloatExtractor<T>;
 
     Extractor ex{};
@@ -353,7 +355,7 @@ static T internal_copysign(T x, T y) noexcept {
 }
 
 template<typename T>
-static T internal_gamma(T x) noexcept {
+static T gamma(T x) noexcept {
     if ( isnan(x) )
         return static_cast<T>(NAN);
 
@@ -376,7 +378,7 @@ static T internal_gamma(T x) noexcept {
                       ? 18
                       : (Extractor::m_mantissa_bits == FloatExtractor<float>::m_mantissa_bits ? 10 : 0)));
     static_assert(max_integer_whose_factorial_fits != 0,
-                  "internal_gamma needs to be aware of the integer factorial that fits in this floating point type.");
+                  "Details::gamma needs to be aware of the integer factorial that fits in this floating point type.");
 
     if ( static_cast<int>(x) == x && x <= max_integer_whose_factorial_fits + 1 ) {
         long long result = 1;
@@ -390,6 +392,8 @@ static T internal_gamma(T x) noexcept {
     return sqrtl(2.0 * M_PIl / static_cast<long double>(x))
          * powl(static_cast<long double>(x) / M_El, static_cast<long double>(x));
 }
+
+} /* namespace Details */
 
 extern "C" {
 
@@ -1020,21 +1024,21 @@ double asin(double x) noexcept {
     auto squared = x * x;
     auto value   = x;
     auto i       = x * squared;
-    value += i * product_odd<1>() / product_even<2>() / 3;
+    value += i * Details::product_odd<1>() / Details::product_even<2>() / 3;
     i *= squared;
-    value += i * product_odd<3>() / product_even<4>() / 5;
+    value += i * Details::product_odd<3>() / Details::product_even<4>() / 5;
     i *= squared;
-    value += i * product_odd<5>() / product_even<6>() / 7;
+    value += i * Details::product_odd<5>() / Details::product_even<6>() / 7;
     i *= squared;
-    value += i * product_odd<7>() / product_even<8>() / 9;
+    value += i * Details::product_odd<7>() / Details::product_even<8>() / 9;
     i *= squared;
-    value += i * product_odd<9>() / product_even<10>() / 11;
+    value += i * Details::product_odd<9>() / Details::product_even<10>() / 11;
     i *= squared;
-    value += i * product_odd<11>() / product_even<12>() / 13;
+    value += i * Details::product_odd<11>() / Details::product_even<12>() / 13;
     i *= squared;
-    value += i * product_odd<13>() / product_even<14>() / 15;
+    value += i * Details::product_odd<13>() / Details::product_even<14>() / 15;
     i *= squared;
-    value += i * product_odd<15>() / product_even<16>() / 17;
+    value += i * Details::product_odd<15>() / Details::product_even<16>() / 17;
     return value;
 }
 
@@ -1047,21 +1051,21 @@ float asinf(float x) noexcept {
     auto squared = x * x;
     auto value   = x;
     auto i       = x * squared;
-    value += i * product_odd<1>() / product_even<2>() / 3;
+    value += i * Details::product_odd<1>() / Details::product_even<2>() / 3;
     i *= squared;
-    value += i * product_odd<3>() / product_even<4>() / 5;
+    value += i * Details::product_odd<3>() / Details::product_even<4>() / 5;
     i *= squared;
-    value += i * product_odd<5>() / product_even<6>() / 7;
+    value += i * Details::product_odd<5>() / Details::product_even<6>() / 7;
     i *= squared;
-    value += i * product_odd<7>() / product_even<8>() / 9;
+    value += i * Details::product_odd<7>() / Details::product_even<8>() / 9;
     i *= squared;
-    value += i * product_odd<9>() / product_even<10>() / 11;
+    value += i * Details::product_odd<9>() / Details::product_even<10>() / 11;
     i *= squared;
-    value += i * product_odd<11>() / product_even<12>() / 13;
+    value += i * Details::product_odd<11>() / Details::product_even<12>() / 13;
     i *= squared;
-    value += i * product_odd<13>() / product_even<14>() / 15;
+    value += i * Details::product_odd<13>() / Details::product_even<14>() / 15;
     i *= squared;
-    value += i * product_odd<15>() / product_even<16>() / 17;
+    value += i * Details::product_odd<15>() / Details::product_even<16>() / 17;
     return value;
 }
 
@@ -1074,21 +1078,21 @@ long double asinl(long double x) noexcept {
     auto squared = x * x;
     auto value   = x;
     auto i       = x * squared;
-    value += i * product_odd<1>() / product_even<2>() / 3;
+    value += i * Details::product_odd<1>() / Details::product_even<2>() / 3;
     i *= squared;
-    value += i * product_odd<3>() / product_even<4>() / 5;
+    value += i * Details::product_odd<3>() / Details::product_even<4>() / 5;
     i *= squared;
-    value += i * product_odd<5>() / product_even<6>() / 7;
+    value += i * Details::product_odd<5>() / Details::product_even<6>() / 7;
     i *= squared;
-    value += i * product_odd<7>() / product_even<8>() / 9;
+    value += i * Details::product_odd<7>() / Details::product_even<8>() / 9;
     i *= squared;
-    value += i * product_odd<9>() / product_even<10>() / 11;
+    value += i * Details::product_odd<9>() / Details::product_even<10>() / 11;
     i *= squared;
-    value += i * product_odd<11>() / product_even<12>() / 13;
+    value += i * Details::product_odd<11>() / Details::product_even<12>() / 13;
     i *= squared;
-    value += i * product_odd<13>() / product_even<14>() / 15;
+    value += i * Details::product_odd<13>() / Details::product_even<14>() / 15;
     i *= squared;
-    value += i * product_odd<15>() / product_even<16>() / 17;
+    value += i * Details::product_odd<15>() / Details::product_even<16>() / 17;
     return value;
 }
 
@@ -1313,16 +1317,18 @@ double gamma(double x) noexcept {
 }
 
 double tgamma(double value) noexcept {
-    return internal_gamma(value);
+    return Details::gamma(value);
 }
 
 float tgammaf(float value) noexcept {
-    return internal_gamma(value);
+    return Details::gamma(value);
 }
 
 long double tgammal(long double value) noexcept {
-    return internal_gamma(value);
+    return Details::gamma(value);
 }
+
+int signgam = 0;
 
 double lgamma(double value) noexcept {
     return lgamma_r(value, &signgam);
@@ -1342,7 +1348,7 @@ double lgamma_r(double value, int* sign) noexcept {
     if ( isinf(value) || value == 0.0 )
         return static_cast<double>(INFINITY);
 
-    auto result = log(internal_gamma(value));
+    auto result = log(Details::gamma(value));
     *sign       = signbit(result) ? -1 : 1;
     return result;
 }
@@ -1353,7 +1359,7 @@ float lgammaf_r(float value, int* sign) noexcept {
     if ( isinf(value) || value == 0.0f )
         return INFINITY;
 
-    auto result = logf(internal_gamma(value));
+    auto result = logf(Details::gamma(value));
     *sign       = signbit(result) ? -1 : 1;
     return result;
 }
@@ -1364,33 +1370,33 @@ long double lgammal_r(long double value, int* sign) noexcept {
     if ( isinf(value) || value == 0.0L )
         return static_cast<long double>(INFINITY);
 
-    auto result = logl(internal_gamma(value));
+    auto result = logl(Details::gamma(value));
     *sign       = signbit(result) ? -1 : 1;
     return result;
 }
 
 double ceil(double value) noexcept {
-    return internal_to_integer(value, RoundingMode::Up);
+    return Details::to_integer(value, Details::RoundingMode::Up);
 }
 
 float ceilf(float value) noexcept {
-    return internal_to_integer(value, RoundingMode::Up);
+    return Details::to_integer(value, Details::RoundingMode::Up);
 }
 
 long double ceill(long double value) noexcept {
-    return internal_to_integer(value, RoundingMode::Up);
+    return Details::to_integer(value, Details::RoundingMode::Up);
 }
 
 double floor(double value) noexcept {
-    return internal_to_integer(value, RoundingMode::Down);
+    return Details::to_integer(value, Details::RoundingMode::Down);
 }
 
 float floorf(float value) noexcept {
-    return internal_to_integer(value, RoundingMode::Down);
+    return Details::to_integer(value, Details::RoundingMode::Down);
 }
 
 long double floorl(long double value) noexcept {
-    return internal_to_integer(value, RoundingMode::Down);
+    return Details::to_integer(value, Details::RoundingMode::Down);
 }
 
 double trunc(double x) noexcept {
@@ -1402,7 +1408,7 @@ double trunc(double x) noexcept {
             : [temp] "m"(temp));
         return x;
     } else
-        return internal_to_integer(x, RoundingMode::ToZero);
+        return Details::to_integer(x, Details::RoundingMode::ToZero);
 }
 
 float truncf(float x) noexcept {
@@ -1414,7 +1420,7 @@ float truncf(float x) noexcept {
             : [temp] "m"(temp));
         return x;
     } else
-        return internal_to_integer(x, RoundingMode::ToZero);
+        return Details::to_integer(x, Details::RoundingMode::ToZero);
 }
 
 long double truncl(long double x) noexcept {
@@ -1426,19 +1432,19 @@ long double truncl(long double x) noexcept {
             : [temp] "m"(temp));
         return x;
     } else
-        return internal_to_integer(x, RoundingMode::ToZero);
+        return Details::to_integer(x, Details::RoundingMode::ToZero);
 }
 
 double round(double value) noexcept {
-    return internal_to_integer(value, RoundingMode::ToEven);
+    return Details::to_integer(value, Details::RoundingMode::ToEven);
 }
 
 float roundf(float value) noexcept {
-    return internal_to_integer(value, RoundingMode::ToEven);
+    return Details::to_integer(value, Details::RoundingMode::ToEven);
 }
 
 long double roundl(long double value) noexcept {
-    return internal_to_integer(value, RoundingMode::ToEven);
+    return Details::to_integer(value, Details::RoundingMode::ToEven);
 }
 
 long lround(double value) noexcept {
@@ -1470,15 +1476,15 @@ long long llroundd(long double value) noexcept {
 }
 
 double nearbyint(double value) noexcept {
-    return internal_to_integer(value, RoundingMode{ fegetround() });
+    return Details::to_integer(value, Details::RoundingMode{ fegetround() });
 }
 
 float nearbyintf(float value) noexcept {
-    return internal_to_integer(value, RoundingMode{ fegetround() });
+    return Details::to_integer(value, Details::RoundingMode{ fegetround() });
 }
 
 long double nearbyintl(long double value) noexcept {
-    return internal_to_integer(value, RoundingMode{ fegetround() });
+    return Details::to_integer(value, Details::RoundingMode{ fegetround() });
 }
 
 double rint(double value) noexcept {
@@ -1551,67 +1557,67 @@ long double frexpl(long double x, int* exp) noexcept {
 }
 
 double ldexp(double x, int exp) noexcept {
-    return internal_scalbn(x, exp);
+    return Details::scalbn(x, exp);
 }
 
 float ldexpf(float x, int exp) noexcept {
-    return internal_scalbn(x, exp);
+    return Details::scalbn(x, exp);
 }
 
 long double ldexpl(long double x, int exp) noexcept {
-    return internal_scalbn(x, exp);
+    return Details::scalbn(x, exp);
 }
 
 double modf(double x, double* intpart) noexcept {
-    return internal_modf(x, intpart);
+    return Details::modf(x, intpart);
 }
 
 float modff(float x, float* intpart) noexcept {
-    return internal_modf(x, intpart);
+    return Details::modf(x, intpart);
 }
 
 long double modfl(long double x, long double* intpart) noexcept {
-    return internal_modf(x, intpart);
+    return Details::modf(x, intpart);
 }
 
 double scalbn(double x, int exp) noexcept {
-    return internal_scalbn(x, exp);
+    return Details::scalbn(x, exp);
 }
 
 float scalbnf(float x, int exp) noexcept {
-    return internal_scalbn(x, exp);
+    return Details::scalbn(x, exp);
 }
 
 long double scalbnl(long double x, int exp) noexcept {
-    return internal_scalbn(x, exp);
+    return Details::scalbn(x, exp);
 }
 
 double scalbln(double x, long exp) noexcept {
-    return internal_scalbn(x, exp);
+    return Details::scalbn(x, exp);
 }
 
 float scalbnlf(float x, long exp) noexcept {
-    return internal_scalbn(x, exp);
+    return Details::scalbn(x, exp);
 }
 
 float scalblnf(float x, long exp) noexcept {
-    return internal_scalbn(x, exp);
+    return Details::scalbn(x, exp);
 }
 
 long double scalblnl(long double x, long exp) noexcept {
-    return internal_scalbn(x, exp);
+    return Details::scalbn(x, exp);
 }
 
 int ilogb(double x) noexcept {
-    return internal_ilogb(x);
+    return Details::ilogb(x);
 }
 
 int ilogbf(float x) noexcept {
-    return internal_ilogb(x);
+    return Details::ilogb(x);
 }
 
 int ilogbl(long double x) noexcept {
-    return internal_ilogb(x);
+    return Details::ilogb(x);
 }
 
 double logb(double x) noexcept {
@@ -1630,54 +1636,54 @@ double nextafter(double x, double target) noexcept {
     if ( x == target )
         return target;
     else
-        return internal_nextafter(x, target >= x);
+        return Details::nextafter(x, target >= x);
 }
 
 float nextafterf(float x, float target) noexcept {
     if ( x == target )
         return target;
     else
-        return internal_nextafter(x, target >= x);
+        return Details::nextafter(x, target >= x);
 }
 
 long double nextafterl(long double x, long double target) noexcept {
     if ( x == target )
         return target;
     else
-        return internal_nextafter(x, target >= x);
+        return Details::nextafter(x, target >= x);
 }
 
 double nexttoward(double x, long double target) noexcept {
     if ( x == static_cast<double>(target) )
         return static_cast<double>(target);
     else
-        return internal_nextafter(x, static_cast<double>(target) >= x);
+        return Details::nextafter(x, static_cast<double>(target) >= x);
 }
 
 float nexttowardf(float x, long double target) noexcept {
     if ( x == static_cast<float>(target) )
         return static_cast<float>(target);
     else
-        return internal_nextafter(x, static_cast<float>(target) >= x);
+        return Details::nextafter(x, static_cast<float>(target) >= x);
 }
 
 long double nexttowardl(long double x, long double target) noexcept {
     if ( x == target )
         return target;
     else
-        return internal_nextafter(x, target >= x);
+        return Details::nextafter(x, target >= x);
 }
 
 double copysign(double x, double y) noexcept {
-    return internal_copysign(x, y);
+    return Details::copysign(x, y);
 }
 
 float copysignf(float x, float y) noexcept {
-    return internal_copysign(x, y);
+    return Details::copysign(x, y);
 }
 
 long double copysignl(long double x, long double y) noexcept {
-    return internal_copysign(x, y);
+    return Details::copysign(x, y);
 }
 
 double fdim(double, double) noexcept {
