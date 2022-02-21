@@ -10,14 +10,34 @@
  * GNU General Public License version 3
  */
 
-#include "DIR.hh"
-
-#include <Api.h>
+#include <Api/FileSystem.h>
 #include <dirent.h>
 #include <errno.h>
+#include <LibTC/Assertions.hh>
 #include <string.h>
 
-extern "C" struct dirent* readdir(DIR* dir) {
+extern "C" {
+
+struct DirStream {
+    FsDirectoryIterator* m_directory_iterator;
+    struct dirent*       m_entry_buffer;
+};
+
+DIR* opendir(const char* path) {
+    FsOpenDirectoryStatus open_status{};
+
+    auto dir_it = s_open_directory_s(path, &open_status);
+    if ( open_status == FS_OPEN_DIRECTORY_SUCCESSFUL )
+        return new DIR{ dir_it, new dirent{} };
+    else if ( open_status == FS_OPEN_DIRECTORY_NOT_FOUND )
+        errno = ENOTDIR;
+    else if ( open_status == FS_OPEN_DIRECTORY_ERROR )
+        errno = EIO;
+
+    return nullptr;
+}
+
+struct dirent* readdir(DIR* dir) {
     FsReadDirectoryStatus read_status{};
 
     auto dir_entry = s_read_directory_s(dir->m_directory_iterator, &read_status);
@@ -40,6 +60,8 @@ extern "C" struct dirent* readdir(DIR* dir) {
             case FS_NODE_TYPE_MOUNTPOINT:
                 dir->m_entry_buffer->d_type = DT_DIR;
                 break;
+            default:
+                VERIFY_NOT_REACHED();
         }
         return entry_buffer;
     } else if ( read_status == FS_READ_DIRECTORY_EOD )
@@ -47,4 +69,12 @@ extern "C" struct dirent* readdir(DIR* dir) {
     else if ( read_status == FS_READ_DIRECTORY_ERROR )
         errno = EIO;
     return nullptr;
+}
+
+int closedir(DIR* dir) {
+    s_close_directory(dir->m_directory_iterator);
+    delete dir->m_entry_buffer;
+    delete dir;
+    return 0;
+}
 }

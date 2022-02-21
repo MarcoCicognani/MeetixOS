@@ -170,9 +170,6 @@ add_library(LibC
         unistd/sbrk.cc
         unistd/chdir.cc
         unistd/getpid.cc
-        dirent/closedir.cc
-        dirent/opendir.cc
-        dirent/readdir.cc
         abi_support.cc
         ctype.cc
         time/ctime.cc
@@ -214,7 +211,7 @@ add_library(LibC
         pthread/pthread_self.cc
         pthread/pthread_kill.cc
         pthread/pthread_exit.cc
-        sys/stat/fchmod.cc)
+        sys/stat/fchmod.cc dirent.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 add_custom_command(
