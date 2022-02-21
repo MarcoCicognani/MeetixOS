@@ -158,8 +158,7 @@ add_library(LibC
         unistd/read.cc
         unistd/getcwd.cc
         unistd/access.cc
-        getopt/getopt.cc
-        getopt/OptionsParser.cc
+        OptionsParser.cc
         unistd/close.cc
         unistd/getppid.cc
         unistd/symlink.cc
@@ -205,7 +204,7 @@ add_library(LibC
         pthread/pthread_self.cc
         pthread/pthread_kill.cc
         pthread/pthread_exit.cc
-        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc)
+        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc getopt.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 add_custom_command(
