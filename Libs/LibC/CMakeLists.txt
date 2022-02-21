@@ -101,9 +101,6 @@ add_library(LibC
         stdio/fsetpos.cc
         stdio/fwrite_unlocked.cc
         libc_main.cc
-        signal/raise.cc
-        signal/sig_handlers.cc
-        signal/signal.cc
         strings/strncasecmp.cc
         strings/strcasecmp.cc
         stdlib/abort.cc
@@ -190,7 +187,7 @@ add_library(LibC
         sys/stat/lstat.cc
         sys/stat/chmod.cc
         setjmp.S
-        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc getopt.cc libgen.cc locale.cc pthread.cc sched.cc)
+        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc getopt.cc libgen.cc locale.cc pthread.cc sched.cc signal.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 add_custom_command(
