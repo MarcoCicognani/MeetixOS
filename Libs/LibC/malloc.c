@@ -1,4 +1,4 @@
-#include "config.hh"
+#include "MallocConfig.hh"
 
 /*
   This is a version (aka dlmalloc) of malloc/free/realloc written by

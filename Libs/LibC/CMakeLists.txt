@@ -180,7 +180,7 @@ add_library(LibC
         time/strftime.cc
         time/time.cc
         assert.cc
-        malloc/dlmalloc.c
+        malloc.c
         sched/sched_yield.cc
         sys/time/gettimeofday.cc
         sys/param/getwd.cc
