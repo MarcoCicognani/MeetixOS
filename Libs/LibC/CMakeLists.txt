@@ -192,15 +192,7 @@ add_library(LibC
         sys/stat/chmod.cc
         setjmp/i386/setjmp.s
         setjmp/i386/longjmp.s
-        pthread/pthread_create.cc
-        pthread/pthread_attr_init.cc
-        pthread/pthread_attr_destroy.cc
-        pthread/pthread_set_detachstate.cc
-        pthread/pthread_join.cc
-        pthread/pthread_self.cc
-        pthread/pthread_kill.cc
-        pthread/pthread_exit.cc
-        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc getopt.cc libgen.cc locale.cc)
+        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc getopt.cc libgen.cc locale.cc pthread.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 add_custom_command(
