@@ -181,7 +181,6 @@ add_library(LibC
         time/strftime.cc
         time/time.cc
         assert.cc
-        errno/errno.cc
         locale/localeconv.cc
         locale/setlocale.cc
         malloc/dlmalloc.c
@@ -207,7 +206,7 @@ add_library(LibC
         pthread/pthread_self.cc
         pthread/pthread_kill.cc
         pthread/pthread_exit.cc
-        sys/stat/fchmod.cc dirent.cc dlfcn.cc)
+        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 add_custom_command(
