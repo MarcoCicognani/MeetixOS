@@ -40,11 +40,10 @@ the learning effect.
 
 Currently, I'm working on `LibTC`, the Template Collection Library.
 
-This nearly header-only library is inspired by
-the [SerenityOS/AK](https://github.com/SerenityOS/serenity/tree/master/AK)
-and the [SkiftOS/LibUtils](https://github.com/skiftOS/skift/tree/main/userspace/libs/libutils) libraries.
+This template library is inspired by the [SerenityOS/AK](https://github.com/SerenityOS/serenity/tree/master/AK) and
+the [SkiftOS/LibUtils](https://github.com/skiftOS/skift/tree/main/userspace/libs/libutils) libraries.
 
-The goal is to make it usable in all the OS contexts, from the kernel to the applications as substitute of
+The goal is to make it usable in all the OS contexts, from the kernel to the applications, as substitute of
 the `LibStdC++`.
 
 ## What's Next
