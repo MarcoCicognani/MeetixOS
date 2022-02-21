@@ -7,10 +7,10 @@ port_unpack() {
 }
 
 port_build() {
-    PKG_CONFIG=meetix-pkg-config.sh   \
-    CPPFLAGS="$MEETIX_EXTRA_INCLUDES" \
-    LDFLAGS="$MEETIX_EXTRA_LINK_DIRS" \
-    LIBS="$MEETIX_EXTRA_LIBS"         \
+    PKG_CONFIG=meetix-pkg-config.sh        \
+    CPPFLAGS="$MEETIX_EXTRA_INCLUDE_PATHS" \
+    LDFLAGS="$MEETIX_EXTRA_LINK_DIRS"      \
+    LIBS="$MEETIX_EXTRA_LIBS"              \
         ../$UNPACKED_DIR/configure --host=i686-pc-meetix --prefix="$TOOLCHAIN_ROOT" || exit 1
 
     make -j$BUILD_JOBS install || exit 1

@@ -192,8 +192,9 @@ export CXXFLAGS=""
 
 # ------------------------------------------ Script Code: Remove OS Headers ------------------------------------------ #
 
-# TODO uncomment this when all the userspace is free from the libstdc++ headers
-# build_step "OS/Headers Uninstall" rm -vrf "$TOOLCHAIN_PREFIX/include/*"
+dir_push "$TOOLCHAIN_PREFIX"
+    build_step "OS/Headers Uninstall" rm -vrf include/* || exit 1
+dir_pop
 
 # ------------------------------------ Scrip Code: CMake Toolchains Configuration ------------------------------------ #
 

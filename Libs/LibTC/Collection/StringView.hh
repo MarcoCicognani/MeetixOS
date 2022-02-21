@@ -178,11 +178,6 @@ using Collection::TrimWhitespace;
 
 } /* namespace TC */
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wliteral-suffix"
-
 [[nodiscard]] constexpr inline TC::StringView operator"" sv(char const* c_str, usize len) {
     return TC::StringView{ c_str, len };
 }
-
-#pragma GCC diagnostic pop

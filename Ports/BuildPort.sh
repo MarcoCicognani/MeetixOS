@@ -2,20 +2,43 @@
 
 # Colors
 RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
 RESET=$(tput sgr0)
 
 PACKAGE=$1
 SOURCE_DIR=$(realpath ..)
-LIBS_DIR="$SOURCE_DIR/Libs"
-BUILD_ROOT="$SOURCE_DIR/Build/Ports"
+SOURCE_LIBS_DIR="$SOURCE_DIR/Libs"
+BUILD_PORT_ROOT="$SOURCE_DIR/Build/Ports"
 TOOLCHAIN_ROOT="$SOURCE_DIR/Toolchain/Local"
-
-MEETIX_EXTRA_INCLUDES="-I$LIBS_DIR -I$LIBS_DIR/LibApi -I$LIBS_DIR/LibC -I$LIBS_DIR/LibMath"
-MEETIX_EXTRA_LINK_DIRS="-L$SOURCE_DIR/Build/Release/Libs/LibC -L$SOURCE_DIR/Build/Release/Libs/LibMath"
-MEETIX_EXTRA_LIBS="-lLibC -lLibMath -lstdc++"
-
 BUILD_IN_SOURCE_DIR=0
+
+EXTRA_INCLUDE_PATHS=(
+    "$TOOLCHAIN_ROOT/i686-pc-meetix/include"
+    "$TOOLCHAIN_ROOT/i686-pc-meetix/include/c++/11.2.0"
+    "$TOOLCHAIN_ROOT/i686-pc-meetix/include/c++/11.2.0/i686-pc-meetix"
+    "$TOOLCHAIN_ROOT/i686-pc-meetix/include/c++/11.2.0/backward"
+    "$TOOLCHAIN_ROOT/lib/gcc/i686-pc-meetix/11.2.0/include"
+    "$TOOLCHAIN_ROOT/lib/gcc/i686-pc-meetix/11.2.0/include-fixed"
+    "$TOOLCHAIN_ROOT/include"
+    "$SOURCE_LIBS_DIR"
+    "$SOURCE_LIBS_DIR/LibMath"
+    "$SOURCE_LIBS_DIR/LibApi"
+    "$SOURCE_LIBS_DIR/LibC"
+)
+EXTRA_OPTIONS=(
+    -m32
+    -nostdinc
+    -Wdouble-promotion
+    -fdiagnostics-color=always
+)
+EXTRA_LINK_DIRS=(
+    "$SOURCE_DIR/Build/Release/Libs/LibC"
+    "$SOURCE_DIR/Build/Release/Libs/LibMath"
+)
+EXTRA_LIBS=(
+    LibC
+    LibMath
+    stdc++
+)
 
 # Fails with the given error message and exits
 fail() {
@@ -32,7 +55,7 @@ if [ -z "$PACKAGE" ]; then
 fi
 
 # Rebuild the Build directory for the package
-BUILD_DIR="$BUILD_ROOT/$PACKAGE"
+BUILD_DIR="$BUILD_PORT_ROOT/$PACKAGE"
 if [ -d "$BUILD_DIR" ]; then
     rm -rf "$BUILD_DIR"
 fi
@@ -87,6 +110,27 @@ else
     mkdir -p "$BUILD_DIR/Build" || exit 1
     pushd "$BUILD_DIR/Build" || exit 1
 fi
+
+# build the arguments
+MEETIX_EXTRA_INCLUDE_PATHS=""
+for path in "${EXTRA_INCLUDE_PATHS[@]}"; do
+    MEETIX_EXTRA_INCLUDE_PATHS+="-isystem $path "
+done
+
+MEETIX_EXTRA_OPTIONS=""
+for option in "${EXTRA_OPTIONS[@]}"; do
+    MEETIX_EXTRA_OPTIONS+="$option "
+done
+
+MEETIX_EXTRA_LINK_DIRS=""
+for path in "${EXTRA_LINK_DIRS[@]}"; do
+    MEETIX_EXTRA_LINK_DIRS+="-L$path "
+done
+
+MEETIX_EXTRA_LIBS=""
+for path in "${EXTRA_LIBS[@]}"; do
+    MEETIX_EXTRA_LIBS+="-l$path "
+done
 
 # Build the port and install it
 export PATH="$PATH:$TOOLCHAIN_ROOT/bin"

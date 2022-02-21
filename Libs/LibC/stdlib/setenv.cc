@@ -10,15 +10,14 @@
  * GNU General Public License version 3
  */
 
-//#include <sstream>
+#include <sstream>
 #include <stdlib.h>
 
 /* TODO find a better way to do this */
 
-extern "C" int setenv(const char*, const char*, int) {
-    return EXIT_FAILURE;
-    //    std::stringstream ss;
-    //    ss << "/Bins/MxSh --setenv " << key << "=" << value;
-    //
-    //    return system(ss.str().c_str());
+extern "C" int setenv(const char* key, const char* value, int) {
+    std::stringstream ss;
+    ss << "/Bins/MxSh --setenv " << key << "=" << value;
+
+    return system(ss.str().c_str());
 }

@@ -34,9 +34,36 @@ set(CMAKE_ASM_NASM_COMPILE_OBJECT "${CMAKE_ASM_NASM_COMPILER} -f elf -o <OBJECT>
 # C/C++ Flags
 #
 add_compile_options(-m32)
-add_compile_options(-fdiagnostics-color=always)
-#add_compile_options(-Wno-literal-suffix) TODO implement dlmalloc.cc and re-introduce this (remove from LibTC/Collection/StringView.hh GCC diagnostic)
+add_compile_options(-nostdinc) # See following include_directories() for explanation
 add_compile_options(-Wdouble-promotion)
+add_compile_options(-fdiagnostics-color=always)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-literal-suffix>)
+
+#
+# NOTE to avoid to copy library headers into ${TOOLCHAIN_INCLUDE} -nostdinc is passed to the compiler and the default
+# include paths (both for C and C++) are passed explicitly as -isystem via command line.
+#
+# This ensures that #include_next directives doesn't search into ${TOOLCHAIN_INCLUDE} (which is reserved for ported
+# library installations) but into Libs
+#
+
+include_directories(SYSTEM ${TOOLCHAIN_ROOT}/i686-pc-meetix/include)
+include_directories(SYSTEM ${TOOLCHAIN_ROOT}/i686-pc-meetix/include/c++/11.2.0)
+include_directories(SYSTEM ${TOOLCHAIN_ROOT}/i686-pc-meetix/include/c++/11.2.0/i686-pc-meetix)
+include_directories(SYSTEM ${TOOLCHAIN_ROOT}/i686-pc-meetix/include/c++/11.2.0/backward)
+
+include_directories(SYSTEM ${TOOLCHAIN_LIB}/gcc/i686-pc-meetix/11.2.0/include)
+include_directories(SYSTEM ${TOOLCHAIN_LIB}/gcc/i686-pc-meetix/11.2.0/include-fixed)
+
+#
+# AFTER is fundamental since #include_next watches into the last system include directories
+#
+
+include_directories(AFTER SYSTEM "${TOOLCHAIN_INCLUDE}")
+include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}/Libs")
+include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}/Libs/LibMath")
+include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}/Libs/LibApi")
+include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}/Libs/LibC")
 
 #
 # C/C++ Release Flags
@@ -62,9 +89,3 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
-
-include_directories("${TOOLCHAIN_INCLUDE}")
-include_directories("${CMAKE_SOURCE_DIR}/Libs")
-include_directories("${CMAKE_SOURCE_DIR}/Libs/LibC")
-include_directories("${CMAKE_SOURCE_DIR}/Libs/LibApi")
-include_directories("${CMAKE_SOURCE_DIR}/Libs/LibMath")
