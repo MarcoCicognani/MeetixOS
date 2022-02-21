@@ -47,12 +47,10 @@ public:
      * @brief Constructors
      */
     constexpr StringView() = default;
-    constexpr StringView(char const* str, usize count)
-        : m_chars_ptr{ str }
-        , m_chars_count{ count } {}
-    StringView(String const& string);
-    StringView(char const* str);
-    StringView(StringView const& rhs);
+    constexpr StringView(char const* str, usize count) noexcept;
+    StringView(String const& string) noexcept;
+    StringView(char const* str) noexcept;
+    StringView(StringView const& rhs) noexcept;
     StringView(StringView&& rhs) noexcept;
     ~StringView() = default;
 

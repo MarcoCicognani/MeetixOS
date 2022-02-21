@@ -150,7 +150,6 @@ add_library(LibC
         string/strcat.cc
         string/strstr.cc
         string/strspn.cc
-        dlfcn/dlerror.cc
         unistd/write.cc
         unistd/tell.cc
         unistd/lseek.cc
@@ -200,9 +199,6 @@ add_library(LibC
         sys/stat/chmod.cc
         setjmp/i386/setjmp.s
         setjmp/i386/longjmp.s
-        dlfcn/dlopen.cc
-        dlfcn/dlsym.cc
-        dlfcn/dlclose.cc
         pthread/pthread_create.cc
         pthread/pthread_attr_init.cc
         pthread/pthread_attr_destroy.cc
@@ -211,7 +207,7 @@ add_library(LibC
         pthread/pthread_self.cc
         pthread/pthread_kill.cc
         pthread/pthread_exit.cc
-        sys/stat/fchmod.cc dirent.cc)
+        sys/stat/fchmod.cc dirent.cc dlfcn.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 add_custom_command(

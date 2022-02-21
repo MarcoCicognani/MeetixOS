@@ -22,20 +22,20 @@
 
 namespace TC::Collection {
 
-// constexpr StringView::StringView(char const* str, usize count)
-//     : m_chars_ptr{ str }
-//     , m_chars_count{ count } {
-// }
+constexpr StringView::StringView(char const* str, usize count) noexcept
+    : m_chars_ptr{ str }
+    , m_chars_count{ count } {
+}
 
-StringView::StringView(String const& string)
+StringView::StringView(String const& string) noexcept
     : StringView{ string.as_cstr(), string.len() } {
 }
 
-StringView::StringView(char const* str)
+StringView::StringView(char const* str) noexcept
     : StringView{ str, str != nullptr ? strlen(str) : 0 } {
 }
 
-StringView::StringView(StringView const& rhs)
+StringView::StringView(StringView const& rhs) noexcept
     : StringView{ rhs.as_cstr(), rhs.len() } {
 }
 
