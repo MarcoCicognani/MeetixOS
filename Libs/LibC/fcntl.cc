@@ -15,7 +15,9 @@
 #include <fcntl.h>
 #include <stdarg.h>
 
-extern "C" int open(const char* path, int flags, ...) {
+extern "C" {
+
+int open(const char* path, int flags, ...) {
     /* read the creat-mode from the third parameter */
     auto creat_mode = 0;
     if ( flags & O_CREAT ) {
@@ -35,4 +37,5 @@ extern "C" int open(const char* path, int flags, ...) {
     else
         errno = EIO;
     return -1;
+}
 }

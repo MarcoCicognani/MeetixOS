@@ -184,7 +184,6 @@ add_library(LibC
         locale/localeconv.cc
         locale/setlocale.cc
         malloc/dlmalloc.c
-        fcntl/open.cc
         libgen/basename.cc
         libgen/dirname.cc
         sched/sched_yield.cc
@@ -206,7 +205,7 @@ add_library(LibC
         pthread/pthread_self.cc
         pthread/pthread_kill.cc
         pthread/pthread_exit.cc
-        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc)
+        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 add_custom_command(
