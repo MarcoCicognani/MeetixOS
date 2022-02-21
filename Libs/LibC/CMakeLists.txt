@@ -189,8 +189,7 @@ add_library(LibC
         sys/stat/umask.cc
         sys/stat/lstat.cc
         sys/stat/chmod.cc
-        setjmp/i386/setjmp.s
-        setjmp/i386/longjmp.s
+        setjmp.S
         sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc getopt.cc libgen.cc locale.cc pthread.cc sched.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
