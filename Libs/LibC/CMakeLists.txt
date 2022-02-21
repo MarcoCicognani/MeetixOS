@@ -180,8 +180,6 @@ add_library(LibC
         time/strftime.cc
         time/time.cc
         assert.cc
-        locale/localeconv.cc
-        locale/setlocale.cc
         malloc/dlmalloc.c
         sched/sched_yield.cc
         sys/time/gettimeofday.cc
@@ -202,7 +200,7 @@ add_library(LibC
         pthread/pthread_self.cc
         pthread/pthread_kill.cc
         pthread/pthread_exit.cc
-        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc getopt.cc libgen.cc)
+        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc getopt.cc libgen.cc locale.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 add_custom_command(
