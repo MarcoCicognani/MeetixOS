@@ -181,7 +181,6 @@ add_library(LibC
         time/time.cc
         assert.cc
         malloc.c
-        sched/sched_yield.cc
         sys/time/gettimeofday.cc
         sys/param/getwd.cc
         sys/stat/mkdir.cc
@@ -192,7 +191,7 @@ add_library(LibC
         sys/stat/chmod.cc
         setjmp/i386/setjmp.s
         setjmp/i386/longjmp.s
-        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc getopt.cc libgen.cc locale.cc pthread.cc)
+        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc getopt.cc libgen.cc locale.cc pthread.cc sched.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 add_custom_command(

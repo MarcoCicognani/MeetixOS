@@ -13,7 +13,10 @@
 #include <Api/User.h>
 #include <sched.h>
 
-extern "C" int sched_yield() {
+extern "C" {
+
+int sched_yield() {
     s_yield();
     return 0;
+}
 }
