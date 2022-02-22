@@ -68,14 +68,19 @@ int Suite::main(int, char const* const* argv) {
     }
     auto all_tests_end_timestamp = s_millis();
 
-    printf("%s - Executed %lu tests (%lu tests/%lu benchmarks) in %llums\n",
-           argv[0],
-           m_test_cases.count(),
-           test_completed + test_failed,
-           benchmark_completed + benchmark_failed,
-           all_tests_end_timestamp - all_tests_start_timestamp);
-    printf("\tTests      - %lu Completed/%lu Failed\n", test_completed, test_failed);
-    printf("\tBenchmarks - %lu Completed/%lu Failed\n", benchmark_completed, benchmark_failed);
+    printf(
+        "%s - Executed \033[32m%lu\033[0m tests (\033[32m%lu\033[0m tests/\033[32m%lu\033[0m benchmarks) in %llums\n",
+        argv[0],
+        m_test_cases.count(),
+        test_completed + test_failed,
+        benchmark_completed + benchmark_failed,
+        all_tests_end_timestamp - all_tests_start_timestamp);
+    if ( test_completed + test_failed > 0 )
+        printf("\tTests      - \033[32m%lu\033[0m Completed/\033[31m%lu\033[0m Failed\n", test_completed, test_failed);
+    if ( benchmark_completed + benchmark_failed > 0 )
+        printf("\tBenchmarks - \033[32m%lu\033[0m Completed/\033[31m%lu\033[0m Failed\n",
+               benchmark_completed,
+               benchmark_failed);
 
     if ( test_failed != 0 || benchmark_failed != 0 )
         return EXIT_FAILURE;
