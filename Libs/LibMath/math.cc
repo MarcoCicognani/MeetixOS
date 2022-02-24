@@ -17,6 +17,7 @@
 #include <fenv.h>
 #include <LibTC/Assertions.hh>
 #include <LibTC/IntTypes.hh>
+#include <LibTC/Math.hh>
 #include <math.h>
 
 namespace Details {
@@ -71,38 +72,6 @@ constexpr usize product_odd<1>() {
 template<usize value>
 constexpr usize product_odd() {
     return value * Details::product_odd<value - 2>();
-}
-
-template<typename T>
-constexpr T clamp(T const& value, T const& min, T const& max) {
-    VERIFY_GREATER_EQUAL(max, min);
-    if ( value > max )
-        return max;
-    if ( value < min )
-        return min;
-    return value;
-}
-
-template<typename T>
-constexpr T min(T const& a, T const& b) {
-    return b < a ? b : a;
-}
-
-template<typename T>
-constexpr T max(T const& a, T const& b) {
-    return a < b ? b : a;
-}
-
-template<typename T>
-constexpr int count_leading_zeroes(T value) {
-    static_assert(sizeof(T) <= sizeof(unsigned long long));
-    if constexpr ( sizeof(T) <= sizeof(unsigned int) )
-        return __builtin_clz(value) - (32 - (8 * sizeof(T)));
-    if constexpr ( sizeof(T) == sizeof(unsigned long) )
-        return __builtin_clzl(value);
-    if constexpr ( sizeof(T) == sizeof(unsigned long long) )
-        return __builtin_clzll(value);
-    VERIFY_NOT_REACHED();
 }
 
 enum class RoundingMode {
@@ -326,13 +295,13 @@ static T scalbn(T x, int exponent) noexcept {
     extractor.m_value = x;
     if ( extractor.m_exponent != 0 ) {
         extractor.m_exponent
-            = clamp((int)extractor.m_exponent + exponent, 0, static_cast<int>(Extractor::m_exponent_max));
+            = TC::clamp((int)extractor.m_exponent + exponent, 0, static_cast<int>(Extractor::m_exponent_max));
         return extractor.m_value;
     }
 
-    auto leading_mantissa_zeroes = extractor.m_mantissa == 0 ? 32 : count_leading_zeroes(extractor.m_mantissa);
-    auto shift                   = min(static_cast<int>(leading_mantissa_zeroes), exponent);
-    exponent                     = max(exponent - shift, 0);
+    auto leading_mantissa_zeroes = extractor.m_mantissa == 0 ? 32 : TC::count_leading_zeroes(extractor.m_mantissa);
+    auto shift                   = TC::min(static_cast<int>(leading_mantissa_zeroes), exponent);
+    exponent                     = TC::max(exponent - shift, 0);
 
     extractor.m_exponent <<= shift;
     extractor.m_exponent = exponent + 1;

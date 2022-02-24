@@ -32,6 +32,7 @@
 #include <LibTC/Hashing/Integer.hh>
 #include <LibTC/Hashing/Pointer.hh>
 #include <LibTC/IntTypes.hh>
+#include <LibTC/Math.hh>
 #include <LibTC/Memory/NonNullBox.hh>
 #include <LibTC/Memory/NonNullRef.hh>
 #include <LibTC/Memory/Raw.hh>
