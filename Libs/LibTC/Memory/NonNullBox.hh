@@ -13,6 +13,8 @@
 #pragma once
 
 #include <Api/Common.h>
+#include <LibTC/Assertions.hh>
+#include <LibTC/Cxx.hh>
 #include <LibTC/DenyCopy.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 
@@ -31,54 +33,105 @@ public:
      * @brief Constructors
      */
     NonNullBox() = delete;
-    NonNullBox(AdoptTag, T& ref);
-    NonNullBox(AdoptTag, T const& ref);
-    NonNullBox(NonNullBox&& rhs) noexcept;
-    ~NonNullBox();
+    NonNullBox(AdoptTag, T& ref)
+        : m_boxed_ptr{ &ref } {
+    }
+    NonNullBox(AdoptTag, T const& ref)
+        : m_boxed_ptr{ const_cast<T*>(&ref) } {
+    }
+    NonNullBox(NonNullBox&& rhs) noexcept
+        : m_boxed_ptr{ exchange(rhs.m_boxed_ptr, nullptr) } {
+    }
+    ~NonNullBox() {
+        delete m_boxed_ptr;
+        m_boxed_ptr = nullptr;
+    }
 
-    NonNullBox& operator=(NonNullBox&& rhs) noexcept;
+    NonNullBox& operator=(NonNullBox&& rhs) noexcept {
+        NonNullBox non_null_box{ move(rhs) };
+        swap(non_null_box);
+        return *this;
+    }
 
     /**
      * @brief Swaps this box with another
      */
-    void swap(NonNullBox& rhs) noexcept;
+    void swap(NonNullBox& rhs) noexcept {
+        Cxx::swap(m_boxed_ptr, rhs.m_boxed_ptr);
+    }
 
     /**
      * @brief Access operators
      */
-    A_RETURN_NONNULL T*       operator->();
-    A_RETURN_NONNULL T const* operator->() const;
+    A_RETURN_NONNULL T* operator->() {
+        return as_ptr();
+    }
+    A_RETURN_NONNULL T const* operator->() const {
+        return as_ptr();
+    }
 
-    T&       operator*();
-    T const& operator*() const;
+    T& operator*() {
+        return as_ref();
+    }
+    T const& operator*() const {
+        return as_ref();
+    }
 
     /**
      * @brief Conversion operators
      */
-    A_RETURN_NONNULL explicit operator T*();
-    A_RETURN_NONNULL explicit operator T const*() const;
+    A_RETURN_NONNULL explicit operator T*() {
+        return as_ptr();
+    }
+    A_RETURN_NONNULL explicit operator T const*() const {
+        return as_ptr();
+    }
 
-    explicit operator T&();
-    explicit operator T const&() const;
+    explicit operator T&() {
+        return as_ref();
+    }
+    explicit operator T const&() const {
+        return as_ref();
+    }
 
     /**
      * @brief Getters
      */
-    [[nodiscard]] A_RETURN_NONNULL T*       as_ptr();
-    [[nodiscard]] A_RETURN_NONNULL T const* as_ptr() const;
+    [[nodiscard]] A_RETURN_NONNULL T* as_ptr() {
+        VERIFY_NOT_NULL(m_boxed_ptr);
+        return m_boxed_ptr;
+    }
+    [[nodiscard]] A_RETURN_NONNULL T const* as_ptr() const {
+        VERIFY_NOT_NULL(m_boxed_ptr);
+        return m_boxed_ptr;
+    }
 
-    [[nodiscard]] T&       as_ref();
-    [[nodiscard]] T const& as_ref() const;
+    [[nodiscard]] T& as_ref() {
+        return *as_ptr();
+    }
+    [[nodiscard]] T const& as_ref() const {
+        return *as_ptr();
+    }
 
 private:
     T* m_boxed_ptr{ nullptr };
 };
 
 template<typename T, typename... Args>
-inline NonNullBox<T> make_box(Args&&... args);
+inline NonNullBox<T> make_box(Args&&... args) {
+    auto ptr = new (nothrow) T{ forward<Args>(args)... };
+    VERIFY_NOT_NULL(ptr);
+    return NonNullBox<T>{ NonNullBox<T>::Adopt, *ptr };
+}
 
 template<typename T, typename... Args>
-inline Functional::ErrorOr<NonNullBox<T>> try_make_box(Args&&... args);
+inline Functional::ErrorOr<NonNullBox<T>> try_make_box(Args&&... args) {
+    auto ptr = new (nothrow) T{ forward<Args>(args)... };
+    if ( ptr != nullptr )
+        return NonNullBox<T>{ NonNullBox<T>::Adopt, *ptr };
+    else
+        return ENOMEM;
+}
 
 } /* namespace Memory */
 
@@ -87,5 +140,3 @@ using Memory::NonNullBox;
 using Memory::try_make_box;
 
 } /* namespace TC */
-
-#include <LibTC/Memory/NonNullBox.hhi>

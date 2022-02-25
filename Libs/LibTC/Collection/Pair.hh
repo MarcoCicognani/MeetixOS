@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <LibTC/Cxx.hh>
+
 namespace TC {
 namespace Collection {
 
@@ -22,10 +24,19 @@ public:
      * @brief Constructors
      */
     Pair() = default;
-    Pair(K const& key, T const& value);
-    Pair(K&& key, T&& value);
+    Pair(K const& key, T const& value)
+        : m_key{ key }
+        , m_value{ value } {
+    }
+    Pair(K&& key, T&& value)
+        : m_key{ move(key) }
+        , m_value{ move(value) } {
+    }
     Pair(Pair const&) = default;
-    Pair(Pair&& rhs) noexcept;
+    Pair(Pair&& rhs) noexcept
+        : m_key{ move(rhs.m_key) }
+        , m_value{ move(rhs.m_value) } {
+    }
 
     ~Pair() = default;
 
@@ -35,14 +46,22 @@ public:
     /**
      * @brief Key getters
      */
-    K&       key();
-    K const& key() const;
+    K& key() {
+        return m_key;
+    }
+    K const& key() const {
+        return m_key;
+    }
 
     /**
      * @brief Value getters
      */
-    T&       value();
-    T const& value() const;
+    T& value() {
+        return m_value;
+    }
+    T const& value() const {
+        return m_value;
+    }
 
 private:
     K m_key{};
@@ -54,5 +73,3 @@ private:
 using Collection::Pair;
 
 } /* namespace TC */
-
-#include <LibTC/Collection/Pair.hhi>

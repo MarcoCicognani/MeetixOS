@@ -11,7 +11,7 @@ AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortEnumsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortFunctionsOnASingleLine: None
 AlwaysBreakAfterReturnType: None
 AlwaysBreakTemplateDeclarations: Yes
 AttributeMacros:

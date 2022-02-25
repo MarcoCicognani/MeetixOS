@@ -17,7 +17,6 @@
 #include <LibTC/Cxx.hh>
 #include <LibTC/Functional/Must.hh>
 #include <LibTC/Functional/Try.hh>
-#include <string.h>
 
 namespace TC::Collection {
 
