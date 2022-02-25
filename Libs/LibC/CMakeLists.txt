@@ -124,29 +124,7 @@ add_library(LibC
         stdlib/getenv.cc
         stdlib/atol.cc
         stdlib/atof.cc
-        string/strxfrm.cc
-        string/strcoll.cc
-        string/memcpy.cc
-        string/strdup.cc
-        string/memset.cc
-        string/memmem.cc
-        string/strncpy.cc
-        string/strcpy.cc
-        string/strlen.cc
-        string/strpbrk.cc
-        string/strerror.cc
-        string/memmove.cc
-        string/memchr.cc
-        string/memcmp.cc
-        string/strchr.cc
-        string/strcspn.cc
-        string/strncmp.cc
-        string/strcmp.cc
-        string/strrchr.cc
-        string/strncat.cc
-        string/strcat.cc
-        string/strstr.cc
-        string/strspn.cc
+        string.cc
         unistd/write.cc
         unistd/tell.cc
         unistd/lseek.cc

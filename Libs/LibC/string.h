@@ -43,6 +43,7 @@ usize strspn(const char*, const char*);
 char* strpbrk(const char*, const char*);
 char* strstr(const char*, const char*);
 char* strtok(char*, const char*);
+char* strtok_r(char*, const char*, char**);
 usize strlen(const char*);
 char* strdup(const char*);
 char* strerror(int);

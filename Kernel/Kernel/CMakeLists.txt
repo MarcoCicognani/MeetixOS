@@ -16,6 +16,22 @@ set(ASM_SOURCES
         system/processor.asm)
 set_source_files_properties(${ASM_SOURCES} PROPERTIES LANGUAGE ASM_NASM)
 
+# TODO missing ctype, memcpy, memset, memmove, strlen
+set(LIBTC_SOURCES
+        ../../Libs/LibTC/Collection/String.cc
+        ../../Libs/LibTC/Collection/StringBuilder.cc
+        ../../Libs/LibTC/Collection/StringStorage.cc
+        ../../Libs/LibTC/Collection/StringView.cc
+        ../../Libs/LibTC/Hashing/Integer.cc
+        ../../Libs/LibTC/Hashing/Pointer.cc
+        ../../Libs/LibTC/Memory/Shareable.cc
+        ../../Libs/LibTC/Text/Formatter.cc
+        ../../Libs/LibTC/Text/Lexer.cc)
+
+set(LIBC_SOURCES
+        ../../Libs/LibC/ctype.cc
+        ../../Libs/LibC/string.cc)
+
 add_executable(Kernel
         EvangelionNG.cpp
         filesystem/FsDelegateTasked.cpp
@@ -57,6 +73,7 @@ add_executable(Kernel
         calls/SyscallHandlerSpawning.cpp
         calls/SyscallHandlerTasking.cpp
         calls/SyscallHandlerServer.cpp
+        calls/SyscallHandlerTime.cc
         utils/string.cpp
         logger/logger.cpp
         tasking/tasking.cpp
@@ -89,7 +106,9 @@ add_executable(Kernel
         system/acpi/madt.cpp
         system/timing/RTC.cc
         vm86/Virtual8086Monitor.cpp
-        ${ASM_SOURCES} calls/SyscallHandlerTime.cc)
+        ${ASM_SOURCES}
+        ${LIBTC_SOURCES}
+        ${LIBC_SOURCES})
 
 target_include_directories(Kernel PRIVATE . ../Shared)
 target_link_libraries(Kernel Shared)
