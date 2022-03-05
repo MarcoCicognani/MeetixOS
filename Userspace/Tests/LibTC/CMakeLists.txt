@@ -11,7 +11,7 @@
 #
 
 add_meetix_unit_test(ErrorOr)
-add_meetix_unit_test(LList)
+add_meetix_unit_test(List)
 add_meetix_unit_test(Map)
 add_meetix_unit_test(NonNullBox)
 add_meetix_unit_test(NonNullRef)
