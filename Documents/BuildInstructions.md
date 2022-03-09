@@ -13,7 +13,7 @@ sudo apt install build-essential gcc g++ cmake ninja-build libmpfr-dev libmpc-de
 ### ArchLinux/Manjaro
 
 ```shell
-sudo pacman -S --needed base-devel gcc g++ cmake ninja mpfr libmpc gmp qemu qemu-arch-extra grub2-common xorriso patch wget
+sudo pacman -S --needed base-devel gcc g++ cmake nasm ninja mpfr libmpc gmp qemu qemu-arch-extra grub2-common xorriso patch wget
 ```
 
 ## Build
