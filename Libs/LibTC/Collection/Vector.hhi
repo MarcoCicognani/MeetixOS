@@ -127,6 +127,13 @@ Vector<T>::Vector(AdoptTag, T* data_storage, usize size)
 }
 
 template<typename T>
+Vector<T>::Vector(AdoptTag, T* data_storage, usize size, usize capacity)
+    : m_data_storage{ data_storage }
+    , m_data_capacity{ size }
+    , m_values_count{ capacity } {
+}
+
+template<typename T>
 Vector<T>::Vector(Vector const& rhs)
     : m_values_count{ rhs.m_values_count } {
     if ( !is_empty() ) {

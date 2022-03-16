@@ -97,6 +97,7 @@ public:
     explicit Vector() = default;
     explicit Vector(usize capacity);
     explicit Vector(AdoptTag, T* data_storage, usize size);
+    explicit Vector(AdoptTag, T* data_storage, usize size, usize capacity);
 
     Vector(Vector const& rhs);
     Vector(Vector&& rhs) noexcept;
