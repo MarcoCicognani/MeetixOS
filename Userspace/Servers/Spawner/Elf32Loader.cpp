@@ -148,7 +148,7 @@ LoaderStatus Elf32Loader::loadTlsSegment(Elf32Phdr* phdr) {
         }
     }
 
-    delete tlsContent;
+    delete[] tlsContent;
 
     return result;
 }
