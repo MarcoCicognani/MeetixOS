@@ -84,25 +84,25 @@ typedef struct {
     u16 e_phnum;            /* Number of entries in program header table */
     u16 e_shentsize;        /* Size of one entry in section header table */
     u16 e_shnum;            /* Number of entries in section header table */
-    u16 e_shstrndx;         /* Section header table index of section name string table */
+    u16 e_shstrndx;         /* Section header string table index */
 } A_PACKED Elf32Ehdr;
 
 /**
  * @brief ELF program headers
  */
-#define PT_NULL    0
-#define PT_LOAD    1
-#define PT_DYNAMIC 2
-#define PT_INTERP  3
-#define PT_NOTE    4
-#define PT_SHLIB   5
-#define PT_PHDR    6
-#define PT_TLS     7
+#define PT_NULL    0 /* Unused header */
+#define PT_LOAD    1 /* Loadable segment */
+#define PT_DYNAMIC 2 /* Linking information  */
+#define PT_INTERP  3 /* Path to the interpreter */
+#define PT_NOTE    4 /* Auxiliary information */
+#define PT_SHLIB   5 /* Reserved */
+#define PT_PHDR    6 /* Program header table */
+#define PT_TLS     7 /* Thread local storage */
 #define PT_LOPROC  0x70000000
 #define PT_HIPROC  0x7FFFFFFF
 
 /**
- * @brief ELF Program header protection flags
+ * @brief ELF program header protection flags
  */
 #define PF_X        1
 #define PF_W        2
@@ -114,12 +114,41 @@ typedef struct {
     u32 p_type;   /* Type of the segment */
     u32 p_offset; /* Offset of the segment in the binary file */
     u32 p_vaddr;  /* Virtual address */
-    u32 p_paddr;  /* Not relevant for System V */
+    u32 p_paddr;  /* Physical address */
     u32 p_filesz; /* Size of the segment in the binary file */
     u32 p_memsz;  /* Size of the segment in memory */
     u32 p_flags;  /* Segment flags */
     u32 p_align;  /* Alignment information */
 } A_PACKED Elf32Phdr;
+
+/**
+ * @brief ELF section header
+ */
+#define SHT_NULL     0  /* Inactive header */
+#define SHT_PROGBITS 1  /* Information defined by the program */
+#define SHT_SYMTAB   2  /* Symbol table */
+#define SHT_STRTAB   3  /* String table */
+#define SHT_RELA     4  /* Relocation entries with explicit addend. Not in x86 ABI */
+#define SHT_HASH     5  /* Symbol hash table */
+#define SHT_DYNAMIC  6  /* Information for dynamic linking */
+#define SHT_NOTE     7  /* Notes */
+#define SHT_NOBITS   8  /* Program defined with empty space */
+#define SHT_REL      9  /* Relocation entries with implicit addend */
+#define SHT_SHLIB    10 /* Reserved */
+#define SHT_DYNSYM   11 /* Dynamic symbols */
+
+typedef struct {
+    u32 sh_name;      /* Section name */
+    u32 sh_type;      /* Section type */
+    u32 sh_flags;     /* Section flags */
+    u32 sh_addr;      /* Section virtual address at execution */
+    u32 sh_offset;    /* Section file offset */
+    u32 sh_size;      /* Section size in bytes */
+    u32 sh_link;      /* Link to another section */
+    u32 sh_info;      /* Additional section information */
+    u32 sh_addralign; /* Section alignment */
+    u32 sh_entsize;   /* Entry size if section holds table */
+} A_PACKED Elf32Shdr;
 
 #ifdef __cplusplus
 }
