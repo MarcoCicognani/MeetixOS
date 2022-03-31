@@ -13,7 +13,7 @@ port_build() {
     CC=i686-pc-meetix-gcc                                      \
     AR=i686-pc-meetix-ar                                       \
     CFLAGS="$MEETIX_EXTRA_INCLUDE_PATHS $MEETIX_EXTRA_OPTIONS" \
-        ../$UNPACKED_DIR/configure --static --prefix="$TOOLCHAIN_ROOT" || exit 1
+        ../$UNPACKED_DIR/configure --static --prefix="$TOOLCHAIN_ROOT"
 
-    make -j$BUILD_JOBS TEST_LDFLAGS="$TEST_LDFLAGS" install || exit 1
+    make -j$BUILD_JOBS TEST_LDFLAGS="$TEST_LDFLAGS" install
 }

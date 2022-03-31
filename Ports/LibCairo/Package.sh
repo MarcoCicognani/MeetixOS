@@ -15,7 +15,7 @@ port_build() {
         ../$UNPACKED_DIR/configure --disable-shared                                                               \
                                    --host=i686-pc-meetix                                                          \
                                    --prefix="$TOOLCHAIN_ROOT"                                                     \
-                                   --enable-xlib=no || exit 1
+                                   --enable-xlib=no
 
-    make -j$BUILD_JOBS install || exit 1
+    make -j$BUILD_JOBS install
 }

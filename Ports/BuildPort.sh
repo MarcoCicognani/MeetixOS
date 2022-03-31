@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Colors
 RED=$(tput setaf 1)
 RESET=$(tput sgr0)
@@ -33,10 +35,12 @@ EXTRA_OPTIONS=(
 EXTRA_LINK_DIRS=(
     "$SOURCE_DIR/Build/Release/Libs/LibC"
     "$SOURCE_DIR/Build/Release/Libs/LibMath"
+    "$SOURCE_DIR/Build/Release/Libs/LibTC"
 )
 EXTRA_LIBS=(
     LibC
     LibMath
+    LibTC
     stdc++
 )
 
@@ -86,10 +90,10 @@ if [ -z "$UNPACKED_DIR" ]; then
 fi
 
 # Download then run the port_unpack function
-pushd "$BUILD_DIR" || exit 1
-    wget -c "$REMOTE_ARCHIVE" || exit 1
+pushd "$BUILD_DIR"
+    wget -c "$REMOTE_ARCHIVE"
     port_unpack
-popd || exit 1
+popd
 
 # Check for unpacked directory
 if [ ! -d "$BUILD_DIR/$UNPACKED_DIR" ]; then
@@ -98,17 +102,17 @@ fi
 
 # Patch it if necessary
 if [ -f "$PACKAGE/Patch.diff" ]; then
-    pushd "$BUILD_DIR/$UNPACKED_DIR" || exit 1
-        patch -p1 <"../../../../Ports/$PACKAGE/Patch.diff" || exit 1
-    popd || exit 1
+    pushd "$BUILD_DIR/$UNPACKED_DIR"
+        patch -p1 <"../../../../Ports/$PACKAGE/Patch.diff"
+    popd
 fi
 
 # Build now the port package
 if [ "$BUILD_IN_SOURCE_DIR" -eq 1 ]; then
-    pushd "$BUILD_DIR/$UNPACKED_DIR" || exit 1
+    pushd "$BUILD_DIR/$UNPACKED_DIR"
 else
-    mkdir -p "$BUILD_DIR/Build" || exit 1
-    pushd "$BUILD_DIR/Build" || exit 1
+    mkdir -p "$BUILD_DIR/Build"
+    pushd "$BUILD_DIR/Build"
 fi
 
 # build the arguments
@@ -134,10 +138,10 @@ done
 
 # Build the port and install it
 export PATH="$PATH:$TOOLCHAIN_ROOT/bin"
-port_build || exit 1
+port_build
 
 # Cleanup
-popd || exit 1
-rm -rf "$BUILD_DIR" || exit 1
+popd
+rm -rf "$BUILD_DIR"
 
 exit 0

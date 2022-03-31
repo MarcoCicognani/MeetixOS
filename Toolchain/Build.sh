@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e # abort the execution of the script if any of the sub-commands return non-zero
+
 # ----------------------------------------------- Variables Definitions ---------------------------------------------- #
 
 # Colors
@@ -99,40 +101,40 @@ require_tool xorriso
 # -------------------------------------- Script Code: Dirs & Tarballs Downloads -------------------------------------- #
 
 echo "Building toolchain into ${GREEN}$(realpath $BUILD_DIR)${RESET}"
-mkdir -p $BUILD_DIR $TARBALLS_DIR || exit 1
+mkdir -p $BUILD_DIR $TARBALLS_DIR
 
 dir_push $TARBALLS_DIR
-    build_step "Download/$BINUTILS_UNPACKED" wget -N $BINUTILS_REMOTE || exit 1
-    build_step "Download/$GCC_UNPACKED"      wget -N $GCC_REMOTE      || exit 1
+    build_step "Download/$BINUTILS_UNPACKED" wget -N $BINUTILS_REMOTE
+    build_step "Download/$GCC_UNPACKED"      wget -N $GCC_REMOTE
 dir_pop
 
 # Print some information and create devel directory
 echo "Toolchain will be installed into: ${GREEN}$TOOLCHAIN_PREFIX${RESET}"
-mkdir -p "$TOOLCHAIN_PREFIX/bin" || exit 1
+mkdir -p "$TOOLCHAIN_PREFIX/bin"
 
 # ------------------------------------------- Script Code: Tarballs Unpack ------------------------------------------- #
 
-build_step "Unpack/$GCC_UNPACKED"      tar -xf $TARBALLS_DIR/$GCC_UNPACKED.tar.gz -C $BUILD_DIR      || exit 1
-build_step "Unpack/$BINUTILS_UNPACKED" tar -xf $TARBALLS_DIR/$BINUTILS_UNPACKED.tar.gz -C $BUILD_DIR || exit 1
+build_step "Unpack/$GCC_UNPACKED"      tar -xf $TARBALLS_DIR/$GCC_UNPACKED.tar.gz -C $BUILD_DIR
+build_step "Unpack/$BINUTILS_UNPACKED" tar -xf $TARBALLS_DIR/$BINUTILS_UNPACKED.tar.gz -C $BUILD_DIR
 
 # ----------------------------------------- Script Code: Toolchains Patching ----------------------------------------- #
 
-build_step "Patch/$BINUTILS_UNPACKED" patch -d $BUILD_DIR/$BINUTILS_UNPACKED -p 1 <$BINUTILS_PATCH || exit 1
-build_step "Patch/$GCC_UNPACKED"      patch -d $BUILD_DIR/$GCC_UNPACKED -p 1 <$GCC_PATCH           || exit 1
+build_step "Patch/$BINUTILS_UNPACKED" patch -d $BUILD_DIR/$BINUTILS_UNPACKED -p 1 <$BINUTILS_PATCH
+build_step "Patch/$GCC_UNPACKED"      patch -d $BUILD_DIR/$GCC_UNPACKED -p 1 <$GCC_PATCH
 
 # ----------------------------------------- Script Code: Build Internal Tools ---------------------------------------- #
 
 dir_push ../Meta/Tools/PackageConfig
-    build_step "Tool/PackageConfig" bash Build.sh || exit 1
+    build_step "Tool/PackageConfig" bash Build.sh
 dir_pop
 
 echo "Building ${GREEN}RamdiskWriter tool${RESET}"
 dir_push ..
-    mkdir -p Build/Release/Meta/Tools/RamdiskWriter || exit 1
+    mkdir -p Build/Release/Meta/Tools/RamdiskWriter
     dir_push Build/Release/Meta/Tools/RamdiskWriter
         build_step "Tool/RamdiskWriter" \
-            cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../../../../../Meta/Tools/RamdiskWriter || exit 1
-        build_step "Tool/RamdiskWriter" ninja install || exit 1
+            cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../../../../../Meta/Tools/RamdiskWriter
+        build_step "Tool/RamdiskWriter" ninja install
     dir_pop
 dir_pop
 
@@ -149,9 +151,9 @@ dir_push $BUILD_BINUTILS
                                         --prefix="$TOOLCHAIN_PREFIX" \
                                         --disable-nls                \
                                         --disable-werror             \
-                                        --with-sysroot="$TOOLCHAIN_PREFIX" || exit 1
-    build_step "Binutils/Build"   make $MAKE_JOBS all     || exit 1
-    build_step "Binutils/Install" make $MAKE_JOBS install || exit 1
+                                        --with-sysroot="$TOOLCHAIN_PREFIX"
+    build_step "Binutils/Build"   make $MAKE_JOBS all
+    build_step "Binutils/Install" make $MAKE_JOBS install
 dir_pop
 
 # ----------------------------------------- Script Code: OS Headers Install ------------------------------------------ #
@@ -159,13 +161,13 @@ dir_pop
 LIB_HEADERS=$(find "$REPO_ROOT/Libs/LibApi" "$REPO_ROOT/Libs/LibC" "$REPO_ROOT/Libs/LibMath" -name '*.h')
 for header in $LIB_HEADERS; do
     target=$(echo "$header" | sed -e "s@$REPO_ROOT/Libs/LibApi/@@" -e "s@$REPO_ROOT/Libs/LibC/@@" -e "s@$REPO_ROOT/Libs/LibMath/@@")
-    build_step "OS/Headers Install" install -D "$header" "$TOOLCHAIN_PREFIX/include/$target" || exit 1
+    build_step "OS/Headers Install" install -D "$header" "$TOOLCHAIN_PREFIX/include/$target"
 done
 
 # ---------------------------------------------- Script Code: GCC Build ---------------------------------------------- #
 
 BUILD_GCC=$BUILD_DIR/Gcc
-mkdir -p $BUILD_GCC || exit 1
+mkdir -p $BUILD_GCC
 dir_push $BUILD_GCC
     build_step "GCC/Configure"                                  \
         ../$GCC_UNPACKED/configure --target=$TARGET             \
@@ -174,15 +176,15 @@ dir_push $BUILD_GCC
                                    --with-newlib                \
                                    --disable-nls                \
                                    --enable-lto                 \
-                                   --with-sysroot="$TOOLCHAIN_PREFIX" || exit 1
-    build_step "GCC/Build"   make $MAKE_JOBS all-gcc     || exit 1
-    build_step "GCC/Install" make $MAKE_JOBS install-gcc || exit 1
+                                   --with-sysroot="$TOOLCHAIN_PREFIX"
+    build_step "GCC/Build"   make $MAKE_JOBS all-gcc
+    build_step "GCC/Install" make $MAKE_JOBS install-gcc
 
-    build_step "GCC/LibGCC Build"   make $MAKE_JOBS all-target-libgcc     || exit 1
-    build_step "GCC/LibGCC Install" make $MAKE_JOBS install-target-libgcc || exit 1
+    build_step "GCC/LibGCC Build"   make $MAKE_JOBS all-target-libgcc
+    build_step "GCC/LibGCC Install" make $MAKE_JOBS install-target-libgcc
 
-    build_step "LibStdC++/Build"   make $MAKE_JOBS all-target-libstdc++-v3     || exit 1
-    build_step "LibStdC++/Install" make $MAKE_JOBS install-target-libstdc++-v3 || exit 1
+    build_step "LibStdC++/Build"   make $MAKE_JOBS all-target-libstdc++-v3
+    build_step "LibStdC++/Install" make $MAKE_JOBS install-target-libstdc++-v3
 dir_pop
 
 # ---------------------------------------- Scrip Code: Reset Compilation Flags --------------------------------------- #
@@ -193,13 +195,13 @@ export CXXFLAGS=""
 # ------------------------------------------ Script Code: Remove OS Headers ------------------------------------------ #
 
 dir_push "$TOOLCHAIN_PREFIX"
-    build_step "OS/Headers Uninstall" rm -vrf include/* || exit 1
+    build_step "OS/Headers Uninstall" rm -vrf include/*
 dir_pop
 
 # ------------------------------------ Scrip Code: CMake Toolchains Configuration ------------------------------------ #
 
 dir_push ../Meta
-    build_step "CMake/Toolchain" bash BuildCMakeToolchain.sh || exit 1
+    build_step "CMake/Toolchain" bash BuildCMakeToolchain.sh
 dir_pop
 
 # ----------------------------------- Script Code: Internal Fundamental Libs Build ----------------------------------- #
@@ -210,27 +212,28 @@ dir_push ../Build/Release
               -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchain.txt \
               -DCMAKE_BUILD_TYPE=Release                      \
               ../.. || exit 1
-    build_step "Libs/CRTs"    ninja crt0 crti crtn || exit 1
-    build_step "Libs/LibApi"  ninja LibApi         || exit 1
-    build_step "Libs/LibC"    ninja LibC           || exit 1
-    build_step "Libs/LibMath" ninja LibMath        || exit 1
+    build_step "Libs/CRTs"    ninja crt0 crti crtn
+    build_step "Libs/LibApi"  ninja LibApi
+    build_step "Libs/LibC"    ninja LibC
+    build_step "Libs/LibMath" ninja LibMath
+    build_step "Libs/LibTC"   ninja LibTC
 dir_pop
 
 # ---------------------------------------- Script Code: Third Party Libs Build --------------------------------------- #
 
 dir_push ../Ports
-    build_step "Ports/LibZ"        bash BuildPort.sh LibZ        || exit 1
-    build_step "Ports/LibPNG"      bash BuildPort.sh LibPNG      || exit 1
-    build_step "Ports/LibPixMan"   bash BuildPort.sh LibPixMan   || exit 1
-    build_step "Ports/LibFreeType" bash BuildPort.sh LibFreeType || exit 1
-    build_step "Ports/LibCairo"    bash BuildPort.sh LibCairo    || exit 1
+    build_step "Ports/LibZ"        bash BuildPort.sh LibZ
+    build_step "Ports/LibPNG"      bash BuildPort.sh LibPNG
+    build_step "Ports/LibPixMan"   bash BuildPort.sh LibPixMan
+    build_step "Ports/LibFreeType" bash BuildPort.sh LibFreeType
+    build_step "Ports/LibCairo"    bash BuildPort.sh LibCairo
 dir_pop
 
 # -------------------------------------------- Script Code: Last Cleaning -------------------------------------------- #
 
 if [[ $SKIP_LAST_CLEAN -ne 1 ]]; then
     echo "Last Cleaning"
-    rm -rf $BUILD_DIR || exit 1
+    rm -rf $BUILD_DIR
 else
     echo "Skipping Last Cleaning"
 fi

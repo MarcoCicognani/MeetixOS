@@ -12,8 +12,8 @@ port_build() {
     CFLAGS="$MEETIX_EXTRA_OPTIONS"         \
     LDFLAGS="$MEETIX_EXTRA_LINK_DIRS"      \
     LIBS="$MEETIX_EXTRA_LIBS"              \
-        ../$UNPACKED_DIR/configure --host=i686-pc-meetix --prefix="$TOOLCHAIN_ROOT" --with-harfbuzz=no || exit 1
+        ../$UNPACKED_DIR/configure --host=i686-pc-meetix --prefix="$TOOLCHAIN_ROOT" --with-harfbuzz=no
 
-    make -j$BUILD_JOBS         || exit 1 # make all is necessary or install fails...mmh
-    make -j$BUILD_JOBS install || exit 1
+    make -j$BUILD_JOBS # make all is necessary or install fails...mmh
+    make -j$BUILD_JOBS install
 }
