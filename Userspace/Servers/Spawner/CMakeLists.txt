@@ -10,7 +10,9 @@
 # GNU General Public License version 3
 #
 
-add_executable(Spawner.sv Elf32Loader.cpp power.cpp spawner.cpp)
-target_include_directories(Spawner.sv PRIVATE .)
-target_link_libraries(Spawner.sv LibApi LibC LibIO LibUtils LibTasking)
-install(TARGETS Spawner.sv DESTINATION MeetiX/Kernel/Servers)
+set(SOURCES
+        spawner.cpp
+        power.cpp
+        Elf32Loader.cpp)
+add_meetix_server(Spawner)
+target_link_libraries(Spawner.sv LibTasking)
