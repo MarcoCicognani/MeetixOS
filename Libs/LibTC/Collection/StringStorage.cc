@@ -24,7 +24,7 @@ NonNullRef<StringStorage> StringStorage::from(StringView string_view) {
 
 ErrorOr<NonNullRef<StringStorage>> StringStorage::try_from(StringView string_view) {
     if ( string_view.is_null() )
-        return EINVAL;
+        return Error{ EINVAL };
 
     auto string_storage_size = alloc_size(string_view.len());
     auto string_storage_slot = TRY(Memory::Raw::clean_alloc_object<StringStorage>(string_storage_size));

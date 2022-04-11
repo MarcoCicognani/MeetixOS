@@ -102,6 +102,7 @@ enum OSError {
     ETXTBSY,         /* text file busy */
     EWOULDBLOCK,     /* operation would block (maybe the same value as [EAGAIN]) */
     EXDEV,           /* cross-device link */
+    ECUSTOM          /* custom error, used only by LibTC/Error when only string is provided */
 };
 
 #define ENOERR          ENOERR
@@ -182,6 +183,7 @@ enum OSError {
 #define ETXTBSY         ETXTBSY
 #define EWOULDBLOCK     EWOULDBLOCK
 #define EXDEV           EXDEV
+#define ECUSTOM         ECUSTOM
 
 #ifdef __cplusplus
 }

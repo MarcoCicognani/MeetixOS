@@ -21,8 +21,12 @@ inline constexpr bool IsSame = false;
 template<typename T>
 inline constexpr bool IsSame<T, T> = true;
 
+template<typename T, typename U>
+concept SameAs = IsSame<T, U>;
+
 } /* namespace Trait */
 
 using Trait::IsSame;
+using Trait::SameAs;
 
 } /* namespace TC */

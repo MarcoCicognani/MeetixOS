@@ -152,7 +152,7 @@ inline ErrorOr<NonNullRef<T>> try_make_ref(Args&&... args) {
     if ( ref_ptr != nullptr )
         return NonNullRef<T>{ NonNullRef<T>::Adopt, *ref_ptr };
     else
-        return ENOMEM;
+        return Error{ ENOMEM };
 }
 
 } /* namespace Memory */

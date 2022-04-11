@@ -13,8 +13,8 @@
 #pragma once
 
 /**
- * @brief Works like Rust's try!() macro: If <expression> produces an error Result returns the error to the caller
- * function, otherwise unwraps the value to the current function
+ * @brief Works like Rust's try!() macro: If <expression> produces an error Specifications returns the error to the
+ * caller function, otherwise unwraps the value to the current function
  */
 #define TRY(expression)                                                                                                \
     ({                                                                                                                 \

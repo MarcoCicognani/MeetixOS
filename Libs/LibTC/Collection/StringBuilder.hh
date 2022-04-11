@@ -62,7 +62,7 @@ public:
     [[nodiscard]] usize len() const;
     [[nodiscard]] bool  is_empty() const;
 
-    [[nodiscard]] StringView as_view() const;
+    [[nodiscard]] StringView as_string_view() const;
 
 private:
     Vector<char> m_char_vector{};

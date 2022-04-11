@@ -18,8 +18,12 @@ namespace Trait {
 template<typename T>
 inline constexpr bool IsClass = __is_class(T);
 
+template<typename T>
+concept Class = IsClass<T>;
+
 } /* namespace Trait */
 
+using Trait::Class;
 using Trait::IsClass;
 
 } /* namespace TC */

@@ -25,8 +25,12 @@ set(LIBTC_SOURCES
         ../../Libs/LibTC/Hashing/Integer.cc
         ../../Libs/LibTC/Hashing/Pointer.cc
         ../../Libs/LibTC/Memory/Shareable.cc
+        ../../Libs/LibTC/Text/FormatParser.cc
         ../../Libs/LibTC/Text/Formatter.cc
-        ../../Libs/LibTC/Text/Lexer.cc)
+        ../../Libs/LibTC/Text/Lexer.cc
+        ../../Libs/LibTC/Text/FormatLexer.cc
+        ../../Libs/LibTC/SourceLocation.cc
+        ../../Libs/LibTC/Error.cc)
 
 set(LIBC_SOURCES
         ../../Libs/LibC/ctype.cc
@@ -111,7 +115,7 @@ add_executable(Kernel
         ${LIBC_SOURCES})
 
 target_include_directories(Kernel PRIVATE . ../Shared)
-target_link_libraries(Kernel Shared)
+target_link_libraries(Kernel Shared gcc)
 target_link_options(Kernel PRIVATE LINKER:-T ${CMAKE_CURRENT_SOURCE_DIR}/LinkScript.ld -nostdlib -nostartfiles)
 
 install(TARGETS Kernel DESTINATION ../ISO/boot)

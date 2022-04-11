@@ -27,7 +27,7 @@
 #    define VERIFY_NULL(expression)             ((void)0)
 #    define VERIFY_NOT_REACHED()                ((void)0)
 #else
-#    include <assert.h>
+#    include <LibC/assert.h>
 
 #    define VERIFY(expression)                  assert(expression)
 #    define VERIFY_EQUAL(first, second)         assert(first == second)

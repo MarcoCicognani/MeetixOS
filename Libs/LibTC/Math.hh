@@ -49,8 +49,18 @@ constexpr T min(T const& a, T const& b) {
     return b < a ? b : a;
 }
 
+template<typename T, typename U>
+constexpr T ceil_div(T a, U b) {
+    static_assert(sizeof(T) == sizeof(U));
+    T result = a / b;
+    if ( (a % b) != 0 )
+        ++result;
+    return result;
+}
+
 } /* namespace Math */
 
+using Math::ceil_div;
 using Math::clamp;
 using Math::count_leading_zeroes;
 using Math::max;

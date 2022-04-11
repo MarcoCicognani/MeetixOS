@@ -48,7 +48,7 @@ String StringBuilder::to_string() const {
 }
 
 ErrorOr<String> StringBuilder::try_to_string() const {
-    return String::try_from(as_view());
+    return String::try_from(as_string_view());
 }
 
 usize StringBuilder::len() const {
@@ -59,7 +59,7 @@ bool StringBuilder::is_empty() const {
     return len() == 0;
 }
 
-StringView StringBuilder::as_view() const {
+StringView StringBuilder::as_string_view() const {
     return StringView{ m_char_vector.data(), len() };
 }
 

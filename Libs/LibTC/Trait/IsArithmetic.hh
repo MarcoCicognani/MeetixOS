@@ -12,18 +12,21 @@
 
 #pragma once
 
+#include <LibTC/Trait/IsFloatingPoint.hh>
+#include <LibTC/Trait/IsIntegral.hh>
+
 namespace TC {
 namespace Trait {
 
 template<typename T>
-inline constexpr bool IsUnion = __is_union(T);
+inline constexpr bool IsArithmetic = IsIntegral<T> || IsFloatingPoint<T>;
 
 template<typename T>
-concept Union = IsUnion<T>;
+concept Arithmetic = IsArithmetic<T>;
 
 } /* namespace Trait */
 
-using Trait::IsUnion;
-using Trait::Union;
+using Trait::Arithmetic;
+using Trait::IsArithmetic;
 
 } /* namespace TC */

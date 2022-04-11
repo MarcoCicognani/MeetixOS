@@ -77,10 +77,10 @@ public:
     [[nodiscard]] bool equals_ignore_case(StringView rhs) const;
 
     /**
-     * @brief Returns a sub_string of this string view
+     * @brief Returns a sub_string_view of this string view
      */
-    [[nodiscard]] StringView sub_string(usize start) const;
-    [[nodiscard]] StringView sub_string(usize start, usize count) const;
+    [[nodiscard]] StringView sub_string_view(usize start) const;
+    [[nodiscard]] StringView sub_string_view(usize start, usize count) const;
 
     /**
      * @brief Returns a sub-StringView of this trimmed out of chars

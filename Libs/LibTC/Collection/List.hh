@@ -133,8 +133,6 @@ struct ListNode {
 
 template<typename T>
 class List {
-    TC_DENY_COPY(List);
-
 public:
     using Iterator      = Details::ListIterator<List, T>;
     using ConstIterator = Details::ListIterator<List const, T const>;
@@ -145,6 +143,10 @@ public:
      * @brief Constructors
      */
     List() = default;
+    List(List const& rhs) {
+        for ( auto const& element : rhs )
+            append(element);
+    }
     List(List&& rhs) noexcept
         : m_head_node{ exchange(rhs.m_head_node, nullptr) }
         , m_tail_node{ exchange(rhs.m_tail_node, nullptr) }
@@ -159,6 +161,14 @@ public:
         clear();
     }
 
+    List& operator=(List const& rhs) noexcept {
+        if ( this == &rhs )
+            return *this;
+
+        List list{ rhs };
+        swap(list);
+        return *this;
+    }
     List& operator=(List&& rhs) noexcept {
         List list{ move(rhs) };
         swap(list);
@@ -209,7 +219,7 @@ public:
     ErrorOr<void> try_append(T&& value) {
         auto new_node = new (nothrow) Node{ move(value) };
         if ( new_node == nullptr )
-            return ENOMEM;
+            return Error{ ENOMEM };
 
         if ( m_tail_node == nullptr )
             m_head_node = new_node;
@@ -239,7 +249,7 @@ public:
     ErrorOr<void> try_prepend(T&& value) {
         auto new_node = new (nothrow) Node{ move(value) };
         if ( new_node == nullptr )
-            return ENOMEM;
+            return Error{ ENOMEM };
 
         if ( m_head_node == nullptr )
             m_tail_node = new_node;

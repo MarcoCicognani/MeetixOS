@@ -17,4 +17,10 @@ add_library(LibTC STATIC
         Collection/StringView.cc
         Hashing/Integer.cc
         Hashing/Pointer.cc
-        Memory/Shareable.cc)
+        Memory/Shareable.cc
+        Text/Lexer.cc
+        Text/FormatLexer.cc
+        Text/FormatParser.cc
+        Text/Format.cc
+        SourceLocation.cc
+        Error.cc Text/Formatter.cc)

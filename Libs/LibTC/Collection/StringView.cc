@@ -10,7 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <LibC/ctype.h>
+#include <LibC/string.h>
 #include <LibTC/Assertions.hh>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringView.hh>
@@ -18,7 +19,6 @@
 #include <LibTC/Functional/Must.hh>
 #include <LibTC/Functional/Try.hh>
 #include <LibTC/Trait/NumericLimits.hh>
-#include <string.h>
 
 namespace TC::Collection {
 
@@ -116,11 +116,11 @@ bool StringView::equals_ignore_case(StringView rhs) const {
     return true;
 }
 
-StringView StringView::sub_string(usize start) const {
-    return sub_string(start, len() - start);
+StringView StringView::sub_string_view(usize start) const {
+    return sub_string_view(start, len() - start);
 }
 
-StringView StringView::sub_string(usize start, usize count) const {
+StringView StringView::sub_string_view(usize start, usize count) const {
     VERIFY_LESS_EQUAL(start + count, len());
     return StringView{ as_cstr() + start, count };
 }
@@ -152,7 +152,7 @@ StringView StringView::trim(StringView chars, TrimMode trim_mode) const {
         }
     }
 
-    return sub_string(sub_start, sub_len);
+    return sub_string_view(sub_start, sub_len);
 }
 
 StringView StringView::trim_whitespaces(TrimMode trim_mode) const {
@@ -295,7 +295,7 @@ Option<T> StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const {
         if ( string_view.len() <= 2 )
             return {};
 
-        string_view = string_view.sub_string(2);
+        string_view = string_view.sub_string_view(2);
     }
 
     /* convert the string into the integer */

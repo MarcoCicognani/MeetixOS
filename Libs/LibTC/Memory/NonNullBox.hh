@@ -125,12 +125,12 @@ inline NonNullBox<T> make_box(Args&&... args) {
 }
 
 template<typename T, typename... Args>
-inline Functional::ErrorOr<NonNullBox<T>> try_make_box(Args&&... args) {
+inline ErrorOr<NonNullBox<T>> try_make_box(Args&&... args) {
     auto ptr = new (nothrow) T{ forward<Args>(args)... };
     if ( ptr != nullptr )
         return NonNullBox<T>{ NonNullBox<T>::Adopt, *ptr };
     else
-        return ENOMEM;
+        return Error{ ENOMEM };
 }
 
 } /* namespace Memory */

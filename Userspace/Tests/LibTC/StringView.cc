@@ -139,11 +139,11 @@ TEST_CASE(equals_ignore_case) {
 TEST_CASE(sub_string) {
     StringView string_view{ "SplittableStringView" };
 
-    VERIFY_EQUAL(string_view.sub_string(10), "StringView"sv);
-    VERIFY_EQUAL(string_view.sub_string(3), "ittableStringView"sv);
+    VERIFY_EQUAL(string_view.sub_string_view(10), "StringView"sv);
+    VERIFY_EQUAL(string_view.sub_string_view(3), "ittableStringView"sv);
 
-    VERIFY_EQUAL(string_view.sub_string(5, 3), "tab"sv);
-    VERIFY_EQUAL(string_view.sub_string(10, 6), "String"sv);
+    VERIFY_EQUAL(string_view.sub_string_view(5, 3), "tab"sv);
+    VERIFY_EQUAL(string_view.sub_string_view(10, 6), "String"sv);
 }
 
 TEST_CASE(trim) {

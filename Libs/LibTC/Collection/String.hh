@@ -68,7 +68,7 @@ public:
     [[nodiscard]] bool equals_ignore_case(StringView rhs) const;
 
     /**
-     * @brief Returns a sub_string of this string
+     * @brief Returns a sub_string_view of this string
      */
     [[nodiscard]] String sub_string(usize start) const;
     [[nodiscard]] String sub_string(usize start, usize count) const;

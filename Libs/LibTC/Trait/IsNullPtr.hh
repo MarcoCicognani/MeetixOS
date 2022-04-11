@@ -12,18 +12,18 @@
 
 #pragma once
 
+#include <LibTC/Cxx.hh>
+#include <LibTC/Trait/IsSame.hh>
+#include <LibTC/Trait/RemoveConstVolatile.hh>
+
 namespace TC {
 namespace Trait {
 
 template<typename T>
-inline constexpr bool IsUnion = __is_union(T);
-
-template<typename T>
-concept Union = IsUnion<T>;
+inline constexpr bool IsNullPtr = IsSame<nullptr_t, RemoveConstVolatile<T>>;
 
 } /* namespace Trait */
 
-using Trait::IsUnion;
-using Trait::Union;
+using Trait::IsNullPtr;
 
 } /* namespace TC */

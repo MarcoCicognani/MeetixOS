@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <LibC/ctype.h>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringBuilder.hh>
 #include <LibTC/Collection/StringView.hh>
@@ -114,11 +114,11 @@ ErrorOr<String> String::try_sub_string(usize start, usize count) const {
 }
 
 StringView String::sub_string_view(usize start) const {
-    return as_view().sub_string(start);
+    return as_view().sub_string_view(start);
 }
 
 StringView String::sub_string_view(usize start, usize count) const {
-    return as_view().sub_string(start, count);
+    return as_view().sub_string_view(start, count);
 }
 
 String String::trim(StringView chars, TrimMode trim_mode) const {

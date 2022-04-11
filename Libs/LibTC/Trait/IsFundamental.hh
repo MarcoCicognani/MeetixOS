@@ -12,18 +12,22 @@
 
 #pragma once
 
+#include <LibTC/Trait/IsArithmetic.hh>
+#include <LibTC/Trait/IsNullPtr.hh>
+#include <LibTC/Trait/IsVoid.hh>
+
 namespace TC {
 namespace Trait {
 
 template<typename T>
-inline constexpr bool IsUnion = __is_union(T);
+inline constexpr bool IsFundamental = IsArithmetic<T> || IsVoid<T> || IsNullPtr<T>;
 
 template<typename T>
-concept Union = IsUnion<T>;
+concept Fundamental = IsFundamental<T>;
 
 } /* namespace Trait */
 
-using Trait::IsUnion;
-using Trait::Union;
+using Trait::Fundamental;
+using Trait::IsFundamental;
 
 } /* namespace TC */

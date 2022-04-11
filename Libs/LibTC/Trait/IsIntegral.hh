@@ -54,8 +54,12 @@ inline constexpr bool IsIntegral<unsigned long long> = true;
 template<typename T>
 inline constexpr bool IsIntegral = Details::IsIntegral<MakeUnsigned<RemoveConstVolatile<T>>>;
 
+template<typename T>
+concept Integral = IsIntegral<T>;
+
 } /* namespace Trait */
 
+using Trait::Integral;
 using Trait::IsIntegral;
 
 } /* namespace TC */

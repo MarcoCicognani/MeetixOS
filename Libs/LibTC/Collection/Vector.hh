@@ -236,7 +236,7 @@ public:
     }
     ErrorOr<void> try_insert_at(usize index, T&& value) {
         if ( index > m_values_count )
-            return EINVAL;
+            return Error{ EINVAL };
 
         TRY(try_ensure_capacity(m_values_count + 1));
 
@@ -416,7 +416,7 @@ public:
      */
     ErrorOr<void> erase_at(usize index) {
         if ( index >= m_values_count )
-            return EINVAL;
+            return Error{ EINVAL };
 
         /* shift all the values one position back */
         if constexpr ( Trait::TypeIntrinsics<T>::is_trivial() )
@@ -438,7 +438,7 @@ public:
                 return {};
             }
         }
-        return ENOENT;
+        return Error{ ENOENT };
     }
     ErrorOr<usize> erase_all_of(T const& value) {
         return erase_all_matches([&value](T const& current) { return current == value; });

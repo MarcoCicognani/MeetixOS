@@ -116,9 +116,12 @@ TEST_CASE(append) {
     public:
         Object() = default;
         explicit Object(usize value)
-            : m_value{ value } {}
+            : m_value{ value } {
+        }
 
-        [[nodiscard]] usize value() const { return m_value; }
+        [[nodiscard]] usize value() const {
+            return m_value;
+        }
 
     private:
         usize m_value{ 0 };
@@ -241,11 +244,16 @@ TEST_CASE(erase_first_of) {
     public:
         Object() = default;
         explicit Object(usize value)
-            : m_value{ value } {}
+            : m_value{ value } {
+        }
 
-        [[nodiscard]] usize value() const { return m_value; }
+        [[nodiscard]] usize value() const {
+            return m_value;
+        }
 
-        bool operator==(Object const& rhs) const { return m_value == rhs.m_value; }
+        bool operator==(Object const& rhs) const {
+            return m_value == rhs.m_value;
+        }
 
     private:
         usize m_value{ 0 };
@@ -275,7 +283,7 @@ TEST_CASE(erase_all_of) {
 
     auto error_or_count_100 = vector.erase_all_of(100);
     VERIFY(error_or_count_100.is_error());
-    VERIFY_EQUAL(error_or_count_100.error(), ENOENT);
+    VERIFY_EQUAL(error_or_count_100.error().os_error(), ENOENT);
 }
 
 TEST_CASE(erase_all_matches) {
@@ -283,9 +291,12 @@ TEST_CASE(erase_all_matches) {
     public:
         Object() = default;
         explicit Object(usize value)
-            : m_value{ value } {}
+            : m_value{ value } {
+        }
 
-        [[nodiscard]] usize value() const { return m_value; }
+        [[nodiscard]] usize value() const {
+            return m_value;
+        }
 
         bool operator==(Object const&) const = default;
 
@@ -384,10 +395,15 @@ TEST_CASE(find_if) {
         Object() = default;
         Object(usize first, char second)
             : m_first{ first }
-            , m_second{ second } {}
+            , m_second{ second } {
+        }
 
-        [[nodiscard]] usize first() const { return m_first; }
-        [[nodiscard]] char  second() const { return m_second; }
+        [[nodiscard]] usize first() const {
+            return m_first;
+        }
+        [[nodiscard]] char second() const {
+            return m_second;
+        }
 
     private:
         usize m_first{ 0 };
@@ -440,9 +456,12 @@ BENCHMARK_CASE(one_hundred_thousand_append_with_reallocations) {
     public:
         Object() = default;
         explicit Object(u64 value)
-            : m_value{ value } {}
+            : m_value{ value } {
+        }
 
-        [[nodiscard]] u64 value() const { return m_value; }
+        [[nodiscard]] u64 value() const {
+            return m_value;
+        }
 
         bool operator==(Object const&) const = default;
 
@@ -464,9 +483,12 @@ BENCHMARK_CASE(one_hundred_thousand_append_without_reallocations) {
     public:
         Object() = default;
         explicit Object(u64 value)
-            : m_value{ value } {}
+            : m_value{ value } {
+        }
 
-        [[nodiscard]] u64 value() const { return m_value; }
+        [[nodiscard]] u64 value() const {
+            return m_value;
+        }
 
         bool operator==(Object const&) const = default;
 
@@ -488,9 +510,12 @@ BENCHMARK_CASE(one_hundred_thousand_append_unchecked_without_reallocations) {
     public:
         Object() = default;
         explicit Object(u64 value)
-            : m_value{ value } {}
+            : m_value{ value } {
+        }
 
-        [[nodiscard]] u64 value() const { return m_value; }
+        [[nodiscard]] u64 value() const {
+            return m_value;
+        }
 
         bool operator==(Object const&) const = default;
 

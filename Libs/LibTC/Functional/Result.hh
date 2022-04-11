@@ -308,6 +308,6 @@ private:
 
 } /* namespace Functional */
 
-using Functional::Option;
+using Functional::Result;
 
 } /* namespace TC */

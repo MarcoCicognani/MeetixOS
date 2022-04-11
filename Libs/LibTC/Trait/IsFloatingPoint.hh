@@ -35,8 +35,12 @@ inline constexpr bool IsFloatingPoint<long double> = true;
 template<typename T>
 inline constexpr bool IsFloatingPoint = Details::IsFloatingPoint<RemoveConstVolatile<T>>;
 
+template<typename T>
+concept FloatingPoint = IsFloatingPoint<T>;
+
 } /* namespace Trait */
 
+using Trait::FloatingPoint;
 using Trait::IsFloatingPoint;
 
 } /* namespace TC */

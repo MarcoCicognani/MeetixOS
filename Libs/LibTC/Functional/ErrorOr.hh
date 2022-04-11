@@ -12,14 +12,14 @@
 
 #pragma once
 
-#include <errno.h>
+#include <LibTC/Error.hh>
 #include <LibTC/Functional/Result.hh>
 
 namespace TC {
 namespace Functional {
 
 template<typename T>
-using ErrorOr = Result<T, OSError>;
+using ErrorOr = Result<T, Error>;
 
 } /* namespace Functional */
 

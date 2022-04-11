@@ -21,7 +21,7 @@ TEST_CASE(value_and_error) {
         if ( value == 100 )
             return 110;
         else
-            return EINVAL;
+            return Error{ EINVAL };
     };
 
     auto must_be_value_result = may_produce_value(100);
@@ -30,7 +30,7 @@ TEST_CASE(value_and_error) {
 
     auto must_be_error_result = may_produce_value(0);
     VERIFY(must_be_error_result.is_error());
-    VERIFY_EQUAL(must_be_error_result.error(), EINVAL);
+    VERIFY_EQUAL(must_be_error_result.error().os_error(), EINVAL);
 }
 
 TEST_CASE(unwrap_value) {
@@ -38,9 +38,12 @@ TEST_CASE(unwrap_value) {
     public:
         Object() = default;
         explicit Object(usize value)
-            : m_value{ value } {}
+            : m_value{ value } {
+        }
 
-        [[nodiscard]] usize value() const { return m_value; }
+        [[nodiscard]] usize value() const {
+            return m_value;
+        }
 
     private:
         usize m_value{ 0 };
@@ -59,14 +62,14 @@ TEST_CASE(unwrap_value) {
 }
 
 TEST_CASE(unwrap_error) {
-    ErrorOr<int> error_or_int{ ENOENT };
+    ErrorOr<int> error_or_int{ Error{ ENOENT, "No Entry Found" } };
     VERIFY(error_or_int.is_error());
 
     auto const& error = error_or_int.error();
-    VERIFY_EQUAL(error, ENOENT);
+    VERIFY_EQUAL(error.os_error(), ENOENT);
 
     auto error_v = error_or_int.unwrap_error();
-    VERIFY_EQUAL(error_v, ENOENT);
+    VERIFY_EQUAL(error_v.os_error(), ENOENT);
     VERIFY_FALSE(error_or_int.is_error());
     VERIFY_FALSE(error_or_int.is_value());
 }
@@ -97,10 +100,10 @@ TEST_CASE(reference_as_value) {
 TEST_CASE(assignment_operator) {
     ErrorOr<int> error_or_int{ 512 };
 
-    error_or_int = ENOENT;
+    error_or_int = Error{ ENOENT };
     VERIFY(error_or_int.is_error());
     VERIFY_FALSE(error_or_int.is_value());
-    VERIFY_EQUAL(error_or_int.error(), ENOENT);
+    VERIFY_EQUAL(error_or_int.error().os_error(), ENOENT);
 
     error_or_int = 4096;
     VERIFY(error_or_int.is_value());
@@ -109,10 +112,10 @@ TEST_CASE(assignment_operator) {
 
     ErrorOr<void> error_or_void{};
 
-    error_or_void = EINVAL;
+    error_or_void = Error{ EINVAL };
     VERIFY(error_or_void.is_error());
     VERIFY_FALSE(error_or_void.is_value());
-    VERIFY_EQUAL(error_or_void.error(), EINVAL);
+    VERIFY_EQUAL(error_or_void.error().os_error(), EINVAL);
 
     ErrorOr<int&> error_or_ref = *new int{ 256 };
 
@@ -121,8 +124,8 @@ TEST_CASE(assignment_operator) {
     auto* value = &error_or_ref.value();
     delete value;
 
-    error_or_ref = ENOENT;
+    error_or_ref = Error{ ENOENT };
     VERIFY(error_or_ref.is_error());
     VERIFY_FALSE(error_or_ref.is_value());
-    VERIFY_EQUAL(error_or_ref.error(), ENOENT);
+    VERIFY_EQUAL(error_or_ref.error().os_error(), ENOENT);
 }

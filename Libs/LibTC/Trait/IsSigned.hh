@@ -12,18 +12,21 @@
 
 #pragma once
 
+#include <LibTC/Trait/IsSame.hh>
+#include <LibTC/Trait/MakeSigned.hh>
+
 namespace TC {
 namespace Trait {
 
 template<typename T>
-inline constexpr bool IsUnion = __is_union(T);
+inline constexpr bool IsSigned = IsSame<T, MakeSigned<T>>;
 
 template<typename T>
-concept Union = IsUnion<T>;
+concept Signed = IsSigned<T>;
 
 } /* namespace Trait */
 
-using Trait::IsUnion;
-using Trait::Union;
+using Trait::IsSigned;
+using Trait::Signed;
 
 } /* namespace TC */
