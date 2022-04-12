@@ -788,4 +788,8 @@ ErrorOr<void> Formatter<char const*>::format(char const* value) {
         return Formatter<StringView>::format(value);
 }
 
+ErrorOr<void> Formatter<StringBuilder>::format(StringBuilder value) {
+    return Formatter<StringView>::format(value.as_string_view());
+}
+
 } /* namespace TC::Text */

@@ -363,13 +363,42 @@ public:
     /**
      * @brief Constructors
      */
-    explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
+    explicit Formatter(BaseFormatter base_formatter)
+        : BaseFormatter{ move(base_formatter) } {
+    }
+    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
+        : BaseFormatter{ string_builder, specifications } {
+    }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(Map<K, T> value);
+    ErrorOr<void> format(Map<K, T> value) {
+        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
+            VERIFY_NOT_REACHED();
+        if ( show_base() != FormatParser::ShowBase::No )
+            VERIFY_NOT_REACHED();
+        if ( zero_pad() != FormatParser::ZeroPad::No )
+            VERIFY_NOT_REACHED();
+        if ( display_as() != FormatParser::DisplayAs::Default )
+            VERIFY_NOT_REACHED();
+        if ( width().is_present() && precision().is_present() )
+            VERIFY_NOT_REACHED();
+
+        TRY(try_put_literal("{ "sv));
+
+        bool is_first = true;
+        for ( auto const& pair : value ) {
+            Formatter<T> element_formatter{ *this };
+            if ( !is_first )
+                TRY(try_put_literal(", "sv));
+            else
+                is_first = false;
+
+            TRY(element_formatter.format(pair));
+        }
+        return try_put_literal(" }"sv);
+    }
 };
 
 template<typename K, typename T>
@@ -378,13 +407,39 @@ public:
     /**
      * @brief Constructors
      */
-    explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
+    explicit Formatter(BaseFormatter base_formatter)
+        : BaseFormatter{ move(base_formatter) } {
+    }
+    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
+        : BaseFormatter{ string_builder, specifications } {
+    }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(Pair<K, T> value);
+    ErrorOr<void> format(Pair<K, T> value) {
+        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
+            VERIFY_NOT_REACHED();
+        if ( show_base() != FormatParser::ShowBase::No )
+            VERIFY_NOT_REACHED();
+        if ( zero_pad() != FormatParser::ZeroPad::No )
+            VERIFY_NOT_REACHED();
+        if ( display_as() != FormatParser::DisplayAs::Default )
+            VERIFY_NOT_REACHED();
+        if ( width().is_present() && precision().is_present() )
+            VERIFY_NOT_REACHED();
+
+        /* format the key for the first */
+        Formatter<K> key_formatter{ *this };
+        TRY(key_formatter.format(value.key()));
+
+        /* add the colon for the separator */
+        TRY(try_put_literal(" : "sv));
+
+        /* format the value */
+        Formatter<T> value_formatter{ *this };
+        return value_formatter.format(value.value());
+    }
 };
 
 template<typename T>
@@ -393,13 +448,33 @@ public:
     /**
      * @brief Constructors
      */
-    explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
+    explicit Formatter(BaseFormatter base_formatter)
+        : BaseFormatter{ move(base_formatter) } {
+    }
+    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
+        : BaseFormatter{ string_builder, specifications } {
+    }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(Range<T> value);
+    ErrorOr<void> format(Range<T> value) {
+        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
+            VERIFY_NOT_REACHED();
+        if ( show_base() != FormatParser::ShowBase::No )
+            VERIFY_NOT_REACHED();
+        if ( zero_pad() != FormatParser::ZeroPad::No )
+            VERIFY_NOT_REACHED();
+        if ( display_as() != FormatParser::DisplayAs::Default )
+            VERIFY_NOT_REACHED();
+        if ( width().is_present() && precision().is_present() )
+            VERIFY_NOT_REACHED();
+
+        Formatter<T> formatter{ *this };
+        TRY(formatter.format(value.first()));
+        TRY(try_put_literal(".."sv));
+        return formatter.format(value.end());
+    }
 };
 
 template<>
@@ -408,14 +483,8 @@ class Formatter<String> : public Formatter<StringView> {
 };
 
 template<>
-class Formatter<StringBuilder> : public BaseFormatter {
+class Formatter<StringBuilder> : public Formatter<StringView> {
 public:
-    /**
-     * @brief Constructors
-     */
-    explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
-
     /**
      * @brief Performs the format on the given string-builder
      */
@@ -428,13 +497,47 @@ public:
     /**
      * @brief Constructors
      */
-    explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
+    explicit Formatter(BaseFormatter base_formatter)
+        : BaseFormatter{ move(base_formatter) } {
+    }
+    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
+        : BaseFormatter{ string_builder, specifications } {
+    }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(Vector<T> value);
+    ErrorOr<void> format(Vector<T> value) {
+        if (display_as() == FormatParser::DisplayAs::Pointer) {
+            Formatter<T*> formatter { *this };
+            return formatter.format(value.data());
+        }
+
+        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
+            VERIFY_NOT_REACHED();
+        if ( show_base() != FormatParser::ShowBase::No )
+            VERIFY_NOT_REACHED();
+        if ( zero_pad() != FormatParser::ZeroPad::No )
+            VERIFY_NOT_REACHED();
+        if ( display_as() != FormatParser::DisplayAs::Default )
+            VERIFY_NOT_REACHED();
+        if ( width().is_present() && precision().is_present() )
+            VERIFY_NOT_REACHED();
+
+        TRY(try_put_literal("[ "sv));
+
+        bool is_first = true;
+        for ( auto const& element : value ) {
+            Formatter<T> element_formatter{ *this };
+            if ( !is_first )
+                TRY(try_put_literal(", "sv));
+            else
+                is_first = false;
+
+            TRY(element_formatter.format(element));
+        }
+        return try_put_literal(" ]"sv);
+    }
 };
 
 template<typename T>
@@ -443,8 +546,12 @@ public:
     /**
      * @brief Constructors
      */
-    explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
+    explicit Formatter(BaseFormatter base_formatter)
+        : BaseFormatter{ move(base_formatter) } {
+    }
+    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
+        : BaseFormatter{ string_builder, specifications } {
+    }
 
     /**
      * @brief Performs the format on the given string-builder
