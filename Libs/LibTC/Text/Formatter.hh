@@ -343,16 +343,15 @@ public:
 
         TRY(try_put_literal("[ "sv));
 
-        bool         is_first = true;
-        Formatter<T> content_formatter{ *this };
+        bool is_first = true;
         for ( auto const& element : value ) {
-            if ( !is_first ) {
+            Formatter<T> element_formatter{ *this };
+            if ( !is_first )
                 TRY(try_put_literal(", "sv));
-                content_formatter = Formatter<T>{ *this };
-            }
+            else
+                is_first = false;
 
-            is_first = false;
-            TRY(content_formatter.format(element));
+            TRY(element_formatter.format(element));
         }
         return try_put_literal(" ]"sv);
     }
