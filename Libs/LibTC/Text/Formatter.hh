@@ -508,8 +508,8 @@ public:
      * @brief Performs the format on the given string-builder
      */
     ErrorOr<void> format(Vector<T> value) {
-        if (display_as() == FormatParser::DisplayAs::Pointer) {
-            Formatter<T*> formatter { *this };
+        if ( display_as() == FormatParser::DisplayAs::Pointer ) {
+            Formatter<T*> formatter{ *this };
             return formatter.format(value.data());
         }
 
@@ -540,8 +540,8 @@ public:
     }
 };
 
-template<typename T>
-class Formatter<ErrorOr<T>> : public BaseFormatter {
+template<typename T, typename E>
+class Formatter<Result<T, E>> : public BaseFormatter {
 public:
     /**
      * @brief Constructors
@@ -556,7 +556,32 @@ public:
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(ErrorOr<T> value);
+    ErrorOr<void> format(Result<T, E> value) {
+        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
+            VERIFY_NOT_REACHED();
+        if ( show_base() != FormatParser::ShowBase::No )
+            VERIFY_NOT_REACHED();
+        if ( zero_pad() != FormatParser::ZeroPad::No )
+            VERIFY_NOT_REACHED();
+        if ( display_as() != FormatParser::DisplayAs::Default )
+            VERIFY_NOT_REACHED();
+        if ( width().is_present() && precision().is_present() )
+            VERIFY_NOT_REACHED();
+
+        if ( value.is_value() ) {
+            Formatter<T> value_formatter{ *this };
+
+            TRY(try_put_literal("Value("sv));
+            TRY(value_formatter.format(value.value()));
+            return try_put_literal(")"sv);
+        } else {
+            Formatter<E> error_formatter{ *this };
+
+            TRY(try_put_literal("Error("sv));
+            TRY(error_formatter.format(value.error()));
+            return try_put_literal(")"sv);
+        }
+    }
 };
 
 template<typename T>
@@ -571,22 +596,27 @@ public:
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(Option<T> value);
-};
+    ErrorOr<void> format(Option<T> value) {
+        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
+            VERIFY_NOT_REACHED();
+        if ( show_base() != FormatParser::ShowBase::No )
+            VERIFY_NOT_REACHED();
+        if ( zero_pad() != FormatParser::ZeroPad::No )
+            VERIFY_NOT_REACHED();
+        if ( display_as() != FormatParser::DisplayAs::Default )
+            VERIFY_NOT_REACHED();
+        if ( width().is_present() && precision().is_present() )
+            VERIFY_NOT_REACHED();
 
-template<typename T, typename E>
-class Formatter<Result<T, E>> : public BaseFormatter {
-public:
-    /**
-     * @brief Constructors
-     */
-    explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
+        if (value.is_present()) {
+            Formatter<T> value_formatter{*this};
 
-    /**
-     * @brief Performs the format on the given string-builder
-     */
-    ErrorOr<void> format(Result<T, E> value);
+            TRY(try_put_literal("Some("sv));
+            TRY(value_formatter.format(value.value()));
+            return try_put_literal(")"sv);
+        } else
+            return try_put_literal("None"sv);
+    }
 };
 
 } /* namespace Text */
