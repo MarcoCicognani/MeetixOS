@@ -29,8 +29,8 @@ add_custom_target(repack
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Root ${CMAKE_INSTALL_PREFIX}
         COMMAND ${CMAKE_COMMAND} -E env TOOLCHAIN_BIN=${TOOLCHAIN_BIN}
         ${CMAKE_SOURCE_DIR}/Meta/Repack.sh --out-dir=${CMAKE_BINARY_DIR}
-        --iso-root=${CMAKE_BINARY_DIR}/Image/ISO
-        --ramdisk-root=${CMAKE_INSTALL_PREFIX}
+                                           --iso-root=${CMAKE_BINARY_DIR}/Image/ISO
+                                           --ramdisk-root=${CMAKE_INSTALL_PREFIX}
         DEPENDS install
         USES_TERMINAL)
 
