@@ -6,9 +6,12 @@ set -e # abort the execution of the script if any of the sub-commands return non
 
 # Colors
 if [ -n "$TERM" ]; then
+    echo "Colors enabled..."
     RED=$(tput setaf 1)
     GREEN=$(tput setaf 2)
     RESET=$(tput sgr0)
+else
+    echo "Colors disabled..."
 fi
 
 # Make jobs to use
