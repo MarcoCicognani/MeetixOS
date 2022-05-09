@@ -46,14 +46,12 @@ TEST_CASE(floating_format) {
 }
 
 TEST_CASE(list_format) {
-    List<int> list{ 1, 2, 3, 4, 5, 6 };
+    List list{ 1, 2, 3, 4, 5, 6 };
 
     StringBuilder string_builder{};
 
     auto error_or_void = format(string_builder, "MyList = {}", list);
     VERIFY_FALSE(error_or_void.is_error());
-
-    printf("string_builder = '%s'\n", string_builder.as_string_view().as_cstr());
 
     VERIFY_EQUAL(string_builder.as_string_view(), "MyList = [ 1, 2, 3, 4, 5, 6 ]");
 }

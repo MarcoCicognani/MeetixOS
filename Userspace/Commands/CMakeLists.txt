@@ -17,7 +17,7 @@
 #add_subdirectory(Find)
 #add_subdirectory(GuiNotify)
 #add_subdirectory(GZip)
-#add_subdirectory(Idle)
+add_subdirectory(Idle)
 #add_subdirectory(Kill)
 #add_subdirectory(List)
 #add_subdirectory(ListPCI)
