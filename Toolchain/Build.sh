@@ -5,9 +5,11 @@ set -e # abort the execution of the script if any of the sub-commands return non
 # ----------------------------------------------- Variables Definitions ---------------------------------------------- #
 
 # Colors
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-RESET=$(tput sgr0)
+if [ -n "$TERM" ]; then
+    RED=$(tput setaf 1)
+    GREEN=$(tput setaf 2)
+    RESET=$(tput sgr0)
+fi
 
 # Make jobs to use
 BUILD_JOBS=$(nproc)
