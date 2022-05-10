@@ -3,8 +3,10 @@
 set -e
 
 # Colors
-RED=$(tput setaf 1)
-RESET=$(tput sgr0)
+if [[ -n "$TERM" && "$TERM" != "dumb" ]]; then
+    RED=$(tput setaf 1)
+    RESET=$(tput sgr0)
+fi
 
 PACKAGE=$1
 SOURCE_DIR=$(realpath ..)
