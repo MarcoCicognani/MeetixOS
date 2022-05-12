@@ -115,7 +115,7 @@ ErrorOr<void> BaseFormatter::try_put_u64(u64                           value,
         /* To ensure format("{:#08x}", 32) produces '0x00000020' instead '0x000020' */
         prefix_width = 0;
     } else {
-        if ( is_negative || integer_sign == FormatParser::ShowIntegerSign::Yes )
+        if ( is_negative || integer_sign != FormatParser::ShowIntegerSign::IfNegative )
             prefix_width = 1;
         else
             prefix_width = 0;
@@ -618,7 +618,7 @@ ErrorOr<void> Formatter<T>::format(T value) {
     }
 
     /* put the number into the string-builder */
-    if constexpr ( IsSame<MakeUnsigned<T>, T> )
+    if constexpr ( IsSame<MakeUnsigned<T>, T> ) {
         return try_put_u64(value,
                            base,
                            show_base(),
@@ -629,7 +629,7 @@ ErrorOr<void> Formatter<T>::format(T value) {
                            alignment_fill(),
                            show_integer_sign(),
                            false);
-    else
+    } else {
         return try_put_i64(value,
                            base,
                            show_base(),
@@ -639,6 +639,7 @@ ErrorOr<void> Formatter<T>::format(T value) {
                            alignment(),
                            alignment_fill(),
                            show_integer_sign());
+    }
 }
 
 template class Formatter<u8>;

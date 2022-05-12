@@ -40,7 +40,7 @@ protected:
      * @brief Constructor
      */
     explicit BaseFormatter(StringBuilder& string_builder);
-    BaseFormatter(StringBuilder& string_builder, FormatParser::Specifications specifications);
+    explicit BaseFormatter(StringBuilder& string_builder, FormatParser::Specifications specifications);
 
     /**
      * @brief put formatting functions
@@ -283,6 +283,8 @@ public:
 template<>
 class Formatter<char const*> : public Formatter<StringView> {
 public:
+    using Formatter<StringView>::Formatter;
+
     /**
      * @brief Performs the format on the given string-builder
      */
@@ -291,16 +293,21 @@ public:
 
 template<>
 class Formatter<char*> : public Formatter<char const*> {
-    /* Content inherited by Formatter<char const*> */
+public:
+    using Formatter<char const*>::Formatter;
 };
 
 template<usize SIZE>
 class Formatter<char[SIZE]> : public Formatter<char const*> {
-    /* Content inherited by Formatter<char const*> */
+public:
+    using Formatter<char const*>::Formatter;
 };
 
 template<usize SIZE>
 class Formatter<unsigned char[SIZE]> : public Formatter<StringView> {
+public:
+    using Formatter<StringView>::Formatter;
+
     /**
      * @brief Performs the format on the given string-builder
      */
@@ -330,17 +337,6 @@ public:
      * @brief Performs the format on the given string-builder
      */
     ErrorOr<void> format(List<T> value) {
-        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
-            VERIFY_NOT_REACHED();
-        if ( show_base() != FormatParser::ShowBase::No )
-            VERIFY_NOT_REACHED();
-        if ( zero_pad() != FormatParser::ZeroPad::No )
-            VERIFY_NOT_REACHED();
-        if ( display_as() != FormatParser::DisplayAs::Default )
-            VERIFY_NOT_REACHED();
-        if ( width().is_present() && precision().is_present() )
-            VERIFY_NOT_REACHED();
-
         TRY(try_put_literal("[ "sv));
 
         bool is_first = true;
@@ -374,17 +370,6 @@ public:
      * @brief Performs the format on the given string-builder
      */
     ErrorOr<void> format(Map<K, T> value) {
-        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
-            VERIFY_NOT_REACHED();
-        if ( show_base() != FormatParser::ShowBase::No )
-            VERIFY_NOT_REACHED();
-        if ( zero_pad() != FormatParser::ZeroPad::No )
-            VERIFY_NOT_REACHED();
-        if ( display_as() != FormatParser::DisplayAs::Default )
-            VERIFY_NOT_REACHED();
-        if ( width().is_present() && precision().is_present() )
-            VERIFY_NOT_REACHED();
-
         TRY(try_put_literal("{ "sv));
 
         bool is_first = true;
@@ -418,17 +403,6 @@ public:
      * @brief Performs the format on the given string-builder
      */
     ErrorOr<void> format(Pair<K, T> value) {
-        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
-            VERIFY_NOT_REACHED();
-        if ( show_base() != FormatParser::ShowBase::No )
-            VERIFY_NOT_REACHED();
-        if ( zero_pad() != FormatParser::ZeroPad::No )
-            VERIFY_NOT_REACHED();
-        if ( display_as() != FormatParser::DisplayAs::Default )
-            VERIFY_NOT_REACHED();
-        if ( width().is_present() && precision().is_present() )
-            VERIFY_NOT_REACHED();
-
         /* format the key for the first */
         Formatter<K> key_formatter{ *this };
         TRY(key_formatter.format(value.key()));
@@ -459,17 +433,6 @@ public:
      * @brief Performs the format on the given string-builder
      */
     ErrorOr<void> format(Range<T> value) {
-        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
-            VERIFY_NOT_REACHED();
-        if ( show_base() != FormatParser::ShowBase::No )
-            VERIFY_NOT_REACHED();
-        if ( zero_pad() != FormatParser::ZeroPad::No )
-            VERIFY_NOT_REACHED();
-        if ( display_as() != FormatParser::DisplayAs::Default )
-            VERIFY_NOT_REACHED();
-        if ( width().is_present() && precision().is_present() )
-            VERIFY_NOT_REACHED();
-
         Formatter<T> formatter{ *this };
         TRY(formatter.format(value.first()));
         TRY(try_put_literal(".."sv));
@@ -479,12 +442,15 @@ public:
 
 template<>
 class Formatter<String> : public Formatter<StringView> {
-    /* Content inherited by Formatter<StringView> */
+public:
+    using Formatter<StringView>::Formatter;
 };
 
 template<>
 class Formatter<StringBuilder> : public Formatter<StringView> {
 public:
+    using Formatter<StringView>::Formatter;
+
     /**
      * @brief Performs the format on the given string-builder
      */
@@ -512,17 +478,6 @@ public:
             Formatter<T*> formatter{ *this };
             return formatter.format(value.data());
         }
-
-        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
-            VERIFY_NOT_REACHED();
-        if ( show_base() != FormatParser::ShowBase::No )
-            VERIFY_NOT_REACHED();
-        if ( zero_pad() != FormatParser::ZeroPad::No )
-            VERIFY_NOT_REACHED();
-        if ( display_as() != FormatParser::DisplayAs::Default )
-            VERIFY_NOT_REACHED();
-        if ( width().is_present() && precision().is_present() )
-            VERIFY_NOT_REACHED();
 
         TRY(try_put_literal("[ "sv));
 
@@ -557,17 +512,6 @@ public:
      * @brief Performs the format on the given string-builder
      */
     ErrorOr<void> format(Result<T, E> value) {
-        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
-            VERIFY_NOT_REACHED();
-        if ( show_base() != FormatParser::ShowBase::No )
-            VERIFY_NOT_REACHED();
-        if ( zero_pad() != FormatParser::ZeroPad::No )
-            VERIFY_NOT_REACHED();
-        if ( display_as() != FormatParser::DisplayAs::Default )
-            VERIFY_NOT_REACHED();
-        if ( width().is_present() && precision().is_present() )
-            VERIFY_NOT_REACHED();
-
         if ( value.is_value() ) {
             Formatter<T> value_formatter{ *this };
 
@@ -597,17 +541,6 @@ public:
      * @brief Performs the format on the given string-builder
      */
     ErrorOr<void> format(Option<T> value) {
-        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
-            VERIFY_NOT_REACHED();
-        if ( show_base() != FormatParser::ShowBase::No )
-            VERIFY_NOT_REACHED();
-        if ( zero_pad() != FormatParser::ZeroPad::No )
-            VERIFY_NOT_REACHED();
-        if ( display_as() != FormatParser::DisplayAs::Default )
-            VERIFY_NOT_REACHED();
-        if ( width().is_present() && precision().is_present() )
-            VERIFY_NOT_REACHED();
-
         if (value.is_present()) {
             Formatter<T> value_formatter{*this};
 
