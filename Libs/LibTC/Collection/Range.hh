@@ -43,11 +43,13 @@ public:
             m_current += m_step;
         else
             m_current = m_end;
+
         return *this;
     }
     RangeIterator operator++(int) {
         RangeIterator it{ *this };
-                      operator++();
+
+        operator++();
         return it;
     }
 
@@ -98,16 +100,22 @@ template<typename T>
     requires IsIntegral<T>
 class Range {
 public:
+    enum class Inclusive {
+        Yes,
+        No
+    };
+
     using Iterator = RangeIterator<T>;
 
 public:
     /**
      * @brief Constructor
      */
-    explicit constexpr Range(T first, T end, T step)
+    explicit constexpr Range(T first, T end, T step = 1, Inclusive range_inclusive = Inclusive::No)
         : m_first{ first }
-        , m_end{ end }
-        , m_step{ step } {
+        , m_end{ range_inclusive == Inclusive::Yes ? end + 1 : end }
+        , m_step{ step }
+        , m_range_inclusive{ range_inclusive } {
     }
 
     /**
@@ -117,26 +125,33 @@ public:
         return m_first;
     }
     T last() const {
-        return m_end - 1;
+        if ( is_inclusive() )
+            return m_end;
+        else
+            return m_end - 1;
     }
     T step() const {
         return m_step;
+    }
+    Inclusive is_inclusive() const {
+        return m_range_inclusive;
     }
 
     /**
      * @brief Iterator
      */
     Iterator begin() const {
-        return RangeIterator{ m_first, m_end, m_step };
+        return Iterator{ m_first, m_end, m_step };
     }
     Iterator end() const {
-        return RangeIterator{ m_end, m_end, m_step };
+        return Iterator{ m_end, m_end, m_step };
     }
 
 private:
-    T m_first;
-    T m_end;
-    T m_step;
+    T         m_first;
+    T         m_end;
+    T         m_step;
+    Inclusive m_range_inclusive;
 };
 
 template<typename T>
@@ -146,7 +161,7 @@ constexpr Range<T> iter_range(T first, T end, T step = 1) {
 
 template<typename T>
 constexpr Range<T> iter_range_inclusive(T first, T last, T step = 1) {
-    return iter_range(first, last + 1, step);
+    return Range<T>{ first, last, step, Range<T>::Inclusive::Yes };
 }
 
 } /* namespace Collection */
