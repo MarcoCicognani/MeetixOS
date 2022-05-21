@@ -134,7 +134,9 @@ public:
         No
     };
 
-    enum AdoptTag { Adopt };
+    enum AdoptTag {
+        Adopt
+    };
 
 public:
     /**
@@ -192,22 +194,23 @@ public:
     }
 
     /**
-     * @brief Destroys all the stored values keeping the capacity of this vector
+     * @brief Destroys all the stored values keeping the capacity of this vector if requested
      */
     void clear(KeepStorageCapacity keep_storage_capacity = KeepStorageCapacity::Yes) {
-        if ( m_data_storage != nullptr ) {
-            /* call the destructors only for non-trivial types */
-            if constexpr ( !Trait::TypeIntrinsics<T>::is_trivial() ) {
-                for ( usize i = 0; i < m_values_count; ++i )
-                    m_data_storage[i].~T();
-            }
+        if ( m_data_storage == nullptr )
+            return;
 
-            /* free the memory if requested */
-            if ( keep_storage_capacity == KeepStorageCapacity::No ) {
-                Memory::Raw::free_sized(m_data_storage, m_data_capacity);
-                m_data_storage  = nullptr;
-                m_data_capacity = 0;
-            }
+        /* call the destructors only for non-trivial types */
+        if constexpr ( !Trait::TypeIntrinsics<T>::is_trivial() ) {
+            for ( usize i = 0; i < m_values_count; ++i )
+                m_data_storage[i].~T();
+        }
+
+        /* free the memory if requested */
+        if ( keep_storage_capacity == KeepStorageCapacity::No ) {
+            Memory::Raw::free_sized(m_data_storage, m_data_capacity);
+            m_data_storage  = nullptr;
+            m_data_capacity = 0;
         }
         m_values_count = 0;
     }
@@ -227,14 +230,16 @@ public:
     void insert_at(usize index, T const& value) {
         MUST(try_insert_at(index, T{ value }));
     }
-    void insert_at(usize index, T&& value) {
-        MUST(try_insert_at(index, move(value)));
+    template<typename U = T>
+    void insert_at(usize index, U&& value) {
+        MUST(try_insert_at(index, forward(value)));
     }
 
     ErrorOr<void> try_insert_at(usize index, T const& value) {
         return try_insert_at(index, T{ value });
     }
-    ErrorOr<void> try_insert_at(usize index, T&& value) {
+    template<typename U = T>
+    ErrorOr<void> try_insert_at(usize index, U&& value) {
         if ( index > m_values_count )
             return Error{ EINVAL };
 
@@ -246,14 +251,14 @@ public:
                 __builtin_memmove(data_slot(index + 1), data_slot(index), (m_values_count - index) * sizeof(T));
             else {
                 for ( usize i = m_values_count; i > index; --i ) {
-                    new (data_slot(i)) T{ move(m_data_storage[i - 1]) };
+                    new (data_slot(i)) T{ forward(m_data_storage[i - 1]) };
                     at(i - 1).~T();
                 }
             }
         }
 
         /* move the value into the memory */
-        new (data_slot(index)) T{ move(value) };
+        new (data_slot(index)) T{ forward(value) };
         ++m_values_count;
         return {};
     }
@@ -293,15 +298,17 @@ public:
     void prepend(T const& value) {
         MUST(try_prepend(T{ value }));
     }
-    void prepend(T&& value) {
-        MUST(try_prepend(move(value)));
+    template<typename U = T>
+    void prepend(U&& value) {
+        MUST(try_prepend(forward(value)));
     }
 
     ErrorOr<void> try_prepend(T const& value) {
         return try_prepend(T{ value });
     }
-    ErrorOr<void> try_prepend(T&& value) {
-        return try_insert_at(0, move(value));
+    template<typename U = T>
+    ErrorOr<void> try_prepend(U&& value) {
+        return try_insert_at(0, forward(value));
     }
 
     /**
@@ -310,22 +317,25 @@ public:
     void append(T const& value) {
         MUST(try_append(T{ value }));
     }
-    void append(T&& value) {
-        MUST(try_append(move(value)));
+    template<typename U = T>
+    void append(U&& value) {
+        MUST(try_append(forward(value)));
     }
 
     ErrorOr<void> try_append(T const& value) {
         return try_append(T{ value });
     }
-    ErrorOr<void> try_append(T&& value) {
-        return try_insert_at(m_values_count, move(value));
+    template<typename U = T>
+    ErrorOr<void> try_append(U&& value) {
+        return try_insert_at(m_values_count, forward(value));
     }
 
     void append_unchecked(T const& value) {
         append_unchecked(T{ value });
     }
+    template<typename U = T>
     void append_unchecked(T&& value) {
-        new (data_slot(m_values_count)) T{ move(value) };
+        new (data_slot(m_values_count)) T{ forward(value) };
         ++m_values_count;
     }
 

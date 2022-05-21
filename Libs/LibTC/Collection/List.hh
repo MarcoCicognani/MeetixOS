@@ -28,6 +28,9 @@ namespace Details {
 template<typename Collection, typename T>
 class ListIterator {
 public:
+    /**
+     * @brief Constructors
+     */
     explicit ListIterator(Collection& collection)
         : m_collection{ &collection } {
     }
@@ -120,6 +123,9 @@ private:
 
 template<typename T>
 struct ListNode {
+    /**
+     * @brief Constructors
+     */
     explicit ListNode(T&& value)
         : m_value{ move(value) } {
     }
@@ -209,15 +215,17 @@ public:
     void append(T const& value) {
         MUST(try_append(T{ value }));
     }
-    void append(T&& value) {
-        MUST(try_append(move(value)));
+    template<typename U = T>
+    void append(U&& value) {
+        MUST(try_append(forward<U>(value)));
     }
 
     ErrorOr<void> try_append(T const& value) {
         return try_append(T{ value });
     }
-    ErrorOr<void> try_append(T&& value) {
-        auto new_node = new (nothrow) Node{ move(value) };
+    template<typename U = T>
+    ErrorOr<void> try_append(U&& value) {
+        auto new_node = new (nothrow) Node{ forward(value) };
         if ( new_node == nullptr )
             return Error{ ENOMEM };
 
@@ -239,15 +247,17 @@ public:
     void prepend(T const& value) {
         MUST(try_prepend(T{ value }));
     }
-    void prepend(T&& value) {
-        MUST(try_prepend(move(value)));
+    template<typename U = T>
+    void prepend(U&& value) {
+        MUST(try_prepend(forward(value)));
     }
 
     ErrorOr<void> try_prepend(T const& value) {
         return try_prepend(T{ value });
     }
-    ErrorOr<void> try_prepend(T&& value) {
-        auto new_node = new (nothrow) Node{ move(value) };
+    template<typename U = T>
+    ErrorOr<void> try_prepend(U&& value) {
+        auto new_node = new (nothrow) Node{ forward(value) };
         if ( new_node == nullptr )
             return Error{ ENOMEM };
 
