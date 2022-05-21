@@ -232,7 +232,7 @@ public:
     }
     template<typename U = T>
     void insert_at(usize index, U&& value) {
-        MUST(try_insert_at(index, forward(value)));
+        MUST(try_insert_at(index, forward<U>(value)));
     }
 
     ErrorOr<void> try_insert_at(usize index, T const& value) {
@@ -251,14 +251,14 @@ public:
                 __builtin_memmove(data_slot(index + 1), data_slot(index), (m_values_count - index) * sizeof(T));
             else {
                 for ( usize i = m_values_count; i > index; --i ) {
-                    new (data_slot(i)) T{ forward(m_data_storage[i - 1]) };
+                    new (data_slot(i)) T{ forward<U>(m_data_storage[i - 1]) };
                     at(i - 1).~T();
                 }
             }
         }
 
         /* move the value into the memory */
-        new (data_slot(index)) T{ forward(value) };
+        new (data_slot(index)) T{ forward<U>(value) };
         ++m_values_count;
         return {};
     }
@@ -300,7 +300,7 @@ public:
     }
     template<typename U = T>
     void prepend(U&& value) {
-        MUST(try_prepend(forward(value)));
+        MUST(try_prepend<U>(forward<U>(value)));
     }
 
     ErrorOr<void> try_prepend(T const& value) {
@@ -308,7 +308,7 @@ public:
     }
     template<typename U = T>
     ErrorOr<void> try_prepend(U&& value) {
-        return try_insert_at(0, forward(value));
+        return try_insert_at<U>(0, forward<U>(value));
     }
 
     /**
@@ -319,7 +319,7 @@ public:
     }
     template<typename U = T>
     void append(U&& value) {
-        MUST(try_append(forward(value)));
+        MUST(try_append<U>(forward<U>(value)));
     }
 
     ErrorOr<void> try_append(T const& value) {
@@ -327,15 +327,15 @@ public:
     }
     template<typename U = T>
     ErrorOr<void> try_append(U&& value) {
-        return try_insert_at(m_values_count, forward(value));
+        return try_insert_at<U>(m_values_count, forward<U>(value));
     }
 
     void append_unchecked(T const& value) {
         append_unchecked(T{ value });
     }
     template<typename U = T>
-    void append_unchecked(T&& value) {
-        new (data_slot(m_values_count)) T{ forward(value) };
+    void append_unchecked(U&& value) {
+        new (data_slot(m_values_count)) T{ forward<U>(value) };
         ++m_values_count;
     }
 

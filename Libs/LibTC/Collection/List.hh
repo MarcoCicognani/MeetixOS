@@ -217,15 +217,14 @@ public:
     }
     template<typename U = T>
     void append(U&& value) {
-        MUST(try_append(forward<U>(value)));
+        MUST(try_append<U>(forward<U>(value)));
     }
 
     ErrorOr<void> try_append(T const& value) {
         return try_append(T{ value });
     }
-    template<typename U = T>
-    ErrorOr<void> try_append(U&& value) {
-        auto new_node = new (nothrow) Node{ forward(value) };
+    ErrorOr<void> try_append(T&& value) {
+        auto new_node = new (nothrow) Node{ move(value) };
         if ( new_node == nullptr )
             return Error{ ENOMEM };
 
@@ -249,15 +248,14 @@ public:
     }
     template<typename U = T>
     void prepend(U&& value) {
-        MUST(try_prepend(forward(value)));
+        MUST(try_prepend<U>(forward<U>(value)));
     }
 
     ErrorOr<void> try_prepend(T const& value) {
         return try_prepend(T{ value });
     }
-    template<typename U = T>
-    ErrorOr<void> try_prepend(U&& value) {
-        auto new_node = new (nothrow) Node{ forward(value) };
+    ErrorOr<void> try_prepend(T&& value) {
+        auto new_node = new (nothrow) Node{ move(value) };
         if ( new_node == nullptr )
             return Error{ ENOMEM };
 
