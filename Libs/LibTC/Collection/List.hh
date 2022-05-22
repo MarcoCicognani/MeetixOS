@@ -217,7 +217,7 @@ public:
     }
     template<typename U = T>
     void append(U&& value) {
-        MUST(try_append<U>(forward<U>(value)));
+        MUST(try_append(forward<U>(value)));
     }
 
     ErrorOr<void> try_append(T const& value) {
@@ -248,7 +248,7 @@ public:
     }
     template<typename U = T>
     void prepend(U&& value) {
-        MUST(try_prepend<U>(forward<U>(value)));
+        MUST(try_prepend(forward<U>(value)));
     }
 
     ErrorOr<void> try_prepend(T const& value) {
