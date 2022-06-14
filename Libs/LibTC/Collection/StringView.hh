@@ -12,31 +12,19 @@
 
 #pragma once
 
+#include <LibTC/Collection/Enums/CaseSensitivity.hh>
+#include <LibTC/Collection/Enums/TrimMode.hh>
+#include <LibTC/Collection/Enums/TrimWhitespace.hh>
 #include <LibTC/Collection/Vector.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Option.hh>
+#include <LibTC/Hashing.hh>
 #include <LibTC/IntTypes.hh>
 
 namespace TC {
 namespace Collection {
 
 class String;
-
-enum class TrimWhitespace {
-    Yes,
-    No
-};
-
-enum class TrimMode {
-    Left,
-    Right,
-    Both
-};
-
-enum class CaseSensitivity {
-    Sensitive,
-    Insensitive
-};
 
 class StringView {
 public:
@@ -169,13 +157,25 @@ private:
 
 } /* namespace Collection */
 
-using Collection::CaseSensitivity;
 using Collection::StringView;
-using Collection::TrimMode;
-using Collection::TrimWhitespace;
+
+namespace Trait {
+
+template<>
+struct TypeIntrinsics<StringView> : public Details::TypeIntrinsics<StringView> {
+    static usize hash(StringView const& value) {
+        return Hashing::string_calculate_hash(value.as_cstr(), value.len());
+    }
+
+    static constexpr bool is_trivial() {
+        return false;
+    }
+};
+
+} /* namespace Trait */
 
 } /* namespace TC */
 
-[[nodiscard]] constexpr inline TC::StringView operator"" sv(char const* c_str, usize len) {
+[[nodiscard]] constexpr TC::StringView operator"" sv(char const* c_str, usize len) {
     return TC::StringView{ c_str, len };
 }

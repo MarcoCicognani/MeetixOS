@@ -12,8 +12,7 @@
 
 #pragma once
 
-#include <LibTC/Hashing/Integer.hh>
-#include <LibTC/Hashing/Pointer.hh>
+#include <LibTC/Hashing.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Trait/IsIntegral.hh>
 #include <LibTC/Trait/IsPointer.hh>
@@ -21,26 +20,48 @@
 
 namespace TC {
 namespace Trait {
+namespace Details {
 
 template<typename T>
 struct TypeIntrinsics {
-    static constexpr bool is_trivial() { return false; }
+    static constexpr bool is_trivial() {
+        return false;
+    }
+    static constexpr bool equals(T const& a, T const& b) {
+        return a == b;
+    }
 };
 
-template<typename T>
-    requires IsIntegral<T>
-struct TypeIntrinsics<T> {
-    static constexpr usize hash(T value) { return integer_hash(value); }
+} /* namespace Details */
 
-    static constexpr bool is_trivial() { return true; }
+template<typename T>
+struct TypeIntrinsics : public Details::TypeIntrinsics<T> {
+    /* Inherit implementation from details */
 };
 
-template<typename T>
-    requires IsPointer<T>
-struct TypeIntrinsics<T> {
-    static constexpr usize hash(T value) { return pointer_hash(value); }
+template<Integral T>
+struct TypeIntrinsics<T> : public Details::TypeIntrinsics<T> {
+    static constexpr usize hash(T const& value) {
+        if constexpr ( sizeof(T) < 8 )
+            return Hashing::u32_calculate_hash(value);
+        else
+            return Hashing::u64_calculate_hash(value);
+    }
 
-    static constexpr bool is_trivial() { return true; }
+    static constexpr bool is_trivial() {
+        return true;
+    }
+};
+
+template<Pointer T>
+struct TypeIntrinsics<T> : public Details::TypeIntrinsics<T> {
+    static constexpr usize hash(T value) {
+        return Hashing::pointer_calculate_hash(value);
+    }
+
+    static constexpr bool is_trivial() {
+        return true;
+    }
 };
 
 } /* namespace Trait */

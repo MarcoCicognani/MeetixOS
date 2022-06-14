@@ -14,6 +14,7 @@
 
 #include <initializer_list>
 #include <LibTC/Assertions.hh>
+#include <LibTC/Collection/Enums/KeepStorageCapacity.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Must.hh>
@@ -129,15 +130,6 @@ public:
     using Iterator      = Details::VectorIterator<Vector, T>;
     using ConstIterator = Details::VectorIterator<Vector const, T const>;
 
-    enum class KeepStorageCapacity {
-        Yes,
-        No
-    };
-
-    enum AdoptTag {
-        Adopt
-    };
-
 public:
     /**
      * @brief Constructors
@@ -145,11 +137,6 @@ public:
     explicit Vector() = default;
     explicit Vector(usize capacity) {
         ensure_capacity(capacity);
-    }
-    explicit Vector(AdoptTag, T* data_storage, usize size)
-        : m_data_storage{ data_storage }
-        , m_data_capacity{ size }
-        , m_values_count{ size } {
     }
 
     Vector(Vector const& rhs)
@@ -451,14 +438,14 @@ public:
         return Error{ ENOENT };
     }
     ErrorOr<usize> erase_all_of(T const& value) {
-        return erase_all_matches([&value](T const& current) { return current == value; });
+        return erase_all_matches([&value](T const& current) { return Trait::TypeIntrinsics<T>::equals(current, value); });
     }
     template<typename CallBack>
     ErrorOr<usize> erase_all_matches(CallBack matches) {
         usize erased_count = 0;
         for ( usize i = 0; i < m_values_count; ) {
             if ( matches(m_data_storage[i]) ) {
-                erase_at(i);
+                TRY(erase_at(i));
                 ++erased_count;
             } else
                 ++i;
@@ -573,7 +560,7 @@ public:
      * @brief Returns the index of the value if exists or when the callback returns true
      */
     Option<usize> index_of(T const& value) const {
-        return index_if([&value](auto const& v) { return v == value; });
+        return index_if([&value](auto const& v) { return Trait::TypeIntrinsics<T>::equals(value, v); });
     }
     template<typename Callback>
     Option<usize> index_if(Callback callback) const {

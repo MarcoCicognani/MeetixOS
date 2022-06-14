@@ -25,21 +25,21 @@ public:
     /**
      * @brief Constructors
      */
-    Option() = default;
-    Option(T const& value)
+    constexpr Option() = default;
+    constexpr Option(T const& value)
         : m_is_present{ true } {
         new (&m_data_storage) T{ value };
     }
-    Option(T&& value)
+    constexpr Option(T&& value)
         : m_is_present{ true } {
         new (&m_data_storage) T{ move(value) };
     }
-    Option(Option const& rhs)
+    constexpr Option(Option const& rhs)
         : m_is_present{ rhs.m_is_present } {
         if ( m_is_present )
             new (&m_data_storage) T{ rhs.value() };
     }
-    Option(Option&& rhs) noexcept
+    constexpr Option(Option&& rhs) noexcept
         : m_is_present{ rhs.m_is_present } {
         if ( m_is_present )
             new (&m_data_storage) T{ move(rhs.unwrap()) };
@@ -48,21 +48,21 @@ public:
         reset();
     }
 
-    Option& operator=(T const& value) {
+    constexpr Option& operator=(T const& value) {
         Option option{ value };
         swap(option);
         return *this;
     }
-    Option& operator=(T&& value) {
+    constexpr Option& operator=(T&& value) {
         Option option{ move(value) };
         swap(option);
         return *this;
     }
-    Option& operator=(nullptr_t) {
+    constexpr Option& operator=(nullptr_t) {
         reset();
         return *this;
     }
-    Option& operator=(Option const& rhs) {
+    constexpr Option& operator=(Option const& rhs) {
         if ( this == &rhs )
             return *this;
 
@@ -70,7 +70,7 @@ public:
         swap(option);
         return *this;
     }
-    Option& operator=(Option&& rhs) noexcept {
+    constexpr Option& operator=(Option&& rhs) noexcept {
         Option option{ move(rhs) };
         swap(option);
         return *this;
@@ -79,7 +79,7 @@ public:
     /**
      * @brief Swaps this Option with another
      */
-    void swap(Option& rhs) noexcept {
+    constexpr void swap(Option& rhs) noexcept {
         Cxx::swap(m_is_present, rhs.m_is_present);
         Cxx::swap(storage_as_ref(), rhs.storage_as_ref());
     }
@@ -153,34 +153,35 @@ public:
     /**
      * @brief Constructors
      */
-    Option() = default;
-    Option(T const& value)
+    constexpr Option() = default;
+    constexpr Option(T const& value)
         : m_inner_option{ const_cast<T*>(&value) } {
     }
-    Option(T&& value)
+    constexpr Option(T&& value)
         : m_inner_option{ const_cast<T*>(&move(value)) } {
     }
-    Option(Option const& rhs)     = default;
-    Option(Option&& rhs) noexcept = default;
-    ~Option()                     = default;
+    constexpr Option(Option const& rhs)     = default;
+    constexpr Option(Option&& rhs) noexcept = default;
 
-    Option& operator=(T const& value) {
+    ~Option() = default;
+
+    constexpr Option& operator=(T const& value) {
         m_inner_option = &value;
         return *this;
     }
-    Option& operator=(T&& value) {
+    constexpr Option& operator=(T&& value) {
         m_inner_option = &move(value);
         return *this;
     }
-    Option& operator=(nullptr_t) {
+    constexpr Option& operator=(nullptr_t) {
         m_inner_option = nullptr;
         return *this;
     }
-    Option& operator=(Option const& rhs) {
+    constexpr Option& operator=(Option const& rhs) {
         m_inner_option = rhs.m_inner_option;
         return *this;
     }
-    Option& operator=(Option&& rhs) noexcept {
+    constexpr Option& operator=(Option&& rhs) noexcept {
         m_inner_option = move(rhs.m_inner_option);
         return *this;
     }
@@ -188,7 +189,7 @@ public:
     /**
      * @brief Swaps this Option with another
      */
-    void swap(Option& rhs) noexcept {
+    constexpr void swap(Option& rhs) noexcept {
         m_inner_option.swap(rhs.m_inner_option);
     }
 

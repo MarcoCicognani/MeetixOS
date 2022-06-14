@@ -2226,7 +2226,7 @@ typedef unsigned int         flag_t;   /* The type of various bit flag sets */
 /* pad request, checking for minimum (but not maximum) */
 #define request2size(req) (((req) < MIN_REQUEST) ? MIN_CHUNK_SIZE : pad_request(req))
 
-/* ------------------ Operations on head and foot fields ----------------- */
+/* ------------------ Operators on head and foot fields ----------------- */
 
 /*
   The head field of a chunk is or'ed with PINUSE_BIT when previous
@@ -2629,7 +2629,7 @@ static struct malloc_state _gm_;
 
 /* -------------------------- system alloc setup ------------------------- */
 
-/* Operations on mflags */
+/* Operators on mflags */
 
 #define use_lock(M)    ((M)->mflags & USE_LOCK_BIT)
 #define enable_lock(M) ((M)->mflags |= USE_LOCK_BIT)
@@ -2892,7 +2892,7 @@ static size_t traverse_and_check(mstate m);
     ((SIZE_T_ONE << (((i) >> 1) + TREEBIN_SHIFT))                                                  \
      | (((size_t)((i)&SIZE_T_ONE)) << (((i) >> 1) + TREEBIN_SHIFT - 1)))
 
-/* ------------------------ Operations on bin maps ----------------------- */
+/* ------------------------ Operators on bin maps ----------------------- */
 
 /* bit corresponding to given index */
 #define idx2bit(i) ((binmap_t)(1) << (i))
@@ -3530,7 +3530,7 @@ static void internal_malloc_stats(mstate m) {
 }
 #endif /* NO_MALLOC_STATS */
 
-/* ----------------------- Operations on smallbins ----------------------- */
+/* ----------------------- Operators on smallbins ----------------------- */
 
 /*
   Various forms of linking and unlinking are defined as macros.  Even
@@ -3613,7 +3613,7 @@ static void internal_malloc_stats(mstate m) {
         M->dv     = P;                                                                             \
     }
 
-/* ------------------------- Operations on trees ------------------------- */
+/* ------------------------- Operators on trees ------------------------- */
 
 /* Insert chunk into tree */
 #define insert_large_chunk(M, X, S)                                                                \

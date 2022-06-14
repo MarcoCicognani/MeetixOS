@@ -16,8 +16,8 @@
 
 namespace TC::Collection {
 
-void StringBuilder::clear() {
-    m_char_vector.clear();
+void StringBuilder::clear(KeepStorageCapacity keep_storage_capacity) {
+    m_char_vector.clear(keep_storage_capacity);
 }
 
 void StringBuilder::append(char c) {

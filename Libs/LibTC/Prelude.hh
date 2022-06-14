@@ -17,6 +17,7 @@
 #include <LibTC/Collection/Map.hh>
 #include <LibTC/Collection/Pair.hh>
 #include <LibTC/Collection/Range.hh>
+#include <LibTC/Collection/Set.hh>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringBuilder.hh>
 #include <LibTC/Collection/StringStorage.hh>
@@ -31,8 +32,7 @@
 #include <LibTC/Functional/Option.hh>
 #include <LibTC/Functional/Result.hh>
 #include <LibTC/Functional/Try.hh>
-#include <LibTC/Hashing/Integer.hh>
-#include <LibTC/Hashing/Pointer.hh>
+#include <LibTC/Hashing.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Math.hh>
 #include <LibTC/Memory/NonNullBox.hh>
@@ -53,6 +53,7 @@
 #include <LibTC/Trait/EnableIf.hh>
 #include <LibTC/Trait/FalseType.hh>
 #include <LibTC/Trait/First.hh>
+#include <LibTC/Trait/Hashable.hh>
 #include <LibTC/Trait/In.hh>
 #include <LibTC/Trait/IndexOf.hh>
 #include <LibTC/Trait/IsArithmetic.hh>

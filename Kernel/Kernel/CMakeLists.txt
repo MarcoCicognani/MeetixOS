@@ -22,15 +22,14 @@ set(LIBTC_SOURCES
         ../../Libs/LibTC/Collection/StringBuilder.cc
         ../../Libs/LibTC/Collection/StringStorage.cc
         ../../Libs/LibTC/Collection/StringView.cc
-        ../../Libs/LibTC/Hashing/Integer.cc
-        ../../Libs/LibTC/Hashing/Pointer.cc
         ../../Libs/LibTC/Memory/Shareable.cc
         ../../Libs/LibTC/Text/FormatParser.cc
         ../../Libs/LibTC/Text/Formatter.cc
         ../../Libs/LibTC/Text/Lexer.cc
         ../../Libs/LibTC/Text/FormatLexer.cc
         ../../Libs/LibTC/SourceLocation.cc
-        ../../Libs/LibTC/Error.cc)
+        ../../Libs/LibTC/Error.cc
+        ../../Libs/LibTC/Hashing.cc)
 
 set(LIBC_SOURCES
         ../../Libs/LibC/ctype.cc

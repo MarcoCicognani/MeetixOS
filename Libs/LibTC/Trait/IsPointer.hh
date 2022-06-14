@@ -29,8 +29,12 @@ inline constexpr bool IsPointer<T*> = true;
 template<typename T>
 inline constexpr bool IsPointer = Details::IsPointer<RemoveConstVolatile<T>>;
 
+template<typename T>
+concept Pointer = IsPointer<T>;
+
 } /* namespace Trait */
 
 using Trait::IsPointer;
+using Trait::Pointer;
 
 } /* namespace TC */

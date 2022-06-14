@@ -17,18 +17,16 @@
 
 namespace TC {
 namespace Collection {
+namespace Details {
 
-template<typename T>
-    requires IsIntegral<T>
+template<Integral T>
 class RangeIterator {
 public:
     /**
      * @brief Constructor
      */
-    RangeIterator(T first, T end, T step)
-        : m_current{ first }
-        , m_end{ end }
-        , m_step{ step } {
+    explicit constexpr RangeIterator(T first)
+        : m_current{ first } {
     }
 
     RangeIterator(RangeIterator const&) = default;
@@ -38,15 +36,11 @@ public:
     /**
      * @brief Increment operators
      */
-    RangeIterator& operator++() {
-        if ( m_current < m_end && m_current + m_step < m_end )
-            m_current += m_step;
-        else
-            m_current = m_end;
-
+    [[gnu::always_inline]] RangeIterator& operator++() {
+        ++m_current;
         return *this;
     }
-    RangeIterator operator++(int) {
+    [[gnu::always_inline]] RangeIterator operator++(int) {
         RangeIterator it{ *this };
 
         operator++();
@@ -56,118 +50,71 @@ public:
     /**
      * @brief ValueReference access operators
      */
-    T operator*() const {
-        VERIFY_FALSE(is_end());
+    [[gnu::always_inline]] T operator*() const {
         return m_current;
     }
 
     /**
      * @brief Getters
      */
-    [[nodiscard]] bool is_end() const {
-        return m_current == m_end;
+    T value() const {
+        return m_current;
     }
 
     /**
-     * @brief Comparison operators
+     * @brief Comparison operator
      */
-    [[nodiscard]] bool operator==(RangeIterator const& rhs) const {
-        return m_current == rhs.m_current;
-    }
-    [[nodiscard]] bool operator!=(RangeIterator const& rhs) const {
-        return m_current != rhs.m_current;
-    }
-    [[nodiscard]] bool operator<(RangeIterator const& rhs) const {
-        return m_current < rhs.m_current;
-    }
-    [[nodiscard]] bool operator>(RangeIterator const& rhs) const {
-        return m_current > rhs.m_current;
-    }
-    [[nodiscard]] bool operator<=(RangeIterator const& rhs) const {
-        return m_current <= rhs.m_current;
-    }
-    [[nodiscard]] bool operator>=(RangeIterator const& rhs) const {
-        return m_current >= rhs.m_current;
-    }
+    [[nodiscard]] inline bool operator<=>(RangeIterator const&) const = default;
 
 private:
     T m_current;
-    T m_end;
-    T m_step;
 };
 
-template<typename T>
-    requires IsIntegral<T>
+} /* namespace Details */
+
+template<Integral T>
 class Range {
 public:
-    enum class Inclusive {
-        Yes,
-        No
-    };
-
-    using Iterator = RangeIterator<T>;
+    using Iterator = Details::RangeIterator<T>;
 
 public:
     /**
      * @brief Constructor
      */
-    explicit constexpr Range(T first, T end, T step = 1, Inclusive range_inclusive = Inclusive::No)
+    explicit constexpr Range(T first, T end)
         : m_first{ first }
-        , m_end{ range_inclusive == Inclusive::Yes ? end + 1 : end }
-        , m_step{ step }
-        , m_range_inclusive{ range_inclusive } {
-    }
-
-    /**
-     * @brief Getters
-     */
-    T first() const {
-        return m_first;
-    }
-    T last() const {
-        if ( is_inclusive() )
-            return m_end;
-        else
-            return m_end - 1;
-    }
-    T step() const {
-        return m_step;
-    }
-    Inclusive is_inclusive() const {
-        return m_range_inclusive;
+        , m_end{ end } {
     }
 
     /**
      * @brief Iterator
      */
-    Iterator begin() const {
-        return Iterator{ m_first, m_end, m_step };
+    [[gnu::always_inline]] Iterator begin() const {
+        return Iterator{ m_first };
     }
-    Iterator end() const {
-        return Iterator{ m_end, m_end, m_step };
+    [[gnu::always_inline]] Iterator end() const {
+        return Iterator{ m_end };
     }
 
 private:
-    T         m_first;
-    T         m_end;
-    T         m_step;
-    Inclusive m_range_inclusive;
+    T m_first;
+    T m_end;
 };
 
-template<typename T>
-constexpr Range<T> iter_range(T first, T end, T step = 1) {
-    return Range<T>{ first, end, step };
-}
-
-template<typename T>
-constexpr Range<T> iter_range_inclusive(T first, T last, T step = 1) {
-    return Range<T>{ first, last, step, Range<T>::Inclusive::Yes };
-}
+template<Integral T>
+class RangeInclusive : public Range<T> {
+public:
+    /**
+     * @brief Constructor
+     */
+    explicit constexpr RangeInclusive(T first, T last)
+        : Range<T>{ first, last + 1 } {
+    }
+};
 
 } /* namespace Collection */
 
-using Collection::iter_range;
-using Collection::iter_range_inclusive;
 using Collection::Range;
+using Collection::RangeInclusive;
 
 } /* namespace TC */

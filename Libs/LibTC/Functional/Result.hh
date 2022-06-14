@@ -25,50 +25,50 @@ public:
      * @brief Constructors
      */
     Result() = delete;
-    Result(T const& value)
+    constexpr Result(T const& value)
         : m_value_option{ value } {
     }
-    Result(T&& value)
+    constexpr Result(T&& value)
         : m_value_option{ move(value) } {
     }
-    Result(E const& error)
+    constexpr Result(E const& error)
         : m_error_option{ error } {
     }
-    Result(E&& error)
+    constexpr Result(E&& error)
         : m_error_option{ move(error) } {
     }
-    Result(Result const&)     = default;
-    Result(Result&&) noexcept = default;
-    ~Result()                 = default;
+    constexpr Result(Result const&)     = default;
+    constexpr Result(Result&&) noexcept = default;
+    ~Result()                           = default;
 
-    Result& operator=(T const& value) {
+    constexpr Result& operator=(T const& value) {
         Result result{ value };
         swap(result);
         return *this;
     }
-    Result& operator=(T&& value) {
+    constexpr Result& operator=(T&& value) {
         Result result{ move(value) };
         swap(result);
         return *this;
     }
-    Result& operator=(E const& error) {
+    constexpr Result& operator=(E const& error) {
         Result result{ error };
         swap(result);
         return *this;
     }
-    Result& operator=(E&& error) {
+    constexpr Result& operator=(E&& error) {
         Result result{ move(error) };
         swap(result);
         return *this;
     }
 
-    Result& operator=(Result const&) = default;
-    Result& operator=(Result&&) noexcept = default;
+    constexpr Result& operator=(Result const&)     = default;
+    constexpr Result& operator=(Result&&) noexcept = default;
 
     /**
      * @brief Swaps this result with another
      */
-    void swap(Result& rhs) noexcept {
+    constexpr void swap(Result& rhs) noexcept {
         m_value_option.swap(rhs.m_value_option);
         m_error_option.swap(rhs.m_error_option);
     }
@@ -124,45 +124,45 @@ public:
     /**
      * @brief Constructors
      */
-    Result() = default;
-    Result(E const& error)
+    constexpr Result() = default;
+    constexpr Result(E const& error)
         : m_error_option{ error } {
     }
-    Result(E&& error)
+    constexpr Result(E&& error)
         : m_error_option{ move(error) } {
     }
-    Result(Result const&)     = default;
-    Result(Result&&) noexcept = default;
-    ~Result()                 = default;
+    constexpr Result(Result const&)     = default;
+    constexpr Result(Result&&) noexcept = default;
+    ~Result()                           = default;
 
-    Result& operator=(E const& error) {
+    constexpr Result& operator=(E const& error) {
         Result result{ error };
         swap(result);
         return *this;
     }
-    Result& operator=(E&& error) {
+    constexpr Result& operator=(E&& error) {
         Result result{ move(error) };
         swap(result);
         return *this;
     }
 
-    Result& operator=(Result const&) = default;
-    Result& operator=(Result&&) noexcept = default;
+    constexpr Result& operator=(Result const&)     = default;
+    constexpr Result& operator=(Result&&) noexcept = default;
 
     /**
      * @brief Swaps this result with another
      */
-    void swap(Result& rhs) noexcept {
+    constexpr void swap(Result& rhs) noexcept {
         m_error_option.swap(rhs.m_error_option);
     }
 
     /**
      * @brief Returns the reference to the result value
      */
-    void value() {
+    constexpr void value() {
         /* Only for TRY/MUST compatibility */
     }
-    void value() const {
+    constexpr void value() const {
         /* Only for TRY/MUST compatibility */
     }
 
@@ -213,50 +213,50 @@ public:
      * @brief Constructors
      */
     Result() = delete;
-    Result(T const& value)
+    constexpr Result(T const& value)
         : m_value_option{ value } {
     }
-    Result(T&& value)
+    constexpr Result(T&& value)
         : m_value_option{ move(value) } {
     }
-    Result(E const& error)
+    constexpr Result(E const& error)
         : m_error_option{ error } {
     }
-    Result(E&& error)
+    constexpr Result(E&& error)
         : m_error_option{ move(error) } {
     }
-    Result(Result const&)     = default;
-    Result(Result&&) noexcept = default;
+    constexpr Result(Result const&)     = default;
+    constexpr Result(Result&&) noexcept = default;
     ~Result()                 = default;
 
-    Result& operator=(T const& value) {
+    constexpr Result& operator=(T const& value) {
         Result result{ value };
         swap(result);
         return *this;
     }
-    Result& operator=(T&& value) {
+    constexpr Result& operator=(T&& value) {
         Result result{ move(value) };
         swap(result);
         return *this;
     }
-    Result& operator=(E const& error) {
+    constexpr Result& operator=(E const& error) {
         Result result{ error };
         swap(result);
         return *this;
     }
-    Result& operator=(E&& error) {
+    constexpr Result& operator=(E&& error) {
         Result result{ move(error) };
         swap(result);
         return *this;
     }
 
-    Result& operator=(Result const&) = default;
-    Result& operator=(Result&&) noexcept = default;
+    constexpr Result& operator=(Result const&)     = default;
+    constexpr Result& operator=(Result&&) noexcept = default;
 
     /**
      * @brief Swaps this result with another
      */
-    void swap(Result& rhs) noexcept {
+    constexpr void swap(Result& rhs) noexcept {
         m_value_option.swap(rhs.m_value_option);
         m_error_option.swap(rhs.m_error_option);
     }

@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <LibTC/Collection/Enums/KeepStorageCapacity.hh>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/Collection/Vector.hh>
@@ -36,7 +37,7 @@ public:
     /**
      * @brief Clear this StringBuilder
      */
-    void clear();
+    void clear(KeepStorageCapacity keep_storage_capacity = KeepStorageCapacity::Yes);
 
     /**
      * @brief Appends a character to the builder

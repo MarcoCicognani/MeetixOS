@@ -13,6 +13,7 @@
 #pragma once
 
 #include <LibTC/Cxx.hh>
+#include <LibTC/Trait/TypeIntrinsics.hh>
 
 namespace TC {
 namespace Collection {
@@ -40,7 +41,7 @@ public:
 
     ~Pair() = default;
 
-    Pair& operator=(Pair const&) = default;
+    Pair& operator=(Pair const&)     = default;
     Pair& operator=(Pair&&) noexcept = default;
 
     /**
@@ -72,4 +73,22 @@ private:
 
 using Collection::Pair;
 
+namespace Trait {
+
+template<typename K, typename T>
+struct TypeIntrinsics<Pair<K, T>> : public Details::TypeIntrinsics<Pair<K, T>> {
+    static constexpr bool equals(Pair<K, T> const& a, Pair<K, T> const& b) {
+        return TypeIntrinsics<K>::equals(a.key(), b.key());
+    }
+
+    static constexpr usize hash(Pair<K, T> const& value) {
+        return TypeIntrinsics<K>::hash(value.key());
+    }
+
+    static constexpr bool is_trivial() {
+        return TypeIntrinsics<K>::is_trivial() && TypeIntrinsics<T>::is_trivial();
+    }
+};
+
+} /* namespace Trait */
 } /* namespace TC */

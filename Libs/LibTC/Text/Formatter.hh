@@ -17,6 +17,7 @@
 #include <LibTC/Collection/Map.hh>
 #include <LibTC/Collection/Pair.hh>
 #include <LibTC/Collection/Range.hh>
+#include <LibTC/Collection/Set.hh>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringBuilder.hh>
 #include <LibTC/Collection/StringView.hh>
@@ -60,8 +61,8 @@ protected:
                               usize                         min_width        = 0,
                               FormatParser::Alignment       alignment        = FormatParser::Alignment::Right,
                               char                          alignment_fill   = ' ',
-                              FormatParser::ShowIntegerSign integer_sign = FormatParser::ShowIntegerSign::IfNegative,
-                              bool                          is_negative  = false);
+                              FormatParser::ShowIntegerSign integer_sign     = FormatParser::ShowIntegerSign::IfNegative,
+                              bool                          is_negative      = false);
     ErrorOr<void> try_put_i64(i64                           value,
                               u8                            base             = 10,
                               FormatParser::ShowBase        show_base_prefix = FormatParser::ShowBase::No,
@@ -70,7 +71,7 @@ protected:
                               usize                         min_width        = 0,
                               FormatParser::Alignment       alignment        = FormatParser::Alignment::Right,
                               char                          alignment_fill   = ' ',
-                              FormatParser::ShowIntegerSign integer_sign = FormatParser::ShowIntegerSign::IfNegative);
+                              FormatParser::ShowIntegerSign integer_sign     = FormatParser::ShowIntegerSign::IfNegative);
 #ifndef IN_KERNEL
     ErrorOr<void> try_put_f64(double                        value,
                               u8                            base           = 10,
@@ -353,6 +354,39 @@ public:
     }
 };
 
+template<typename T>
+class Formatter<Set<T>> : public BaseFormatter {
+public:
+    /**
+     * @brief Constructors
+     */
+    explicit Formatter(BaseFormatter base_formatter)
+        : BaseFormatter{ move(base_formatter) } {
+    }
+    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
+        : BaseFormatter{ string_builder, specifications } {
+    }
+
+    /**
+     * @brief Performs the format on the given string-builder
+     */
+    ErrorOr<void> format(Set<T> value) {
+        TRY(try_put_literal("[ "sv));
+
+        bool is_first = true;
+        for ( auto const& element : value ) {
+            Formatter<T> element_formatter{ *this };
+            if ( !is_first )
+                TRY(try_put_literal(", "sv));
+            else
+                is_first = false;
+
+            TRY(element_formatter.format(element));
+        }
+        return try_put_literal(" ]"sv);
+    }
+};
+
 template<typename K, typename T>
 class Formatter<Map<K, T>> : public BaseFormatter {
 public:
@@ -374,7 +408,7 @@ public:
 
         bool is_first = true;
         for ( auto const& pair : value ) {
-            Formatter<T> element_formatter{ *this };
+            Formatter<Pair<K, T>> element_formatter{ *this };
             if ( !is_first )
                 TRY(try_put_literal(", "sv));
             else
@@ -434,9 +468,33 @@ public:
      */
     ErrorOr<void> format(Range<T> value) {
         Formatter<T> formatter{ *this };
-        TRY(formatter.format(value.first()));
+        TRY(formatter.format(value.begin().value()));
         TRY(try_put_literal(".."sv));
-        return formatter.format(value.end());
+        return formatter.format(value.end().value());
+    }
+};
+
+template<typename T>
+class Formatter<RangeInclusive<T>> : public BaseFormatter {
+public:
+    /**
+     * @brief Constructors
+     */
+    explicit Formatter(BaseFormatter base_formatter)
+        : BaseFormatter{ move(base_formatter) } {
+    }
+    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
+        : BaseFormatter{ string_builder, specifications } {
+    }
+
+    /**
+     * @brief Performs the format on the given string-builder
+     */
+    ErrorOr<void> format(RangeInclusive<T> value) {
+        Formatter<T> formatter{ *this };
+        TRY(formatter.format(value.begin().value()));
+        TRY(try_put_literal("..="sv));
+        return formatter.format(value.end().value() - 1);
     }
 };
 
@@ -541,8 +599,8 @@ public:
      * @brief Performs the format on the given string-builder
      */
     ErrorOr<void> format(Option<T> value) {
-        if (value.is_present()) {
-            Formatter<T> value_formatter{*this};
+        if ( value.is_present() ) {
+            Formatter<T> value_formatter{ *this };
 
             TRY(try_put_literal("Some("sv));
             TRY(value_formatter.format(value.value()));

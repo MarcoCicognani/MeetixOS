@@ -33,13 +33,13 @@ BaseFormatter::BaseFormatter(StringBuilder& string_builder, FormatParser::Specif
 }
 
 ErrorOr<void> BaseFormatter::try_put_padding(char fill, usize amount) {
-    for ( [[maybe_unused]] usize i : iter_range(0Ul, amount) )
+    for ( [[maybe_unused]] usize i : Range{ 0uL, amount } )
         TRY(m_string_builder.try_append(fill));
     return {};
 }
 
 ErrorOr<void> BaseFormatter::try_put_literal(StringView value) {
-    for ( usize i : iter_range(0Ul, value.len()) ) {
+    for ( usize i : Range{ 0uL, value.len() } ) {
         TRY(m_string_builder.try_append(value[i]));
 
         /* skip escaped placeholders */
@@ -173,7 +173,7 @@ ErrorOr<void> BaseFormatter::try_put_u64(u64                           value,
         return {};
     };
     auto try_put_digits = [&]() -> ErrorOr<void> {
-        for ( usize i : iter_range(0Ul, digits_width) )
+        for ( usize i : Range{ 0uL, digits_width } )
             TRY(m_string_builder.try_append(to_char_buffer[i]));
         return {};
     };
@@ -291,7 +291,7 @@ ErrorOr<void> BaseFormatter::try_put_f64(double                        value,
 
         /* make the epsilon precision value */
         double epsilon = 0.5;
-        for ( [[maybe_unused]] usize i : iter_range(0Ul, precision) )
+        for ( [[maybe_unused]] usize i : Range{ 0uL, precision } )
             epsilon /= 10.0;
 
         /* calculate the visible precision chars */
@@ -380,7 +380,7 @@ ErrorOr<void> BaseFormatter::try_put_f80(long double                   value,
 
         /* make the epsilon precision value */
         long double epsilon = 0.5L;
-        for ( [[maybe_unused]] usize i : iter_range(0Ul, precision) )
+        for ( [[maybe_unused]] usize i : Range{ 0uL, precision } )
             epsilon /= 10.0L;
 
         /* calculate the visible precision chars */
@@ -501,7 +501,7 @@ usize BaseFormatter::convert_unsigned_to_chars(u64 value, char to_chars_buffer[1
     }
 
     /* flip the buffer */
-    for ( usize i : iter_range(0Ul, used_chars / 2) )
+    for ( usize i : Range{ 0uL, used_chars / 2 } )
         swap(to_chars_buffer[i], to_chars_buffer[used_chars - i - 1]);
 
     return used_chars;
@@ -646,10 +646,13 @@ template class Formatter<u8>;
 template class Formatter<u16>;
 template class Formatter<u32>;
 template class Formatter<u64>;
+template class Formatter<usize>;
+
 template class Formatter<i8>;
 template class Formatter<i16>;
 template class Formatter<i32>;
 template class Formatter<i64>;
+template class Formatter<isize>;
 
 Formatter<bool>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ move(base_formatter) } {

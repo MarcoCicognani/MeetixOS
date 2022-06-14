@@ -53,11 +53,11 @@ TEST_CASE(resize) {
 TEST_CASE(clear) {
     Vector vector{ 1, 2, 3, 4, 5 };
 
-    vector.clear(Vector<int>::KeepStorageCapacity::Yes);
+    vector.clear(KeepStorageCapacity::Yes);
     VERIFY(vector.is_empty());
     VERIFY_GREATER_EQUAL(vector.capacity(), 5);
 
-    vector.clear(Vector<int>::KeepStorageCapacity::No);
+    vector.clear(KeepStorageCapacity::No);
     VERIFY(vector.is_empty());
     VERIFY_EQUAL(vector.capacity(), 0);
 }

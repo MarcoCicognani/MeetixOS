@@ -145,8 +145,6 @@ TEST_CASE(floating_format) {
     ensure_formatted("inf", "{}", INFINITY);
     ensure_formatted("-inf", "{}", -INFINITY);
 
-    // FIXME: There is always the question what we mean with the width field. Do we mean significant digits?
-    //        Do we mean the whole width? This is what was the simplest to implement:
     ensure_formatted("xx1.1", "{:x>5.1}", 1.12);
 }
 
@@ -170,4 +168,34 @@ TEST_CASE(magnitude_less_than_zero) {
 
 TEST_CASE(list_format) {
     ensure_formatted("[ 1, 2, 3, 4, 5, 6 ]", "{}", List{ 1, 2, 3, 4, 5, 6 });
+}
+
+TEST_CASE(pair_format) {
+    ensure_formatted("hi : abc", "{}", Pair{ "hi"sv, "abc"sv });
+    ensure_formatted("0x4 : 0xff", "{:#x}", Pair{ 4, 0xff });
+}
+
+TEST_CASE(range_format) {
+    StringBuilder string_builder{};
+
+    ensure_formatted("0..25", "{}", Range{ 0, 25 });
+    ensure_formatted("0..=25", "{}", RangeInclusive{ 0, 25 });
+}
+
+TEST_CASE(map_format) {
+    Error error{ EACCES, "Access Denied", TC::Error::FromSyscall::Yes };
+
+    StringBuilder string_builder{};
+
+
+
+    Text::format(string_builder,
+                 "{} {} {}\n",
+                 error.source_location().file_path(),
+                 error.source_location().function(),
+                 error.source_location().line());
+    s_write(STDOUT_FILENO, string_builder.as_string_view().as_cstr(), string_builder.as_string_view().len());
+
+    /* TODO implement Map as single dimension */
+    // ensure_formatted("{ 0 : 10, 1 : 20, 2 : 30 }", "{}", Map{ Pair{ 0, 10 }, Pair{ 1, 20 }, Pair{ 2, 30 } });
 }

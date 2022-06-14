@@ -42,7 +42,7 @@ BraceWrapping:
 BreakBeforeBinaryOperators: All
 BreakInheritanceList: AfterComma
 BreakAfterJavaFieldAnnotations: true
-ColumnLimit: 120
+ColumnLimit: 140
 Cpp11BracedListStyle: false
 EmptyLineBeforeAccessModifier: Always
 IncludeBlocks: Preserve

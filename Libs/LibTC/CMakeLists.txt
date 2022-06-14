@@ -15,12 +15,12 @@ add_library(LibTC STATIC
         Collection/StringBuilder.cc
         Collection/StringStorage.cc
         Collection/StringView.cc
-        Hashing/Integer.cc
-        Hashing/Pointer.cc
         Memory/Shareable.cc
-        Text/Lexer.cc
+        Text/Format.cc
         Text/FormatLexer.cc
         Text/FormatParser.cc
-        Text/Format.cc
-        SourceLocation.cc
-        Error.cc Text/Formatter.cc)
+        Text/Formatter.cc
+        Text/Lexer.cc
+        Error.cc
+        Hashing.cc
+        SourceLocation.cc)

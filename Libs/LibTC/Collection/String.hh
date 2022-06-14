@@ -12,12 +12,17 @@
 
 #pragma once
 
+#include <LibTC/Collection/Enums/CaseSensitivity.hh>
+#include <LibTC/Collection/Enums/TrimMode.hh>
+#include <LibTC/Collection/Enums/TrimWhitespace.hh>
 #include <LibTC/Collection/StringStorage.hh>
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Option.hh>
+#include <LibTC/Hashing.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Memory/NonNullRef.hh>
+#include <LibTC/Trait/TypeIntrinsics.hh>
 
 namespace TC {
 namespace Collection {
@@ -186,5 +191,20 @@ private:
 } /* namespace Collection */
 
 using Collection::String;
+
+namespace Trait {
+
+template<>
+struct TypeIntrinsics<String> : public Details::TypeIntrinsics<String> {
+    static usize hash(String const& value) {
+        return Hashing::string_calculate_hash(value.as_cstr(), value.len());
+    }
+
+    static constexpr bool is_trivial() {
+        return false;
+    }
+};
+
+} /* namespace Trait */
 
 } /* namespace TC */
