@@ -17,8 +17,8 @@
 
 using namespace TC;
 
-TEST_CASE(try_from) {
-    auto error_or_empty_string = String::try_from("");
+TEST_CASE(try_construct_from) {
+    auto error_or_empty_string = String::try_construct_from("");
     VERIFY(error_or_empty_string.is_value());
 
     auto empty_string = error_or_empty_string.unwrap_value();
@@ -26,7 +26,7 @@ TEST_CASE(try_from) {
     VERIFY_EQUAL(empty_string.len(), 0);
     VERIFY_EQUAL(empty_string, "");
 
-    auto error_or_filled_string = String::try_from("MeetixOS C++");
+    auto error_or_filled_string = String::try_construct_from("MeetixOS C++");
     VERIFY(error_or_filled_string.is_value());
 
     auto filled_string = error_or_filled_string.unwrap_value();
@@ -34,7 +34,7 @@ TEST_CASE(try_from) {
     VERIFY_EQUAL(filled_string.len(), 12);
     VERIFY_EQUAL(filled_string, "MeetixOS C++");
 
-    auto error_or_sub_string = String::try_from("MeetixOS C++", 8);
+    auto error_or_sub_string = String::try_construct_from("MeetixOS C++", 8);
     VERIFY(error_or_sub_string.is_value());
 
     auto sub_string = error_or_sub_string.unwrap_value();
@@ -43,7 +43,7 @@ TEST_CASE(try_from) {
     VERIFY_EQUAL(sub_string, "MeetixOS");
 
     StringView string_view{ "Hello World Gun!" };
-    auto       error_or_string_from_view = String::try_from(string_view);
+    auto       error_or_string_from_view = String::try_construct_from(string_view);
     VERIFY(error_or_string_from_view.is_value());
 
     auto string_from_view = error_or_string_from_view.unwrap_value();

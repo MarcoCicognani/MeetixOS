@@ -28,9 +28,7 @@ public:
     /**
      * @brief Constructors
      */
-    explicit Error(OSError        os_error,
-                   FromSyscall    from_syscall   = FromSyscall::No,
-                   SourceLocation error_location = SourceLocation::here());
+    explicit Error(OSError os_error, FromSyscall from_syscall = FromSyscall::No, SourceLocation error_location = SourceLocation::here());
     explicit Error(char const*    string_literal,
                    FromSyscall    from_syscall   = FromSyscall::No,
                    SourceLocation error_location = SourceLocation::here());
@@ -46,6 +44,9 @@ public:
     [[nodiscard]] char const*    string_literal() const;
     [[nodiscard]] FromSyscall    from_syscall() const;
     [[nodiscard]] SourceLocation source_location() const;
+
+    [[nodiscard]] bool operator==(OSError const& rhs) const;
+    [[nodiscard]] bool operator==(char const* rhs) const;
 
 private:
     OSError        m_os_error;

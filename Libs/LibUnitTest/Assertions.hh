@@ -144,7 +144,19 @@
         }                                                                                                                                  \
     } while ( false )
 
-#define VERIFY_IS_PRESENT_EQUAL(expression, expected_value)                                                                                   \
+#define VERIFY_IS_PRESENT(expression)                                                                                                      \
+    do {                                                                                                                                   \
+        auto value_or_none = (expression);                                                                                                 \
+        if ( !value_or_none.is_present() ) [[unlikely]] {                                                                                  \
+            printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_PRESENT(\033[31m%s\033[0m) Failed...\n",                                 \
+                   __FILE__,                                                                                                               \
+                   __LINE__,                                                                                                               \
+                   #expression);                                                                                                           \
+            UnitTest::Suite::inst().current_test_must_fail();                                                                              \
+        }                                                                                                                                  \
+    } while ( false )
+
+#define VERIFY_IS_PRESENT_EQUAL(expression, expected_value)                                                                                \
     do {                                                                                                                                   \
         auto value_or_none = (expression);                                                                                                 \
         if ( !value_or_none.is_present() || !(value_or_none.value() == expected_value) ) [[unlikely]] {                                    \
@@ -157,7 +169,7 @@
         }                                                                                                                                  \
     } while ( false )
 
-#define VERIFY_IS_NONE(expression)                                                                                                            \
+#define VERIFY_IS_NONE(expression)                                                                                                         \
     do {                                                                                                                                   \
         auto value_or_none = (expression);                                                                                                 \
         if ( value_or_none.is_present() ) [[unlikely]] {                                                                                   \
@@ -166,16 +178,16 @@
         }                                                                                                                                  \
     } while ( false )
 
-#define VERIFY_IS_VALUE(expression)                                                                                                           \
+#define VERIFY_IS_VALUE(expression)                                                                                                        \
     do {                                                                                                                                   \
         auto error_or_value = (expression);                                                                                                \
         if ( !error_or_value.is_value() ) [[unlikely]] {                                                                                   \
-            printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_VALUE(\033[31m%s\033[0m) Failed...\n", __FILE__, __LINE__, #expression);  \
+            printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_VALUE(\033[31m%s\033[0m) Failed...\n", __FILE__, __LINE__, #expression); \
             UnitTest::Suite::inst().current_test_must_fail();                                                                              \
         }                                                                                                                                  \
     } while ( false )
 
-#define VERIFY_IS_VALUE_EQUAL(expression, expected_value)                                                                                     \
+#define VERIFY_IS_VALUE_EQUAL(expression, expected_value)                                                                                  \
     do {                                                                                                                                   \
         auto error_or_value = (expression);                                                                                                \
         if ( !error_or_value.is_value() || !(error_or_value.value() == expected_value) ) [[unlikely]] {                                    \
@@ -188,7 +200,7 @@
         }                                                                                                                                  \
     } while ( false )
 
-#define VERIFY_IS_ERROR_EQUAL(expression, expected_error)                                                                                     \
+#define VERIFY_IS_ERROR_EQUAL(expression, expected_error)                                                                                  \
     do {                                                                                                                                   \
         auto error_or_value = (expression);                                                                                                \
         if ( !error_or_value.is_error() || !(error_or_value.error() == expected_error) ) [[unlikely]] {                                    \

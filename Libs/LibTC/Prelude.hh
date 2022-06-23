@@ -13,6 +13,8 @@
 #pragma once
 
 #include <LibTC/Assertions.hh>
+#include <LibTC/BitCast.hh>
+#include <LibTC/CharTypes.hh>
 #include <LibTC/Collection/List.hh>
 #include <LibTC/Collection/Map.hh>
 #include <LibTC/Collection/Pair.hh>
@@ -35,10 +37,11 @@
 #include <LibTC/Hashing.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Math.hh>
+#include <LibTC/Memory/Find.hh>
 #include <LibTC/Memory/NonNullBox.hh>
 #include <LibTC/Memory/NonNullRef.hh>
 #include <LibTC/Memory/Raw.hh>
-#include <LibTC/Memory/Shareable.hh>
+#include <LibTC/Memory/Tags.hh>
 #include <LibTC/SourceLocation.hh>
 #include <LibTC/Text/Format.hh>
 #include <LibTC/Text/FormatLexer.hh>

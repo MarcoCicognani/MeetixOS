@@ -10,14 +10,15 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/ctype.h>
-#include <LibC/string.h>
 #include <LibTC/Assertions.hh>
+#include <LibTC/BitCast.hh>
+#include <LibTC/CharTypes.hh>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/Functional/Must.hh>
 #include <LibTC/Functional/Try.hh>
+#include <LibTC/Memory/Find.hh>
 #include <LibTC/Trait/NumericLimits.hh>
 
 namespace TC::Collection {
@@ -32,7 +33,7 @@ StringView::StringView(String const& string) noexcept
 }
 
 StringView::StringView(char const* str) noexcept
-    : StringView{ str, str != nullptr ? strlen(str) : 0 } {
+    : StringView{ str, str != nullptr ? __builtin_strlen(str) : 0 } {
 }
 
 StringView::StringView(StringView const& rhs) noexcept
@@ -93,7 +94,7 @@ int StringView::compare(StringView rhs) const {
 
     /* use the optimized mem-cmp for the minimum of the two lengths */
     auto min_len = len() < rhs.len() ? len() : rhs.len();
-    auto res     = memcmp(as_cstr(), rhs.as_cstr(), min_len);
+    auto res     = __builtin_memcmp(as_cstr(), rhs.as_cstr(), min_len);
     if ( res == 0 ) {
         if ( len() < rhs.len() )
             return -1;
@@ -110,7 +111,7 @@ bool StringView::equals_ignore_case(StringView rhs) const {
         return false;
 
     for ( usize i = 0; i < len(); ++i ) {
-        if ( tolower(at(i)) != tolower(rhs.at(i)) )
+        if ( to_ascii_lowercase(at(i)) != to_ascii_lowercase(rhs.at(i)) )
             return false;
     }
     return true;
@@ -170,10 +171,10 @@ bool StringView::starts_with(StringView rhs, CaseSensitivity case_sensitivity) c
         return true;
 
     if ( case_sensitivity == CaseSensitivity::Sensitive )
-        return memcmp(as_cstr(), rhs.as_cstr(), rhs.len()) == 0;
+        return __builtin_memcmp(as_cstr(), rhs.as_cstr(), rhs.len()) == 0;
     else {
         for ( usize i = 0; i < rhs.len(); ++i ) {
-            if ( tolower(at(i)) != tolower(rhs.at(i)) )
+            if ( to_ascii_lowercase(at(i)) != to_ascii_lowercase(rhs.at(i)) )
                 return false;
         }
     }
@@ -187,7 +188,7 @@ bool StringView::starts_with(char rhs, CaseSensitivity case_sensitivity) const {
     if ( case_sensitivity == CaseSensitivity::Sensitive )
         return at(0) == rhs;
     else
-        return tolower(at(0)) == tolower(rhs);
+        return to_ascii_lowercase(at(0)) == to_ascii_lowercase(rhs);
 }
 
 bool StringView::ends_with(StringView rhs, CaseSensitivity case_sensitivity) const {
@@ -201,11 +202,11 @@ bool StringView::ends_with(StringView rhs, CaseSensitivity case_sensitivity) con
         return false;
 
     if ( case_sensitivity == CaseSensitivity::Sensitive )
-        return memcmp(as_cstr() + (len() - rhs.len()), rhs.as_cstr(), rhs.len()) == 0;
+        return __builtin_memcmp(as_cstr() + (len() - rhs.len()), rhs.as_cstr(), rhs.len()) == 0;
     else {
         usize str_i = len() - rhs.len();
         for ( usize i = 0; i < rhs.len(); ++i, ++str_i ) {
-            if ( tolower(at(str_i)) != tolower(rhs.at(i)) )
+            if ( to_ascii_lowercase(at(str_i)) != to_ascii_lowercase(rhs.at(i)) )
                 return false;
         }
     }
@@ -219,7 +220,7 @@ bool StringView::ends_with(char rhs, CaseSensitivity case_sensitivity) const {
     if ( case_sensitivity == CaseSensitivity::Sensitive )
         return at(len() - 1) == rhs;
     else
-        return tolower(at(len() - 1)) == tolower(rhs);
+        return to_ascii_lowercase(at(len() - 1)) == to_ascii_lowercase(rhs);
 }
 
 template<typename T>
@@ -369,11 +370,9 @@ Option<usize> StringView::find(StringView needle, size_t start) const {
     if ( start >= len() )
         return {};
 
-    auto ptr_pos = memmem(as_cstr() + start, len() - start, needle.as_cstr(), needle.len());
-    if ( ptr_pos != nullptr )
-        return reinterpret_cast<char const*>(ptr_pos) - as_cstr();
-    else
-        return {};
+    return find_in_memory(as_cstr() + start, len() - start, needle.as_cstr(), needle.len())
+        .map<usize>([](auto ptr_pos) { return bit_cast<usize>(ptr_pos); })
+        .map<usize>([this](usize result_as_usize) { return result_as_usize - bit_cast<usize>(as_cstr()); });
 }
 
 Option<usize> StringView::find_last(char needle) const {
@@ -393,11 +392,11 @@ ErrorOr<Vector<usize>> StringView::try_find_all(StringView needle) const {
 
     usize current_position = 0;
     while ( current_position < len() ) {
-        auto ptr_pos = memmem(as_cstr() + current_position, len() - current_position, needle.as_cstr(), needle.len());
-        if ( ptr_pos == nullptr )
+        auto ptr_pos_or_none = find_in_memory(as_cstr() + current_position, len() - current_position, needle.as_cstr(), needle.len());
+        if ( !ptr_pos_or_none.is_present() )
             break;
 
-        auto char_ptr_pos   = reinterpret_cast<char const*>(ptr_pos);
+        auto char_ptr_pos   = ptr_pos_or_none.value();
         auto relative_index = char_ptr_pos - (as_cstr() + current_position);
 
         TRY(positions.try_append(current_position + relative_index));
@@ -435,15 +434,15 @@ bool StringView::contains(StringView rhs, CaseSensitivity case_sensitivity) cons
         return false;
 
     if ( case_sensitivity == CaseSensitivity::Sensitive )
-        return memmem(as_cstr(), len(), rhs.as_cstr(), rhs.len()) != nullptr;
+        return find_in_memory(as_cstr(), len(), rhs.as_cstr(), rhs.len()).is_present();
 
-    auto needle_first = tolower(rhs.at(0));
+    auto needle_first = to_ascii_lowercase(rhs.at(0));
     for ( usize i = 0; i < len(); ++i ) {
-        if ( tolower(at(i)) != needle_first )
+        if ( to_ascii_lowercase(at(i)) != needle_first )
             continue;
 
         for ( usize ni = 0; i + ni < len(); ++ni ) {
-            if ( tolower(at(i + ni)) != tolower(rhs.at(ni)) ) {
+            if ( to_ascii_lowercase(at(i + ni)) != to_ascii_lowercase(rhs.at(ni)) ) {
                 i += ni;
                 break;
             }
@@ -463,7 +462,7 @@ bool StringView::contains(char rhs, CaseSensitivity case_sensitivity) const {
             if ( c == rhs )
                 return true;
         } else {
-            if ( tolower(c) == tolower(rhs) )
+            if ( to_ascii_lowercase(c) == to_ascii_lowercase(rhs) )
                 return true;
         }
     }

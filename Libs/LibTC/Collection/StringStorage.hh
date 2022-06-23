@@ -15,14 +15,13 @@
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Memory/NonNullRef.hh>
-#include <LibTC/Memory/Shareable.hh>
 
 namespace TC {
 namespace Collection {
 
 class StringView;
 
-class StringStorage : public Shareable {
+class StringStorage {
     TC_DENY_COPY(StringStorage);
     TC_DENY_MOVE(StringStorage);
 
@@ -30,10 +29,11 @@ public:
     /**
      * @brief Constructors
      */
-    static NonNullRef<StringStorage>          from(StringView string_view);
-    static ErrorOr<NonNullRef<StringStorage>> try_from(StringView string_view);
+    static NonNullRef<StringStorage>          construct_from(StringView string_view);
+    static ErrorOr<NonNullRef<StringStorage>> try_construct_from(StringView string_view);
 
-    ~StringStorage() override = default;
+    explicit StringStorage(StringView string_view);
+    ~StringStorage() = default;
 
     /**
      * @brief Custom delete operator
@@ -43,8 +43,8 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] char const* data() const;
-    [[nodiscard]] usize       count() const;
+    [[nodiscard]] char const* data_storage() const;
+    [[nodiscard]] usize       char_count() const;
 
     [[nodiscard]] bool is_empty() const;
 
@@ -53,9 +53,6 @@ public:
      * class plus the capacity for the string storage
      */
     static usize alloc_size(usize char_count);
-
-private:
-    explicit StringStorage(StringView string_view);
 
 private:
     usize m_char_count{ 0 };

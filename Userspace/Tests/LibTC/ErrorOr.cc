@@ -11,121 +11,95 @@
  */
 
 #include <LibTC/Functional/ErrorOr.hh>
+#include <LibTC/Memory/NonNullBox.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
 using namespace TC;
 
 TEST_CASE(value_and_error) {
-    auto may_produce_value = [](int value) -> ErrorOr<int> {
+    auto return_110_on_100 = [](i32 value) -> ErrorOr<i32> {
         if ( value == 100 )
             return 110;
         else
             return Error{ EINVAL };
     };
 
-    auto must_be_value_result = may_produce_value(100);
-    VERIFY(must_be_value_result.is_value());
-    VERIFY_EQUAL(must_be_value_result.value(), 110);
-
-    auto must_be_error_result = may_produce_value(0);
-    VERIFY(must_be_error_result.is_error());
-    VERIFY_EQUAL(must_be_error_result.error().os_error(), EINVAL);
+    VERIFY_IS_VALUE_EQUAL(return_110_on_100(100), 110);
+    VERIFY_IS_ERROR_EQUAL(return_110_on_100(0), EINVAL);
 }
 
 TEST_CASE(unwrap_value) {
-    class Object {
+    struct USize {
     public:
-        Object() = default;
-        explicit Object(usize value)
-            : m_value{ value } {
-        }
-
-        [[nodiscard]] usize value() const {
-            return m_value;
-        }
-
-    private:
         usize m_value{ 0 };
     };
 
-    ErrorOr<Object> error_or_object{ Object{ 0xcafebabe } };
-    VERIFY(error_or_object.is_value());
+    ErrorOr<USize> error_or_usize{ USize{ 0xcafebabe } };
+    VERIFY(error_or_usize.is_value());
 
-    auto const& object = error_or_object.value();
-    VERIFY_EQUAL(object.value(), 0xcafebabe);
+    auto& usize_ref = error_or_usize.value();
+    VERIFY_EQUAL(usize_ref.m_value, 0xcafebabe);
 
-    auto object_v = error_or_object.unwrap_value();
-    VERIFY_EQUAL(object_v.value(), 0xcafebabe);
-    VERIFY_FALSE(error_or_object.is_value());
-    VERIFY_FALSE(error_or_object.is_error());
+    usize_ref.m_value = 123;
+
+    auto usize_value = error_or_usize.unwrap_value();
+    VERIFY_EQUAL(usize_value.m_value, 123);
+    VERIFY_FALSE(error_or_usize.is_value());
+    VERIFY_FALSE(error_or_usize.is_error());
 }
 
 TEST_CASE(unwrap_error) {
-    ErrorOr<int> error_or_int{ Error{ ENOENT, "No Entry Found" } };
-    VERIFY(error_or_int.is_error());
+    ErrorOr<i32> error_or_i32{ Error{ ENOENT, "No Entry Found" } };
+    VERIFY(error_or_i32.is_error());
 
-    auto const& error = error_or_int.error();
+    auto& error = error_or_i32.error();
     VERIFY_EQUAL(error.os_error(), ENOENT);
 
-    auto error_v = error_or_int.unwrap_error();
-    VERIFY_EQUAL(error_v.os_error(), ENOENT);
-    VERIFY_FALSE(error_or_int.is_error());
-    VERIFY_FALSE(error_or_int.is_value());
+    error = Error{ EINVAL };
+
+    auto error_value = error_or_i32.unwrap_error();
+    VERIFY_EQUAL(error_value, EINVAL);
+    VERIFY_FALSE(error_or_i32.is_error());
+    VERIFY_FALSE(error_or_i32.is_value());
 }
 
 TEST_CASE(reference_as_value) {
-    auto  int_ptr = new usize{ 0xdeadbeef };
-    auto& int_ref = *int_ptr;
+    NonNullBox<i32> boxed_i32{ FromArgs, 123 };
 
-    ErrorOr<usize&> error_or_usize{ int_ref };
+    auto& i32_ref = boxed_i32.as_ref();
 
-    VERIFY(error_or_usize.is_value());
+    ErrorOr<i32&> error_or_i32{ i32_ref };
+    VERIFY(error_or_i32.is_value());
 
-    auto& int_ref_from_error_or = error_or_usize.value();
-    VERIFY_EQUAL(int_ref_from_error_or, 0xdeadbeef);
+    auto& i32_ref_from_error_or = error_or_i32.value();
+    VERIFY_EQUAL(i32_ref_from_error_or, 123);
+    VERIFY_EQUAL(&i32_ref_from_error_or, &i32_ref);
 
-    int_ref_from_error_or = 0xcafebabe;
-    VERIFY_EQUAL(*int_ptr, 0xcafebabe);
-    VERIFY_EQUAL(int_ref, 0xcafebabe);
+    i32_ref_from_error_or = 456;
+    VERIFY_EQUAL(*boxed_i32, 456);
+    VERIFY_EQUAL(i32_ref, 456);
 
-    auto& int_ref_value = error_or_usize.unwrap_value();
-    VERIFY_EQUAL(int_ref_value, 0xcafebabe);
-    VERIFY_FALSE(error_or_usize.is_value());
-    VERIFY_FALSE(error_or_usize.is_error());
-
-    delete int_ptr;
+    auto& int_ref_value = error_or_i32.unwrap_value();
+    VERIFY_EQUAL(int_ref_value, 456);
+    VERIFY_FALSE(error_or_i32.is_value());
+    VERIFY_FALSE(error_or_i32.is_error());
 }
 
 TEST_CASE(assignment_operator) {
-    ErrorOr<int> error_or_int{ 512 };
+    ErrorOr<i32> error_or_i32{ 512 };
 
-    error_or_int = Error{ ENOENT };
-    VERIFY(error_or_int.is_error());
-    VERIFY_FALSE(error_or_int.is_value());
-    VERIFY_EQUAL(error_or_int.error().os_error(), ENOENT);
+    error_or_i32 = Error{ ENOENT };
+    VERIFY_IS_ERROR_EQUAL(error_or_i32, ENOENT);
 
-    error_or_int = 4096;
-    VERIFY(error_or_int.is_value());
-    VERIFY_FALSE(error_or_int.is_error());
-    VERIFY_EQUAL(error_or_int.value(), 4096);
+    error_or_i32 = 486;
+    VERIFY_IS_VALUE_EQUAL(error_or_i32, 486);
 
     ErrorOr<void> error_or_void{};
 
     error_or_void = Error{ EINVAL };
-    VERIFY(error_or_void.is_error());
-    VERIFY_FALSE(error_or_void.is_value());
-    VERIFY_EQUAL(error_or_void.error().os_error(), EINVAL);
+    VERIFY_IS_ERROR_EQUAL(error_or_void, EINVAL);
 
-    ErrorOr<int&> error_or_ref = *new int{ 256 };
-
-    VERIFY(error_or_ref.is_value());
-
-    auto* value = &error_or_ref.value();
-    delete value;
-
-    error_or_ref = Error{ ENOENT };
-    VERIFY(error_or_ref.is_error());
-    VERIFY_FALSE(error_or_ref.is_value());
-    VERIFY_EQUAL(error_or_ref.error().os_error(), ENOENT);
+    ErrorOr<NonNullBox<i32>> error_or_boxed_i32{ NonNullBox<i32>{ FromArgs, 64 } };
+    VERIFY(error_or_boxed_i32.is_value());
 }

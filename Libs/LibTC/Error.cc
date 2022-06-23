@@ -11,6 +11,7 @@
  */
 
 #include <LibC/string.h>
+#include <LibTC/Collection/StringView.hh>
 #include <LibTC/Error.hh>
 
 namespace TC {
@@ -49,6 +50,14 @@ Error::FromSyscall Error::from_syscall() const {
 
 SourceLocation Error::source_location() const {
     return m_error_location;
+}
+
+bool Error::operator==(const OSError& rhs) const {
+    return m_os_error == rhs;
+}
+
+bool Error::operator==(const char* rhs) const {
+    return StringView{ m_string_literal } == StringView{ rhs };
 }
 
 } /* namespace TC */

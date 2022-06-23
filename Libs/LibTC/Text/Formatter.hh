@@ -13,6 +13,7 @@
 #pragma once
 
 #include <LibTC/Assertions.hh>
+#include <LibTC/BitCast.hh>
 #include <LibTC/Collection/List.hh>
 #include <LibTC/Collection/Map.hh>
 #include <LibTC/Collection/Pair.hh>
@@ -36,13 +37,14 @@ namespace TC {
 namespace Text {
 
 class BaseFormatter {
-protected:
+public:
     /**
      * @brief Constructor
      */
     explicit BaseFormatter(StringBuilder& string_builder);
     explicit BaseFormatter(StringBuilder& string_builder, FormatParser::Specifications specifications);
 
+protected:
     /**
      * @brief put formatting functions
      */
@@ -138,8 +140,8 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
 
     /**
      * @brief Performs the format on the given string-builder
@@ -153,8 +155,8 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
 
     /**
      * @brief Performs the format on the given string-builder
@@ -168,8 +170,8 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
 
     /**
      * @brief Performs the format on the given string-builder
@@ -183,13 +185,13 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(bool value);
+    ErrorOr<void> format(bool value) const;
 };
 
 template<>
@@ -198,13 +200,13 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(char value);
+    ErrorOr<void> format(char value) const;
 };
 
 #ifndef IN_KERNEL
@@ -214,13 +216,13 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(float value);
+    ErrorOr<void> format(float value) const;
 };
 
 template<>
@@ -229,8 +231,8 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
 
     /**
      * @brief Performs the format on the given string-builder
@@ -244,8 +246,8 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
 
     /**
      * @brief Performs the format on the given string-builder
@@ -260,11 +262,9 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
         : BaseFormatter{ move(base_formatter) } {
-    }
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-        : BaseFormatter{ string_builder, specifications } {
     }
 
     /**
@@ -277,7 +277,7 @@ public:
 
         /* forward to the integral formatter */
         Formatter<usize> formatter{ *this };
-        return formatter.format(reinterpret_cast<usize>(value));
+        return formatter.format(bit_cast<usize>(value));
     }
 };
 
@@ -315,9 +315,9 @@ public:
     ErrorOr<void> format(unsigned char const* value) {
         if ( display_as() == FormatParser::DisplayAs::Pointer ) {
             Formatter<usize> formatter{ *this };
-            return formatter.format(reinterpret_cast<usize>(value));
+            return formatter.format(bit_cast<usize>(value));
         } else
-            return Formatter<StringView>::format(StringView{ reinterpret_cast<char const*>(value), SIZE });
+            return Formatter<StringView>::format(StringView{ bit_cast<char const*>(value), SIZE });
     }
 };
 
@@ -327,17 +327,15 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
         : BaseFormatter{ move(base_formatter) } {
-    }
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-        : BaseFormatter{ string_builder, specifications } {
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(List<T> value) {
+    ErrorOr<void> format(List<T> const& value) {
         TRY(try_put_literal("[ "sv));
 
         bool is_first = true;
@@ -360,17 +358,46 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
         : BaseFormatter{ move(base_formatter) } {
-    }
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-        : BaseFormatter{ string_builder, specifications } {
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(Set<T> value) {
+    ErrorOr<void> format(Set<T> const& value) {
+        TRY(try_put_literal("[ "sv));
+
+        bool is_first = true;
+        for ( auto const& element : value ) {
+            Formatter<T> element_formatter{ *this };
+            if ( !is_first )
+                TRY(try_put_literal(", "sv));
+            else
+                is_first = false;
+
+            TRY(element_formatter.format(element));
+        }
+        return try_put_literal(" ]"sv);
+    }
+};
+
+template<typename T>
+class Formatter<OrderedSet<T>> : public BaseFormatter {
+public:
+    /**
+     * @brief Constructors
+     */
+    using BaseFormatter::BaseFormatter;
+    explicit Formatter(BaseFormatter base_formatter)
+        : BaseFormatter{ move(base_formatter) } {
+    }
+
+    /**
+     * @brief Performs the format on the given string-builder
+     */
+    ErrorOr<void> format(OrderedSet<T> const& value) {
         TRY(try_put_literal("[ "sv));
 
         bool is_first = true;
@@ -393,17 +420,46 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
         : BaseFormatter{ move(base_formatter) } {
-    }
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-        : BaseFormatter{ string_builder, specifications } {
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(Map<K, T> value) {
+    ErrorOr<void> format(Map<K, T> const& value) {
+        TRY(try_put_literal("{ "sv));
+
+        bool is_first = true;
+        for ( auto const& pair : value ) {
+            Formatter<Pair<K, T>> element_formatter{ *this };
+            if ( !is_first )
+                TRY(try_put_literal(", "sv));
+            else
+                is_first = false;
+
+            TRY(element_formatter.format(pair));
+        }
+        return try_put_literal(" }"sv);
+    }
+};
+
+template<typename K, typename T>
+class Formatter<OrderedMap<K, T>> : public BaseFormatter {
+public:
+    /**
+     * @brief Constructors
+     */
+    using BaseFormatter::BaseFormatter;
+    explicit Formatter(BaseFormatter base_formatter)
+        : BaseFormatter{ move(base_formatter) } {
+    }
+
+    /**
+     * @brief Performs the format on the given string-builder
+     */
+    ErrorOr<void> format(OrderedMap<K, T> const& value) {
         TRY(try_put_literal("{ "sv));
 
         bool is_first = true;
@@ -426,23 +482,21 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
         : BaseFormatter{ move(base_formatter) } {
-    }
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-        : BaseFormatter{ string_builder, specifications } {
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(Pair<K, T> value) {
+    ErrorOr<void> format(Pair<K, T> const& value) {
         /* format the key for the first */
         Formatter<K> key_formatter{ *this };
         TRY(key_formatter.format(value.key()));
 
         /* add the colon for the separator */
-        TRY(try_put_literal(" : "sv));
+        TRY(try_put_literal(": "sv));
 
         /* format the value */
         Formatter<T> value_formatter{ *this };
@@ -456,17 +510,15 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
         : BaseFormatter{ move(base_formatter) } {
-    }
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-        : BaseFormatter{ string_builder, specifications } {
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(Range<T> value) {
+    ErrorOr<void> format(Range<T> const& value) {
         Formatter<T> formatter{ *this };
         TRY(formatter.format(value.begin().value()));
         TRY(try_put_literal(".."sv));
@@ -480,17 +532,15 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
         : BaseFormatter{ move(base_formatter) } {
-    }
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-        : BaseFormatter{ string_builder, specifications } {
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(RangeInclusive<T> value) {
+    ErrorOr<void> format(RangeInclusive<T> const& value) {
         Formatter<T> formatter{ *this };
         TRY(formatter.format(value.begin().value()));
         TRY(try_put_literal("..="sv));
@@ -512,7 +562,7 @@ public:
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(StringBuilder value);
+    ErrorOr<void> format(StringBuilder const& value);
 };
 
 template<typename T>
@@ -521,17 +571,15 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
         : BaseFormatter{ move(base_formatter) } {
-    }
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-        : BaseFormatter{ string_builder, specifications } {
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(Vector<T> value) {
+    ErrorOr<void> format(Vector<T> const& value) {
         if ( display_as() == FormatParser::DisplayAs::Pointer ) {
             Formatter<T*> formatter{ *this };
             return formatter.format(value.data());
@@ -559,17 +607,15 @@ public:
     /**
      * @brief Constructors
      */
+    using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
         : BaseFormatter{ move(base_formatter) } {
-    }
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-        : BaseFormatter{ string_builder, specifications } {
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(Result<T, E> value) {
+    ErrorOr<void> format(Result<T, E> const& value) {
         if ( value.is_value() ) {
             Formatter<T> value_formatter{ *this };
 
@@ -592,13 +638,15 @@ public:
     /**
      * @brief Constructors
      */
-    explicit Formatter(BaseFormatter base_formatter);
-    explicit Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications);
+    using BaseFormatter::BaseFormatter;
+    explicit Formatter(BaseFormatter base_formatter)
+        : BaseFormatter{ move(base_formatter) } {
+    }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    ErrorOr<void> format(Option<T> value) {
+    ErrorOr<void> format(Option<T> const& value) {
         if ( value.is_present() ) {
             Formatter<T> value_formatter{ *this };
 

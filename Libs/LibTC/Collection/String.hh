@@ -35,9 +35,8 @@ public:
     /**
      * @brief Error Safe Constructors
      */
-    static ErrorOr<String> try_from(char const* str);
-    static ErrorOr<String> try_from(char const* str, usize count);
-    static ErrorOr<String> try_from(StringView string_view);
+    static ErrorOr<String> try_construct_from(StringView string_view);
+    static ErrorOr<String> try_construct_from(char const* str, usize count);
 
     /**
      * @brief Constructors
@@ -179,13 +178,13 @@ public:
 
     [[nodiscard]] bool is_empty() const;
 
-    [[nodiscard]] StringView as_view() const;
+    [[nodiscard]] StringView as_string_view() const;
 
 private:
     explicit String(NonNullRef<StringStorage>&& string_storage);
 
 private:
-    NonNullRef<StringStorage> m_string_storage;
+    NonNullRef<StringStorage> m_string_storage_ref;
 };
 
 } /* namespace Collection */

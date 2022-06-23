@@ -74,6 +74,28 @@ public:
     }
 
     /**
+     * @brief Maps the value of this Option into another type
+     */
+    template<typename U>
+    Option<U> map(auto predicate) {
+        if ( is_value() )
+            return predicate(value());
+        else
+            return {};
+    }
+
+    /**
+     * @brief Maps the error of this Option into another type
+     */
+    template<typename U>
+    Option<U> map_error(auto predicate) {
+        if ( is_error() )
+            return predicate(error());
+        else
+            return {};
+    }
+
+    /**
      * @brief Returns the reference to the result value
      */
     T& value() {
@@ -157,6 +179,28 @@ public:
     }
 
     /**
+     * @brief Maps the value of this Option into another type
+     */
+    template<typename U>
+    Option<U> map(auto predicate) {
+        if ( is_value() )
+            return predicate(value());
+        else
+            return {};
+    }
+
+    /**
+     * @brief Maps the error of this Option into another type
+     */
+    template<typename U>
+    Option<U> map_error(auto predicate) {
+        if ( is_error() )
+            return predicate(error());
+        else
+            return {};
+    }
+
+    /**
      * @brief Returns the reference to the result value
      */
     constexpr void value() {
@@ -227,7 +271,7 @@ public:
     }
     constexpr Result(Result const&)     = default;
     constexpr Result(Result&&) noexcept = default;
-    ~Result()                 = default;
+    ~Result()                           = default;
 
     constexpr Result& operator=(T const& value) {
         Result result{ value };
@@ -259,6 +303,28 @@ public:
     constexpr void swap(Result& rhs) noexcept {
         m_value_option.swap(rhs.m_value_option);
         m_error_option.swap(rhs.m_error_option);
+    }
+
+    /**
+     * @brief Maps the value of this Option into another type
+     */
+    template<typename U>
+    Option<U> map(auto predicate) {
+        if ( is_value() )
+            return predicate(value());
+        else
+            return {};
+    }
+
+    /**
+     * @brief Maps the error of this Option into another type
+     */
+    template<typename U>
+    Option<U> map_error(auto predicate) {
+        if ( is_error() )
+            return predicate(error());
+        else
+            return {};
     }
 
     /**

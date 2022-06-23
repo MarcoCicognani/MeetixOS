@@ -15,52 +15,114 @@
 #include <Api/Common.h>
 #include <LibTC/Assertions.hh>
 #include <LibTC/Cxx.hh>
+#include <LibTC/DenyCopy.hh>
+#include <LibTC/DenyMove.hh>
 #include <LibTC/Functional/ErrorOr.hh>
+#include <LibTC/IntTypes.hh>
+#include <LibTC/Memory/Tags.hh>
 
 namespace TC {
 namespace Memory {
+namespace Details {
+
+template<typename T>
+struct RefCounted {
+    TC_DENY_COPY(RefCounted);
+    TC_DENY_MOVE(RefCounted);
+
+public:
+    /**
+     * @brief Constructor
+     */
+    RefCounted() = delete;
+    template<typename... Args>
+    RefCounted(Args&&... args)
+        : m_shared_object{ T{ forward<Args>(args)... } } {
+    }
+
+    ~RefCounted() = default;
+
+    void add_strong_reference() const {
+        auto old_strong_count = __atomic_fetch_add(&m_strong_ref_count, 1, __ATOMIC_SEQ_CST);
+        VERIFY_GREATER_EQUAL(old_strong_count, 1);
+    }
+    void remove_strong_reference() const {
+        auto old_strong_count = __atomic_fetch_sub(&m_strong_ref_count, 1, __ATOMIC_SEQ_CST);
+        VERIFY_GREATER_EQUAL(old_strong_count, 1);
+
+        collect(this);
+    }
+
+    /**
+     * @brief Getters
+     */
+    [[nodiscard]] T& shared_object() {
+        return m_shared_object;
+    }
+    [[nodiscard]] T const& shared_object() const {
+        return m_shared_object;
+    }
+
+    [[nodiscard]] usize strong_ref_count() const {
+        return __atomic_load_n(&m_strong_ref_count, __ATOMIC_SEQ_CST);
+    }
+
+private:
+    static void collect(RefCounted<T> const* ref_counted) {
+        auto strong_ref_count = __atomic_load_n(&ref_counted->m_strong_ref_count, __ATOMIC_SEQ_CST);
+        if ( strong_ref_count == 0 )
+            delete ref_counted;
+    }
+
+private:
+    mutable usize m_strong_ref_count{ 1 };
+
+    T m_shared_object;
+};
+
+} /* namespace Details */
 
 template<typename T>
 class NonNullRef {
 public:
-    enum AdoptTag { Adopt };
+    /**
+     * @brief Error safe constructor
+     */
+    template<typename... Args>
+    static ErrorOr<NonNullRef<T>> try_construct_from_args(Args&&... args) {
+        auto ref_counted_ptr = new (nothrow) Details::RefCounted<T>{ forward<Args>(args)... };
+        if ( ref_counted_ptr != nullptr ) [[likely]]
+            return NonNullRef<T>{ Adopt, ref_counted_ptr };
+        else
+            return Error{ ENOMEM };
+    }
 
-public:
     /**
      * @brief Constructors
      */
     NonNullRef() = delete;
-    NonNullRef(AdoptTag, T& ref)
-        : m_shared_ptr{ &ref } {
+    template<typename... Args>
+    NonNullRef(FromArgsTag, Args&&... args)
+        : m_ref_counted_ptr{ new (nothrow) Details::RefCounted<T>{ forward<Args>(args)... } } {
+        VERIFY_NOT_NULL(m_ref_counted_ptr);
     }
-    NonNullRef(AdoptTag, T const& ref)
-        : m_shared_ptr{ const_cast<T*>(&ref) } {
+    NonNullRef(AdoptTag, Details::RefCounted<T>* ref_counted_ptr)
+        : m_ref_counted_ptr{ ref_counted_ptr } {
     }
     NonNullRef(NonNullRef const& rhs)
-        : m_shared_ptr{ rhs.m_shared_ptr } {
-        if ( m_shared_ptr != nullptr ) [[likely]]
-            m_shared_ptr->add_ref();
+        : m_ref_counted_ptr{ rhs.m_ref_counted_ptr } {
+        if ( m_ref_counted_ptr != nullptr ) [[likely]]
+            m_ref_counted_ptr->add_strong_reference();
     }
     NonNullRef(NonNullRef&& rhs) noexcept
-        : m_shared_ptr{ exchange(rhs.m_shared_ptr, nullptr) } {
-    }
-    ~NonNullRef() {
-        if ( m_shared_ptr != nullptr ) [[likely]] {
-            m_shared_ptr->dec_ref();
-            m_shared_ptr = nullptr;
-        }
+        : m_ref_counted_ptr{ exchange(rhs.m_ref_counted_ptr, nullptr) } {
     }
 
-    NonNullRef& operator=(T& ref) {
-        NonNullRef non_null_ref{ ref };
-        swap(non_null_ref);
-        return *this;
+    ~NonNullRef() {
+        if ( m_ref_counted_ptr != nullptr ) [[likely]]
+            m_ref_counted_ptr->remove_strong_reference();
     }
-    NonNullRef& operator=(T const& ref) {
-        NonNullRef non_null_ref{ ref };
-        swap(non_null_ref);
-        return *this;
-    }
+
     NonNullRef& operator=(NonNullRef const& rhs) {
         if ( this == &rhs )
             return *this;
@@ -79,7 +141,7 @@ public:
      * @brief Swaps this ref with another
      */
     void swap(NonNullRef& rhs) noexcept {
-        Cxx::swap(m_shared_ptr, rhs.m_shared_ptr);
+        Cxx::swap(m_ref_counted_ptr, rhs.m_ref_counted_ptr);
     }
 
     /**
@@ -120,12 +182,12 @@ public:
      * @brief Getters
      */
     [[nodiscard]] A_RETURN_NONNULL T* as_ptr() {
-        VERIFY_NOT_NULL(m_shared_ptr);
-        return m_shared_ptr;
+        VERIFY_NOT_NULL(m_ref_counted_ptr);
+        return &m_ref_counted_ptr->shared_object();
     }
     [[nodiscard]] A_RETURN_NONNULL T const* as_ptr() const {
-        VERIFY_NOT_NULL(m_shared_ptr);
-        return m_shared_ptr;
+        VERIFY_NOT_NULL(m_ref_counted_ptr);
+        return &m_ref_counted_ptr->shared_object();
     }
 
     [[nodiscard]] T& as_ref() {
@@ -135,30 +197,17 @@ public:
         return *as_ptr();
     }
 
+    [[nodiscard]] usize strong_ref_count() {
+        VERIFY_NOT_NULL(m_ref_counted_ptr);
+        return m_ref_counted_ptr->strong_ref_count();
+    }
+
 private:
-    T* m_shared_ptr{ nullptr };
+    Details::RefCounted<T>* m_ref_counted_ptr;
 };
-
-template<typename T, typename... Args>
-inline NonNullRef<T> make_ref(Args&&... args) {
-    auto ref_ptr = new (nothrow) T{ forward<Args>(args)... };
-    VERIFY_NOT_NULL(ref_ptr);
-    return NonNullRef<T>{ NonNullRef<T>::Adopt, *ref_ptr };
-}
-
-template<typename T, typename... Args>
-inline ErrorOr<NonNullRef<T>> try_make_ref(Args&&... args) {
-    auto ref_ptr = new (nothrow) T{ forward<Args>(args)... };
-    if ( ref_ptr != nullptr )
-        return NonNullRef<T>{ NonNullRef<T>::Adopt, *ref_ptr };
-    else
-        return Error{ ENOMEM };
-}
 
 } /* namespace Memory */
 
-using Memory::make_ref;
 using Memory::NonNullRef;
-using Memory::try_make_ref;
 
 } /* namespace TC */

@@ -22,7 +22,6 @@ set(LIBTC_SOURCES
         ../../Libs/LibTC/Collection/StringBuilder.cc
         ../../Libs/LibTC/Collection/StringStorage.cc
         ../../Libs/LibTC/Collection/StringView.cc
-        ../../Libs/LibTC/Memory/Shareable.cc
         ../../Libs/LibTC/Text/FormatParser.cc
         ../../Libs/LibTC/Text/Formatter.cc
         ../../Libs/LibTC/Text/Lexer.cc

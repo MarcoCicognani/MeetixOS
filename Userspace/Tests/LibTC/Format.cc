@@ -20,12 +20,11 @@
 using namespace TC;
 
 template<typename... Args>
-void ensure_formatted(StringView expected_result, StringView format_view, Args... args) {
+void ensure_formatted(StringView expected_result, StringView format_view, Args&&... args) {
     StringBuilder string_builder{};
 
     auto error_or_void = format(string_builder, format_view, forward<Args>(args)...);
     VERIFY_FALSE(error_or_void.is_error());
-
     VERIFY_EQUAL(string_builder.as_string_view(), expected_result);
 }
 
@@ -183,19 +182,7 @@ TEST_CASE(range_format) {
 }
 
 TEST_CASE(map_format) {
-    Error error{ EACCES, "Access Denied", TC::Error::FromSyscall::Yes };
-
     StringBuilder string_builder{};
 
-
-
-    Text::format(string_builder,
-                 "{} {} {}\n",
-                 error.source_location().file_path(),
-                 error.source_location().function(),
-                 error.source_location().line());
-    s_write(STDOUT_FILENO, string_builder.as_string_view().as_cstr(), string_builder.as_string_view().len());
-
-    /* TODO implement Map as single dimension */
-    // ensure_formatted("{ 0 : 10, 1 : 20, 2 : 30 }", "{}", Map{ Pair{ 0, 10 }, Pair{ 1, 20 }, Pair{ 2, 30 } });
+    ensure_formatted("{ z: 1, y: 2, x: 3 }", "{}", OrderedMap<StringView, usize>{ { "z", 1uL }, { "y", 2uL }, { "x", 3uL } });
 }

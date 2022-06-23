@@ -15,7 +15,6 @@ add_library(LibTC STATIC
         Collection/StringBuilder.cc
         Collection/StringStorage.cc
         Collection/StringView.cc
-        Memory/Shareable.cc
         Text/Format.cc
         Text/FormatLexer.cc
         Text/FormatParser.cc

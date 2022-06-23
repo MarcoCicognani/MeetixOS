@@ -12,6 +12,7 @@
 
 #include <LibTC/Collection/Range.hh>
 #include <LibTC/Hashing.hh>
+#include <LibTC/BitCast.hh>
 
 namespace TC::Hashing {
 
@@ -33,9 +34,9 @@ usize u64_calculate_hash(u64 key) {
 
 usize pointer_calculate_hash(void const* key) {
     if constexpr ( sizeof(void const*) == 4 )
-        return u32_calculate_hash(reinterpret_cast<u32>(key));
+        return u32_calculate_hash(bit_cast<u32>(key));
     else
-        return u64_calculate_hash(reinterpret_cast<u64>(key));
+        return u64_calculate_hash(bit_cast<u64>(key));
 }
 
 usize string_calculate_hash(char const* key, usize len) {

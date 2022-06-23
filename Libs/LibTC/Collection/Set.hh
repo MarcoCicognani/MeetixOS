@@ -13,6 +13,7 @@
 #pragma once
 
 #include <LibTC/Assertions.hh>
+#include <LibTC/BitCast.hh>
 #include <LibTC/Collection/Enums/InsertResult.hh>
 #include <LibTC/Collection/Enums/KeepStorageCapacity.hh>
 #include <LibTC/Collection/Enums/OnExistingEntry.hh>
@@ -214,10 +215,10 @@ private:
 template<typename T>
 struct SetBucket {
     T* slot() {
-        return reinterpret_cast<T*>(m_storage);
+        return bit_cast<T*>(&m_storage);
     }
     T const* slot() const {
-        return reinterpret_cast<T const*>(m_storage);
+        return bit_cast<T const*>(&m_storage);
     }
 
     SetBucketState m_bucket_state;
@@ -227,10 +228,10 @@ struct SetBucket {
 template<typename T>
 struct OrderedSetBucket {
     T* slot() {
-        return reinterpret_cast<T*>(m_storage);
+        return bit_cast<T*>(&m_storage);
     }
     T const* slot() const {
-        return reinterpret_cast<T const*>(m_storage);
+        return bit_cast<T const*>(&m_storage);
     }
 
     OrderedSetBucket* m_previous;

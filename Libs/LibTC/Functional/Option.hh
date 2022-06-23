@@ -13,6 +13,7 @@
 #pragma once
 
 #include <LibTC/Assertions.hh>
+#include <LibTC/BitCast.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/IntTypes.hh>
 
@@ -85,6 +86,17 @@ public:
     }
 
     /**
+     * @brief Maps the value of this Option into another type
+     */
+    template<typename U>
+    Option<U> map(auto predicate) {
+        if ( is_present() )
+            return predicate(value());
+        else
+            return {};
+    }
+
+    /**
      * @brief Returns a reference to the value from this option
      */
     T& value() {
@@ -136,10 +148,10 @@ public:
 
 private:
     T& storage_as_ref() {
-        return *__builtin_launder(reinterpret_cast<T*>(m_data_storage));
+        return *__builtin_launder(bit_cast<T*>(&m_data_storage));
     }
     T const& storage_as_ref() const {
-        return *__builtin_launder(reinterpret_cast<T const*>(m_data_storage));
+        return *__builtin_launder(bit_cast<T const*>(&m_data_storage));
     }
 
 private:
@@ -191,6 +203,17 @@ public:
      */
     constexpr void swap(Option& rhs) noexcept {
         m_inner_option.swap(rhs.m_inner_option);
+    }
+
+    /**
+     * @brief Maps the value of this Option into another type
+     */
+    template<typename TPredicate>
+    Option map(TPredicate predicate) {
+        if ( is_present() )
+            return Option{ predicate(value()) };
+        else
+            return {};
     }
 
     /**

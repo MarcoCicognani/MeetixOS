@@ -48,7 +48,7 @@ String StringBuilder::to_string() const {
 }
 
 ErrorOr<String> StringBuilder::try_to_string() const {
-    return String::try_from(as_string_view());
+    return String::try_construct_from(as_string_view());
 }
 
 usize StringBuilder::len() const {

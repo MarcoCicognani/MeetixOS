@@ -34,7 +34,7 @@ ErrorOr<void> format(StringBuilder& string_builder, StringView literals_view);
  * @brief Formats the given StringView and writes out into the given StringBuilder
  */
 template<typename... Args>
-ErrorOr<void> format(StringBuilder& string_builder, StringView format_view, Args... variadic_args) {
+ErrorOr<void> format(StringBuilder& string_builder, StringView format_view, Args&&... variadic_args) {
     FormatLexer format_lexer{ format_view };
     return format(string_builder, format_lexer, forward<Args>(variadic_args)...);
 }
@@ -44,7 +44,7 @@ ErrorOr<void> format(StringBuilder& string_builder, StringView format_view, Args
  * variadic_args are > 0
  */
 template<typename T, typename... Args>
-ErrorOr<void> format(StringBuilder& string_builder, FormatLexer& format_lexer, T first_arg, Args... variadic_args) {
+ErrorOr<void> format(StringBuilder& string_builder, FormatLexer& format_lexer, T first_arg, Args&&... variadic_args) {
     /* consume all the non format literals */
     TRY(format(string_builder, format_lexer.consume_literal()));
 

@@ -11,6 +11,7 @@
  */
 
 #include <LibTC/Assertions.hh>
+#include <LibTC/BitCast.hh>
 #include <LibTC/Collection/Range.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/Functional/Try.hh>
@@ -50,11 +51,8 @@ ErrorOr<void> BaseFormatter::try_put_literal(StringView value) {
     return {};
 }
 
-ErrorOr<void> BaseFormatter::try_put_string(StringView              value,
-                                            usize                   min_width,
-                                            usize                   max_width,
-                                            FormatParser::Alignment alignment,
-                                            char                    alignment_fill) {
+ErrorOr<void>
+BaseFormatter::try_put_string(StringView value, usize min_width, usize max_width, FormatParser::Alignment alignment, char alignment_fill) {
     /* ensure the alignment */
     if ( alignment == FormatParser::Alignment::Default )
         alignment = FormatParser::Alignment::Left;
@@ -315,12 +313,8 @@ ErrorOr<void> BaseFormatter::try_put_f64(double                        value,
                                            visible_precision));
         }
         if ( zero_pad == FormatParser::ZeroPad::Yes && (precision - visible_precision) > 0 ) {
-            TRY(base_formatter.try_put_u64(0,
-                                           base,
-                                           FormatParser::ShowBase::No,
-                                           false,
-                                           FormatParser::ZeroPad::Yes,
-                                           precision - visible_precision));
+            TRY(base_formatter
+                    .try_put_u64(0, base, FormatParser::ShowBase::No, false, FormatParser::ZeroPad::Yes, precision - visible_precision));
         }
     }
 
@@ -511,24 +505,12 @@ Formatter<nullptr_t>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ move(base_formatter) } {
 }
 
-Formatter<nullptr_t>::Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-    : BaseFormatter{ string_builder, specifications } {
-}
-
 ErrorOr<void> Formatter<nullptr_t>::format(nullptr_t) {
-    return try_put_string("nullptr",
-                          width().value_or(0),
-                          precision().value_or(0xffffff),
-                          alignment(),
-                          alignment_fill());
+    return try_put_string("nullptr", width().value_or(0), precision().value_or(0xffffff), alignment(), alignment_fill());
 }
 
 Formatter<StringView>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ move(base_formatter) } {
-}
-
-Formatter<StringView>::Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-    : BaseFormatter{ string_builder, specifications } {
 }
 
 ErrorOr<void> Formatter<StringView>::format(StringView value) {
@@ -551,11 +533,6 @@ Formatter<T>::Formatter(BaseFormatter base_formatter)
 }
 
 template<Integral T>
-Formatter<T>::Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-    : BaseFormatter{ string_builder, specifications } {
-}
-
-template<Integral T>
 ErrorOr<void> Formatter<T>::format(T value) {
     if ( display_as() == FormatParser::DisplayAs::Char ) {
         VERIFY_GREATER_EQUAL(value, 0);
@@ -566,7 +543,7 @@ ErrorOr<void> Formatter<T>::format(T value) {
 
         /* forward to the string-view formatter */
         Formatter<StringView> formatter{ *this };
-        return formatter.format(StringView{ reinterpret_cast<char const*>(&value), 1 });
+        return formatter.format(StringView{ bit_cast<char const*>(&value), 1 });
     }
 
     /* integral format does not support precision */
@@ -658,11 +635,7 @@ Formatter<bool>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ move(base_formatter) } {
 }
 
-Formatter<bool>::Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-    : BaseFormatter{ string_builder, specifications } {
-}
-
-ErrorOr<void> Formatter<bool>::format(bool value) {
+ErrorOr<void> Formatter<bool>::format(bool value) const {
     if ( display_as_is_numeric() ) {
         Formatter<u8> formatter{ *this };
         return formatter.format(static_cast<u8>(value));
@@ -676,11 +649,7 @@ Formatter<char>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ move(base_formatter) } {
 }
 
-Formatter<char>::Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-    : BaseFormatter{ string_builder, specifications } {
-}
-
-ErrorOr<void> Formatter<char>::format(char value) {
+ErrorOr<void> Formatter<char>::format(char value) const {
     if ( display_as_is_numeric() ) {
         Formatter<i8> formatter{ *this };
         return formatter.format(value);
@@ -695,21 +664,13 @@ Formatter<float>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ move(base_formatter) } {
 }
 
-Formatter<float>::Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-    : BaseFormatter{ string_builder, specifications } {
-}
-
-ErrorOr<void> Formatter<float>::format(float value) {
+ErrorOr<void> Formatter<float>::format(float value) const {
     Formatter<double> formatter{ *this };
     return formatter.format(static_cast<double>(value));
 }
 
 Formatter<double>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ move(base_formatter) } {
-}
-
-Formatter<double>::Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-    : BaseFormatter{ string_builder, specifications } {
 }
 
 ErrorOr<void> Formatter<double>::format(double value) {
@@ -748,10 +709,6 @@ Formatter<long double>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ move(base_formatter) } {
 }
 
-Formatter<long double>::Formatter(StringBuilder& string_builder, FormatParser::Specifications const& specifications)
-    : BaseFormatter{ string_builder, specifications } {
-}
-
 ErrorOr<void> Formatter<long double>::format(long double value) {
     /* prepare the base and the case */
     u8   base       = 0;
@@ -787,12 +744,12 @@ ErrorOr<void> Formatter<long double>::format(long double value) {
 ErrorOr<void> Formatter<char const*>::format(char const* value) {
     if ( display_as() == FormatParser::DisplayAs::Pointer ) {
         Formatter<usize> formatter{ *this };
-        return formatter.format(reinterpret_cast<usize>(value));
+        return formatter.format(bit_cast<usize>(value));
     } else
         return Formatter<StringView>::format(value);
 }
 
-ErrorOr<void> Formatter<StringBuilder>::format(StringBuilder value) {
+ErrorOr<void> Formatter<StringBuilder>::format(StringBuilder const& value) {
     return Formatter<StringView>::format(value.as_string_view());
 }
 

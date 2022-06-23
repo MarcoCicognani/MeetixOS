@@ -14,6 +14,7 @@
 
 #include <LibTC/Assertions.hh>
 #include <LibTC/Trait/IsIntegral.hh>
+#include <LibTC/Trait/TypeIntrinsics.hh>
 
 namespace TC {
 namespace Collection {
@@ -81,7 +82,7 @@ public:
     /**
      * @brief Constructor
      */
-    explicit constexpr Range(T first, T end)
+    constexpr Range(T first, T end)
         : m_first{ first }
         , m_end{ end } {
     }
@@ -107,7 +108,7 @@ public:
     /**
      * @brief Constructor
      */
-    explicit constexpr RangeInclusive(T first, T last)
+    constexpr RangeInclusive(T first, T last)
         : Range<T>{ first, last + 1 } {
     }
 };
@@ -117,4 +118,29 @@ public:
 using Collection::Range;
 using Collection::RangeInclusive;
 
+namespace Trait {
+
+template<typename T>
+struct TypeIntrinsics<Range<T>> : public Details::TypeIntrinsics<Range<T>> {
+    static constexpr bool equals(Range<T> const& a, Range<T> const& b) {
+        return TypeIntrinsics<T>::equals(a.begin().value(), b.begin().value) && TypeIntrinsics<T>::equals(a.end().value(), b.end().value());
+    }
+
+    static constexpr bool is_trivial() {
+        return true;
+    }
+};
+
+template<typename T>
+struct TypeIntrinsics<RangeInclusive<T>> : public Details::TypeIntrinsics<RangeInclusive<T>> {
+    static constexpr bool equals(Range<T> const& a, Range<T> const& b) {
+        return TypeIntrinsics<T>::equals(a.begin().value(), b.begin().value) && TypeIntrinsics<T>::equals(a.end().value(), b.end().value());
+    }
+
+    static constexpr bool is_trivial() {
+        return true;
+    }
+};
+
+} /* namespace Trait */
 } /* namespace TC */
