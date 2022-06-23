@@ -56,14 +56,13 @@ public:
 
 TEST_CASE(try_construct_from_args) {
     auto error_or_boxed_array = NonNullBox<Array<0x1000>>::try_construct_from_args();
-    VERIFY_IS_VALUE(error_or_boxed_array);
+    VERIFY(error_or_boxed_array.is_value());
 
     auto object_box = error_or_boxed_array.unwrap_value();
     VERIFY_EQUAL(object_box->m_values[0], 0xcafebabe);
     VERIFY_EQUAL(object_box->m_values[1], 0xdeadbeef);
 
-    auto error_or_boxed_array_over_limit = NonNullBox<Array<0xfffffff>>::try_construct_from_args();
-    VERIFY_IS_ERROR_EQUAL(error_or_boxed_array_over_limit, ENOMEM);
+    VERIFY_IS_ERROR_EQUAL(NonNullBox<Array<0xfffffff>>::try_construct_from_args(), ENOMEM);
 }
 
 TEST_CASE(swap) {
