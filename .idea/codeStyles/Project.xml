@@ -53,6 +53,11 @@
     <clangFormatSettings>
       <option name="ENABLED" value="true" />
     </clangFormatSettings>
+    <files>
+      <extensions>
+        <pair source="cc" header="hh" fileNamingConvention="PASCAL_CASE" />
+      </extensions>
+    </files>
     <codeStyleSettings language="JSON">
       <indentOptions>
         <option name="INDENT_SIZE" value="4" />
