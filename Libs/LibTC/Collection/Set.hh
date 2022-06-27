@@ -320,7 +320,7 @@ public:
 
         /* call the destructors only for non-trivial types */
         if constexpr ( !TIntrinsics::is_trivial() ) {
-            for ( usize i : Range{ 0uL, m_data_capacity } ) {
+            for ( usize i : Range{ 0u, m_data_capacity } ) {
                 if ( Details::is_used_bucket(m_buckets_storage[i].m_bucket_state) )
                     m_buckets_storage[i].slot()->~T();
             }
@@ -425,13 +425,13 @@ public:
     /**
      * @brief Removes all the elements for which the given call_back returns true
      */
-    template<typename CallBack>
-    usize remove_all_matching(CallBack const& call_back) {
+    template<typename TPredicate>
+    usize remove_all_matching(TPredicate predicate) {
         /* iterate all the used buckets and give them to the given call_back */
         usize removed_count = 0;
-        for ( usize i : Range{ 0uL, m_data_capacity } ) {
+        for ( usize i : Range{ 0u, m_data_capacity } ) {
             auto& bucket = m_buckets_storage[i];
-            if ( Details::is_used_bucket(bucket.m_bucket_state) && call_back(*bucket.slot()) ) {
+            if ( Details::is_used_bucket(bucket.m_bucket_state) && predicate(*bucket.slot()) ) {
                 delete_bucket(bucket);
                 ++removed_count;
             }
@@ -468,7 +468,7 @@ public:
             return Iterator{ m_collection_data.m_head };
         else {
             /* find the first used bucket */
-            for ( usize i : Range{ 0uL, m_data_capacity } ) {
+            for ( usize i : Range{ 0u, m_data_capacity } ) {
                 if ( Details::is_used_bucket(m_buckets_storage[i].m_bucket_state) )
                     return Iterator{ &m_buckets_storage[i] };
             }
@@ -484,7 +484,7 @@ public:
             return ConstIterator{ m_collection_data.m_head };
         else {
             /* find the first used bucket */
-            for ( usize i : Range{ 0uL, m_data_capacity } ) {
+            for ( usize i : Range{ 0u, m_data_capacity } ) {
                 if ( Details::is_used_bucket(m_buckets_storage[i].m_bucket_state) )
                     return ConstIterator{ &m_buckets_storage[i] };
             }
@@ -515,17 +515,17 @@ public:
     /**
      * @brief Returns a reference to the element for which the given call_back return true
      */
-    template<typename CallBack>
-    Option<T&> find(usize hash, CallBack call_back) {
-        BucketType* bucket_type = lookup_with_hash(hash, move(call_back));
+    template<typename TPredicate>
+    Option<T&> find(usize hash, TPredicate predicate) {
+        BucketType* bucket_type = lookup_with_hash(hash, move(predicate));
         if ( bucket_type != nullptr )
             return *bucket_type->slot();
         else
             return {};
     }
-    template<typename CallBack>
-    Option<T const&> find(usize hash, CallBack call_back) const {
-        BucketType* bucket_type = lookup_with_hash(hash, move(call_back));
+    template<typename TPredicate>
+    Option<T const&> find(usize hash, TPredicate predicate) const {
+        BucketType* bucket_type = lookup_with_hash(hash, move(predicate));
         if ( bucket_type != nullptr )
             return *bucket_type->slot();
         else
@@ -573,7 +573,7 @@ private:
         }
 
         /* roundup the given new capacity */
-        new_capacity = Math::max(new_capacity, 4uL);
+        new_capacity = Math::max(new_capacity, 4u);
         new_capacity = new_capacity * sizeof(BucketType) / sizeof(BucketType);
 
         /* keep old references */
@@ -613,7 +613,7 @@ private:
     }
 
     void rehash_in_place() {
-        for ( usize i : Range{ 0uL, m_data_capacity } ) {
+        for ( usize i : Range{ 0u, m_data_capacity } ) {
             auto& bucket = m_buckets_storage[i];
 
             if ( bucket.m_bucket_state == Details::SetBucketState::Rehashed || bucket.m_bucket_state == Details::SetBucketState::End
@@ -723,7 +723,7 @@ private:
                 bucket_to_move->m_bucket_state = Details::SetBucketState::Free;
         }
 
-        for ( usize i : Range{ 0uL, m_data_capacity } ) {
+        for ( usize i : Range{ 0u, m_data_capacity } ) {
             if ( m_buckets_storage[i].m_bucket_state == Details::SetBucketState::Rehashed )
                 m_buckets_storage[i].m_bucket_state = Details::SetBucketState::Used;
         }
@@ -731,8 +731,8 @@ private:
         m_deleted_count = 0;
     }
 
-    template<typename CallBack>
-    [[nodiscard]] BucketType* lookup_with_hash(u32 hash, CallBack predicate) const {
+    template<typename TPredicate>
+    [[nodiscard]] BucketType* lookup_with_hash(u32 hash, TPredicate predicate) const {
         if ( is_empty() )
             return nullptr;
 

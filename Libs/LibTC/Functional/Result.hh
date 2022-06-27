@@ -77,9 +77,9 @@ public:
      * @brief Maps the value of this Option into another type
      */
     template<typename U>
-    Option<U> map(auto predicate) {
+    Result<U, E> map(auto predicate) {
         if ( is_value() )
-            return predicate(value());
+            return Result{ predicate(value()) };
         else
             return {};
     }
@@ -88,9 +88,9 @@ public:
      * @brief Maps the error of this Option into another type
      */
     template<typename U>
-    Option<U> map_error(auto predicate) {
+    Result<T, U> map_error(auto predicate) {
         if ( is_error() )
-            return predicate(error());
+            return Result{ predicate(error()) };
         else
             return {};
     }
@@ -182,9 +182,9 @@ public:
      * @brief Maps the value of this Option into another type
      */
     template<typename U>
-    Option<U> map(auto predicate) {
+    Result<U, E> map(auto predicate) {
         if ( is_value() )
-            return predicate(value());
+            return Result{ predicate(value()) };
         else
             return {};
     }
@@ -193,9 +193,9 @@ public:
      * @brief Maps the error of this Option into another type
      */
     template<typename U>
-    Option<U> map_error(auto predicate) {
+    Result<void, U> map_error(auto predicate) {
         if ( is_error() )
-            return predicate(error());
+            return Result{ predicate(error()) };
         else
             return {};
     }
@@ -309,9 +309,9 @@ public:
      * @brief Maps the value of this Option into another type
      */
     template<typename U>
-    Option<U> map(auto predicate) {
+    Result<U&, E> map(auto predicate) {
         if ( is_value() )
-            return predicate(value());
+            return Result{ predicate(value()) };
         else
             return {};
     }
@@ -320,9 +320,9 @@ public:
      * @brief Maps the error of this Option into another type
      */
     template<typename U>
-    Option<U> map_error(auto predicate) {
+    Result<T&, U> map_error(auto predicate) {
         if ( is_error() )
-            return predicate(error());
+            return Result{ predicate(error()) };
         else
             return {};
     }

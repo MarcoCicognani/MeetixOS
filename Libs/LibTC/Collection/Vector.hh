@@ -440,11 +440,11 @@ public:
     ErrorOr<usize> erase_all_of(T const& value) {
         return erase_all_matches([&value](T const& current) { return Trait::TypeIntrinsics<T>::equals(current, value); });
     }
-    template<typename CallBack>
-    ErrorOr<usize> erase_all_matches(CallBack matches) {
+    template<typename TPredicate>
+    ErrorOr<usize> erase_all_matches(TPredicate predicate) {
         usize erased_count = 0;
         for ( usize i = 0; i < m_values_count; ) {
-            if ( matches(m_data_storage[i]) ) {
+            if ( predicate(m_data_storage[i]) ) {
                 TRY(erase_at(i));
                 ++erased_count;
             } else
@@ -562,10 +562,10 @@ public:
     Option<usize> index_of(T const& value) const {
         return index_if([&value](auto const& v) { return Trait::TypeIntrinsics<T>::equals(value, v); });
     }
-    template<typename Callback>
-    Option<usize> index_if(Callback callback) const {
+    template<typename TPredicate>
+    Option<usize> index_if(TPredicate predicate) const {
         for ( usize i = 0; i < m_values_count; ++i ) {
-            if ( callback(m_data_storage[i]) )
+            if ( predicate(m_data_storage[i]) )
                 return i;
         }
         return {};
@@ -592,17 +592,17 @@ public:
     /**
      * @brief Returns a reference to the element if the callback returns true
      */
-    template<typename Callback>
-    Option<T&> find_if(Callback callback) {
-        auto index_or_none = index_if(callback);
+    template<typename TPredicate>
+    Option<T&> find_if(TPredicate predicate) {
+        auto index_or_none = index_if(predicate);
         if ( index_or_none.is_present() )
             return at(index_or_none.value());
         else
             return {};
     }
-    template<typename Callback>
-    Option<T const&> find_if(Callback callback) const {
-        auto index_or_none = index_if(callback);
+    template<typename TPredicate>
+    Option<T const&> find_if(TPredicate predicate) const {
+        auto index_or_none = index_if(predicate);
         if ( index_or_none.is_present() )
             return at(index_or_none.value());
         else

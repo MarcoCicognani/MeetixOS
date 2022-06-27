@@ -41,7 +41,7 @@ usize pointer_calculate_hash(void const* key) {
 
 usize string_calculate_hash(char const* key, usize len) {
     u32 hash = 0;
-    for ( usize i : Range{ 0uL, len } ) {
+    for ( usize i : Range{ 0u, len } ) {
         hash += static_cast<u32>(key[i]);
         hash += (hash << 10);
         hash ^= (hash >> 6);

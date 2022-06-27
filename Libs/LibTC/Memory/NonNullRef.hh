@@ -20,6 +20,7 @@
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Memory/Tags.hh>
+#include <LibTC/Trait/TypeIntrinsics.hh>
 
 namespace TC {
 namespace Memory {
@@ -36,7 +37,7 @@ public:
      */
     RefCounted() = delete;
     template<typename... Args>
-    RefCounted(Args&&... args)
+    RefCounted(FromArgsTag, Args&&... args)
         : m_shared_object{ T{ forward<Args>(args)... } } {
     }
 
@@ -90,7 +91,7 @@ public:
      */
     template<typename... Args>
     static ErrorOr<NonNullRef<T>> try_construct_from_args(Args&&... args) {
-        auto ref_counted_ptr = new (nothrow) Details::RefCounted<T>{ forward<Args>(args)... };
+        auto ref_counted_ptr = new (nothrow) Details::RefCounted<T>{ FromArgs, forward<Args>(args)... };
         if ( ref_counted_ptr != nullptr ) [[likely]]
             return NonNullRef<T>{ Adopt, ref_counted_ptr };
         else
@@ -103,7 +104,7 @@ public:
     NonNullRef() = delete;
     template<typename... Args>
     NonNullRef(FromArgsTag, Args&&... args)
-        : m_ref_counted_ptr{ new (nothrow) Details::RefCounted<T>{ forward<Args>(args)... } } {
+        : m_ref_counted_ptr{ new (nothrow) Details::RefCounted<T>{ FromArgs, forward<Args>(args)... } } {
         VERIFY_NOT_NULL(m_ref_counted_ptr);
     }
     NonNullRef(AdoptTag, Details::RefCounted<T>* ref_counted_ptr)
@@ -210,4 +211,22 @@ private:
 
 using Memory::NonNullRef;
 
+namespace Trait {
+
+template<typename T>
+struct TypeIntrinsics<NonNullRef<T>> : public Details::TypeIntrinsics<NonNullRef<T>> {
+    static constexpr usize hash(NonNullRef<T> const& value) {
+        return Hashing::pointer_calculate_hash(value.as_ptr());
+    }
+
+    static constexpr bool is_trivial() {
+        return false;
+    }
+
+    static constexpr bool equals(NonNullRef<T> const& a, NonNullRef<T> const& b) {
+        return a.as_ptr() == b.as_ptr();
+    }
+};
+
+} /* namespace Trait */
 } /* namespace TC */

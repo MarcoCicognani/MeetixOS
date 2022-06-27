@@ -50,10 +50,10 @@ public:
     StringView consume_until(char c);
     StringView consume_until(StringView word);
 
-    template<typename CallBack>
-    StringView consume_until(CallBack call_back) {
+    template<typename TPredicate>
+    StringView consume_until(TPredicate predicate) {
         usize start_index = m_index;
-        while ( !is_end() && !call_back(peek()) )
+        while ( !is_end() && !predicate(peek()) )
             ++m_index;
 
         usize len = m_index - start_index;
@@ -62,10 +62,10 @@ public:
         else
             return m_source_view.sub_string_view(start_index, len);
     }
-    template<typename CallBack>
-    StringView consume_while(CallBack call_back) {
+    template<typename TPredicate>
+    StringView consume_while(TPredicate predicate) {
         usize start_index = m_index;
-        while ( !is_end() && call_back(peek()) )
+        while ( !is_end() && predicate(peek()) )
             ++m_index;
 
         usize len = m_index - start_index;
@@ -86,14 +86,14 @@ public:
     void ignore_until(char stop_c);
     void ignore_until(StringView stop_word);
 
-    template<typename CallBack>
-    void ignore_until(CallBack call_back) {
-        while ( !is_end() && !call_back(peek()) )
+    template<typename TPredicate>
+    void ignore_until(TPredicate predicate) {
+        while ( !is_end() && !predicate(peek()) )
             ++m_index;
     }
-    template<typename CallBack>
-    void ignore_while(CallBack call_back) {
-        while ( !is_end() && call_back(peek()) )
+    template<typename TPredicate>
+    void ignore_while(TPredicate predicate) {
+        while ( !is_end() && predicate(peek()) )
             ++m_index;
     }
 
@@ -108,9 +108,9 @@ public:
     [[nodiscard]] bool next_is(char c) const;
     [[nodiscard]] bool next_is(StringView word) const;
 
-    template<typename CallBack>
-    [[nodiscard]] bool next_is(CallBack call_back) const {
-        return call_back(peek());
+    template<typename TPredicate>
+    [[nodiscard]] bool next_is(TPredicate predicate) const {
+        return predicate(peek());
     }
 
     /**

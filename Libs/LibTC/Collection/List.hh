@@ -294,11 +294,11 @@ public:
     /**
      * @brief Erases the elements which makes call_back return true
      */
-    template<typename Callback>
-    void erase_if(Callback call_back) {
+    template<typename TPredicate>
+    void erase_if(TPredicate predicate) {
         auto it = begin();
         while ( it != end() ) {
-            if ( call_back(*it) )
+            if ( predicate(*it) )
                 it = it.erase();
             else
                 ++it;
@@ -325,18 +325,18 @@ public:
     /**
      * @brief Returns a reference to the element if the callback returns true
      */
-    template<typename Callback>
-    Option<T&> find_if(Callback callback) {
+    template<typename TPredicate>
+    Option<T&> find_if(TPredicate predicate) {
         for ( auto& node : *this ) {
-            if ( callback(node) )
+            if ( predicate(node) )
                 return node;
         }
         return {};
     }
-    template<typename Callback>
-    Option<T const&> find_if(Callback callback) const {
+    template<typename TPredicate>
+    Option<T const&> find_if(TPredicate predicate) const {
         for ( auto const& node : *this ) {
-            if ( callback(node) )
+            if ( predicate(node) )
                 return node;
         }
         return {};

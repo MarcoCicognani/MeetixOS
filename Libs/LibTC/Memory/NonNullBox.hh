@@ -16,8 +16,9 @@
 #include <LibTC/Assertions.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/DenyCopy.hh>
-#include <LibTC/Memory/Tags.hh>
 #include <LibTC/Functional/ErrorOr.hh>
+#include <LibTC/Memory/Tags.hh>
+#include <LibTC/Trait/TypeIntrinsics.hh>
 
 namespace TC {
 namespace Memory {
@@ -135,4 +136,22 @@ private:
 
 using Memory::NonNullBox;
 
+namespace Trait {
+
+template<typename T>
+struct TypeIntrinsics<NonNullBox<T>> : public Details::TypeIntrinsics<NonNullBox<T>> {
+    static constexpr usize hash(NonNullBox<T> const& value) {
+        return Hashing::pointer_calculate_hash(value.as_ptr());
+    }
+
+    static constexpr bool is_trivial() {
+        return false;
+    }
+
+    static constexpr bool equals(NonNullBox<T> const& a, NonNullBox<T> const& b) {
+        return a.as_ptr() == b.as_ptr();
+    }
+};
+
+} /* namespace Trait */
 } /* namespace TC */

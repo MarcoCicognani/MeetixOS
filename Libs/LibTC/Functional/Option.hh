@@ -208,10 +208,10 @@ public:
     /**
      * @brief Maps the value of this Option into another type
      */
-    template<typename TPredicate>
-    Option map(TPredicate predicate) {
+    template<typename U>
+    Option<U> map(auto predicate) {
         if ( is_present() )
-            return Option{ predicate(value()) };
+            return predicate(value());
         else
             return {};
     }

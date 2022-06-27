@@ -205,5 +205,4 @@ struct TypeIntrinsics<String> : public Details::TypeIntrinsics<String> {
 };
 
 } /* namespace Trait */
-
 } /* namespace TC */

@@ -18,150 +18,121 @@
 
 using namespace TC;
 
-namespace Object {
+TEST_CASE(construct) {
+    NonNullRef<i32> ref_i32{ FromArgs, 64u };
 
-class Shared {
-public:
-    Shared() = default;
-    explicit Shared(usize value, usize value2)
-        : m_value{ value } {
-    }
-
-    ~Shared() {
-        s_destructor_was_called = true;
-    }
-
-    void inc_value(usize inc) {
-        m_value += inc;
-    }
-    [[nodiscard]] usize value() const {
-        return m_value;
-    }
-
-    static void reset_no_ref_count_called_count() {
-        s_no_ref_count_called_count = 0;
-    }
-    static usize no_ref_count_called_count() {
-        return s_no_ref_count_called_count;
-    }
-
-    static void reset_destructor_was_called() {
-        s_destructor_was_called = false;
-    }
-    static bool destructor_was_called() {
-        return s_destructor_was_called;
-    }
-
-private:
-    usize m_value{ 0 };
-
-    static usize s_no_ref_count_called_count;
-    static bool  s_destructor_was_called;
-};
-
-usize Shared::s_no_ref_count_called_count = 0;
-bool  Shared::s_destructor_was_called     = false;
-
-} /* namespace Object */
-
-TEST_CASE(construct_nonnull_ref) {
-    NonNullRef<Object::Shared> object_ref{ FromArgs, 512uL, 64uL };
-    VERIFY_EQUAL(object_ref->value(), 512);
-    VERIFY_EQUAL(object_ref.strong_ref_count(), 1);
-
-    object_ref.as_ref().inc_value(512);
-    VERIFY_EQUAL(object_ref->value(), 1024);
+    VERIFY_EQUAL(ref_i32.strong_ref_count(), 1);
+    VERIFY_EQUAL(ref_i32.as_ref(), 64u);
 }
 
-TEST_CASE(try_construct_nonnull_ref) {
-    auto error_or_object_ref = NonNullRef<Object::Shared>::try_construct_from_args(4096uL, 64uL);
-    VERIFY(error_or_object_ref.is_value());
-    VERIFY_EQUAL(error_or_object_ref.value()->value(), 4096);
-    VERIFY_EQUAL(error_or_object_ref.value().strong_ref_count(), 1);
+TEST_CASE(copy) {
+    NonNullRef<i32> ref_i32{ FromArgs, 64u };
 
-    auto object_ref = error_or_object_ref.unwrap_value();
-    VERIFY_EQUAL(object_ref->value(), 4096);
-    VERIFY_EQUAL(object_ref.strong_ref_count(), 1);
+    NonNullRef<i32> ref_i32_2{ ref_i32 };
+
+    VERIFY_EQUAL(ref_i32.strong_ref_count(), 2);
+    VERIFY_EQUAL(ref_i32_2.strong_ref_count(), 2);
+
+    VERIFY_EQUAL(ref_i32.as_ref(), 64u);
+    VERIFY_EQUAL(ref_i32_2.as_ref(), 64u);
+
+    VERIFY_EQUAL(ref_i32.as_ptr(), ref_i32_2.as_ptr());
 }
 
-TEST_CASE(ref_count_copy) {
-    Object::Shared::reset_no_ref_count_called_count();
-    Object::Shared::reset_destructor_was_called();
+TEST_CASE(with_object) {
+    static bool s_destructor_was_called = false;
+
+    struct Object {
+    public:
+        ~Object() {
+            s_destructor_was_called = true;
+        }
+    };
 
     {
-        NonNullRef<Object::Shared> object_ref_512_1{ FromArgs, 512uL, 64uL };
-        VERIFY_EQUAL(object_ref_512_1->value(), 512);
-        VERIFY_EQUAL(object_ref_512_1.strong_ref_count(), 1);
+        NonNullRef<Object> ref_object_0{ FromArgs };
 
-        NonNullRef object_ref_512_2{ object_ref_512_1 };
-        VERIFY_EQUAL(object_ref_512_1->value(), 512);
-        VERIFY_EQUAL(object_ref_512_2->value(), 512);
-        VERIFY_EQUAL(object_ref_512_1.strong_ref_count(), 2);
-        VERIFY_EQUAL(object_ref_512_2.strong_ref_count(), 2);
-        VERIFY_EQUAL(object_ref_512_1.as_ptr(), object_ref_512_2.as_ptr());
+        {
+            NonNullRef<Object> ref_object_1{ ref_object_0 };
 
-        NonNullRef object_ref_512_3{ object_ref_512_1 };
-        NonNullRef object_ref_512_4{ object_ref_512_2 };
+            VERIFY_EQUAL(ref_object_1.strong_ref_count(), 2);
+        }
 
-        VERIFY_EQUAL(object_ref_512_1->value(), 512);
-        VERIFY_EQUAL(object_ref_512_2->value(), 512);
-        VERIFY_EQUAL(object_ref_512_3->value(), 512);
-        VERIFY_EQUAL(object_ref_512_4->value(), 512);
-
-        VERIFY_EQUAL(object_ref_512_1.strong_ref_count(), 4);
-        VERIFY_EQUAL(object_ref_512_2.strong_ref_count(), 4);
-        VERIFY_EQUAL(object_ref_512_3.strong_ref_count(), 4);
-        VERIFY_EQUAL(object_ref_512_4.strong_ref_count(), 4);
-
-        VERIFY_EQUAL(object_ref_512_1.as_ptr(), object_ref_512_2.as_ptr());
-        VERIFY_EQUAL(object_ref_512_2.as_ptr(), object_ref_512_3.as_ptr());
-        VERIFY_EQUAL(object_ref_512_3.as_ptr(), object_ref_512_4.as_ptr());
+        VERIFY_FALSE(s_destructor_was_called);
     }
-    VERIFY_EQUAL(Object::Shared::no_ref_count_called_count(), 1);
-    VERIFY(Object::Shared::destructor_was_called());
+
+    VERIFY(s_destructor_was_called);
+}
+
+TEST_CASE(reset_with_another_object) {
+    static bool s_destructor_was_called = false;
+
+    struct Object {
+    public:
+        usize m_value{ 0 };
+
+        ~Object() {
+            s_destructor_was_called = true;
+        }
+    };
+
+    NonNullRef<Object> ref_object_32{ FromArgs, 32 };
+    VERIFY_EQUAL(ref_object_32.as_ref().m_value, 32);
+
+    NonNullRef<Object> ref_object_64{ FromArgs, 64 };
+    VERIFY_EQUAL(ref_object_64.as_ref().m_value, 64);
+
+    ref_object_64 = ref_object_32;
+    VERIFY_EQUAL(ref_object_64.as_ref().m_value, 32);
+    VERIFY(s_destructor_was_called);
 }
 
 TEST_CASE(swap) {
-    NonNullRef<Object::Shared> object_ref_512{ FromArgs, 512uL, 64uL };
-    VERIFY_EQUAL(object_ref_512->value(), 512);
-    VERIFY_EQUAL(object_ref_512.strong_ref_count(), 1);
+    NonNullRef<i32> ref_i32_512{ FromArgs, 512u };
+    VERIFY_EQUAL(ref_i32_512.as_ref(), 512u);
+    VERIFY_EQUAL(ref_i32_512.strong_ref_count(), 1);
 
-    NonNullRef<Object::Shared> object_ref_768{ FromArgs, 768uL, 64uL };
-    VERIFY_EQUAL(object_ref_768->value(), 768);
-    VERIFY_EQUAL(object_ref_768.strong_ref_count(), 1);
+    NonNullRef<i32> ref_i32_768{ FromArgs, 768u };
+    VERIFY_EQUAL(ref_i32_768.as_ref(), 768u);
+    VERIFY_EQUAL(ref_i32_768.strong_ref_count(), 1);
 
-    NonNullRef<Object::Shared> object_ref_768_ref{ object_ref_768 };
+    NonNullRef<i32> ref_i32_768_ref{ ref_i32_768 };
 
-    object_ref_512.swap(object_ref_768);
+    ref_i32_512.swap(ref_i32_768);
 
-    VERIFY_EQUAL(object_ref_512->value(), 768);
-    VERIFY_EQUAL(object_ref_512.strong_ref_count(), 2);
-    VERIFY_EQUAL(object_ref_768->value(), 512);
-    VERIFY_EQUAL(object_ref_768.strong_ref_count(), 1);
+    VERIFY_EQUAL(ref_i32_512.as_ref(), 768u);
+    VERIFY_EQUAL(ref_i32_512.strong_ref_count(), 2);
+    VERIFY_EQUAL(ref_i32_768.as_ref(), 512u);
+    VERIFY_EQUAL(ref_i32_768.strong_ref_count(), 1);
 }
 
 TEST_CASE(ref_count_into_vector) {
-    Object::Shared::reset_no_ref_count_called_count();
+    static i32 s_destructor_called_count = 0;
+
+    struct Object {
+    public:
+        usize m_value{ 0 };
+
+        ~Object() {
+            ++s_destructor_called_count;
+        }
+    };
 
     {
-        NonNullRef<Object::Shared> object_ref{ FromArgs, 512uL, 64uL };
+        NonNullRef<Object> ref_object{ FromArgs, 64u };
 
-        Vector<NonNullRef<Object::Shared>> vector_1{};
-        Vector<NonNullRef<Object::Shared>> vector_2{};
-        Vector<NonNullRef<Object::Shared>> vector_3{};
-        Vector<NonNullRef<Object::Shared>> vector_4{};
+        Vector<NonNullRef<Object>> vector_1{ ref_object };
+        Vector<NonNullRef<Object>> vector_2{ ref_object };
+        Vector<NonNullRef<Object>> vector_3{ ref_object };
+        Vector<NonNullRef<Object>> vector_4{ ref_object };
+        VERIFY_EQUAL(ref_object.strong_ref_count(), 5);
 
-        vector_1.append(object_ref);
-        vector_2.append(object_ref);
-        vector_3.append(object_ref);
-        vector_4.append(object_ref);
-        VERIFY_EQUAL(object_ref.strong_ref_count(), 5);
+        vector_1.append(ref_object);
+        VERIFY_EQUAL(ref_object.strong_ref_count(), 6);
 
-        vector_1.append(object_ref);
-        VERIFY_EQUAL(object_ref.strong_ref_count(), 6);
-
-        vector_2.append(move(object_ref));
+        vector_2.append(move(ref_object));
         VERIFY_EQUAL(vector_2.last().strong_ref_count(), 6);
     }
-    VERIFY_EQUAL(Object::Shared::no_ref_count_called_count(), 1);
+
+    VERIFY_EQUAL(s_destructor_called_count, 1);
 }

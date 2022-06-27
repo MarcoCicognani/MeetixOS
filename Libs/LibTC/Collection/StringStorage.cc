@@ -30,8 +30,8 @@ ErrorOr<NonNullRef<StringStorage>> StringStorage::try_construct_from(StringView 
     if ( string_view.is_null() )
         return Error{ EINVAL };
 
-    auto ref_counted_string_storage = TRY(Memory::Raw::clean_alloc_object<RCStringStorage>(alloc_size(string_view.len())));
-    auto ref_counted_string_ptr         = new (ref_counted_string_storage) RCStringStorage{ string_view };
+    auto ref_counted_string_storage = TRY(Memory::Raw::clean_alloc_object<void>(alloc_size(string_view.len())));
+    auto ref_counted_string_ptr     = new (ref_counted_string_storage) RCStringStorage{ FromArgs, string_view };
 
     return NonNullRef<StringStorage>{ Adopt, ref_counted_string_ptr };
 }

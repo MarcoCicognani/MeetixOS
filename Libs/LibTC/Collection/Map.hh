@@ -149,9 +149,9 @@ public:
         } else
             return false;
     }
-    template<typename CallBack>
-    usize remove_all_matching(CallBack call_back) {
-        return m_hash_set.remove_all_matching([&call_back](auto& pair) { return call_back(pair.key(), pair.value()); });
+    template<typename TPredicate>
+    usize remove_all_matching(TPredicate predicate) {
+        return m_hash_set.remove_all_matching([&predicate](auto& pair) { return predicate(pair.key(), pair.value()); });
     }
 
     /**

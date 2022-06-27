@@ -123,7 +123,8 @@ namespace Trait {
 template<typename T>
 struct TypeIntrinsics<Range<T>> : public Details::TypeIntrinsics<Range<T>> {
     static constexpr bool equals(Range<T> const& a, Range<T> const& b) {
-        return TypeIntrinsics<T>::equals(a.begin().value(), b.begin().value) && TypeIntrinsics<T>::equals(a.end().value(), b.end().value());
+        return TypeIntrinsics<T>::equals(a.begin().value(), b.begin().value)
+            && TypeIntrinsics<T>::equals(a.end().value(), b.end().value());
     }
 
     static constexpr bool is_trivial() {
@@ -134,7 +135,8 @@ struct TypeIntrinsics<Range<T>> : public Details::TypeIntrinsics<Range<T>> {
 template<typename T>
 struct TypeIntrinsics<RangeInclusive<T>> : public Details::TypeIntrinsics<RangeInclusive<T>> {
     static constexpr bool equals(Range<T> const& a, Range<T> const& b) {
-        return TypeIntrinsics<T>::equals(a.begin().value(), b.begin().value) && TypeIntrinsics<T>::equals(a.end().value(), b.end().value());
+        return TypeIntrinsics<T>::equals(a.begin().value(), b.begin().value)
+            && TypeIntrinsics<T>::equals(a.end().value(), b.end().value());
     }
 
     static constexpr bool is_trivial() {

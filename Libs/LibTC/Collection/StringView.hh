@@ -20,6 +20,7 @@
 #include <LibTC/Functional/Option.hh>
 #include <LibTC/Hashing.hh>
 #include <LibTC/IntTypes.hh>
+#include <LibTC/Trait/TypeIntrinsics.hh>
 
 namespace TC {
 namespace Collection {
@@ -173,7 +174,6 @@ struct TypeIntrinsics<StringView> : public Details::TypeIntrinsics<StringView> {
 };
 
 } /* namespace Trait */
-
 } /* namespace TC */
 
 [[nodiscard]] constexpr TC::StringView operator"" sv(char const* c_str, usize len) {

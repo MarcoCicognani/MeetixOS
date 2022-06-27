@@ -34,14 +34,14 @@
 /**
  * new implementation
  */
-void* operator new(long unsigned int size) {
+void* operator new(usize size) {
     return KernelHeap::allocate(size);
 }
 
 /**
  * new[] implementation
  */
-void* operator new[](long unsigned int size) {
+void* operator new[](usize size) {
     return KernelHeap::allocate(size);
 }
 
@@ -52,7 +52,7 @@ void operator delete(void* m) {
     KernelHeap::free(m);
 }
 
-void operator delete(void* m, unsigned long) {
+void operator delete(void* m, usize) {
     KernelHeap::free(m);
 }
 
