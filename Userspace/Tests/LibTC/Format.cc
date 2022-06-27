@@ -170,8 +170,8 @@ TEST_CASE(list_format) {
 }
 
 TEST_CASE(pair_format) {
-    ensure_formatted("hi : abc", "{}", Pair{ "hi"sv, "abc"sv });
-    ensure_formatted("0x4 : 0xff", "{:#x}", Pair{ 4, 0xff });
+    ensure_formatted("hi: abc", "{}", Pair{ "hi"sv, "abc"sv });
+    ensure_formatted("0x4: 0xff", "{:#x}", Pair{ 4, 0xff });
 }
 
 TEST_CASE(range_format) {

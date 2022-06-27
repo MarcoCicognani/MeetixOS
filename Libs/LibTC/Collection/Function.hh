@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include "Range.hh"
 #include <LibTC/Assertions.hh>
 #include <LibTC/BitCast.hh>
+#include <LibTC/Collection/Range.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/DenyCopy.hh>
 #include <LibTC/Math.hh>
@@ -37,7 +37,7 @@ public:
     Function() = delete;
     template<Callable TCallable>
     Function(TCallable&& callable) {
-        VERIFY_GREATER_EQUAL(sizeof(TCallable), sizeof(m_inline_storage));
+        VERIFY_LESS_EQUAL(sizeof(TCallable), sizeof(m_inline_storage));
 
         new (m_inline_storage) CallableWrapper<TCallable>{ forward<TCallable>(callable) };
     }
