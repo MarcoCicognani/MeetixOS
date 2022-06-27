@@ -151,7 +151,7 @@ dir_push $BUILD_BINUTILS
     build_step "Binutils/Configure"                                  \
         ../$BINUTILS_UNPACKED/configure --target=$TARGET             \
                                         --prefix="$TOOLCHAIN_PREFIX" \
-                                        --disable-nls                \
+                                       --disable-nls                \
                                         --disable-werror             \
                                         --with-sysroot="$TOOLCHAIN_PREFIX"
     build_step "Binutils/Build"   make $MAKE_JOBS all
@@ -214,7 +214,7 @@ dir_push ../Build/Release
               -DCMAKE_TOOLCHAIN_FILE=Build/CMakeToolchain.txt \
               -DCMAKE_BUILD_TYPE=Release                      \
               ../.. || exit 1
-    build_step "Libs/CRTs"    ninja crt0 crti crtn
+    build_step "Libs/CRTs"    ninja crt0
     build_step "Libs/LibApi"  ninja LibApi
     build_step "Libs/LibC"    ninja LibC
     build_step "Libs/LibMath" ninja LibMath
