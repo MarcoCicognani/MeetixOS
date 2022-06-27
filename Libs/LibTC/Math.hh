@@ -30,6 +30,7 @@ constexpr T clamp(T const& value, T const& min, T const& max) {
 template<typename T>
 constexpr int count_leading_zeroes(T value) {
     static_assert(sizeof(T) <= sizeof(unsigned long long));
+
     if constexpr ( sizeof(T) <= sizeof(unsigned int) )
         return __builtin_clz(value) - (32 - (8 * sizeof(T)));
     if constexpr ( sizeof(T) == sizeof(unsigned long) )
@@ -52,6 +53,7 @@ constexpr T min(T const& a, T const& b) {
 template<typename T, typename U>
 constexpr T ceil_div(T a, U b) {
     static_assert(sizeof(T) == sizeof(U));
+
     T result = a / b;
     if ( (a % b) != 0 )
         ++result;

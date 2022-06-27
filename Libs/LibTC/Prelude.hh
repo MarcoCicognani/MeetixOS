@@ -15,6 +15,7 @@
 #include <LibTC/Assertions.hh>
 #include <LibTC/BitCast.hh>
 #include <LibTC/CharTypes.hh>
+#include <LibTC/Collection/Function.hh>
 #include <LibTC/Collection/List.hh>
 #include <LibTC/Collection/Map.hh>
 #include <LibTC/Collection/Pair.hh>
@@ -61,10 +62,10 @@
 #include <LibTC/Trait/IndexOf.hh>
 #include <LibTC/Trait/IsArithmetic.hh>
 #include <LibTC/Trait/IsBaseOf.hh>
+#include <LibTC/Trait/IsCallable.hh>
 #include <LibTC/Trait/IsClass.hh>
 #include <LibTC/Trait/IsConst.hh>
 #include <LibTC/Trait/IsFloatingPoint.hh>
-#include <LibTC/Trait/IsFunction.hh>
 #include <LibTC/Trait/IsFundamental.hh>
 #include <LibTC/Trait/IsIntegral.hh>
 #include <LibTC/Trait/IsLValue.hh>
