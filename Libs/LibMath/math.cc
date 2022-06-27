@@ -14,11 +14,11 @@
 
 #include <Api/Common.h>
 #include <Api/User.h>
-#include <fenv.h>
+#include <LibC/fenv.h>
+#include <LibMath/math.h>
 #include <LibTC/Assertions.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Math.hh>
-#include <math.h>
 
 namespace Details {
 
@@ -145,7 +145,7 @@ static T to_integer(T x, Details::RoundingMode rounding_mode) {
     bool has_half_fraction    = false;
     bool has_nonhalf_fraction = false;
     if ( unbiased_exponent < 0 ) {
-        /* it was easier to special case [0..1) as it saves us from handling subnormals, under flows, etc */
+        /* it was easier to special case [0..1) as it saves us from handling sub-normals, under flows, etc */
         if ( unbiased_exponent == -1 )
             has_half_fraction = true;
 
@@ -194,7 +194,7 @@ static T to_integer(T x, Details::RoundingMode rounding_mode) {
 }
 
 template<typename T>
-static T nextafter(T x, bool up) {
+static T next_after(T x, bool up) {
     if ( !isfinite(x) )
         return x;
 
@@ -294,14 +294,14 @@ static T scalbn(T x, int exponent) noexcept {
     Extractor extractor;
     extractor.m_value = x;
     if ( extractor.m_exponent != 0 ) {
-        extractor.m_exponent
-            = TC::clamp((int)extractor.m_exponent + exponent, 0, static_cast<int>(Extractor::m_exponent_max));
+        extractor.m_exponent = TC::clamp(static_cast<int>(extractor.m_exponent) + exponent, 0, static_cast<int>(Extractor::m_exponent_max));
         return extractor.m_value;
     }
 
     auto leading_mantissa_zeroes = extractor.m_mantissa == 0 ? 32 : TC::count_leading_zeroes(extractor.m_mantissa);
-    auto shift                   = TC::min(static_cast<int>(leading_mantissa_zeroes), exponent);
-    exponent                     = TC::max(exponent - shift, 0);
+
+    auto shift = TC::min(static_cast<int>(leading_mantissa_zeroes), exponent);
+    exponent   = TC::max(exponent - shift, 0);
 
     extractor.m_exponent <<= shift;
     extractor.m_exponent = exponent + 1;
@@ -310,7 +310,7 @@ static T scalbn(T x, int exponent) noexcept {
 }
 
 template<typename T>
-static T copysign(T x, T y) noexcept {
+static T copy_sign(T x, T y) noexcept {
     using Extractor = FloatExtractor<T>;
 
     Extractor ex{};
@@ -358,8 +358,7 @@ static T gamma(T x) noexcept {
     }
 
     /* stirling approximation */
-    return sqrtl(2.0 * M_PIl / static_cast<long double>(x))
-         * powl(static_cast<long double>(x) / M_El, static_cast<long double>(x));
+    return sqrtl(2.0 * M_PIl / static_cast<long double>(x)) * powl(static_cast<long double>(x) / M_El, static_cast<long double>(x));
 }
 
 } /* namespace Details */
@@ -1605,54 +1604,54 @@ double nextafter(double x, double target) noexcept {
     if ( x == target )
         return target;
     else
-        return Details::nextafter(x, target >= x);
+        return Details::next_after(x, target >= x);
 }
 
 float nextafterf(float x, float target) noexcept {
     if ( x == target )
         return target;
     else
-        return Details::nextafter(x, target >= x);
+        return Details::next_after(x, target >= x);
 }
 
 long double nextafterl(long double x, long double target) noexcept {
     if ( x == target )
         return target;
     else
-        return Details::nextafter(x, target >= x);
+        return Details::next_after(x, target >= x);
 }
 
 double nexttoward(double x, long double target) noexcept {
     if ( x == static_cast<double>(target) )
         return static_cast<double>(target);
     else
-        return Details::nextafter(x, static_cast<double>(target) >= x);
+        return Details::next_after(x, static_cast<double>(target) >= x);
 }
 
 float nexttowardf(float x, long double target) noexcept {
     if ( x == static_cast<float>(target) )
         return static_cast<float>(target);
     else
-        return Details::nextafter(x, static_cast<float>(target) >= x);
+        return Details::next_after(x, static_cast<float>(target) >= x);
 }
 
 long double nexttowardl(long double x, long double target) noexcept {
     if ( x == target )
         return target;
     else
-        return Details::nextafter(x, target >= x);
+        return Details::next_after(x, target >= x);
 }
 
 double copysign(double x, double y) noexcept {
-    return Details::copysign(x, y);
+    return Details::copy_sign(x, y);
 }
 
 float copysignf(float x, float y) noexcept {
-    return Details::copysign(x, y);
+    return Details::copy_sign(x, y);
 }
 
 long double copysignl(long double x, long double y) noexcept {
-    return Details::copysign(x, y);
+    return Details::copy_sign(x, y);
 }
 
 double fdim(double, double) noexcept {
