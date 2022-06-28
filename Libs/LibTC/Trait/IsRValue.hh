@@ -21,8 +21,12 @@ inline constexpr bool IsRValue = false;
 template<typename T>
 inline constexpr bool IsRValue<T&&> = true;
 
+template<typename T>
+concept RValue = IsRValue<T>;
+
 } /* namespace Trait */
 
 using Trait::IsRValue;
+using Trait::RValue;
 
 } /* namespace TC */

@@ -13,6 +13,7 @@
 #include <LibTC/Assertions.hh>
 #include <LibTC/BitCast.hh>
 #include <LibTC/CharTypes.hh>
+#include <LibTC/Collection/Range.hh>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/Cxx.hh>
@@ -110,7 +111,7 @@ bool StringView::equals_ignore_case(StringView rhs) const {
     if ( len() != rhs.len() )
         return false;
 
-    for ( usize i = 0; i < len(); ++i ) {
+    for ( usize i : Range{ 0u, len() } ) {
         if ( to_ascii_lowercase(at(i)) != to_ascii_lowercase(rhs.at(i)) )
             return false;
     }
@@ -131,7 +132,7 @@ StringView StringView::trim(StringView chars, TrimMode trim_mode) const {
     usize sub_len   = len();
 
     if ( trim_mode == TrimMode::Left || trim_mode == TrimMode::Both ) {
-        for ( usize i = 0; i < len(); ++i ) {
+        for ( usize i : Range{ 0u, len() } ) {
             if ( sub_len == 0 )
                 return "";
             if ( !chars.contains(at(i)) )
@@ -173,7 +174,7 @@ bool StringView::starts_with(StringView rhs, CaseSensitivity case_sensitivity) c
     if ( case_sensitivity == CaseSensitivity::Sensitive )
         return __builtin_memcmp(as_cstr(), rhs.as_cstr(), rhs.len()) == 0;
     else {
-        for ( usize i = 0; i < rhs.len(); ++i ) {
+        for ( usize i : Range{ 0u, rhs.len() } ) {
             if ( to_ascii_lowercase(at(i)) != to_ascii_lowercase(rhs.at(i)) )
                 return false;
         }
@@ -205,9 +206,11 @@ bool StringView::ends_with(StringView rhs, CaseSensitivity case_sensitivity) con
         return __builtin_memcmp(as_cstr() + (len() - rhs.len()), rhs.as_cstr(), rhs.len()) == 0;
     else {
         usize str_i = len() - rhs.len();
-        for ( usize i = 0; i < rhs.len(); ++i, ++str_i ) {
+        for ( usize i : Range{ 0u, rhs.len() } ) {
             if ( to_ascii_lowercase(at(str_i)) != to_ascii_lowercase(rhs.at(i)) )
                 return false;
+
+            ++str_i;
         }
     }
     return true;
@@ -359,7 +362,7 @@ Option<usize> StringView::find(char needle, size_t start) const {
     if ( start >= len() )
         return {};
 
-    for ( usize i = start; i < len(); ++i ) {
+    for ( usize i : Range{ start, len() } ) {
         if ( at(i) == needle )
             return i;
     }
@@ -371,8 +374,8 @@ Option<usize> StringView::find(StringView needle, size_t start) const {
         return {};
 
     return find_in_memory(as_cstr() + start, len() - start, needle.as_cstr(), needle.len())
-        .map<usize>([](auto ptr_pos) { return bit_cast<usize>(ptr_pos); })
-        .map<usize>([this](usize result_as_usize) { return result_as_usize - bit_cast<usize>(as_cstr()); });
+        .map<usize>([](auto ptr_pos) -> usize { return bit_cast<usize>(ptr_pos); })
+        .map<usize>([this](usize result_as_usize) -> usize { return result_as_usize - bit_cast<usize>(as_cstr()); });
 }
 
 Option<usize> StringView::find_last(char needle) const {
@@ -437,7 +440,7 @@ bool StringView::contains(StringView rhs, CaseSensitivity case_sensitivity) cons
         return find_in_memory(as_cstr(), len(), rhs.as_cstr(), rhs.len()).is_present();
 
     auto needle_first = to_ascii_lowercase(rhs.at(0));
-    for ( usize i = 0; i < len(); ++i ) {
+    for ( usize i : Range{ 0u, len() } ) {
         if ( to_ascii_lowercase(at(i)) != needle_first )
             continue;
 

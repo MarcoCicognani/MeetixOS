@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -16,17 +16,14 @@ namespace TC {
 namespace Trait {
 
 template<typename T>
-inline constexpr bool IsLValue = false;
-
-template<typename T>
-inline constexpr bool IsLValue<T&> = true;
-
-template<typename T>
-concept LValue = IsLValue<T>;
+concept Tryable = requires(T t) {
+                      { !t };
+                      { t.unwrap() };
+                      { t.backward() };
+                  };
 
 } /* namespace Trait */
 
-using Trait::IsLValue;
-using Trait::LValue;
+using Trait::Tryable;
 
 } /* namespace TC */

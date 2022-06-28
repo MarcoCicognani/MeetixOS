@@ -92,29 +92,21 @@ public:
      */
     Option<Pair<K, T>&> find(K const& key) {
         return m_hash_set.find(TypeIntrinsics<K>::hash(key),
-                               [&key](auto const& pair) { return TypeIntrinsics<K>::equals(pair.key(), key); });
+                               [&key](auto const& pair) -> bool { return TypeIntrinsics<K>::equals(pair.key(), key); });
     }
     Option<Pair<K, T> const&> find(K const& key) const {
         return m_hash_set.find(TypeIntrinsics<K>::hash(key),
-                               [&key](auto const& pair) { return TypeIntrinsics<K>::equals(pair.key(), key); });
+                               [&key](auto const& pair) -> bool { return TypeIntrinsics<K>::equals(pair.key(), key); });
     }
 
     /**
      * @brief Returns the value by the given key if exists
      */
     Option<T&> at(K const& key) {
-        auto pair_or_none = find(key);
-        if ( pair_or_none.is_present() )
-            return pair_or_none.value().value();
-        else
-            return {};
+        return find(key).template map<T&>([&key](auto& pair) -> T& { return pair.value(); });
     }
     Option<T const&> at(K const& key) const {
-        auto pair_or_none = find(key);
-        if ( pair_or_none.is_present() )
-            return pair_or_none.value().value();
-        else
-            return {};
+        return find(key).template map<T const&>([&key](auto const& pair) -> T const& { return pair.value(); });
     }
 
     Option<T&> operator[](K const& key) {
@@ -151,7 +143,7 @@ public:
     }
     template<typename TPredicate>
     usize remove_all_matching(TPredicate predicate) {
-        return m_hash_set.remove_all_matching([&predicate](auto& pair) { return predicate(pair.key(), pair.value()); });
+        return m_hash_set.remove_all_matching([&predicate](auto& pair) -> bool { return predicate(pair.key(), pair.value()); });
     }
 
     /**

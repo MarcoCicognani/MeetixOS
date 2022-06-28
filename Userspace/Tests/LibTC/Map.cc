@@ -73,13 +73,18 @@ TEST_CASE(iterate) {
 }
 
 TEST_CASE(at) {
-    Map<StringView, usize> map{ { "One", 1 }, { "Two", 2 }, { "Three", 3 } };
+    Map<StringView, StringView> map{ { "One", "1" }, { "Two", "2" }, { "Three", "3" } };
 
-    VERIFY_IS_PRESENT_EQUAL(map["One"], 1);
-    VERIFY_IS_PRESENT_EQUAL(map.at("Three"), 3);
-    VERIFY_IS_PRESENT_EQUAL(map["Two"], 2);
+    VERIFY_IS_PRESENT_EQUAL(map["One"], "1");
+    VERIFY_IS_PRESENT_EQUAL(map.at("Three"), "3");
+    VERIFY_IS_PRESENT_EQUAL(map["Two"], "2");
     VERIFY_IS_NONE(map["Four"]);
     VERIFY_IS_NONE(map.at("Five"));
+
+    auto value_or_none    = map.at("One");
+    value_or_none.value() = StringView{ "15" };
+
+    VERIFY_IS_PRESENT_EQUAL(map["One"], "15");
 }
 
 TEST_CASE(has_key_has_value) {

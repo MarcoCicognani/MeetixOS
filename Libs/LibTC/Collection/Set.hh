@@ -404,8 +404,8 @@ public:
      * @brief Removes the given value from this set and returns whether it was existing
      */
     bool remove(T const& value) {
-        auto bucket
-            = lookup_with_hash(TIntrinsics::hash(value), [&value](auto const& current) { return TIntrinsics::equals(value, current); });
+        auto bucket = lookup_with_hash(TIntrinsics::hash(value),
+                                       [&value](auto const& current) -> bool { return TIntrinsics::equals(value, current); });
         if ( bucket != nullptr )
             return remove(*bucket);
         else
@@ -506,10 +506,10 @@ public:
      * @brief Returns a reference to the element into this Vector if exists
      */
     Option<T&> find(T const& value) {
-        return find(TIntrinsics::hash(value), [&value](auto const& current) { return TIntrinsics::equals(value, current); });
+        return find(TIntrinsics::hash(value), [&value](auto const& current) -> bool { return TIntrinsics::equals(value, current); });
     }
     Option<T const&> find(T const& value) const {
-        return find(TIntrinsics::hash(value), [&value](auto const& current) { return TIntrinsics::equals(value, current); });
+        return find(TIntrinsics::hash(value), [&value](auto const& current) -> bool { return TIntrinsics::equals(value, current); });
     }
 
     /**

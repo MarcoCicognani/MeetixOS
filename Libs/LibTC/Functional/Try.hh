@@ -13,13 +13,13 @@
 #pragma once
 
 /**
- * @brief Works like Rust's try!() macro: If <expression> produces an error Specifications returns the error to the
+ * @brief Works like Rust's try!() macro: If <expression> produces an empty or error variant then it returns the error to the
  * caller function, otherwise unwraps the value to the current function
  */
-#define TRY(expression)                                                                                                \
-    ({                                                                                                                 \
-        auto expression_result = (expression);                                                                         \
-        if ( expression_result.is_error() ) [[unlikely]]                                                               \
-            return expression_result.unwrap_error();                                                                   \
-        expression_result.unwrap_value();                                                                              \
+#define TRY(expression)                                                                                                                    \
+    ({                                                                                                                                     \
+        auto tryable = (expression);                                                                                                       \
+        if ( !tryable ) [[unlikely]]                                                                                                       \
+            return tryable.backward();                                                                                                     \
+        tryable.unwrap();                                                                                                                  \
     })

@@ -15,6 +15,7 @@
 #include <initializer_list>
 #include <LibTC/Assertions.hh>
 #include <LibTC/Collection/Enums/KeepStorageCapacity.hh>
+#include <LibTC/Collection/Range.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Must.hh>
@@ -143,7 +144,7 @@ public:
         : m_values_count{ rhs.m_values_count } {
         if ( !is_empty() ) {
             ensure_capacity(rhs.count());
-            for ( usize i = 0; i < m_values_count; ++i )
+            for ( usize i : Range{ 0u, m_values_count } )
                 new (&m_data_storage[i]) T{ rhs.at(i) };
         }
     }
@@ -189,7 +190,7 @@ public:
 
         /* call the destructors only for non-trivial types */
         if constexpr ( !Trait::TypeIntrinsics<T>::is_trivial() ) {
-            for ( usize i = 0; i < m_values_count; ++i )
+            for ( usize i : Range{ 0u, m_values_count } )
                 m_data_storage[i].~T();
         }
 
@@ -265,7 +266,7 @@ public:
     ErrorOr<void> try_insert_sorted(T const& value, Comparator comparator) {
         /* find the insertion index */
         usize insert_index = 0;
-        for ( usize i = 0; i < m_values_count; ++i ) {
+        for ( usize i : Range{ 0u, m_values_count } ) {
             if ( comparator(m_data_storage[i], value) )
                 insert_index = i + 1;
             else
@@ -420,7 +421,7 @@ public:
             __builtin_memmove(data_slot(index), data_slot(index + 1), (m_values_count - index - 1) * sizeof(T));
         else {
             at(index).~T();
-            for ( usize i = index + 1; i < m_values_count; ++i ) {
+            for ( usize i : Range{ index + 1, m_values_count } ) {
                 new (data_slot(i - 1)) T{ move(m_data_storage[i]) };
                 m_data_storage[i].~T();
             }
@@ -429,7 +430,7 @@ public:
         return {};
     }
     ErrorOr<void> erase_first_of(T const& value) {
-        for ( usize i = 0; i < m_values_count; ++i ) {
+        for ( usize i : Range{ 0u, m_values_count } ) {
             if ( m_data_storage[i] == value ) {
                 TRY(erase_at(i));
                 return {};
@@ -454,7 +455,7 @@ public:
         if ( erased_count > 0 )
             return erased_count;
         else
-            return ENOENT;
+            return Error{ ENOENT };
     }
 
     /**
@@ -479,13 +480,13 @@ public:
     }
     ErrorOr<void> try_resize(usize new_count) {
         if ( new_count < m_values_count ) {
-            for ( usize i = new_count; i < m_values_count; ++i )
+            for ( usize i : Range{ new_count, m_values_count } )
                 at(i).~T();
         } else if ( new_count > m_values_count ) {
             TRY(try_ensure_capacity(new_count));
 
             /* default construct the new values */
-            for ( usize i = m_values_count; i < new_count; ++i )
+            for ( usize i : Range{ m_values_count, new_count } )
                 new (data_slot(i)) T{};
         }
 
@@ -517,7 +518,7 @@ public:
         if constexpr ( Trait::TypeIntrinsics<T>::is_trivial() )
             __builtin_memmove(new_data_storage, m_data_storage, m_values_count * sizeof(T));
         else {
-            for ( usize i = 0; i < m_values_count; ++i ) {
+            for ( usize i : Range{ 0u, m_values_count } ) {
                 new (&new_data_storage[i]) T{ move(at(i)) };
                 at(i).~T();
             }
@@ -560,11 +561,11 @@ public:
      * @brief Returns the index of the value if exists or when the callback returns true
      */
     Option<usize> index_of(T const& value) const {
-        return index_if([&value](auto const& v) { return Trait::TypeIntrinsics<T>::equals(value, v); });
+        return index_if([&value](auto const& v) -> bool { return Trait::TypeIntrinsics<T>::equals(value, v); });
     }
     template<typename TPredicate>
     Option<usize> index_if(TPredicate predicate) const {
-        for ( usize i = 0; i < m_values_count; ++i ) {
+        for ( usize i : Range{ 0u, m_values_count } ) {
             if ( predicate(m_data_storage[i]) )
                 return i;
         }
@@ -575,18 +576,10 @@ public:
      * @brief Returns a reference to the element into this Vector if exists
      */
     Option<T&> find(T const& value) {
-        auto index_or_none = index_of(value);
-        if ( index_or_none.is_present() )
-            return at(index_or_none.value());
-        else
-            return {};
+        return index_of(value).template map<T&>([this](usize index) -> T& { return at(index); });
     }
     Option<T const&> find(T const& value) const {
-        auto index_or_none = index_of(value);
-        if ( index_or_none.is_present() )
-            return at(index_or_none.value());
-        else
-            return {};
+        return index_of(value).template map<T const&>([this](usize index) -> T const& { return at(index); });
     }
 
     /**
@@ -594,19 +587,11 @@ public:
      */
     template<typename TPredicate>
     Option<T&> find_if(TPredicate predicate) {
-        auto index_or_none = index_if(predicate);
-        if ( index_or_none.is_present() )
-            return at(index_or_none.value());
-        else
-            return {};
+        return index_if(predicate).template map<T&>([this](usize index) -> T& { return at(index); });
     }
     template<typename TPredicate>
     Option<T const&> find_if(TPredicate predicate) const {
-        auto index_or_none = index_if(predicate);
-        if ( index_or_none.is_present() )
-            return at(index_or_none.value());
-        else
-            return {};
+        return index_if(predicate).template map<T const&>([this](usize index) -> T const& { return at(index); });
     }
 
     /**

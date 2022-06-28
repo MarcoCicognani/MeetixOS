@@ -45,6 +45,8 @@ public:
         rhs.callable_wrapper()->move_to_other(m_inline_storage);
     }
 
+    ~Function() = default;
+
     template<Callable TCallable>
     Function& operator=(TCallable&& callable) {
         Function func{ callable };

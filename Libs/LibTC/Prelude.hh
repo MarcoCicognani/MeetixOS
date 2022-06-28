@@ -50,6 +50,7 @@
 #include <LibTC/Text/Formatter.hh>
 #include <LibTC/Text/Lexer.hh>
 #include <LibTC/Trait/AddConst.hh>
+#include <LibTC/Trait/AddConstToReference.hh>
 #include <LibTC/Trait/AddVolatile.hh>
 #include <LibTC/Trait/Conditional.hh>
 #include <LibTC/Trait/Constant.hh>
@@ -87,4 +88,5 @@
 #include <LibTC/Trait/RemoveReference.hh>
 #include <LibTC/Trait/RemoveVolatile.hh>
 #include <LibTC/Trait/TrueType.hh>
+#include <LibTC/Trait/Tryable.hh>
 #include <LibTC/Trait/TypeIntrinsics.hh>

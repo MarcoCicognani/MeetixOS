@@ -14,14 +14,24 @@
 
 #include <LibTC/Assertions.hh>
 #include <LibTC/BitCast.hh>
+#include <LibTC/Collection/Function.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/IntTypes.hh>
+#include <LibTC/Trait/AddConstToReference.hh>
+#include <LibTC/Trait/IsLValue.hh>
+#include <LibTC/Trait/IsRValue.hh>
+#include <LibTC/Trait/RemoveReference.hh>
+#include <LibTC/Trait/Tryable.hh>
 
 namespace TC {
 namespace Functional {
 
+template<typename>
+class Option;
+
 template<typename T>
-class Option {
+    requires(!IsLValue<T> && !IsRValue<T>) /* Only instance objects are supported, for references there is the following specialization */
+class Option<T> {
 public:
     /**
      * @brief Constructors
@@ -107,6 +117,13 @@ public:
         VERIFY(is_present());
         return storage_as_ref();
     }
+
+    T& value_or(T& default_value) {
+        if ( is_present() )
+            return value();
+        else
+            return default_value;
+    }
     T const& value_or(T const& default_value) const {
         if ( is_present() )
             return value();
@@ -117,11 +134,6 @@ public:
     /**
      * @brief Returns the value of this option
      */
-    [[nodiscard]] T unwrap() {
-        T moved_value{ move(value()) };
-        reset();
-        return moved_value;
-    }
     [[nodiscard]] T unwrap_or(T const& default_value) {
         if ( is_present() )
             return unwrap();
@@ -146,6 +158,23 @@ public:
         return m_is_present;
     }
 
+    /**
+     * @brief Tryable support
+     */
+    [[nodiscard]] T unwrap() {
+        T to_return{ move(value()) };
+        reset();
+        return to_return;
+    }
+    template<typename U = T>
+    [[nodiscard]] Option<U> backward() const {
+        VERIFY_FALSE(is_present());
+        return {};
+    }
+    [[nodiscard]] bool operator!() const {
+        return !m_is_present;
+    }
+
 private:
     T& storage_as_ref() {
         return *__builtin_launder(bit_cast<T*>(&m_data_storage));
@@ -156,45 +185,45 @@ private:
 
 private:
     bool m_is_present{ false };
-    alignas(T) u8 m_data_storage[sizeof(T)]{ 0 }; /* byte-array to avoid <m_buckets_storage> constructor call */
+    alignas(T) u8 m_data_storage[sizeof(T)]{ 0 }; /* byte-array to avoid <m_data_storage> constructor call */
 };
 
-template<typename T>
-class Option<T&> {
+template<LValue T>
+class Option<T> {
 public:
     /**
      * @brief Constructors
      */
     constexpr Option() = default;
-    constexpr Option(T const& value)
-        : m_inner_option{ const_cast<T*>(&value) } {
+    constexpr Option(RemoveReference<T>& value)
+        : m_optional_ptr{ &value } {
     }
-    constexpr Option(T&& value)
-        : m_inner_option{ const_cast<T*>(&move(value)) } {
+    constexpr Option(Option const& rhs) = default;
+    constexpr Option(Option&& rhs) noexcept
+        : m_optional_ptr{ exchange(rhs.m_optional_ptr, nullptr) } {
     }
-    constexpr Option(Option const& rhs)     = default;
-    constexpr Option(Option&& rhs) noexcept = default;
 
-    ~Option() = default;
-
-    constexpr Option& operator=(T const& value) {
-        m_inner_option = &value;
-        return *this;
+    ~Option() {
+        reset();
     }
-    constexpr Option& operator=(T&& value) {
-        m_inner_option = &move(value);
+
+    constexpr Option& operator=(RemoveReference<T>& value) {
+        Option<T> option{ value };
+        swap(option);
         return *this;
     }
     constexpr Option& operator=(nullptr_t) {
-        m_inner_option = nullptr;
+        reset();
         return *this;
     }
     constexpr Option& operator=(Option const& rhs) {
-        m_inner_option = rhs.m_inner_option;
+        Option<T> option{ rhs };
+        swap(option);
         return *this;
     }
     constexpr Option& operator=(Option&& rhs) noexcept {
-        m_inner_option = move(rhs.m_inner_option);
+        Option<T> option{ move(rhs) };
+        swap(option);
         return *this;
     }
 
@@ -202,7 +231,7 @@ public:
      * @brief Swaps this Option with another
      */
     constexpr void swap(Option& rhs) noexcept {
-        m_inner_option.swap(rhs.m_inner_option);
+        Cxx::swap(m_optional_ptr, rhs.m_optional_ptr);
     }
 
     /**
@@ -219,42 +248,69 @@ public:
     /**
      * @brief Returns a reference to the value from this option
      */
-    T& value() {
-        return *m_inner_option.value();
+    T value() {
+        VERIFY_NOT_NULL(m_optional_ptr);
+        return *m_optional_ptr;
     }
-    T const& value() const {
-        return *m_inner_option.value();
+    AddConstToReference<T> value() const {
+        VERIFY_NOT_NULL(m_optional_ptr);
+        return *m_optional_ptr;
     }
-    T const& value_or(T const& default_value) const {
-        return *m_inner_option.value_or(default_value);
+
+    T value_or(T default_value) {
+        if ( is_present() )
+            return value();
+        else
+            return default_value;
+    }
+    AddConstToReference<T> value_or(AddConstToReference<T> default_value) const {
+        if ( is_present() )
+            return value();
+        else
+            return default_value;
     }
 
     /**
      * @brief Returns the value of this option
      */
-    [[nodiscard]] T& unwrap() {
-        return *m_inner_option.unwrap();
-    }
-    [[nodiscard]] T& unwrap_or(T const& default_value) {
-        return *m_inner_option.unwrap_or(default_value);
+    [[nodiscard]] T unwrap_or(T default_value) {
+        if ( is_present() )
+            return unwrap();
+        else
+            return default_value;
     }
 
     /**
      * @brief Resets the content of this option
      */
     void reset() {
-        m_inner_option.reset();
+        m_optional_ptr = nullptr;
     }
 
     /**
      * @brief Returns whether the value is present
      */
     [[nodiscard]] bool is_present() const {
-        return m_inner_option.is_present();
+        return m_optional_ptr != nullptr;
+    }
+
+    /**
+     * @brief Tryable support
+     */
+    [[nodiscard]] T unwrap() {
+        return *exchange(m_optional_ptr, nullptr);
+    }
+    template<typename U = T>
+    [[nodiscard]] Option<U> backward() const {
+        VERIFY_FALSE(is_present());
+        return {};
+    }
+    [[nodiscard]] bool operator!() const {
+        return !is_present();
     }
 
 private:
-    Option<T*> m_inner_option{};
+    RemoveReference<T>* m_optional_ptr{ nullptr };
 };
 
 } /* namespace Functional */
@@ -262,3 +318,6 @@ private:
 using Functional::Option;
 
 } /* namespace TC */
+
+static_assert(TC::Trait::Tryable<TC::Functional::Option<int>>);
+static_assert(TC::Trait::Tryable<TC::Functional::Option<int&>>);

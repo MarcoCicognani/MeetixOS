@@ -16,6 +16,24 @@
 
 using namespace TC;
 
+Option<int> return_value_2() {
+    return 100;
+}
+
+Option<int> return_value() {
+    auto v = TRY(return_value_2());
+
+    return v + 100;
+}
+
+void value_a() {
+    auto v = return_value();
+    if ( v.is_present() ) {
+        auto i = v.unwrap();
+        i      = 100;
+    }
+}
+
 TEST_CASE(may_produce_value) {
     auto may_produce_value = [](int value) -> Option<int> {
         if ( value <= 10 )
@@ -23,6 +41,8 @@ TEST_CASE(may_produce_value) {
         else
             return {};
     };
+
+    value_a();
 
     auto must_be_none_option = may_produce_value(20);
     VERIFY_FALSE(must_be_none_option.is_present());
@@ -36,15 +56,18 @@ TEST_CASE(unwrap_reset_value) {
     public:
         Object() = default;
         explicit Object(usize value)
-            : m_value{ value } {}
+            : m_value{ value } {
+        }
 
-        [[nodiscard]] usize value() const { return m_value; }
+        [[nodiscard]] usize value() const {
+            return m_value;
+        }
 
     private:
         usize m_value{ 0 };
     };
 
-    Option option{ Object{ 0xdeadbeef } };
+    Option<Object> option{ Object{ 0xdeadbeef } };
     VERIFY(option.is_present());
 
     auto const& object = option.value();
@@ -80,7 +103,7 @@ TEST_CASE(option_with_reference) {
 }
 
 TEST_CASE(assignment_operator) {
-    Option option{ 'a' };
+    Option<char> option{ 'a' };
     VERIFY(option.is_present());
     VERIFY_EQUAL(option.value(), 'a');
 

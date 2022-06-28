@@ -67,7 +67,7 @@ TEST_CASE(unwrap_error) {
 TEST_CASE(reference_as_value) {
     NonNullBox<i32> boxed_i32{ FromArgs, 123 };
 
-    auto const& i32_ref = boxed_i32.as_ref();
+    auto& i32_ref = boxed_i32.as_ref();
 
     ErrorOr<i32&> error_or_i32{ i32_ref };
     VERIFY(error_or_i32.is_value());

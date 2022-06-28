@@ -14,12 +14,21 @@
 
 #include <LibTC/Cxx.hh>
 #include <LibTC/Functional/Option.hh>
+#include <LibTC/Trait/AddConstToReference.hh>
+#include <LibTC/Trait/IsLValue.hh>
+#include <LibTC/Trait/IsRValue.hh>
+#include <LibTC/Trait/RemoveReference.hh>
+#include <LibTC/Trait/Tryable.hh>
 
 namespace TC {
 namespace Functional {
 
+template<typename, typename>
+class Result;
+
 template<typename T, typename E>
-class Result {
+    requires((!IsLValue<T> && !IsRValue<T>) && (!IsLValue<E> && !IsRValue<E>))
+class Result<T, E> {
 public:
     /**
      * @brief Constructors
@@ -78,9 +87,10 @@ public:
      */
     template<typename U>
     Result<U, E> map(auto predicate) {
-        if ( is_value() )
-            return Result{ predicate(value()) };
-        else
+        if ( is_value() ) {
+            auto result = predicate(value());
+            return result;
+        } else
             return {};
     }
 
@@ -90,7 +100,7 @@ public:
     template<typename U>
     Result<T, U> map_error(auto predicate) {
         if ( is_error() )
-            return Result{ predicate(error()) };
+            return predicate(error());
         else
             return {};
     }
@@ -135,12 +145,26 @@ public:
         return m_error_option.is_present();
     }
 
+    /**
+     * @brief Tryable support
+     */
+    [[nodiscard]] T unwrap() {
+        return unwrap_value();
+    }
+    [[nodiscard]] E backward() {
+        return unwrap_error();
+    }
+    [[nodiscard]] bool operator!() const {
+        return is_error();
+    }
+
 private:
     Option<T> m_value_option{};
     Option<E> m_error_option{};
 };
 
 template<typename E>
+    requires(!IsLValue<E> && !IsRValue<E>)
 class Result<void, E> {
 public:
     /**
@@ -183,9 +207,10 @@ public:
      */
     template<typename U>
     Result<U, E> map(auto predicate) {
-        if ( is_value() )
-            return Result{ predicate(value()) };
-        else
+        if ( is_value() ) {
+            auto result = predicate(value());
+            return result;
+        } else
             return {};
     }
 
@@ -195,7 +220,7 @@ public:
     template<typename U>
     Result<void, U> map_error(auto predicate) {
         if ( is_error() )
-            return Result{ predicate(error()) };
+            return predicate(error());
         else
             return {};
     }
@@ -221,15 +246,11 @@ public:
     }
 
     /**
-     * @brief Unwraps the value if exists
+     * @brief Unwraps the value or the error if exists
      */
     void unwrap_value() const {
-        /* Only for TRY/MUST compatibility */
+        /* Nothing to return */
     }
-
-    /**
-     * @brief Unwraps the error if exists
-     */
     [[nodiscard]] E unwrap_error() {
         return m_error_option.unwrap();
     }
@@ -244,12 +265,26 @@ public:
         return m_error_option.is_present();
     }
 
+    /**
+     * @brief Tryable support
+     */
+    void unwrap() const {
+        /* Nothing to return */
+    }
+    [[nodiscard]] E backward() {
+        return unwrap_error();
+    }
+    [[nodiscard]] bool operator!() const {
+        return is_error();
+    }
+
 private:
     Option<E> m_error_option{};
 };
 
-template<typename T, typename E>
-class Result<T&, E> {
+template<LValue T, typename E>
+    requires(!IsLValue<E> && !IsRValue<E>)
+class Result<T, E> {
 public:
 
 public:
@@ -257,11 +292,8 @@ public:
      * @brief Constructors
      */
     Result() = delete;
-    constexpr Result(T const& value)
+    constexpr Result(RemoveReference<T>& value)
         : m_value_option{ value } {
-    }
-    constexpr Result(T&& value)
-        : m_value_option{ move(value) } {
     }
     constexpr Result(E const& error)
         : m_error_option{ error } {
@@ -273,13 +305,8 @@ public:
     constexpr Result(Result&&) noexcept = default;
     ~Result()                           = default;
 
-    constexpr Result& operator=(T const& value) {
+    constexpr Result& operator=(RemoveReference<T>& value) {
         Result result{ value };
-        swap(result);
-        return *this;
-    }
-    constexpr Result& operator=(T&& value) {
-        Result result{ move(value) };
         swap(result);
         return *this;
     }
@@ -309,10 +336,11 @@ public:
      * @brief Maps the value of this Option into another type
      */
     template<typename U>
-    Result<U&, E> map(auto predicate) {
-        if ( is_value() )
-            return Result{ predicate(value()) };
-        else
+    Result<U, E> map(auto predicate) {
+        if ( is_value() ) {
+            auto result = predicate(value());
+            return result;
+        } else
             return {};
     }
 
@@ -320,9 +348,9 @@ public:
      * @brief Maps the error of this Option into another type
      */
     template<typename U>
-    Result<T&, U> map_error(auto predicate) {
+    Result<T, U> map_error(auto predicate) {
         if ( is_error() )
-            return Result{ predicate(error()) };
+            return predicate(error());
         else
             return {};
     }
@@ -330,10 +358,10 @@ public:
     /**
      * @brief Returns the reference to the result value
      */
-    T& value() {
+    T value() {
         return m_value_option.value();
     }
-    T const& value() const {
+    AddConstToReference<T> value() const {
         return m_value_option.value();
     }
 
@@ -350,7 +378,7 @@ public:
     /**
      * @brief Unwraps the value or the error if exists
      */
-    [[nodiscard]] T& unwrap_value() {
+    [[nodiscard]] T unwrap_value() {
         return m_value_option.unwrap();
     }
     [[nodiscard]] E unwrap_error() {
@@ -367,9 +395,22 @@ public:
         return m_error_option.is_present();
     }
 
+    /**
+     * @brief Tryable support
+     */
+    [[nodiscard]] T unwrap() {
+        return unwrap_value();
+    }
+    [[nodiscard]] E backward() {
+        return unwrap_error();
+    }
+    [[nodiscard]] bool operator!() const {
+        return is_error();
+    }
+
 private:
-    Option<T&> m_value_option{};
-    Option<E>  m_error_option{};
+    Option<T> m_value_option{};
+    Option<E> m_error_option{};
 };
 
 } /* namespace Functional */
@@ -377,3 +418,7 @@ private:
 using Functional::Result;
 
 } /* namespace TC */
+
+static_assert(TC::Trait::Tryable<TC::Functional::Result<int, long>>);
+static_assert(TC::Trait::Tryable<TC::Functional::Result<int&, long>>);
+static_assert(TC::Trait::Tryable<TC::Functional::Result<void, long>>);
