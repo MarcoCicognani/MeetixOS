@@ -18,7 +18,7 @@
 namespace TC::Text {
 
 Lexer::Lexer(StringView source_view)
-    : m_source_view{ move(source_view) } {
+    : m_source_view{ Cxx::move(source_view) } {
 }
 
 char Lexer::consume() {

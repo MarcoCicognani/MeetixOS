@@ -15,99 +15,112 @@
 #include <LibTC/Assertions.hh>
 #include <LibTC/BitCast.hh>
 #include <LibTC/Collection/Range.hh>
+#include <LibTC/Concept.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/DenyCopy.hh>
+#include <LibTC/Forward.hh>
 #include <LibTC/Math.hh>
-#include <LibTC/Trait/IsCallable.hh>
 
 namespace TC {
 namespace Collection {
+namespace Details {
 
-template<typename>
-class Function;
+template<typename T>
+constexpr bool IsFunctionObject = false;
+
+template<typename TReturn, typename... TArgs>
+constexpr bool IsFunctionObject<Function<TReturn(TArgs...)>> = true;
+
+template<typename T, typename TReturn, typename... TArgs>
+concept CallableNotFunction = Callable<T, TReturn, TArgs...> && !IsFunctionObject<T>;
+
+} /* namespace Details */
 
 template<typename TReturn, typename... TArgs>
 class Function<TReturn(TArgs...)> {
+private:
     TC_DENY_COPY(Function);
 
 public:
     /**
      * @brief Constructors
      */
-    Function() = delete;
-    template<Callable TCallable>
-    Function(TCallable&& callable) {
-        VERIFY_LESS_EQUAL(sizeof(TCallable), sizeof(m_inline_storage));
+    template<Details::CallableNotFunction<TReturn, TArgs...> TCallable>
+    constexpr explicit(false) Function(TCallable callable) noexcept {
+        static_assert(sizeof(TCallable) <= sizeof(m_inline_storage), "Function<> TCallable cannot be stored into inline storage");
 
-        new (m_inline_storage) CallableWrapper<TCallable>{ forward<TCallable>(callable) };
+        new (m_inline_storage) CallableWrapper<TCallable>{ Cxx::forward<TCallable>(callable) };
     }
-    Function(Function&& rhs) noexcept {
-        rhs.callable_wrapper()->move_to_other(m_inline_storage);
+    Function(Function<TReturn(TArgs...)>&& rhs) noexcept {
+        rhs.storage_as_callable()->move_this_to(m_inline_storage);
     }
 
     ~Function() = default;
 
-    template<Callable TCallable>
-    Function& operator=(TCallable&& callable) {
-        Function func{ callable };
-        swap(func);
+    template<Details::CallableNotFunction<TReturn, TArgs...> TCallable>
+    auto operator=(TCallable&& callable) noexcept -> Function<TReturn(TArgs...)>& {
+        Function function{ callable };
+        swap(function);
         return *this;
     }
-    Function& operator=(Function&& function) noexcept {
-        Function func{ move(function) };
-        swap(func);
+    auto operator=(Function<TReturn(TArgs...)>&& rhs) noexcept -> Function<TReturn(TArgs...)>& {
+        Function function{ Cxx::move(rhs) };
+        swap(function);
         return *this;
     }
 
     /**
      * @brief Swaps in O(1) the content of this List with another
      */
-    void swap(Function& rhs) noexcept {
-        for ( usize i : Range{ 0u, C_INLINE_STORAGE_SIZE } )
+    auto swap(Function<TReturn(TArgs...)>& rhs) noexcept {
+        for ( auto const i : Range{ 0u, C_INLINE_STORAGE_SIZE } )
             Cxx::swap(m_inline_storage[i], rhs.m_inline_storage[i]);
     }
 
-    TReturn operator()(TArgs&&... args) {
-        callable_wrapper()->operator()(forward<TArgs>(args)...);
+    /**
+     * @brief Calls the stored lambda with the given arguments
+     * @note Despite the operator is marked const, the lambda can still modify his captures
+     */
+    [[gnu::always_inline]] auto operator()(TArgs... args) const -> TReturn {
+        return storage_as_callable()->invoke(Cxx::forward<TArgs>(args)...);
     }
 
 private:
-    static constexpr usize C_INLINE_STORAGE_SIZE = 16 * sizeof(void*);
+    static constexpr usize C_INLINE_STORAGE_SIZE = 6 * sizeof(void*);
 
     class ICallable {
     public:
         virtual ~ICallable() = default;
 
-        virtual void move_to_other(u8*) = 0;
-
-        virtual TReturn operator()(TArgs&&...) = 0;
+        virtual auto invoke(TArgs...) -> TReturn = 0;
+        virtual auto move_this_to(u8*) -> void   = 0;
     };
 
     template<typename TCallable>
     class CallableWrapper : public ICallable {
     public:
-        CallableWrapper(TCallable&& callable)
-            : m_callable{ move(callable) } {
+        explicit constexpr CallableWrapper(TCallable&& callable)
+            : m_callable{ Cxx::forward<TCallable>(callable) } {
         }
         ~CallableWrapper() final = default;
 
-        void move_to_other(u8* destination) final {
-            new (destination) CallableWrapper<TCallable>{ move(m_callable) };
+        [[gnu::always_inline]] auto invoke(TArgs... args) -> TReturn final {
+            return m_callable(Cxx::forward<TArgs>(args)...);
         }
 
-        TReturn operator()(TArgs&&... args) final {
-            return m_callable(forward<TArgs>(args)...);
+        auto move_this_to(u8* destination) -> void final {
+            new (destination) CallableWrapper{ Cxx::forward<TCallable>(m_callable) };
         }
 
     private:
         TCallable m_callable;
     };
 
-    ICallable* callable_wrapper() const {
+    [[gnu::always_inline]] auto storage_as_callable() const -> ICallable* {
         return bit_cast<ICallable*>(&m_inline_storage);
     }
 
-    alignas(alignof(ICallable)) u8 m_inline_storage[C_INLINE_STORAGE_SIZE];
+    alignas(alignof(ICallable)) u8 m_inline_storage[C_INLINE_STORAGE_SIZE]{};
 };
 
 } /* namespace Collection */

@@ -13,7 +13,7 @@
 #include <dlfcn.h>
 #include <LibTC/Collection/StringView.hh>
 
-static TC::StringView const g_dl_error_string_view{ "dlfcn not available" };
+static auto const g_dl_error_string_view = "dlfcn not available"sv;
 
 extern "C" {
 

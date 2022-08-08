@@ -12,22 +12,19 @@
 
 #pragma once
 
+#include <LibTC/Concept.hh>
 #include <LibTC/Hashing.hh>
 #include <LibTC/IntTypes.hh>
-#include <LibTC/Trait/IsIntegral.hh>
-#include <LibTC/Trait/IsPointer.hh>
-#include <LibTC/Trait/IsSame.hh>
 
 namespace TC {
-namespace Trait {
 namespace Details {
 
 template<typename T>
-struct TypeIntrinsics {
-    static constexpr bool is_trivial() {
+struct TypeTraits {
+    static constexpr auto is_trivial() -> bool {
         return false;
     }
-    static constexpr bool equals(T const& a, T const& b) {
+    static constexpr auto equals(T const& a, T const& b) -> bool {
         return a == b;
     }
 };
@@ -35,37 +32,33 @@ struct TypeIntrinsics {
 } /* namespace Details */
 
 template<typename T>
-struct TypeIntrinsics : public Details::TypeIntrinsics<T> {
+struct TypeTraits : public Details::TypeTraits<T> {
     /* Inherit implementation from details */
 };
 
 template<Integral T>
-struct TypeIntrinsics<T> : public Details::TypeIntrinsics<T> {
-    static constexpr usize hash(T const& value) {
+struct TypeTraits<T> : public Details::TypeTraits<T> {
+    static constexpr auto hash(T const& value) -> usize {
         if constexpr ( sizeof(T) < 8 )
             return Hashing::u32_calculate_hash(value);
         else
             return Hashing::u64_calculate_hash(value);
     }
 
-    static constexpr bool is_trivial() {
+    static constexpr auto is_trivial() -> bool {
         return true;
     }
 };
 
 template<Pointer T>
-struct TypeIntrinsics<T> : public Details::TypeIntrinsics<T> {
-    static constexpr usize hash(T value) {
+struct TypeTraits<T> : public Details::TypeTraits<T> {
+    static constexpr auto hash(T value) -> usize {
         return Hashing::pointer_calculate_hash(value);
     }
 
-    static constexpr bool is_trivial() {
+    static constexpr auto is_trivial() -> bool {
         return true;
     }
 };
-
-} /* namespace Trait */
-
-using Trait::TypeIntrinsics;
 
 } /* namespace TC */

@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Memory/NonNullRef.hh>
@@ -27,10 +28,9 @@ class StringStorage {
 
 public:
     /**
-     * @brief Constructors
+     * @brief Error safe Factory functions
      */
-    static NonNullRef<StringStorage>          construct_from(StringView string_view);
-    static ErrorOr<NonNullRef<StringStorage>> try_construct_from(StringView string_view);
+    static auto try_construct_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>>;
 
     explicit StringStorage(StringView string_view);
     ~StringStorage() = default;
@@ -38,21 +38,21 @@ public:
     /**
      * @brief Custom delete operator
      */
-    void operator delete(void* raw_string_storage);
+    auto operator delete(void* raw_string_storage) -> void;
 
     /**
      * @brief Getters
      */
-    [[nodiscard]] char const* data_storage() const;
-    [[nodiscard]] usize       char_count() const;
+    [[nodiscard]] auto data_storage() const -> char const*;
+    [[nodiscard]] auto char_count() const -> usize;
 
-    [[nodiscard]] bool is_empty() const;
+    [[nodiscard]] auto is_empty() const -> bool;
 
     /**
      * @brief Since the StringStorage uses inline storage the requested size to the heap allocator is the size of the
      * class plus the capacity for the string storage
      */
-    static usize alloc_size(usize char_count);
+    static auto alloc_size(usize char_count) -> usize;
 
 private:
     usize m_char_count{ 0 };

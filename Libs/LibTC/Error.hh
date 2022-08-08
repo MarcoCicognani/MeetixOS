@@ -13,9 +13,12 @@
 #pragma once
 
 #include <LibC/errno.h>
+#include <LibTC/Forward.hh>
 #include <LibTC/SourceLocation.hh>
 
 namespace TC {
+
+/* TODO Once refactor all to C++ modules use StringView instead of char const* */
 
 class Error {
 public:
@@ -40,13 +43,13 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] OSError        os_error() const;
-    [[nodiscard]] char const*    string_literal() const;
-    [[nodiscard]] FromSyscall    from_syscall() const;
-    [[nodiscard]] SourceLocation source_location() const;
+    [[nodiscard]] auto os_error() const -> OSError;
+    [[nodiscard]] auto string_literal() const -> char const*;
+    [[nodiscard]] auto from_syscall() const -> FromSyscall;
+    [[nodiscard]] auto source_location() const -> SourceLocation;
 
-    [[nodiscard]] bool operator==(OSError const& rhs) const;
-    [[nodiscard]] bool operator==(char const* rhs) const;
+    [[nodiscard]] auto operator==(OSError const& rhs) const -> bool;
+    [[nodiscard]] auto operator==(char const* rhs) const -> bool;
 
 private:
     OSError        m_os_error;

@@ -20,49 +20,45 @@
 
 namespace TC::Collection {
 
-NonNullRef<StringStorage> StringStorage::construct_from(StringView string_view) {
-    return MUST(try_construct_from(string_view));
-}
+using RCStringStorage = Memory::Details::RefCounted<StringStorage>;
 
-ErrorOr<NonNullRef<StringStorage>> StringStorage::try_construct_from(StringView string_view) {
-    using RCStringStorage = Memory::Details::RefCounted<StringStorage>;
-
+auto StringStorage::try_construct_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>> {
     if ( string_view.is_null() )
         return Error{ EINVAL };
 
     auto ref_counted_string_storage = TRY(Memory::Raw::clean_alloc_object<void>(alloc_size(string_view.len())));
-    auto ref_counted_string_ptr     = new (ref_counted_string_storage) RCStringStorage{ FromArgs, string_view };
+    auto ref_counted_string_ptr = new (ref_counted_string_storage) RCStringStorage{ Memory::Details::FromArgsTag::FromArgs, string_view };
 
-    return NonNullRef<StringStorage>{ Adopt, ref_counted_string_ptr };
-}
-
-void StringStorage::operator delete(void* raw_string_storage) {
-    if ( raw_string_storage == nullptr ) [[unlikely]]
-        return;
-
-    auto string_storage = bit_cast<Memory::Details::RefCounted<StringStorage>*>(raw_string_storage);
-    Memory::Raw::free_sized(string_storage, alloc_size(string_storage->shared_object().m_char_count));
-}
-
-char const* StringStorage::data_storage() const {
-    return m_inline_storage;
-}
-
-usize StringStorage::char_count() const {
-    return m_char_count;
-}
-
-bool StringStorage::is_empty() const {
-    return m_char_count == 0;
-}
-
-usize StringStorage::alloc_size(usize char_count) {
-    return sizeof(Memory::Details::RefCounted<StringStorage>) + sizeof(char) * char_count;
+    return NonNullRef<StringStorage>::construct_from_adopt(*ref_counted_string_ptr);
 }
 
 StringStorage::StringStorage(StringView string_view)
     : m_char_count{ string_view.len() } {
     __builtin_memcpy(m_inline_storage, string_view.as_cstr(), sizeof(char) * m_char_count);
+}
+
+auto StringStorage::operator delete(void* raw_string_storage) -> void {
+    if ( raw_string_storage == nullptr ) [[unlikely]]
+        return;
+
+    auto string_storage = bit_cast<RCStringStorage*>(raw_string_storage);
+    Memory::Raw::free_sized(string_storage, alloc_size(string_storage->shared_object().m_char_count));
+}
+
+auto StringStorage::data_storage() const -> char const* {
+    return m_inline_storage;
+}
+
+auto StringStorage::char_count() const -> usize {
+    return m_char_count;
+}
+
+auto StringStorage::is_empty() const -> bool {
+    return m_char_count == 0;
+}
+
+auto StringStorage::alloc_size(usize char_count) -> usize {
+    return sizeof(RCStringStorage) + sizeof(char) * char_count;
 }
 
 } /* namespace TC::Collection */

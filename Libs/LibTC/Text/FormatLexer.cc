@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/ctype.h>
+#include <LibTC/CharTypes.hh>
 #include <LibTC/Text/FormatLexer.hh>
 
 namespace TC::Text {
@@ -22,11 +22,11 @@ FormatLexer::FormatLexer(StringView source_view)
 StringView FormatLexer::consume_literal() {
     auto begin = index();
     while ( !is_end() ) {
-        if ( consume_specific("{{") )
+        if ( consume_specific("{{"sv) )
             continue;
-        if ( consume_specific("}}") )
+        if ( consume_specific("}}"sv) )
             continue;
-        if ( next_is(is_any_of("{}")) )
+        if ( next_is(is_any_of("{}"sv)) )
             return source_view().sub_string_view(begin, index() - begin);
 
         consume();
@@ -38,7 +38,7 @@ bool FormatLexer::consume_number(usize& value) {
     value = 0;
 
     bool consumed_at_least_one = false;
-    while ( next_is(isdigit) ) {
+    while ( next_is(is_ascii_digit) ) {
         value *= 10;
         value += consume() - '0';
         consumed_at_least_one = true;

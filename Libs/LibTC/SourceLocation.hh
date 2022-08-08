@@ -12,18 +12,21 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
 #include <LibTC/IntTypes.hh>
 
 namespace TC {
+
+/* TODO Once refactor all to C++ modules use StringView instead of char const* */
 
 class SourceLocation {
 public:
     /**
      * @brief Returns a SourceLocation from the current location
      */
-    [[nodiscard]] static SourceLocation here(char const* file_path = __builtin_FILE(),
-                                             char const* function  = __builtin_FUNCTION(),
-                                             u32         line      = __builtin_LINE());
+    [[nodiscard]] static auto here(char const* file_path = __builtin_FILE(),
+                                   char const* function  = __builtin_FUNCTION(),
+                                   u32         line      = __builtin_LINE()) -> SourceLocation;
 
     /**
      * @brief Constructors
@@ -31,18 +34,18 @@ public:
     SourceLocation(SourceLocation const&) = default;
     SourceLocation(SourceLocation&&)      = default;
 
-    SourceLocation& operator=(SourceLocation const&) = default;
-    SourceLocation& operator=(SourceLocation&&) = default;
+    auto operator=(SourceLocation const&) -> SourceLocation& = default;
+    auto operator=(SourceLocation&&) -> SourceLocation&      = default;
 
     /**
      * @brief Getters
      */
-    [[nodiscard]] char const* file_path() const;
-    [[nodiscard]] char const* function() const;
-    [[nodiscard]] u32         line() const;
+    [[nodiscard]] auto file_path() const -> char const*;
+    [[nodiscard]] auto function() const -> char const*;
+    [[nodiscard]] auto line() const -> u32;
 
 private:
-    SourceLocation(char const* file_path, char const* function, u32 line);
+    explicit constexpr SourceLocation(char const* file_path, char const* function, u32 line) noexcept;
 
 private:
     char const* m_file_path;

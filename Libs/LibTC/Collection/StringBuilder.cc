@@ -16,51 +16,97 @@
 
 namespace TC::Collection {
 
-void StringBuilder::clear(KeepStorageCapacity keep_storage_capacity) {
+auto StringBuilder::construct_empty() -> StringBuilder {
+    return StringBuilder{};
+}
+
+auto StringBuilder::construct_with_capacity(usize capacity) -> StringBuilder {
+    return MUST(try_construct_with_capacity(capacity));
+}
+
+auto StringBuilder::construct_from_other(const StringBuilder& rhs) -> StringBuilder {
+    return MUST(try_construct_from_other(rhs));
+}
+
+auto StringBuilder::try_construct_with_capacity(usize capacity) -> ErrorOr<StringBuilder> {
+    auto string_builder = construct_empty();
+    TRY(string_builder.try_ensure_capacity(capacity));
+    return string_builder;
+}
+
+auto StringBuilder::try_construct_from_other(const StringBuilder& rhs) -> ErrorOr<StringBuilder> {
+    auto string_builder = TRY(try_construct_with_capacity(rhs.len()));
+    for ( auto const& c : rhs.as_string_view() )
+        TRY(string_builder.try_append(c));
+
+    return string_builder;
+}
+
+auto StringBuilder::clone() const -> StringBuilder {
+    return MUST(try_clone());
+}
+
+auto StringBuilder::try_clone() const -> ErrorOr<StringBuilder> {
+    return StringBuilder::try_construct_from_other(*this);
+}
+
+auto StringBuilder::clear(KeepStorageCapacity keep_storage_capacity) {
     m_char_vector.clear(keep_storage_capacity);
 }
 
-void StringBuilder::append(char c) {
+auto StringBuilder::append(char c) {
     MUST(try_append(c));
 }
 
-ErrorOr<void> StringBuilder::try_append(char c) {
+auto StringBuilder::try_append(char c) -> ErrorOr<void> {
     return m_char_vector.try_append(c);
 }
 
-void StringBuilder::append(StringView string_view) {
+auto StringBuilder::append(StringView string_view) {
     MUST(try_append(string_view));
 }
 
-ErrorOr<void> StringBuilder::try_append(StringView string_view) {
+auto StringBuilder::try_append(StringView string_view) -> ErrorOr<void> {
     if ( string_view.is_null_or_empty() )
         return {};
 
     /* first ensure the right capacity then append unchecked for speed */
-    TRY(m_char_vector.try_ensure_capacity(len() + string_view.len()));
+    TRY(try_ensure_capacity(len() + string_view.len()));
     for ( auto c : string_view )
         m_char_vector.append_unchecked(c);
     return {};
 }
 
-String StringBuilder::to_string() const {
+[[maybe_unused]] auto StringBuilder::ensure_capacity(usize capacity) {
+    MUST(try_ensure_capacity(capacity));
+}
+
+auto StringBuilder::try_ensure_capacity(usize capacity) -> ErrorOr<void> {
+    return m_char_vector.try_ensure_capacity(capacity);
+}
+
+auto StringBuilder::to_string() const -> String {
     return MUST(try_to_string());
 }
 
-ErrorOr<String> StringBuilder::try_to_string() const {
-    return String::try_construct_from(as_string_view());
+auto StringBuilder::try_to_string() const -> ErrorOr<String> {
+    return String::try_construct_from_view(as_string_view());
 }
 
-usize StringBuilder::len() const {
+auto StringBuilder::len() const -> usize {
     return m_char_vector.count();
 }
 
-bool StringBuilder::is_empty() const {
+auto StringBuilder::is_empty() const -> bool {
     return len() == 0;
 }
 
-StringView StringBuilder::as_string_view() const {
-    return StringView{ m_char_vector.data(), len() };
+auto StringBuilder::as_string_view() const -> StringView {
+    return StringView{ m_char_vector.raw_data(), len() };
+}
+
+constexpr StringBuilder::StringBuilder() noexcept
+    : m_char_vector{ Vector<char>::construct_empty() } {
 }
 
 } /* namespace TC::Collection */

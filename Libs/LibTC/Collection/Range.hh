@@ -13,14 +13,16 @@
 #pragma once
 
 #include <LibTC/Assertions.hh>
-#include <LibTC/Trait/IsIntegral.hh>
-#include <LibTC/Trait/TypeIntrinsics.hh>
+#include <LibTC/Collection/ReverseIteratorSupport.hh>
+#include <LibTC/Forward.hh>
+#include <LibTC/Meta.hh>
+#include <LibTC/TypeTraits.hh>
 
 namespace TC {
 namespace Collection {
 namespace Details {
 
-template<Integral T>
+template<Integral T, bool IsReverse>
 class RangeIterator {
 public:
     /**
@@ -32,16 +34,20 @@ public:
 
     RangeIterator(RangeIterator const&) = default;
 
-    RangeIterator& operator=(RangeIterator const&) = default;
+    auto operator=(RangeIterator const&) -> RangeIterator& = default;
 
     /**
      * @brief Increment operators
      */
-    [[gnu::always_inline]] RangeIterator& operator++() {
-        ++m_current;
+    [[gnu::always_inline]] auto operator++() -> RangeIterator& {
+        if constexpr ( IsReverse ) {
+            --m_current;
+        } else {
+            ++m_current;
+        }
         return *this;
     }
-    [[gnu::always_inline]] RangeIterator operator++(int) {
+    [[gnu::always_inline]] auto operator++(int) -> RangeIterator {
         RangeIterator it{ *this };
 
         operator++();
@@ -51,21 +57,21 @@ public:
     /**
      * @brief ValueReference access operators
      */
-    [[gnu::always_inline]] T operator*() const {
+    [[gnu::always_inline]] auto operator*() const -> T {
         return m_current;
     }
 
     /**
      * @brief Getters
      */
-    T value() const {
+    auto value() const -> T {
         return m_current;
     }
 
     /**
      * @brief Comparison operator
      */
-    [[nodiscard]] inline bool operator<=>(RangeIterator const&) const = default;
+    [[nodiscard]] inline auto operator<=>(RangeIterator const&) const -> bool = default;
 
 private:
     T m_current;
@@ -76,25 +82,37 @@ private:
 template<Integral T>
 class Range {
 public:
-    using Iterator = Details::RangeIterator<T>;
+    using Iterator        = Details::RangeIterator<T, false>;
+    using ReverseIterator = Details::RangeIterator<T, true>;
 
 public:
     /**
      * @brief Constructor
      */
-    constexpr Range(T first, T end)
+    explicit constexpr Range(T first, T end) noexcept
         : m_first{ first }
         , m_end{ end } {
     }
 
     /**
-     * @brief Iterator
+     * @brief IteratorProvider
      */
-    [[gnu::always_inline]] Iterator begin() const {
+    [[gnu::always_inline]] auto begin() const -> Iterator {
         return Iterator{ m_first };
     }
-    [[gnu::always_inline]] Iterator end() const {
+    [[gnu::always_inline]] auto end() const -> Iterator {
         return Iterator{ m_end };
+    }
+
+    [[gnu::always_inline]] auto rbegin() const -> Iterator {
+        return ReverseIterator{ m_end };
+    }
+    [[gnu::always_inline]] auto rend() const -> Iterator {
+        return ReverseIterator{ m_first };
+    }
+
+    auto reverse_iter() const -> ReverseIteratorSupport::Wrapper<Range<T>> {
+        return ReverseIteratorSupport::in_reverse(*this);
     }
 
 private:
@@ -108,7 +126,7 @@ public:
     /**
      * @brief Constructor
      */
-    constexpr RangeInclusive(T first, T last)
+    explicit constexpr RangeInclusive(T first, T last) noexcept
         : Range<T>{ first, last + 1 } {
     }
 };
@@ -118,31 +136,28 @@ public:
 using Collection::Range;
 using Collection::RangeInclusive;
 
-namespace Trait {
-
 template<typename T>
-struct TypeIntrinsics<Range<T>> : public Details::TypeIntrinsics<Range<T>> {
-    static constexpr bool equals(Range<T> const& a, Range<T> const& b) {
-        return TypeIntrinsics<T>::equals(a.begin().value(), b.begin().value)
-            && TypeIntrinsics<T>::equals(a.end().value(), b.end().value());
+struct TypeTraits<Range<T>> : public Details::TypeTraits<Range<T>> {
+    static constexpr auto equals(Range<T> const& a, Range<T> const& b) -> bool {
+        return TypeTraits<T>::equals(a.begin().value(), b.begin().value)
+            && TypeTraits<T>::equals(a.end().value(), b.end().value());
     }
 
-    static constexpr bool is_trivial() {
+    static constexpr auto is_trivial() -> bool {
         return true;
     }
 };
 
 template<typename T>
-struct TypeIntrinsics<RangeInclusive<T>> : public Details::TypeIntrinsics<RangeInclusive<T>> {
-    static constexpr bool equals(Range<T> const& a, Range<T> const& b) {
-        return TypeIntrinsics<T>::equals(a.begin().value(), b.begin().value)
-            && TypeIntrinsics<T>::equals(a.end().value(), b.end().value());
+struct TypeTraits<RangeInclusive<T>> : public Details::TypeTraits<RangeInclusive<T>> {
+    static constexpr auto equals(Range<T> const& a, Range<T> const& b) -> bool {
+        return TypeTraits<T>::equals(a.begin().value(), b.begin().value)
+            && TypeTraits<T>::equals(a.end().value(), b.end().value());
     }
 
-    static constexpr bool is_trivial() {
+    static constexpr auto is_trivial() -> bool {
         return true;
     }
 };
 
-} /* namespace Trait */
 } /* namespace TC */

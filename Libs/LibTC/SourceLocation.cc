@@ -14,26 +14,26 @@
 
 namespace TC {
 
-SourceLocation SourceLocation::here(char const* file_path, char const* function, u32 line) {
+auto SourceLocation::here(char const* file_path, char const* function, u32 line) -> SourceLocation {
     return SourceLocation{ file_path, function, line };
 }
 
-SourceLocation::SourceLocation(char const* file_path, char const* function, u32 line)
-    : m_file_path{ file_path }
-    , m_function{ function }
-    , m_line{ line } {
-}
-
-char const* SourceLocation::file_path() const {
+auto SourceLocation::file_path() const -> char const* {
     return m_file_path;
 }
 
-char const* SourceLocation::function() const {
+auto SourceLocation::function() const -> char const* {
     return m_function;
 }
 
-u32 SourceLocation::line() const {
+auto SourceLocation::line() const -> u32 {
     return m_line;
+}
+
+constexpr SourceLocation::SourceLocation(char const* file_path, char const* function, u32 line) noexcept
+    : m_file_path{ file_path }
+    , m_function{ function }
+    , m_line{ line } {
 }
 
 } /* namespace TC */

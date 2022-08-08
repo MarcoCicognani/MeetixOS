@@ -13,6 +13,7 @@
 add_meetix_unit_test(ErrorOr)
 add_meetix_unit_test(Format)
 add_meetix_unit_test(Function)
+add_meetix_unit_test(Iterator)
 add_meetix_unit_test(List)
 add_meetix_unit_test(Map)
 add_meetix_unit_test(NonNullBox)

@@ -16,20 +16,19 @@
 #include <LibTC/Collection/Enums/TrimMode.hh>
 #include <LibTC/Collection/Enums/TrimWhitespace.hh>
 #include <LibTC/Collection/Vector.hh>
+#include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Option.hh>
 #include <LibTC/Hashing.hh>
 #include <LibTC/IntTypes.hh>
-#include <LibTC/Trait/TypeIntrinsics.hh>
+#include <LibTC/TypeTraits.hh>
 
 namespace TC {
 namespace Collection {
 
-class String;
-
 class StringView {
 public:
-    using ConstIterator = Details::VectorIterator<StringView const, char const>;
+    using ConstIterator = Details::VectorIterator<StringView const, char const, false>;
 
 public:
     /**
@@ -37,119 +36,115 @@ public:
      */
     constexpr StringView() = default;
     constexpr StringView(char const* str, usize count) noexcept;
-    StringView(String const& string) noexcept;
-    StringView(char const* str) noexcept;
     StringView(StringView const& rhs) noexcept;
     StringView(StringView&& rhs) noexcept;
     ~StringView() = default;
 
-    StringView& operator=(String const& str);
-    StringView& operator=(char const* str);
-    StringView& operator=(StringView const& rhs);
-    StringView& operator=(StringView&& rhs) noexcept;
+    auto operator=(StringView const& rhs) -> StringView&;
+    auto operator=(StringView&& rhs) noexcept -> StringView&;
 
     /**
      * @brief Swaps this string view with another
      */
-    void swap(StringView& rhs) noexcept;
+    auto swap(StringView& rhs) noexcept -> void;
 
     /**
      * @brief Access operators
      */
-    [[nodiscard]] char const& at(usize index) const;
-    [[nodiscard]] char const& operator[](usize index) const;
+    [[nodiscard]] auto at(usize index) const -> char const&;
+    [[nodiscard]] auto operator[](usize index) const -> char const&;
 
     /**
      * @brief Compares this string view with another
      */
-    [[nodiscard]] int  compare(StringView rhs) const;
-    [[nodiscard]] bool equals_ignore_case(StringView rhs) const;
+    [[nodiscard]] auto compare(StringView rhs) const -> int;
+    [[nodiscard]] auto equals_ignore_case(StringView rhs) const -> bool;
 
     /**
      * @brief Returns a sub_string_view of this string view
      */
-    [[nodiscard]] StringView sub_string_view(usize start) const;
-    [[nodiscard]] StringView sub_string_view(usize start, usize count) const;
+    [[nodiscard]] auto sub_string_view(usize start) const -> StringView;
+    [[nodiscard]] auto sub_string_view(usize start, usize count) const -> StringView;
 
     /**
      * @brief Returns a sub-StringView of this trimmed out of chars
      */
-    [[nodiscard]] StringView trim(StringView chars, TrimMode trim_mode = TrimMode::Both) const;
-    [[nodiscard]] StringView trim_whitespaces(TrimMode trim_mode = TrimMode::Both) const;
+    [[nodiscard]] auto trim(StringView chars, TrimMode trim_mode = TrimMode::Both) const -> StringView;
+    [[nodiscard]] auto trim_whitespaces(TrimMode trim_mode = TrimMode::Both) const -> StringView;
 
     /**
      * @brief Returns whether the given rhs is at the start of this string view
      */
-    [[nodiscard]] bool starts_with(StringView rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const;
-    [[nodiscard]] bool starts_with(char rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const;
+    [[nodiscard]] auto starts_with(StringView rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
+    [[nodiscard]] auto starts_with(char rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
 
-    [[nodiscard]] bool ends_with(StringView rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const;
-    [[nodiscard]] bool ends_with(char rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const;
+    [[nodiscard]] auto ends_with(StringView rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
+    [[nodiscard]] auto ends_with(char rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
 
     /**
      * @brief Converts this StringView into an integer
      */
     template<typename T = i32>
-    [[nodiscard]] Option<T> as_int(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const;
+    [[nodiscard]] auto as_int(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const -> Option<T>;
 
     template<typename T = u32>
-    [[nodiscard]] Option<T> as_uint(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const;
+    [[nodiscard]] auto as_uint(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const -> Option<T>;
 
     template<typename T = u32>
-    [[nodiscard]] Option<T> as_uint_from_hex(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const;
+    [[nodiscard]] auto as_uint_from_hex(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const -> Option<T>;
 
     template<typename T = u32>
-    [[nodiscard]] Option<T> as_uint_from_octal(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const;
+    [[nodiscard]] auto as_uint_from_octal(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const -> Option<T>;
 
     /**
      * @brief Returns the index of the given needle into the src StringView
      */
-    [[nodiscard]] Option<usize> find(char needle, size_t start = 0) const;
-    [[nodiscard]] Option<usize> find(StringView needle, size_t start = 0) const;
+    [[nodiscard]] auto find(char needle, size_t start = 0) const -> Option<usize>;
+    [[nodiscard]] auto find(StringView needle, size_t start = 0) const -> Option<usize>;
 
     /**
      * @brief Returns the last index of the given needle into the src StringView
      */
-    [[nodiscard]] Option<usize> find_last(char needle) const;
+    [[nodiscard]] auto find_last(char needle) const -> Option<usize>;
 
     /**
      * @brief Returns all the indexes of needle inside the src StringView
      */
-    [[nodiscard]] Vector<usize>          find_all(StringView needle) const;
-    [[nodiscard]] ErrorOr<Vector<usize>> try_find_all(StringView needle) const;
+    [[nodiscard]] auto find_all(StringView needle) const -> Vector<usize>;
+    [[nodiscard]] auto try_find_all(StringView needle) const -> ErrorOr<Vector<usize>>;
 
     /**
      * @brief Comparison operators
      */
-    [[nodiscard]] bool operator==(StringView const& rhs) const;
-    [[nodiscard]] bool operator!=(StringView const& rhs) const;
-    [[nodiscard]] bool operator<(StringView const& rhs) const;
-    [[nodiscard]] bool operator<=(StringView const& rhs) const;
-    [[nodiscard]] bool operator>(StringView const& rhs) const;
-    [[nodiscard]] bool operator>=(StringView const& rhs) const;
+    [[nodiscard]] auto operator==(StringView const& rhs) const -> bool;
+    [[nodiscard]] auto operator!=(StringView const& rhs) const -> bool;
+    [[nodiscard]] auto operator<(StringView const& rhs) const -> bool;
+    [[nodiscard]] auto operator<=(StringView const& rhs) const -> bool;
+    [[nodiscard]] auto operator>(StringView const& rhs) const -> bool;
+    [[nodiscard]] auto operator>=(StringView const& rhs) const -> bool;
 
     /**
      * @brief Returns whether the given rhs is contained into this StringView
      */
-    [[nodiscard]] bool contains(StringView rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const;
-    [[nodiscard]] bool contains(char rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const;
+    [[nodiscard]] auto contains(StringView rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
+    [[nodiscard]] auto contains(char rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
 
     /**
      * @brief For-each support
      */
-    ConstIterator begin() const;
-    ConstIterator end() const;
+    auto begin() const -> ConstIterator;
+    auto end() const -> ConstIterator;
 
     /**
      * @brief Getters
      */
-    [[nodiscard]] char const* as_cstr() const;
-    [[nodiscard]] usize       len() const;
-    [[nodiscard]] usize       count() const;
+    [[nodiscard]] auto as_cstr() const -> char const*;
+    [[nodiscard]] auto len() const -> usize;
+    [[nodiscard]] auto count() const -> usize;
 
-    [[nodiscard]] bool is_empty() const;
-    [[nodiscard]] bool is_null() const;
-    [[nodiscard]] bool is_null_or_empty() const;
+    [[nodiscard]] auto is_empty() const -> bool;
+    [[nodiscard]] auto is_null() const -> bool;
+    [[nodiscard]] auto is_null_or_empty() const -> bool;
 
 private:
     char const* m_chars_ptr{ nullptr };
@@ -160,22 +155,19 @@ private:
 
 using Collection::StringView;
 
-namespace Trait {
-
 template<>
-struct TypeIntrinsics<StringView> : public Details::TypeIntrinsics<StringView> {
-    static usize hash(StringView const& value) {
+struct TypeTraits<StringView> : public Details::TypeTraits<StringView> {
+    static auto hash(StringView const& value) -> usize {
         return Hashing::string_calculate_hash(value.as_cstr(), value.len());
     }
 
-    static constexpr bool is_trivial() {
-        return false;
+    static constexpr auto is_trivial() -> bool {
+        return true; /* since this type is a read-only view of a slice the destructor does nothing */
     }
 };
 
-} /* namespace Trait */
 } /* namespace TC */
 
-[[nodiscard]] constexpr TC::StringView operator"" sv(char const* c_str, usize len) {
+[[nodiscard]] constexpr auto operator""sv(char const* c_str, usize len) noexcept -> TC::StringView {
     return TC::StringView{ c_str, len };
 }

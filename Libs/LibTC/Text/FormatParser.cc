@@ -15,9 +15,8 @@
 namespace TC::Text {
 
 bool FormatParser::Specifications::display_as_is_numeric() const {
-    return m_display_as == DisplayAs::Binary || m_display_as == DisplayAs::BinaryUpperCase
-        || m_display_as == DisplayAs::Octal || m_display_as == DisplayAs::Decimal || m_display_as == DisplayAs::Hex
-        || m_display_as == DisplayAs::HexUpperCase;
+    return m_display_as == DisplayAs::Binary || m_display_as == DisplayAs::BinaryUpperCase || m_display_as == DisplayAs::Octal
+        || m_display_as == DisplayAs::Decimal || m_display_as == DisplayAs::Hex || m_display_as == DisplayAs::HexUpperCase;
 }
 
 FormatParser::FormatParser(FormatLexer& format_lexer)
@@ -58,7 +57,7 @@ ErrorOr<FormatParser::Specifications> FormatParser::try_parse() {
 
 void FormatParser::parse_alignment_fill(FormatParser::Specifications& specifications) {
     /* eat the fill character for alignment if the after next character is an alignment specifier */
-    if ( StringView{ "<^>" }.contains(m_format_lexer.peek(1)) )
+    if ( "<^>"sv.contains(m_format_lexer.peek(1)) )
         specifications.m_alignment_fill = m_format_lexer.consume();
 }
 

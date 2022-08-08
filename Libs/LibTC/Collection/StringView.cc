@@ -13,14 +13,12 @@
 #include <LibTC/Assertions.hh>
 #include <LibTC/BitCast.hh>
 #include <LibTC/CharTypes.hh>
-#include <LibTC/Collection/Range.hh>
-#include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/Functional/Must.hh>
 #include <LibTC/Functional/Try.hh>
 #include <LibTC/Memory/Find.hh>
-#include <LibTC/Trait/NumericLimits.hh>
+#include <LibTC/NumericLimits.hh>
 
 namespace TC::Collection {
 
@@ -29,36 +27,16 @@ constexpr StringView::StringView(char const* str, usize count) noexcept
     , m_chars_count{ count } {
 }
 
-StringView::StringView(String const& string) noexcept
-    : StringView{ string.as_cstr(), string.len() } {
-}
-
-StringView::StringView(char const* str) noexcept
-    : StringView{ str, str != nullptr ? __builtin_strlen(str) : 0 } {
-}
-
 StringView::StringView(StringView const& rhs) noexcept
     : StringView{ rhs.as_cstr(), rhs.len() } {
 }
 
 StringView::StringView(StringView&& rhs) noexcept
-    : m_chars_ptr{ exchange(rhs.m_chars_ptr, nullptr) }
-    , m_chars_count{ exchange(rhs.m_chars_count, 0) } {
+    : m_chars_ptr{ Cxx::exchange(rhs.m_chars_ptr, nullptr) }
+    , m_chars_count{ Cxx::exchange(rhs.m_chars_count, 0) } {
 }
 
-StringView& StringView::operator=(String const& str) {
-    StringView string_view{ str };
-    swap(string_view);
-    return *this;
-}
-
-StringView& StringView::operator=(char const* str) {
-    StringView string_view{ str };
-    swap(string_view);
-    return *this;
-}
-
-StringView& StringView::operator=(StringView const& rhs) {
+auto StringView::operator=(StringView const& rhs) -> StringView& {
     if ( this == &rhs )
         return *this;
 
@@ -67,27 +45,27 @@ StringView& StringView::operator=(StringView const& rhs) {
     return *this;
 }
 
-StringView& StringView::operator=(StringView&& rhs) noexcept {
-    StringView string_view{ move(rhs) };
+auto StringView::operator=(StringView&& rhs) noexcept -> StringView& {
+    StringView string_view{ Cxx::move(rhs) };
     swap(string_view);
     return *this;
 }
 
-void StringView::swap(StringView& rhs) noexcept {
+auto StringView::swap(StringView& rhs) noexcept -> void {
     Cxx::swap(m_chars_ptr, rhs.m_chars_ptr);
     Cxx::swap(m_chars_count, rhs.m_chars_count);
 }
 
-char const& StringView::at(usize index) const {
+auto StringView::at(usize index) const -> char const& {
     VERIFY_LESS(index, len());
     return m_chars_ptr[index];
 }
 
-char const& StringView::operator[](usize index) const {
+auto StringView::operator[](usize index) const -> char const& {
     return at(index);
 }
 
-int StringView::compare(StringView rhs) const {
+auto StringView::compare(StringView rhs) const -> int {
     if ( is_null_or_empty() )
         return rhs.is_null_or_empty() ? 0 : -1;
     if ( rhs.is_null_or_empty() )
@@ -107,7 +85,7 @@ int StringView::compare(StringView rhs) const {
     return res;
 }
 
-bool StringView::equals_ignore_case(StringView rhs) const {
+auto StringView::equals_ignore_case(StringView rhs) const -> bool {
     if ( len() != rhs.len() )
         return false;
 
@@ -118,23 +96,23 @@ bool StringView::equals_ignore_case(StringView rhs) const {
     return true;
 }
 
-StringView StringView::sub_string_view(usize start) const {
+auto StringView::sub_string_view(usize start) const -> StringView {
     return sub_string_view(start, len() - start);
 }
 
-StringView StringView::sub_string_view(usize start, usize count) const {
+auto StringView::sub_string_view(usize start, usize count) const -> StringView {
     VERIFY_LESS_EQUAL(start + count, len());
     return StringView{ as_cstr() + start, count };
 }
 
-StringView StringView::trim(StringView chars, TrimMode trim_mode) const {
+auto StringView::trim(StringView chars, TrimMode trim_mode) const -> StringView {
     usize sub_start = 0;
     usize sub_len   = len();
 
     if ( trim_mode == TrimMode::Left || trim_mode == TrimMode::Both ) {
         for ( usize i : Range{ 0u, len() } ) {
             if ( sub_len == 0 )
-                return "";
+                return ""sv;
             if ( !chars.contains(at(i)) )
                 break;
 
@@ -146,7 +124,7 @@ StringView StringView::trim(StringView chars, TrimMode trim_mode) const {
     if ( trim_mode == TrimMode::Right || trim_mode == TrimMode::Both ) {
         for ( usize i = len() - 1; i > 0; --i ) {
             if ( sub_len == 0 )
-                return "";
+                return ""sv;
             if ( !chars.contains(at(i)) )
                 break;
 
@@ -157,11 +135,11 @@ StringView StringView::trim(StringView chars, TrimMode trim_mode) const {
     return sub_string_view(sub_start, sub_len);
 }
 
-StringView StringView::trim_whitespaces(TrimMode trim_mode) const {
-    return trim(" \n\t\v\f\r", trim_mode);
+auto StringView::trim_whitespaces(TrimMode trim_mode) const -> StringView {
+    return trim(" \n\t\v\f\r"sv, trim_mode);
 }
 
-bool StringView::starts_with(StringView rhs, CaseSensitivity case_sensitivity) const {
+auto StringView::starts_with(StringView rhs, CaseSensitivity case_sensitivity) const -> bool {
     if ( is_null_or_empty() )
         return false;
     if ( rhs.is_null_or_empty() )
@@ -182,7 +160,7 @@ bool StringView::starts_with(StringView rhs, CaseSensitivity case_sensitivity) c
     return true;
 }
 
-bool StringView::starts_with(char rhs, CaseSensitivity case_sensitivity) const {
+auto StringView::starts_with(char rhs, CaseSensitivity case_sensitivity) const -> bool {
     if ( is_null_or_empty() )
         return false;
 
@@ -192,7 +170,7 @@ bool StringView::starts_with(char rhs, CaseSensitivity case_sensitivity) const {
         return to_ascii_lowercase(at(0)) == to_ascii_lowercase(rhs);
 }
 
-bool StringView::ends_with(StringView rhs, CaseSensitivity case_sensitivity) const {
+auto StringView::ends_with(StringView rhs, CaseSensitivity case_sensitivity) const -> bool {
     if ( is_null_or_empty() )
         return false;
     if ( rhs.is_null_or_empty() )
@@ -216,7 +194,7 @@ bool StringView::ends_with(StringView rhs, CaseSensitivity case_sensitivity) con
     return true;
 }
 
-bool StringView::ends_with(char rhs, CaseSensitivity case_sensitivity) const {
+auto StringView::ends_with(char rhs, CaseSensitivity case_sensitivity) const -> bool {
     if ( is_null_or_empty() )
         return false;
 
@@ -227,7 +205,7 @@ bool StringView::ends_with(char rhs, CaseSensitivity case_sensitivity) const {
 }
 
 template<typename T>
-Option<T> StringView::as_int(TrimWhitespace trim_whitespace) const {
+auto StringView::as_int(TrimWhitespace trim_whitespace) const -> Option<T> {
     auto string_view = trim_whitespace == TrimWhitespace::Yes ? trim_whitespaces() : *this;
     if ( string_view.is_empty() )
         return {};
@@ -258,13 +236,13 @@ Option<T> StringView::as_int(TrimWhitespace trim_whitespace) const {
     return int_value;
 }
 
-template Option<i8>  StringView::as_int(TrimWhitespace trim_whitespace) const;
-template Option<i16> StringView::as_int(TrimWhitespace trim_whitespace) const;
-template Option<i32> StringView::as_int(TrimWhitespace trim_whitespace) const;
-template Option<i64> StringView::as_int(TrimWhitespace trim_whitespace) const;
+template auto StringView::as_int(TrimWhitespace trim_whitespace) const -> Option<i8>;
+template auto StringView::as_int(TrimWhitespace trim_whitespace) const -> Option<i16>;
+template auto StringView::as_int(TrimWhitespace trim_whitespace) const -> Option<i32>;
+template auto StringView::as_int(TrimWhitespace trim_whitespace) const -> Option<i64>;
 
 template<typename T>
-Option<T> StringView::as_uint(TrimWhitespace trim_whitespace) const {
+auto StringView::as_uint(TrimWhitespace trim_whitespace) const -> Option<T> {
     auto string_view = trim_whitespace == TrimWhitespace::Yes ? trim_whitespaces() : *this;
     if ( string_view.is_empty() )
         return {};
@@ -283,19 +261,19 @@ Option<T> StringView::as_uint(TrimWhitespace trim_whitespace) const {
     return uint_value;
 }
 
-template Option<u8>  StringView::as_uint(TrimWhitespace trim_whitespace) const;
-template Option<u16> StringView::as_uint(TrimWhitespace trim_whitespace) const;
-template Option<u32> StringView::as_uint(TrimWhitespace trim_whitespace) const;
-template Option<u64> StringView::as_uint(TrimWhitespace trim_whitespace) const;
+template auto StringView::as_uint(TrimWhitespace trim_whitespace) const -> Option<u8>;
+template auto StringView::as_uint(TrimWhitespace trim_whitespace) const -> Option<u16>;
+template auto StringView::as_uint(TrimWhitespace trim_whitespace) const -> Option<u32>;
+template auto StringView::as_uint(TrimWhitespace trim_whitespace) const -> Option<u64>;
 
 template<typename T>
-Option<T> StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const {
+auto StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<T> {
     auto string_view = trim_whitespace == TrimWhitespace::Yes ? trim_whitespaces() : *this;
     if ( string_view.is_empty() )
         return {};
 
     /* remove base prefix */
-    if ( string_view.starts_with("0x", CaseSensitivity::Insensitive) ) {
+    if ( string_view.starts_with("0x"sv, CaseSensitivity::Insensitive) ) {
         if ( string_view.len() <= 2 )
             return {};
 
@@ -309,7 +287,7 @@ Option<T> StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const {
         if ( uint_value > (max_value >> 4) )
             return {};
 
-        u8 value = 0;
+        u8 value;
         if ( c >= '0' && c <= '9' )
             value = c - '0';
         else if ( c >= 'a' && c <= 'f' )
@@ -324,13 +302,13 @@ Option<T> StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const {
     return uint_value;
 }
 
-template Option<u8>  StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const;
-template Option<u16> StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const;
-template Option<u32> StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const;
-template Option<u64> StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const;
+template auto StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u8>;
+template auto StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u16>;
+template auto StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u32>;
+template auto StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u64>;
 
 template<typename T>
-Option<T> StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const {
+auto StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<T> {
     auto string_view = trim_whitespace == TrimWhitespace::Yes ? trim_whitespaces() : *this;
     if ( string_view.is_empty() )
         return {};
@@ -342,7 +320,7 @@ Option<T> StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const {
         if ( uint_value > max_value >> 3 )
             return {};
 
-        u8 value = 0;
+        u8 value;
         if ( c >= '0' && c <= '7' )
             value = c - '0';
         else
@@ -353,12 +331,12 @@ Option<T> StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const {
     return uint_value;
 }
 
-template Option<u8>  StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const;
-template Option<u16> StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const;
-template Option<u32> StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const;
-template Option<u64> StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const;
+template auto StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u8>;
+template auto StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u16>;
+template auto StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u32>;
+template auto StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u64>;
 
-Option<usize> StringView::find(char needle, size_t start) const {
+auto StringView::find(char needle, size_t start) const -> Option<usize> {
     if ( start >= len() )
         return {};
 
@@ -369,7 +347,7 @@ Option<usize> StringView::find(char needle, size_t start) const {
     return {};
 }
 
-Option<usize> StringView::find(StringView needle, size_t start) const {
+auto StringView::find(StringView needle, size_t start) const -> Option<usize> {
     if ( start >= len() )
         return {};
 
@@ -378,7 +356,7 @@ Option<usize> StringView::find(StringView needle, size_t start) const {
         .map<usize>([this](usize result_as_usize) -> usize { return result_as_usize - bit_cast<usize>(as_cstr()); });
 }
 
-Option<usize> StringView::find_last(char needle) const {
+auto StringView::find_last(char needle) const -> Option<usize> {
     for ( usize i = len() - 1; i > 0; --i ) {
         if ( at(i) == needle )
             return i;
@@ -386,12 +364,12 @@ Option<usize> StringView::find_last(char needle) const {
     return {};
 }
 
-Vector<usize> StringView::find_all(StringView needle) const {
+auto StringView::find_all(StringView needle) const -> Vector<usize> {
     return MUST(try_find_all(needle));
 }
 
-ErrorOr<Vector<usize>> StringView::try_find_all(StringView needle) const {
-    Vector<usize> positions{};
+auto StringView::try_find_all(StringView needle) const -> ErrorOr<Vector<usize>> {
+    auto positions = Vector<usize>::construct_empty();
 
     usize current_position = 0;
     while ( current_position < len() ) {
@@ -408,31 +386,31 @@ ErrorOr<Vector<usize>> StringView::try_find_all(StringView needle) const {
     return positions;
 }
 
-bool StringView::operator==(StringView const& rhs) const {
+auto StringView::operator==(StringView const& rhs) const -> bool {
     return len() == rhs.len() && compare(rhs) == 0;
 }
 
-bool StringView::operator!=(StringView const& rhs) const {
+auto StringView::operator!=(StringView const& rhs) const -> bool {
     return !operator==(rhs);
 }
 
-bool StringView::operator<(StringView const& rhs) const {
+auto StringView::operator<(StringView const& rhs) const -> bool {
     return len() < rhs.len() || compare(rhs) < 0;
 }
 
-bool StringView::operator<=(StringView const& rhs) const {
+auto StringView::operator<=(StringView const& rhs) const -> bool {
     return len() <= rhs.len() || compare(rhs) <= 0;
 }
 
-bool StringView::operator>(StringView const& rhs) const {
+auto StringView::operator>(StringView const& rhs) const -> bool {
     return len() > rhs.len() || compare(rhs) > 0;
 }
 
-bool StringView::operator>=(StringView const& rhs) const {
+auto StringView::operator>=(StringView const& rhs) const -> bool {
     return len() >= rhs.len() || compare(rhs) >= 0;
 }
 
-bool StringView::contains(StringView rhs, CaseSensitivity case_sensitivity) const {
+auto StringView::contains(StringView rhs, CaseSensitivity case_sensitivity) const -> bool {
     if ( is_null_or_empty() || rhs.is_null_or_empty() || rhs.len() > len() )
         return false;
 
@@ -440,7 +418,7 @@ bool StringView::contains(StringView rhs, CaseSensitivity case_sensitivity) cons
         return find_in_memory(as_cstr(), len(), rhs.as_cstr(), rhs.len()).is_present();
 
     auto needle_first = to_ascii_lowercase(rhs.at(0));
-    for ( usize i : Range{ 0u, len() } ) {
+    for ( usize i = 0; i < len(); ++i ) {
         if ( to_ascii_lowercase(at(i)) != needle_first )
             continue;
 
@@ -456,11 +434,11 @@ bool StringView::contains(StringView rhs, CaseSensitivity case_sensitivity) cons
     return false;
 }
 
-bool StringView::contains(char rhs, CaseSensitivity case_sensitivity) const {
+auto StringView::contains(char rhs, CaseSensitivity case_sensitivity) const -> bool {
     if ( is_null_or_empty() )
         return false;
 
-    for ( auto const c : *this ) {
+    for ( char const c : *this ) {
         if ( case_sensitivity == CaseSensitivity::Sensitive ) {
             if ( c == rhs )
                 return true;
@@ -472,35 +450,35 @@ bool StringView::contains(char rhs, CaseSensitivity case_sensitivity) const {
     return false;
 }
 
-StringView::ConstIterator StringView::begin() const {
+auto StringView::begin() const -> StringView::ConstIterator {
     return ConstIterator::begin(*this);
 }
 
-StringView::ConstIterator StringView::end() const {
+auto StringView::end() const -> StringView::ConstIterator {
     return ConstIterator::end(*this);
 }
 
-char const* StringView::as_cstr() const {
+auto StringView::as_cstr() const -> char const* {
     return m_chars_ptr;
 }
 
-usize StringView::len() const {
+auto StringView::len() const -> usize {
     return m_chars_count;
 }
 
-usize StringView::count() const {
+auto StringView::count() const -> usize {
     return len();
 }
 
-bool StringView::is_empty() const {
+auto StringView::is_empty() const -> bool {
     return len() == 0;
 }
 
-bool StringView::is_null() const {
+auto StringView::is_null() const -> bool {
     return m_chars_ptr == nullptr;
 }
 
-bool StringView::is_null_or_empty() const {
+auto StringView::is_null_or_empty() const -> bool {
     return is_null() || is_empty();
 }
 

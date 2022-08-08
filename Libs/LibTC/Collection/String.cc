@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/ctype.h>
+#include <LibTC/CharTypes.hh>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringBuilder.hh>
 #include <LibTC/Collection/StringView.hh>
@@ -20,291 +20,277 @@
 
 namespace TC::Collection {
 
-ErrorOr<String> String::try_construct_from(char const* str, usize count) {
-    return try_construct_from(StringView{ str, count });
+auto String::construct_empty() -> String {
+    return MUST(try_construct_empty());
 }
 
-ErrorOr<String> String::try_construct_from(StringView string_view) {
-    return String{ TRY(StringStorage::try_construct_from(string_view)) };
+auto String::construct_from_other(const String& rhs) -> String {
+    return MUST(try_construct_from_other(rhs));
 }
 
-String::String()
-    : String{ StringView{ "" } } {
+auto String::construct_from_view(StringView string_view) -> String {
+    return MUST(try_construct_from_view(string_view));
 }
 
-String::String(char const* str)
-    : String{ StringView{ str } } {
+auto String::try_construct_empty() -> ErrorOr<String> {
+    return try_construct_from_view(""sv);
 }
 
-String::String(char const* str, usize count)
-    : String{ StringView{ str, count } } {
+auto String::try_construct_from_other(const String& rhs) -> ErrorOr<String> {
+    return try_construct_from_view(rhs.as_string_view());
 }
 
-String::String(StringView string_view)
-    : String{ StringStorage::construct_from(string_view) } {
+auto String::try_construct_from_view(StringView string_view) -> ErrorOr<String> {
+    auto const string_storage = StringStorage::try_construct_from_view(string_view);
+    return String{ TRY(StringStorage::try_construct_from_view(string_view)) };
+}
+
+auto String::clone() const -> String {
+    return String{ m_string_storage_ref.clone() };
 }
 
 String::String(String&& rhs) noexcept
-    : m_string_storage_ref{ move(rhs.m_string_storage_ref) } {
+    : m_string_storage_ref{ Cxx::move(rhs.m_string_storage_ref) } {
 }
 
-String& String::operator=(char const* rhs) {
-    String string{ rhs };
+auto String::operator=(String&& rhs) noexcept -> String& {
+    String string{ Cxx::move(rhs) };
     swap(string);
     return *this;
 }
 
-String& String::operator=(StringView rhs) {
-    String string{ rhs };
-    swap(string);
-    return *this;
-}
-
-String& String::operator=(String const& rhs) {
-    String string{ rhs };
-    swap(string);
-    return *this;
-}
-
-String& String::operator=(String&& rhs) noexcept {
-    String string{ move(rhs) };
-    swap(string);
-    return *this;
-}
-
-void String::swap(String& rhs) noexcept {
+auto String::swap(String& rhs) noexcept -> void {
     m_string_storage_ref.swap(rhs.m_string_storage_ref);
 }
 
-char const& String::at(usize index) const {
-    VERIFY_LESS(index, len());
-    return m_string_storage_ref->data_storage()[index];
+auto String::at(usize index) const -> char const& {
+    return as_string_view().at(index);
 }
 
-char const& String::operator[](usize index) const {
+auto String::operator[](usize index) const -> char const& {
     return at(index);
 }
 
-int String::compare(StringView rhs) const {
+auto String::compare(StringView rhs) const -> int {
     return as_string_view().compare(rhs);
 }
 
-bool String::equals_ignore_case(StringView rhs) const {
+auto String::equals_ignore_case(StringView rhs) const -> bool {
     return as_string_view().equals_ignore_case(rhs);
 }
 
-String String::sub_string(usize start) const {
+auto String::sub_string(usize start) const -> String {
     return MUST(try_sub_string(start));
 }
 
-String String::sub_string(usize start, usize count) const {
+auto String::sub_string(usize start, usize count) const -> String {
     return MUST(try_sub_string(start, count));
 }
 
-ErrorOr<String> String::try_sub_string(usize start) const {
-    return try_construct_from(sub_string_view(start));
+auto String::try_sub_string(usize start) const -> ErrorOr<String> {
+    return try_construct_from_view(sub_string_view(start));
 }
 
-ErrorOr<String> String::try_sub_string(usize start, usize count) const {
-    return try_construct_from(sub_string_view(start, count));
+auto String::try_sub_string(usize start, usize count) const -> ErrorOr<String> {
+    return try_construct_from_view(sub_string_view(start, count));
 }
 
-StringView String::sub_string_view(usize start) const {
+auto String::sub_string_view(usize start) const -> StringView {
     return as_string_view().sub_string_view(start);
 }
 
-StringView String::sub_string_view(usize start, usize count) const {
+auto String::sub_string_view(usize start, usize count) const -> StringView {
     return as_string_view().sub_string_view(start, count);
 }
 
-String String::trim(StringView chars, TrimMode trim_mode) const {
+auto String::trim(StringView chars, TrimMode trim_mode) const -> String {
     return MUST(try_trim(chars, trim_mode));
 }
 
-ErrorOr<String> String::try_trim(StringView chars, TrimMode trim_mode) const {
-    return try_construct_from(trim_view(chars, trim_mode));
+auto String::try_trim(StringView chars, TrimMode trim_mode) const -> ErrorOr<String> {
+    return try_construct_from_view(trim_view(chars, trim_mode));
 }
 
-String String::trim_whitespaces(TrimMode trim_mode) const {
+auto String::trim_whitespaces(TrimMode trim_mode) const -> String {
     return MUST(try_trim_whitespaces(trim_mode));
 }
 
-ErrorOr<String> String::try_trim_whitespaces(TrimMode trim_mode) const {
-    return try_construct_from(trim_whitespaces_view(trim_mode));
+auto String::try_trim_whitespaces(TrimMode trim_mode) const -> ErrorOr<String> {
+    return try_construct_from_view(trim_whitespaces_view(trim_mode));
 }
 
-StringView String::trim_view(StringView chars, TrimMode trim_mode) const {
+auto String::trim_view(StringView chars, TrimMode trim_mode) const -> StringView {
     return as_string_view().trim(chars, trim_mode);
 }
 
-StringView String::trim_whitespaces_view(TrimMode trim_mode) const {
+auto String::trim_whitespaces_view(TrimMode trim_mode) const -> StringView {
     return as_string_view().trim_whitespaces(trim_mode);
 }
 
-bool String::starts_with(StringView rhs, CaseSensitivity case_sensitivity) const {
+auto String::starts_with(StringView rhs, CaseSensitivity case_sensitivity) const -> bool {
     return as_string_view().starts_with(rhs, case_sensitivity);
 }
 
-bool String::starts_with(char rhs, CaseSensitivity case_sensitivity) const {
+auto String::starts_with(char rhs, CaseSensitivity case_sensitivity) const -> bool {
     return as_string_view().starts_with(rhs, case_sensitivity);
 }
 
-bool String::ends_with(StringView rhs, CaseSensitivity case_sensitivity) const {
+auto String::ends_with(StringView rhs, CaseSensitivity case_sensitivity) const -> bool {
     return as_string_view().ends_with(rhs, case_sensitivity);
 }
 
-bool String::ends_with(char rhs, CaseSensitivity case_sensitivity) const {
+auto String::ends_with(char rhs, CaseSensitivity case_sensitivity) const -> bool {
     return as_string_view().ends_with(rhs, case_sensitivity);
 }
 
 template<typename T>
-Option<T> String::as_int(TrimWhitespace trim_whitespace) const {
+auto String::as_int(TrimWhitespace trim_whitespace) const -> Option<T> {
     return as_string_view().as_int<T>(trim_whitespace);
 }
 
-template Option<i8>  String::as_int(TrimWhitespace trim_whitespace) const;
-template Option<i16> String::as_int(TrimWhitespace trim_whitespace) const;
-template Option<i32> String::as_int(TrimWhitespace trim_whitespace) const;
-template Option<i64> String::as_int(TrimWhitespace trim_whitespace) const;
+template auto String::as_int(TrimWhitespace trim_whitespace) const -> Option<i8>;
+template auto String::as_int(TrimWhitespace trim_whitespace) const -> Option<i16>;
+template auto String::as_int(TrimWhitespace trim_whitespace) const -> Option<i32>;
+template auto String::as_int(TrimWhitespace trim_whitespace) const -> Option<i64>;
 
 template<typename T>
-Option<T> String::as_uint(TrimWhitespace trim_whitespace) const {
+auto String::as_uint(TrimWhitespace trim_whitespace) const -> Option<T> {
     return as_string_view().as_uint<T>(trim_whitespace);
 }
 
-template Option<u8>  String::as_uint(TrimWhitespace trim_whitespace) const;
-template Option<u16> String::as_uint(TrimWhitespace trim_whitespace) const;
-template Option<u32> String::as_uint(TrimWhitespace trim_whitespace) const;
-template Option<u64> String::as_uint(TrimWhitespace trim_whitespace) const;
+template auto String::as_uint(TrimWhitespace trim_whitespace) const -> Option<u8>;
+template auto String::as_uint(TrimWhitespace trim_whitespace) const -> Option<u16>;
+template auto String::as_uint(TrimWhitespace trim_whitespace) const -> Option<u32>;
+template auto String::as_uint(TrimWhitespace trim_whitespace) const -> Option<u64>;
 
 template<typename T>
-Option<T> String::as_uint_from_hex(TrimWhitespace trim_whitespace) const {
+auto String::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<T> {
     return as_string_view().as_uint_from_hex<T>(trim_whitespace);
 }
 
-template Option<u8>  String::as_uint_from_hex(TrimWhitespace trim_whitespace) const;
-template Option<u16> String::as_uint_from_hex(TrimWhitespace trim_whitespace) const;
-template Option<u32> String::as_uint_from_hex(TrimWhitespace trim_whitespace) const;
-template Option<u64> String::as_uint_from_hex(TrimWhitespace trim_whitespace) const;
+template auto String::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u8>;
+template auto String::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u16>;
+template auto String::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u32>;
+template auto String::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u64>;
 
 template<typename T>
-Option<T> String::as_uint_from_octal(TrimWhitespace trim_whitespace) const {
+auto String::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<T> {
     return as_string_view().as_uint_from_octal<T>(trim_whitespace);
 }
 
-template Option<u8>  String::as_uint_from_octal(TrimWhitespace trim_whitespace) const;
-template Option<u16> String::as_uint_from_octal(TrimWhitespace trim_whitespace) const;
-template Option<u32> String::as_uint_from_octal(TrimWhitespace trim_whitespace) const;
-template Option<u64> String::as_uint_from_octal(TrimWhitespace trim_whitespace) const;
+template auto String::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u8>;
+template auto String::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u16>;
+template auto String::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u32>;
+template auto String::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u64>;
 
-Option<usize> String::find(char needle, size_t start) const {
+auto String::find(char needle, size_t start) const -> Option<usize> {
     return as_string_view().find(needle, start);
 }
 
-Option<usize> String::find(StringView needle, size_t start) const {
+auto String::find(StringView needle, size_t start) const -> Option<usize> {
     return as_string_view().find(needle, start);
 }
 
-Option<usize> String::find_last(char needle) const {
+auto String::find_last(char needle) const -> Option<usize> {
     return as_string_view().find_last(needle);
 }
 
-Vector<usize> String::find_all(StringView needle) const {
+auto String::find_all(StringView needle) const -> Vector<usize> {
     return as_string_view().find_all(needle);
 }
 
-ErrorOr<Vector<usize>> String::try_find_all(StringView needle) const {
+auto String::try_find_all(StringView needle) const -> ErrorOr<Vector<usize>> {
     return as_string_view().try_find_all(needle);
 }
 
-String String::to_lowercase() const {
+auto String::to_lowercase() const -> String {
     return MUST(try_to_lowercase());
 }
 
-ErrorOr<String> String::try_to_lowercase() const {
-    StringBuilder string_builder{};
-    for ( auto c : *this ) {
-        if ( isupper(c) && isalpha(c) )
-            TRY(string_builder.try_append(tolower(c)));
+auto String::try_to_lowercase() const -> ErrorOr<String> {
+    auto string_builder = StringBuilder::construct_with_capacity(len());
+    for ( auto const c : *this ) {
+        if ( is_ascii_uppercase_alpha(c) )
+            TRY(string_builder.try_append(to_ascii_lowercase(c)));
         else
             TRY(string_builder.try_append(c));
     }
     return string_builder.try_to_string();
 }
 
-String String::to_uppercase() const {
+auto String::to_uppercase() const -> String {
     return MUST(try_to_uppercase());
 }
 
-ErrorOr<String> String::try_to_uppercase() const {
-    StringBuilder string_builder{};
-    for ( auto c : *this ) {
-        if ( islower(c) && isalpha(c) )
-            TRY(string_builder.try_append(toupper(c)));
+auto String::try_to_uppercase() const -> ErrorOr<String> {
+    auto string_builder = StringBuilder::construct_with_capacity(len());
+    for ( auto const c : *this ) {
+        if ( is_ascii_lowercase_alpha(c) )
+            TRY(string_builder.try_append(to_ascii_uppercase(c)));
         else
             TRY(string_builder.try_append(c));
     }
     return string_builder.try_to_string();
 }
 
-bool String::operator==(const StringView& rhs) const {
+auto String::operator==(const StringView& rhs) const -> bool {
     return as_string_view() == rhs;
 }
 
-bool String::operator!=(const StringView& rhs) const {
+auto String::operator!=(const StringView& rhs) const -> bool {
     return as_string_view() != rhs;
 }
 
-bool String::operator<(const StringView& rhs) const {
+auto String::operator<(const StringView& rhs) const -> bool {
     return as_string_view() < rhs;
 }
 
-bool String::operator<=(const StringView& rhs) const {
+auto String::operator<=(const StringView& rhs) const -> bool {
     return as_string_view() <= rhs;
 }
 
-bool String::operator>(const StringView& rhs) const {
+auto String::operator>(const StringView& rhs) const -> bool {
     return as_string_view() > rhs;
 }
 
-bool String::operator>=(const StringView& rhs) const {
+auto String::operator>=(const StringView& rhs) const -> bool {
     return as_string_view() >= rhs;
 }
 
-bool String::contains(StringView rhs, CaseSensitivity case_sensitivity) const {
+auto String::contains(StringView rhs, CaseSensitivity case_sensitivity) const -> bool {
     return as_string_view().contains(rhs, case_sensitivity);
 }
 
-bool String::contains(char rhs, CaseSensitivity case_sensitivity) const {
+auto String::contains(char rhs, CaseSensitivity case_sensitivity) const -> bool {
     return as_string_view().contains(rhs, case_sensitivity);
 }
 
-String::ConstIterator String::begin() const {
+auto String::begin() const -> String::ConstIterator {
     return as_string_view().begin();
 }
 
-String::ConstIterator String::end() const {
+auto String::end() const -> String::ConstIterator {
     return as_string_view().end();
 }
 
-char const* String::as_cstr() const {
+auto String::as_cstr() const -> char const* {
     return m_string_storage_ref->data_storage();
 }
 
-usize String::len() const {
+auto String::len() const -> usize {
     return m_string_storage_ref->char_count();
 }
 
-bool String::is_empty() const {
+auto String::is_empty() const -> bool {
     return m_string_storage_ref->is_empty();
 }
 
-StringView String::as_string_view() const {
+auto String::as_string_view() const -> StringView {
     return StringView{ as_cstr(), len() };
 }
 
 String::String(NonNullRef<StringStorage>&& string_storage)
-    : m_string_storage_ref{ move(string_storage) } {
+    : m_string_storage_ref{ Cxx::move(string_storage) } {
 }
 
 } /* namespace TC::Collection */

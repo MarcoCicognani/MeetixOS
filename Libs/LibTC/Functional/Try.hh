@@ -19,7 +19,8 @@
 #define TRY(expression)                                                                                                                    \
     ({                                                                                                                                     \
         auto tryable = (expression);                                                                                                       \
-        if ( !tryable ) [[unlikely]]                                                                                                       \
+        if ( !tryable ) [[unlikely]] {                                                                                                     \
             return tryable.backward();                                                                                                     \
+        }                                                                                                                                  \
         tryable.unwrap();                                                                                                                  \
     })

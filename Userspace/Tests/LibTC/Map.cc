@@ -20,109 +20,129 @@
 using namespace TC;
 
 TEST_CASE(default_construction) {
-    Map<usize, usize> map{};
+    auto const map = Map<i32, u64>::construct_empty();
 
     VERIFY(map.is_empty());
     VERIFY_EQUAL(map.count(), 0);
 }
 
 TEST_CASE(initializer_list) {
-    Map<usize, StringView> map{ { 10uL, "Hello" }, { 100uL, "World" }, { 1000uL, "Guys" } };
+    auto const map = Map<i32, StringView>::construct_from_list({ { 10, "Hello"sv }, { 100, "World"sv }, { 1000, "Guys"sv } });
 
     VERIFY_FALSE(map.is_empty());
     VERIFY_EQUAL(map.count(), 3);
 }
 
-TEST_CASE(insert) {
-    Map<String, String> map{};
+TEST_CASE(construct_from_other) {
+    auto const map = Map<StringView, NonNullRef<i32>>::construct_from_list(
+        { { "One"sv, NonNullRef<i32>::construct_from_args(10) }, { "Two"sv, NonNullRef<i32>::construct_from_args(20) } });
 
-    VERIFY_IS_VALUE_EQUAL(map.try_insert("a", "xxx"), InsertResult::InsertedNew);
-    VERIFY_IS_VALUE_EQUAL(map.try_insert("b", "yyy"), InsertResult::InsertedNew);
-    VERIFY_IS_VALUE_EQUAL(map.try_insert("c", "zzz"), InsertResult::InsertedNew);
-    VERIFY_IS_VALUE_EQUAL(map.try_insert("b", "000"), InsertResult::ReplacedExisting);
-    VERIFY_IS_VALUE_EQUAL(map.try_insert("c", "aaa", OnExistingEntry::Keep), InsertResult::KeptExisting);
+    auto const map_2 = Map<StringView, NonNullRef<i32>>::construct_from_other(map);
+
+    VERIFY_FALSE(map.is_empty());
+    VERIFY_EQUAL(map.count(), 2);
+}
+
+TEST_CASE(insert) {
+    auto map = Map<StringView, StringView>::construct_empty();
+
+    VERIFY_IS_VALUE_EQUAL(map.try_insert("a"sv, "xxx"sv), InsertResult::InsertedNew);
+    VERIFY_IS_VALUE_EQUAL(map.try_insert("b"sv, "yyy"sv), InsertResult::InsertedNew);
+    VERIFY_IS_VALUE_EQUAL(map.try_insert("c"sv, "zzz"sv), InsertResult::InsertedNew);
+    VERIFY_IS_VALUE_EQUAL(map.try_insert("b"sv, "000"sv), InsertResult::ReplacedExisting);
+    VERIFY_IS_VALUE_EQUAL(map.try_insert("c"sv, "aaa"sv, OnExistingEntry::Keep), InsertResult::KeptExisting);
 
     VERIFY_FALSE(map.is_empty());
     VERIFY_EQUAL(map.count(), 3);
 }
 
 TEST_CASE(iterate) {
-    Map<StringView, usize> map{ { "One", 1 }, { "Two", 2 }, { "Three", 3 } };
+    auto const map = Map<StringView, i32>::construct_from_list({ { "One"sv, 1 }, { "Two"sv, 2 }, { "Three"sv, 3 } });
 
-    int iter_count = 0;
+    i32 i = 0;
     for ( auto const& pair : map ) {
-        VERIFY_FALSE(pair.key().is_empty());
-        VERIFY_NOT_EQUAL(pair.value(), 0);
+        VERIFY_FALSE(pair.m_key.is_empty());
+        VERIFY_NOT_EQUAL(pair.m_value, 0);
 
-        ++iter_count;
+        ++i;
     }
-    VERIFY_EQUAL(iter_count, 3);
+    VERIFY_EQUAL(i, 3);
 
-    OrderedMap<usize, usize> ordered_map{ { 10, 1 }, { 9, 2 }, { 8, 3 } };
+    auto const ordered_map = OrderedMap<i32, i32>::construct_from_list({ { 10, 1 }, { 9, 2 }, { 8, 3 } });
 
-    iter_count           = 0;
-    usize expected_key   = 10;
-    usize expected_value = 1;
+    i                  = 0;
+    i32 expected_key   = 10;
+    i32 expected_value = 1;
     for ( auto const& pair : ordered_map ) {
-        VERIFY_EQUAL(pair.key(), expected_key--);
-        VERIFY_EQUAL(pair.value(), expected_value++);
+        VERIFY_EQUAL(pair.m_key, expected_key--);
+        VERIFY_EQUAL(pair.m_value, expected_value++);
 
-        ++iter_count;
+        ++i;
     }
-    VERIFY_EQUAL(iter_count, 3);
+    VERIFY_EQUAL(i, 3);
+}
+
+TEST_CASE(ordered_reverse_iterate) {
+    auto const ordered_map = OrderedMap<i32, i32>::construct_from_list({ { 1, 3 }, { 2, 2 }, { 3, 1 } });
+
+    i32 expected_key   = 1;
+    i32 expected_value = 3;
+    for ( auto const& pair : ordered_map.reverse_iter() ) {
+        VERIFY_EQUAL(pair.m_key, expected_key--);
+        VERIFY_EQUAL(pair.m_value, expected_value--);
+    }
 }
 
 TEST_CASE(at) {
-    Map<StringView, StringView> map{ { "One", "1" }, { "Two", "2" }, { "Three", "3" } };
+    auto map = Map<StringView, StringView>::construct_from_list({ { "One"sv, "1"sv }, { "Two"sv, "2" }, { "Three"sv, "3"sv } });
 
-    VERIFY_IS_PRESENT_EQUAL(map["One"], "1");
-    VERIFY_IS_PRESENT_EQUAL(map.at("Three"), "3");
-    VERIFY_IS_PRESENT_EQUAL(map["Two"], "2");
-    VERIFY_IS_NONE(map["Four"]);
-    VERIFY_IS_NONE(map.at("Five"));
+    VERIFY_IS_PRESENT_EQUAL(map["One"sv], "1"sv);
+    VERIFY_IS_PRESENT_EQUAL(map.at("Three"sv), "3"sv);
+    VERIFY_IS_PRESENT_EQUAL(map["Two"sv], "2"sv);
+    VERIFY_IS_NONE(map["Four"sv]);
+    VERIFY_IS_NONE(map.at("Five"sv));
 
-    auto value_or_none    = map.at("One");
-    value_or_none.value() = StringView{ "15" };
+    auto value_or_none    = map.at("One"sv);
+    value_or_none.value() = "15"sv;
 
     VERIFY_IS_PRESENT_EQUAL(map["One"], "15");
 }
 
 TEST_CASE(has_key_has_value) {
-    Map<usize, String> map{ { 0xabc, "Hi" }, { 0xfab, "My" }, { 0xfff, "Friends" } };
+    auto const map = Map<i32, StringView>::construct_from_list({ { 0xabc, "Hi"sv }, { 0xfab, "My"sv }, { 0xfff, "Friends"sv } });
 
     VERIFY(map.has_key(0xabc));
     VERIFY(map.has_key(0xfff));
     VERIFY_FALSE(map.has_key(0x45f));
 
-    VERIFY(map.has_value("Hi"));
-    VERIFY(map.has_value("My"));
-    VERIFY_FALSE(map.has_value("Teacher"));
+    VERIFY(map.has_value("Hi"sv));
+    VERIFY(map.has_value("My"sv));
+    VERIFY_FALSE(map.has_value("Teacher"sv));
 }
 
 TEST_CASE(remove) {
-    Map<StringView, StringView> map{ { "One", "Bla" }, { "Two", "Ble" }, { "Three", "Blu" } };
+    auto map = Map<StringView, StringView>::construct_from_list({ { "One"sv, "Bla"sv }, { "Two"sv, "Ble"sv }, { "Three"sv, "Blu"sv } });
 
-    VERIFY(map.remove("One"));
+    VERIFY(map.remove("One"sv));
     VERIFY_EQUAL(map.count(), 2);
 
-    VERIFY(map.remove("Three"));
+    VERIFY(map.remove("Three"sv));
     VERIFY_EQUAL(map.count(), 1);
 
-    VERIFY_IS_VALUE_EQUAL(map.try_insert("Hundred", "Black"), InsertResult::InsertedNew);
+    VERIFY_IS_VALUE_EQUAL(map.try_insert("Hundred"sv, "Black"sv), InsertResult::InsertedNew);
 
-    VERIFY_FALSE(map.remove("Five"));
+    VERIFY_FALSE(map.remove("Five"sv));
     VERIFY_EQUAL(map.count(), 2);
 }
 
 TEST_CASE(remove_all_matching) {
-    Map<StringView, StringView> map{ { "One", "Bla" }, { "Two", "Tru" }, { "Three", "Blu" } };
+    auto map = Map<StringView, StringView>::construct_from_list({ { "One"sv, "Bla"sv }, { "Two"sv, "Tru"sv }, { "Three"sv, "Blu"sv } });
 
-    VERIFY_EQUAL(map.remove_all_matching([](auto const&, auto const& value) { return value.starts_with("B"); }), 2);
+    VERIFY_EQUAL(map.remove_all_matching([](auto const& pair) { return pair.m_value.starts_with("B"sv); }), 2);
 }
 
 TEST_CASE(ensure_capacity) {
-    Map<usize, usize> map{};
-
+    auto map = Map<i32, i32>::construct_empty();
     VERIFY_EQUAL(map.capacity(), 0);
 
     VERIFY_IS_VALUE(map.try_ensure_capacity(10'000));

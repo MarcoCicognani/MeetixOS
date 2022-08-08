@@ -36,7 +36,7 @@ ErrorOr<void> format(StringBuilder& string_builder, StringView literals_view);
 template<typename... Args>
 ErrorOr<void> format(StringBuilder& string_builder, StringView format_view, Args&&... variadic_args) {
     FormatLexer format_lexer{ format_view };
-    return format(string_builder, format_lexer, forward<Args>(variadic_args)...);
+    return format(string_builder, format_lexer, Cxx::forward<Args>(variadic_args)...);
 }
 
 /**
@@ -59,7 +59,7 @@ ErrorOr<void> format(StringBuilder& string_builder, FormatLexer& format_lexer, T
 
     /* forward recursion */
     if ( !format_lexer.is_end() )
-        TRY(format(string_builder, format_lexer, forward<Args>(variadic_args)...));
+        TRY(format(string_builder, format_lexer, Cxx::forward<Args>(variadic_args)...));
     return {};
 }
 

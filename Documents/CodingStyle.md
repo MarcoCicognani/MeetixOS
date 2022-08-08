@@ -9,7 +9,7 @@ Here we use:
 
 * Same line open brackets
 * Space between keyword and open brace
-* Space before and after the condition
+* Space before and after the Condition
 * For single line `if`/`for`/`while`/`do while` statement can be avoided brackets, but the code must be at newline
 
 ### `If/Else If/Else`

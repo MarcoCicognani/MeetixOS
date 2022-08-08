@@ -9,19 +9,3 @@
  * @license
  * GNU General Public License version 3
  */
-
-#pragma once
-
-namespace TC {
-namespace BitCast {
-
-template<typename T, typename U>
-constexpr auto bit_cast(U const& from) -> T {
-    return __builtin_bit_cast(T, from);
-}
-
-} /* namespace BitCast */
-
-using BitCast::bit_cast;
-
-} /* namespace TC */

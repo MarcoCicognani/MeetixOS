@@ -19,21 +19,44 @@
 using namespace TC;
 
 TEST_CASE(default_construction) {
-    Set<usize> set{};
+    auto const set = Set<i32>::construct_empty();
 
     VERIFY(set.is_empty());
     VERIFY_EQUAL(set.count(), 0);
 }
 
 TEST_CASE(initializer_list) {
-    Set<StringView> set{ "Hey", "I'm", "abc" };
+    auto const set = Set<StringView>::construct_from_list({ "Hey"sv, "I'm"sv, "abc"sv });
+
+    VERIFY_FALSE(set.is_empty());
+    VERIFY_EQUAL(set.count(), 3);
+}
+
+TEST_CASE(copy_other) {
+    auto const set = Set<StringView>::construct_from_list({ "Hey"sv, "I'm"sv, "abc"sv });
+    VERIFY_FALSE(set.is_empty());
+    VERIFY_EQUAL(set.count(), 3);
+
+    auto const other_set = Set<StringView>::construct_from_other(set);
+    VERIFY_FALSE(other_set.is_empty());
+    VERIFY_EQUAL(other_set.count(), 3);
+}
+
+TEST_CASE(clone_other) {
+    auto const set = Set<StringView>::construct_from_list({ "Hey"sv, "I'm"sv, "abc"sv });
+    VERIFY_FALSE(set.is_empty());
+    VERIFY_EQUAL(set.count(), 3);
+
+    auto const other_set = set.clone();
+    VERIFY_FALSE(other_set.is_empty());
+    VERIFY_EQUAL(other_set.count(), 3);
 
     VERIFY_FALSE(set.is_empty());
     VERIFY_EQUAL(set.count(), 3);
 }
 
 TEST_CASE(insert) {
-    Set<usize> set{};
+    auto set = Set<i32>::construct_with_capacity(3);
 
     VERIFY_IS_VALUE_EQUAL(set.try_insert(10), InsertResult::InsertedNew);
     VERIFY_IS_VALUE_EQUAL(set.try_insert(100), InsertResult::InsertedNew);
@@ -46,61 +69,68 @@ TEST_CASE(insert) {
 }
 
 TEST_CASE(iterate) {
-    Set<StringView> set{ "One", "Two", "Three" };
+    auto const set = Set<StringView>::construct_from_list({ "One"sv, "Two"sv, "Three"sv });
 
-    int iter_count = 0;
+    i32 i = 0;
     for ( auto const& value : set ) {
         VERIFY_FALSE(value.is_null_or_empty());
 
-        ++iter_count;
+        ++i;
     }
-    VERIFY_EQUAL(iter_count, 3);
+    VERIFY_EQUAL(i, 3);
 
-    OrderedSet<usize> ordered_set{ 10, 9, 8, 7 };
+    auto const ordered_set = OrderedSet<i32>::construct_from_list({ 1, 2, 3, 4 });
 
-    iter_count           = 0;
-    usize expected_value = 10;
+    i            = 0;
+    i32 expected = 10;
     for ( auto const& value : ordered_set ) {
-        VERIFY_EQUAL(value, expected_value--);
+        VERIFY_EQUAL(value, expected--);
 
-        ++iter_count;
+        ++i;
     }
-    VERIFY_EQUAL(iter_count, 4);
+    VERIFY_EQUAL(i, 4);
+}
+
+TEST_CASE(ordered_set_reverse_iterator) {
+    auto const ordered_set = OrderedSet<i32>::construct_from_list({ 1, 2, 3, 4, 5 });
+
+    i32 expected = 5;
+    for ( auto const i : ordered_set.reverse_iter() )
+        VERIFY_EQUAL(i, expected--);
 }
 
 TEST_CASE(find) {
-    Set<String> set{ "aa", "bb", "cc", "dd" };
+    auto const set = Set<StringView>::construct_from_list({ "aa"sv, "bb"sv, "cc"sv, "dd"sv });
 
-    VERIFY_IS_PRESENT_EQUAL(set.find("aa"), "aa");
-    VERIFY_IS_PRESENT_EQUAL(set.find("cc"), "cc");
-    VERIFY_IS_PRESENT_EQUAL(set.find("bb"), "bb");
-    VERIFY_IS_NONE(set.find("xx"));
+    VERIFY_IS_PRESENT_EQUAL(set.find("aa"sv), "aa"sv);
+    VERIFY_IS_PRESENT_EQUAL(set.find("cc"sv), "cc"sv);
+    VERIFY_IS_PRESENT_EQUAL(set.find("bb"sv), "bb"sv);
+    VERIFY_IS_NONE(set.find("xx"sv));
 }
 
 TEST_CASE(remove) {
-    OrderedSet<StringView> set{ "Hi", "I'm", "Marco" };
+    auto ordered_set = OrderedSet<StringView>::construct_from_list({ "Hi"sv, "I'm"sv, "Marco"sv });
 
-    VERIFY(set.remove("I'm"));
-    VERIFY_EQUAL(set.count(), 2);
+    VERIFY(ordered_set.remove("I'm"));
+    VERIFY_EQUAL(ordered_set.count(), 2);
 
-    VERIFY(set.remove("Hi"));
-    VERIFY_EQUAL(set.count(), 1);
+    VERIFY(ordered_set.remove("Hi"));
+    VERIFY_EQUAL(ordered_set.count(), 1);
 
-    VERIFY_IS_VALUE_EQUAL(set.try_insert("Hello"), InsertResult::InsertedNew);
+    VERIFY_IS_VALUE_EQUAL(ordered_set.try_insert("Hello"), InsertResult::InsertedNew);
 
-    VERIFY_FALSE(set.remove("Eee"));
-    VERIFY_EQUAL(set.count(), 2);
+    VERIFY_FALSE(ordered_set.remove("Eee"));
+    VERIFY_EQUAL(ordered_set.count(), 2);
 }
 
 TEST_CASE(remove_all_matching) {
-    Set<StringView> set{ "Aka", "Biko", "Ako", "Biko" };
+    auto set = Set<StringView>::construct_from_list({ "Aka"sv, "Biko"sv, "Ako"sv, "Biko"sv });
 
-    VERIFY_EQUAL(set.remove_all_matching([](auto const& value) { return value.starts_with("A"); }), 2);
+    VERIFY_EQUAL(set.remove_all_matching([](auto const& value) { return value.starts_with("A"sv); }), 2);
 }
 
 TEST_CASE(ensure_capacity) {
-    Set<usize> set{};
-
+    auto set = Set<i32>::construct_empty();
     VERIFY_EQUAL(set.capacity(), 0);
 
     VERIFY_IS_VALUE(set.try_ensure_capacity(10'000));

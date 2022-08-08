@@ -16,22 +16,19 @@
 #include <LibTC/BitCast.hh>
 #include <LibTC/Collection/List.hh>
 #include <LibTC/Collection/Map.hh>
-#include <LibTC/Collection/Pair.hh>
 #include <LibTC/Collection/Range.hh>
 #include <LibTC/Collection/Set.hh>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringBuilder.hh>
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/Collection/Vector.hh>
+#include <LibTC/Concept.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Option.hh>
 #include <LibTC/Functional/Result.hh>
+#include <LibTC/Meta.hh>
 #include <LibTC/Text/FormatParser.hh>
-#include <LibTC/Trait/IsFloatingPoint.hh>
-#include <LibTC/Trait/IsIntegral.hh>
-#include <LibTC/Trait/IsSame.hh>
-#include <LibTC/Trait/MakeUnsigned.hh>
 
 namespace TC {
 namespace Text {
@@ -264,7 +261,7 @@ public:
      */
     using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
-        : BaseFormatter{ move(base_formatter) } {
+        : BaseFormatter{ Cxx::move(base_formatter) } {
     }
 
     /**
@@ -329,7 +326,7 @@ public:
      */
     using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
-        : BaseFormatter{ move(base_formatter) } {
+        : BaseFormatter{ Cxx::move(base_formatter) } {
     }
 
     /**
@@ -339,7 +336,7 @@ public:
         TRY(try_put_literal("[ "sv));
 
         bool is_first = true;
-        for ( auto const& element : value ) {
+        for ( auto const& element : value.iter() ) {
             Formatter<T> element_formatter{ *this };
             if ( !is_first )
                 TRY(try_put_literal(", "sv));
@@ -360,7 +357,7 @@ public:
      */
     using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
-        : BaseFormatter{ move(base_formatter) } {
+        : BaseFormatter{ Cxx::move(base_formatter) } {
     }
 
     /**
@@ -391,7 +388,7 @@ public:
      */
     using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
-        : BaseFormatter{ move(base_formatter) } {
+        : BaseFormatter{ Cxx::move(base_formatter) } {
     }
 
     /**
@@ -422,7 +419,7 @@ public:
      */
     using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
-        : BaseFormatter{ move(base_formatter) } {
+        : BaseFormatter{ Cxx::move(base_formatter) } {
     }
 
     /**
@@ -433,13 +430,17 @@ public:
 
         bool is_first = true;
         for ( auto const& pair : value ) {
-            Formatter<Pair<K, T>> element_formatter{ *this };
+            Formatter<K> key_formatter{ *this };
+            Formatter<T> value_formatter{ *this };
+
             if ( !is_first )
                 TRY(try_put_literal(", "sv));
             else
                 is_first = false;
 
-            TRY(element_formatter.format(pair));
+            TRY(key_formatter.format(value.key()));
+            TRY(try_put_literal(": "sv));
+            TRY(value_formatter.format(value.value()));
         }
         return try_put_literal(" }"sv);
     }
@@ -453,7 +454,7 @@ public:
      */
     using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
-        : BaseFormatter{ move(base_formatter) } {
+        : BaseFormatter{ Cxx::move(base_formatter) } {
     }
 
     /**
@@ -464,43 +465,19 @@ public:
 
         bool is_first = true;
         for ( auto const& pair : value ) {
-            Formatter<Pair<K, T>> element_formatter{ *this };
+            Formatter<K> key_formatter{ *this };
+            Formatter<T> value_formatter{ *this };
+
             if ( !is_first )
                 TRY(try_put_literal(", "sv));
             else
                 is_first = false;
 
-            TRY(element_formatter.format(pair));
+            TRY(key_formatter.format(value.key()));
+            TRY(try_put_literal(": "sv));
+            TRY(value_formatter.format(value.value()));
         }
         return try_put_literal(" }"sv);
-    }
-};
-
-template<typename K, typename T>
-class Formatter<Pair<K, T>> : public BaseFormatter {
-public:
-    /**
-     * @brief Constructors
-     */
-    using BaseFormatter::BaseFormatter;
-    explicit Formatter(BaseFormatter base_formatter)
-        : BaseFormatter{ move(base_formatter) } {
-    }
-
-    /**
-     * @brief Performs the format on the given string-builder
-     */
-    ErrorOr<void> format(Pair<K, T> const& value) {
-        /* format the key for the first */
-        Formatter<K> key_formatter{ *this };
-        TRY(key_formatter.format(value.key()));
-
-        /* add the colon for the separator */
-        TRY(try_put_literal(": "sv));
-
-        /* format the value */
-        Formatter<T> value_formatter{ *this };
-        return value_formatter.format(value.value());
     }
 };
 
@@ -512,7 +489,7 @@ public:
      */
     using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
-        : BaseFormatter{ move(base_formatter) } {
+        : BaseFormatter{ Cxx::move(base_formatter) } {
     }
 
     /**
@@ -534,7 +511,7 @@ public:
      */
     using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
-        : BaseFormatter{ move(base_formatter) } {
+        : BaseFormatter{ Cxx::move(base_formatter) } {
     }
 
     /**
@@ -573,7 +550,7 @@ public:
      */
     using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
-        : BaseFormatter{ move(base_formatter) } {
+        : BaseFormatter{ Cxx::move(base_formatter) } {
     }
 
     /**
@@ -588,7 +565,7 @@ public:
         TRY(try_put_literal("[ "sv));
 
         bool is_first = true;
-        for ( auto const& element : value ) {
+        for ( auto const& element : value.iter() ) {
             Formatter<T> element_formatter{ *this };
             if ( !is_first )
                 TRY(try_put_literal(", "sv));
@@ -609,7 +586,7 @@ public:
      */
     using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
-        : BaseFormatter{ move(base_formatter) } {
+        : BaseFormatter{ Cxx::move(base_formatter) } {
     }
 
     /**
@@ -640,7 +617,7 @@ public:
      */
     using BaseFormatter::BaseFormatter;
     explicit Formatter(BaseFormatter base_formatter)
-        : BaseFormatter{ move(base_formatter) } {
+        : BaseFormatter{ Cxx::move(base_formatter) } {
     }
 
     /**

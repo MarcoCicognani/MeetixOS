@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <initializer_list>
 #include <new>
 #include <utility>
 
@@ -22,10 +23,13 @@ using std::nullptr_t;
 
 using std::nothrow;
 
+using std::declval;
 using std::exchange;
 using std::forward;
 using std::move;
 using std::swap;
+
+using std::initializer_list;
 
 } /* namespace Cxx */
 
@@ -33,9 +37,12 @@ using Cxx::nullptr_t;
 
 using Cxx::nothrow;
 
+using Cxx::declval;
 using Cxx::exchange;
 using Cxx::forward;
 using Cxx::move;
 using Cxx::swap;
+
+using Cxx::initializer_list;
 
 } /* namespace TC */

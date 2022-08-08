@@ -36,28 +36,29 @@ Error::Error(OSError os_error, char const* string_literal, FromSyscall from_sysc
     , m_from_syscall{ from_syscall }
     , m_error_location{ error_location } {
 }
-OSError Error::os_error() const {
+auto Error::os_error() const -> OSError {
     return m_os_error;
 }
 
-char const* Error::string_literal() const {
+auto Error::string_literal() const -> char const* {
     return m_string_literal;
 }
 
-Error::FromSyscall Error::from_syscall() const {
+auto Error::from_syscall() const -> Error::FromSyscall {
     return m_from_syscall;
 }
 
-SourceLocation Error::source_location() const {
+auto Error::source_location() const -> SourceLocation {
     return m_error_location;
 }
 
-bool Error::operator==(const OSError& rhs) const {
+auto Error::operator==(const OSError& rhs) const -> bool {
     return m_os_error == rhs;
 }
 
-bool Error::operator==(const char* rhs) const {
-    return StringView{ m_string_literal } == StringView{ rhs };
+auto Error::operator==(const char* rhs) const -> bool {
+    /* TODO - find a better way */
+    return StringView{ m_string_literal, __builtin_strlen(m_string_literal) } == StringView{ rhs, __builtin_strlen(rhs) };
 }
 
 } /* namespace TC */

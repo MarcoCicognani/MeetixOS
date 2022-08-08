@@ -13,12 +13,13 @@
 #pragma once
 
 #include <LibTC/Assertions.hh>
+#include <LibTC/IntTypes.hh>
 
 namespace TC {
 namespace Math {
 
 template<typename T>
-constexpr T clamp(T const& value, T const& min, T const& max) {
+constexpr auto clamp(T const& value, T const& min, T const& max) -> T {
     VERIFY_GREATER_EQUAL(max, min);
     if ( value > max )
         return max;
@@ -28,7 +29,7 @@ constexpr T clamp(T const& value, T const& min, T const& max) {
 }
 
 template<typename T>
-constexpr int count_leading_zeroes(T value) {
+constexpr auto count_leading_zeroes(T value) -> i32 {
     static_assert(sizeof(T) <= sizeof(unsigned long long));
 
     if constexpr ( sizeof(T) <= sizeof(unsigned int) )
@@ -41,17 +42,17 @@ constexpr int count_leading_zeroes(T value) {
 }
 
 template<typename T>
-constexpr T max(T const& a, T const& b) {
+constexpr auto max(T const& a, T const& b) -> T {
     return a < b ? b : a;
 }
 
 template<typename T>
-constexpr T min(T const& a, T const& b) {
+constexpr auto min(T const& a, T const& b) -> T {
     return b < a ? b : a;
 }
 
 template<typename T, typename U>
-constexpr T ceil_div(T a, U b) {
+constexpr auto ceil_div(T a, U b) -> T {
     static_assert(sizeof(T) == sizeof(U));
 
     T result = a / b;

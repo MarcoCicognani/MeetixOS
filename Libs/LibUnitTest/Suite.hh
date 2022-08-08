@@ -29,10 +29,13 @@ public:
     void current_test_must_fail();
 
 private:
+    explicit constexpr Suite();
+
+private:
     static Suite* s_instance;
 
-    TC::Collection::Vector<Case*> m_test_cases{};
-    bool                          m_current_test_have_failed{ false };
+    TC::Vector<Case*> m_test_cases;
+    bool              m_current_test_have_failed{ false };
 };
 
 } /* namespace UnitTest */

@@ -23,7 +23,7 @@ TEST_CASE(construct) {
 }
 
 TEST_CASE(construct_complex_function) {
-    Function<int(int, int, int)> sum_function{ [](int a, char b, long c) { return a + b + c; } };
+    Function<long(int, char, long)> sum_function([](int a, char b, long c) { return a + b + c; });
 
     VERIFY_EQUAL(sum_function(1, 2, 3), 6);
     VERIFY_EQUAL(sum_function(10, 10, 10), 30);
@@ -79,4 +79,29 @@ TEST_CASE(copy_capturing_lambda) {
     } };
 
     VERIFY_EQUAL(calc_function(), 5);
+}
+
+void ensure_call_equals_with_functor(Function<usize()> function) {
+    for ( usize i : Range{ 0, 100'000 } ) {
+        VERIFY_EQUAL(function(), i);
+    }
+}
+
+BENCHMARK_CASE(call_one_hundred_thousand_times) {
+    usize counter = 0;
+
+    ensure_call_equals_with_functor([&counter]() -> usize { return counter++; });
+}
+
+template<Callable<usize> TPredicate>
+void ensure_call_equals_with_template(TPredicate function) {
+    for ( usize i : Range{ 0, 100'000 } ) {
+        VERIFY_EQUAL(function(), i);
+    }
+}
+
+BENCHMARK_CASE(call_one_hunder_thousand_times) {
+    usize counter = 0;
+
+    ensure_call_equals_with_template([&counter]() -> usize { return counter++; });
 }

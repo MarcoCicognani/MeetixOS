@@ -20,7 +20,7 @@
 using namespace TC;
 
 TEST_CASE(construct) {
-    NonNullBox<u64> boxed_u64{ FromArgs, 0xcafebabe };
+    auto const boxed_u64 = NonNullBox<u64>::construct_from_args(0xcafebabe);
     VERIFY_EQUAL(boxed_u64.as_ref(), 0xcafebabe);
 }
 
@@ -37,8 +37,8 @@ TEST_CASE(construct_object) {
     };
 
     {
-        NonNullBox<USize> boxed_usize{ FromArgs, 512uL };
-        VERIFY_EQUAL(boxed_usize->m_value, 512uL);
+        auto const boxed_usize = NonNullBox<USize>::construct_from_args(512u);
+        VERIFY_EQUAL(boxed_usize->m_value, 512u);
     }
     VERIFY(s_destructor_called);
 }
@@ -66,10 +66,10 @@ TEST_CASE(try_construct_from_args) {
 }
 
 TEST_CASE(swap) {
-    NonNullBox<i32> boxed_i32_64{ FromArgs, 64 };
+    auto boxed_i32_64 = NonNullBox<i32>::construct_from_args(64);
     VERIFY_EQUAL(boxed_i32_64.as_ref(), 64);
 
-    NonNullBox<i32> boxed_i32_128{ FromArgs, 128 };
+    auto boxed_i32_128 = NonNullBox<i32>::construct_from_args(128);
     VERIFY_EQUAL(boxed_i32_128.as_ref(), 128);
 
     boxed_i32_64.swap(boxed_i32_128);
@@ -84,32 +84,32 @@ TEST_CASE(move) {
         usize m_second_value{ 0 };
     };
 
-    NonNullBox<USizePair> boxed_usize_pair{ FromArgs, 512uL, 1024uL };
-    VERIFY_EQUAL(boxed_usize_pair->m_first_value, 512uL);
-    VERIFY_EQUAL(boxed_usize_pair->m_second_value, 1024uL);
+    auto boxed_usize_pair = NonNullBox<USizePair>::construct_from_args(512u, 1024u);
+    VERIFY_EQUAL(boxed_usize_pair->m_first_value, 512u);
+    VERIFY_EQUAL(boxed_usize_pair->m_second_value, 1024u);
 
-    NonNullBox boxed_usize_pair_2{ move(boxed_usize_pair) };
+    auto boxed_usize_pair_2 = Cxx::move(boxed_usize_pair);
     VERIFY_EQUAL(boxed_usize_pair_2->m_first_value, 512uL);
     VERIFY_EQUAL(boxed_usize_pair_2->m_second_value, 1024uL);
 
-    NonNullBox<USizePair> boxed_usize_pair_3{ FromArgs, 0xab, 0xcd };
+    auto boxed_usize_pair_3 = NonNullBox<USizePair>::construct_from_args(0xab, 0xcd);
     VERIFY_EQUAL(boxed_usize_pair_3->m_first_value, 0xab);
     VERIFY_EQUAL(boxed_usize_pair_3->m_second_value, 0xcd);
 
-    boxed_usize_pair = move(boxed_usize_pair_3);
+    boxed_usize_pair = Cxx::move(boxed_usize_pair_3);
     VERIFY_EQUAL(boxed_usize_pair->m_first_value, 0xab);
     VERIFY_EQUAL(boxed_usize_pair->m_second_value, 0xcd);
 }
 
 TEST_CASE(vector_of_boxes) {
-    Vector<NonNullBox<i32>> vector_of_boxes{};
+    auto vector_of_boxes = Vector<Memory::NonNullBox<i32>>::construct_with_capacity(4);
 
-    vector_of_boxes.append(NonNullBox<i32>{ FromArgs, 256 });
-    vector_of_boxes.append(NonNullBox<i32>{ FromArgs, 512 });
-    vector_of_boxes.append(NonNullBox<i32>{ FromArgs, 1024 });
+    vector_of_boxes.append(NonNullBox<i32>::construct_from_args(256));
+    vector_of_boxes.append(NonNullBox<i32>::construct_from_args(512));
+    vector_of_boxes.append(NonNullBox<i32>::construct_from_args(1024));
 
-    NonNullBox<i32> boxed_i32{ FromArgs, 4096 };
-    vector_of_boxes.append(move(boxed_i32));
+    auto boxed_i32 = NonNullBox<i32>::construct_from_args(4096);
+    vector_of_boxes.append(Cxx::move(boxed_i32));
 
     VERIFY_EQUAL(vector_of_boxes[0].as_ref(), 256);
     VERIFY_EQUAL(vector_of_boxes[1].as_ref(), 512);

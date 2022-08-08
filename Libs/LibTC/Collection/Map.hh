@@ -15,116 +15,192 @@
 #include <LibTC/Collection/Enums/InsertResult.hh>
 #include <LibTC/Collection/Enums/KeepStorageCapacity.hh>
 #include <LibTC/Collection/Enums/OnExistingEntry.hh>
-#include <LibTC/Collection/Pair.hh>
 #include <LibTC/Collection/Set.hh>
+#include <LibTC/Concept.hh>
+#include <LibTC/DenyCopy.hh>
+#include <LibTC/Forward.hh>
 #include <LibTC/IntTypes.hh>
-#include <LibTC/Trait/TypeIntrinsics.hh>
+#include <LibTC/TypeTraits.hh>
 
 namespace TC {
 namespace Collection {
 
-template<Hashable K, typename T, bool IsOrdered>
-class BaseMap {
+template<typename K, typename T, typename KTraits, bool IsOrdered>
+class Map {
+    TC_DENY_COPY(Map);
+
 private:
-    using MapSet = BaseSet<Pair<K, T>, TypeIntrinsics<Pair<K, T>>, IsOrdered>;
+    struct KeyValue {
+        K m_key;
+        T m_value;
+
+        auto try_clone() const -> ErrorOr<KeyValue> {
+            if constexpr ( TryCloneable<K, ErrorOr<K>> && TryCloneable<T, ErrorOr<T>> ) {
+                return KeyValue{ TRY(m_key.try_clone()), TRY(m_value.try_clone()) };
+            } else if constexpr ( TryCloneable<K, ErrorOr<K>> && Cloneable<T> ) {
+                return KeyValue{ TRY(m_key.try_clone()), m_value.clone() };
+            } else if constexpr ( TryCloneable<K, ErrorOr<K>> && CopyConstructible<T> ) {
+                return KeyValue{ TRY(m_key.try_clone()), m_value };
+            } else if constexpr ( Cloneable<K> && TryCloneable<T, ErrorOr<T>> ) {
+                return KeyValue{ m_key.clone(), TRY(m_value.try_clone()) };
+            } else if constexpr ( Cloneable<K> && Cloneable<T> ) {
+                return KeyValue{ m_key.clone(), m_value.clone() };
+            } else if constexpr ( Cloneable<K> && CopyConstructible<T> ) {
+                return KeyValue{ m_key.clone(), m_value };
+            } else if constexpr ( CopyConstructible<K> && TryCloneable<T, ErrorOr<T>> ) {
+                return KeyValue{ m_key, TRY(m_value.try_clone()) };
+            } else if constexpr ( CopyConstructible<K> && Cloneable<T> ) {
+                return KeyValue{ m_key, m_value.clone() };
+            } else if constexpr ( CopyConstructible<K> && CopyConstructible<T> ) {
+                return KeyValue{ m_key, m_value };
+            }
+        }
+    };
+
+    struct KeyValueTraits {
+        static constexpr auto equals(KeyValue const& a, KeyValue const& b) -> bool {
+            return KTraits::equals(a.m_key, b.m_key);
+        }
+
+        static constexpr auto hash(KeyValue const& pair) -> usize {
+            return KTraits::hash(pair.m_key);
+        }
+
+        static constexpr auto is_trivial() -> bool {
+            return KTraits::is_trivial() && TypeTraits<T>::is_trivial();
+        }
+    };
 
 public:
-    using Iterator      = typename MapSet::Iterator;
-    using ConstIterator = typename MapSet::ConstIterator;
+    using Iterator             = typename Set<KeyValue, KeyValueTraits, IsOrdered>::Iterator;
+    using ConstIterator        = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ConstIterator;
+    using ReverseIterator      = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ReverseIterator;
+    using ConstReverseIterator = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ConstReverseIterator;
 
 public:
     /**
-     * @brief Constructors
+     * @brief Non-error safe Factory functions
      */
-    BaseMap() = default;
-    explicit BaseMap(usize capacity)
-        : m_hash_set{ capacity } {
+    static constexpr auto construct_empty() -> Map<K, T, KTraits, IsOrdered> {
+        return Map<K, T, KTraits, IsOrdered>{};
     }
-    BaseMap(BaseMap const&)     = default;
-    BaseMap(BaseMap&&) noexcept = default;
-    BaseMap(std::initializer_list<Pair<K, T>> initializer_list)
-        : m_hash_set{ initializer_list } {
+    static auto construct_with_capacity(usize capacity) -> Map<K, T, KTraits, IsOrdered> {
+        return MUST(try_construct_with_capacity(capacity));
+    }
+    static auto construct_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> Map<K, T, KTraits, IsOrdered> {
+        return MUST(try_construct_from_other(rhs));
+    }
+    static auto construct_from_list(std::initializer_list<KeyValue> initializer_list) -> Map<K, T, KTraits, IsOrdered> {
+        return MUST(try_construct_from_list(initializer_list));
     }
 
-    ~BaseMap() = default;
+    /**
+     * @brief Error safe Factory functions
+     */
+    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+        auto map = construct_empty();
+        TRY(map.try_ensure_capacity(capacity));
+        return map;
+    }
+    static auto try_construct_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+        auto map = TRY(try_construct_with_capacity(rhs.count()));
+        for ( auto const& key_value : rhs )
+            TRY(map.try_insert(TRY(key_value.try_clone())));
 
-    BaseMap& operator=(BaseMap const&)     = default;
-    BaseMap& operator=(BaseMap&&) noexcept = default;
-    BaseMap& operator=(std::initializer_list<Pair<K, T>> initializer_list) {
-        BaseMap map{ initializer_list };
-        swap(map);
-        return *this;
+        return map;
+    }
+    static auto try_construct_from_list(std::initializer_list<KeyValue> initializer_list) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+        auto map = construct_empty();
+        for ( auto const& key_value : initializer_list ) /* even with auto initializer_list exposes only T const& */
+            TRY(map.try_insert(Cxx::move(const_cast<KeyValue&>(key_value))));
+
+        return map;
+    }
+
+    /**
+     * @brief Move constructor and move assignment
+     */
+    Map(Map<K, T, KTraits, IsOrdered>&&) noexcept = default;
+
+    auto operator=(Map<K, T, KTraits, IsOrdered>&&) noexcept -> Map<K, T, KTraits, IsOrdered>& = default;
+
+    /**
+     * @brief Deep cloning
+     */
+    [[nodiscard]] auto clone() const -> Map<K, T, KTraits, IsOrdered> {
+        return MUST(try_clone());
+    }
+    [[nodiscard]] auto try_clone() const -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+        return Map<K, T, KTraits, IsOrdered>::try_construct_from_other(*this);
     }
 
     /**
      * @brief Clears this map
      */
-    void clear(KeepStorageCapacity keep_storage_capacity = KeepStorageCapacity::Yes) {
+    auto clear(KeepStorageCapacity keep_storage_capacity = KeepStorageCapacity::Yes) {
         m_hash_set.clear(keep_storage_capacity);
     }
 
     /**
      * @brief Swaps in O(1) the content of this BaseMap with another
      */
-    void swap(BaseMap& rhs) noexcept {
+    auto swap(Map<K, T, KTraits, IsOrdered>& rhs) noexcept {
         m_hash_set.swap(rhs.m_hash_set);
     }
 
     /**
      * @brief Inserts a new pair if doesn't exists or update it
      */
-    InsertResult insert(K const& key, T const& value, OnExistingEntry on_existing_entry = OnExistingEntry::Replace) {
-        return m_hash_set.insert(Pair{ key, value }, on_existing_entry);
+    auto insert(KeyValue key_value, OnExistingEntry on_existing_entry = OnExistingEntry::Replace) -> InsertResult {
+        return m_hash_set.insert(Cxx::move(key_value), on_existing_entry);
     }
-    InsertResult insert(K&& key, T&& value, OnExistingEntry on_existing_entry = OnExistingEntry::Replace) {
-        return m_hash_set.insert(Pair{ move(key), move(value) }, on_existing_entry);
+    auto insert(K key, T value, OnExistingEntry on_existing_entry = OnExistingEntry::Replace) -> InsertResult {
+        return m_hash_set.insert(KeyValue{ Cxx::move(key), Cxx::move(value) }, on_existing_entry);
     }
 
-    ErrorOr<InsertResult> try_insert(K const& key, T const& value, OnExistingEntry on_existing_entry = OnExistingEntry::Replace) {
-        return m_hash_set.try_insert(Pair{ key, value }, on_existing_entry);
+    auto try_insert(KeyValue key_value, OnExistingEntry on_existing_entry = OnExistingEntry::Replace) -> ErrorOr<InsertResult> {
+        return m_hash_set.insert(Cxx::move(key_value), on_existing_entry);
     }
-    ErrorOr<InsertResult> try_insert(K&& key, T&& value, OnExistingEntry on_existing_entry = OnExistingEntry::Replace) {
-        return m_hash_set.try_insert(Pair{ move(key), move(value) }, on_existing_entry);
+    auto try_insert(K key, T value, OnExistingEntry on_existing_entry = OnExistingEntry::Replace) -> ErrorOr<InsertResult> {
+        return m_hash_set.insert(KeyValue{ Cxx::move(key), Cxx::move(value) }, on_existing_entry);
     }
 
     /**
      * @brief Returns the pair referenced by the given key if exists
      */
-    Option<Pair<K, T>&> find(K const& key) {
-        return m_hash_set.find(TypeIntrinsics<K>::hash(key),
-                               [&key](auto const& pair) -> bool { return TypeIntrinsics<K>::equals(pair.key(), key); });
+    auto find(K const& key) -> Option<KeyValue&> {
+        return m_hash_set.find(KeyValue{ key, T{} });
     }
-    Option<Pair<K, T> const&> find(K const& key) const {
-        return m_hash_set.find(TypeIntrinsics<K>::hash(key),
-                               [&key](auto const& pair) -> bool { return TypeIntrinsics<K>::equals(pair.key(), key); });
+    auto find(K const& key) const -> Option<KeyValue const&> {
+        return m_hash_set.find(KeyValue{ key, T{} });
     }
 
     /**
      * @brief Returns the value by the given key if exists
      */
-    Option<T&> at(K const& key) {
-        return find(key).template map<T&>([&key](auto& pair) -> T& { return pair.value(); });
+    auto at(K const& key) -> Option<T&> {
+        return find(key).template map<T&>([&key](auto& pair) -> T& { return pair.m_value; });
     }
-    Option<T const&> at(K const& key) const {
-        return find(key).template map<T const&>([&key](auto const& pair) -> T const& { return pair.value(); });
+    auto at(K const& key) const -> Option<T const&> {
+        return find(key).template map<T const&>([&key](auto const& pair) -> T const& { return pair.m_value; });
     }
 
-    Option<T&> operator[](K const& key) {
+    auto operator[](K const& key) -> Option<T&> {
         return at(key);
     }
-    Option<T const&> operator[](K const& key) const {
+    auto operator[](K const& key) const -> Option<T const&> {
         return at(key);
     }
 
     /**
      * @brief Returns whether this map has the given key or the given value
      */
-    [[nodiscard]] bool has_key(K const& key) const {
+    [[nodiscard]] auto has_key(K const& key) const -> bool {
         return find(key).is_present();
     }
-    [[nodiscard]] bool has_value(T const& value) const {
+    [[nodiscard]] auto has_value(T const& value) const -> bool {
         for ( auto const& pair : *this ) {
-            if ( TypeIntrinsics<T>::equals(pair.value(), value) )
+            if ( TypeTraits<T>::equals(pair.m_value, value) )
                 return true;
         }
         return false;
@@ -133,68 +209,90 @@ public:
     /**
      * @brief Erases from this map the given key or alle the keys related to the given value
      */
-    bool remove(K const& key) {
-        auto pair_or_none = find(key);
-        if ( pair_or_none.is_present() ) {
-            m_hash_set.remove(pair_or_none.value());
-            return true;
-        } else
-            return false;
+    auto remove(K const& key) -> bool {
+        find(key)
+            .template map<bool>([this](auto const& pair) {
+                m_hash_set.remove(pair);
+                return true;
+            })
+            .unwrap_or(false);
     }
-    template<typename TPredicate>
-    usize remove_all_matching(TPredicate predicate) {
-        return m_hash_set.remove_all_matching([&predicate](auto& pair) -> bool { return predicate(pair.key(), pair.value()); });
+    auto remove_all_matching(Predicate<KeyValue const&> auto predicate) -> usize {
+        return m_hash_set.remove_all_matching([&predicate](auto const& pair) -> bool { return predicate(pair); });
     }
 
     /**
      * @brief Allocates new capacity for this set for at least the given capacity
      */
-    void ensure_capacity(usize capacity) {
+    auto ensure_capacity(usize capacity) {
         m_hash_set.ensure_capacity(capacity);
     }
-    ErrorOr<void> try_ensure_capacity(usize capacity) {
+    auto try_ensure_capacity(usize capacity) -> ErrorOr<void> {
         return m_hash_set.try_ensure_capacity(capacity);
     }
 
     /**
      * @brief for-each support
      */
-    Iterator begin() {
+    auto begin() -> Iterator {
         return m_hash_set.begin();
     }
-    Iterator end() {
+    auto end() -> Iterator {
         return m_hash_set.end();
     }
 
-    ConstIterator begin() const {
+    auto begin() const -> ConstIterator {
         return m_hash_set.begin();
     }
-    ConstIterator end() const {
+    auto end() const -> ConstIterator {
         return m_hash_set.end();
+    }
+
+    /**
+     * @brief reverse for-each support
+     */
+    auto rbegin() -> ReverseIterator {
+        return m_hash_set.rbegin();
+    }
+    auto rend() -> ReverseIterator {
+        return m_hash_set.rend();
+    }
+
+    auto rbegin() const -> ConstReverseIterator {
+        return m_hash_set.rbegin();
+    }
+    auto rend() const -> ConstReverseIterator {
+        return m_hash_set.rend();
+    }
+
+    auto reverse_iter() -> ReverseIteratorSupport::Wrapper<Set<KeyValue, KeyValueTraits, IsOrdered>> {
+        return m_hash_set.reverse_iter();
+    }
+    auto reverse_iter() const -> ReverseIteratorSupport::Wrapper<Set<KeyValue, KeyValueTraits, IsOrdered> const> {
+        return m_hash_set.reverse_iter();
     }
 
     /**
      * @brief Getters
      */
-    [[nodiscard]] usize count() const {
+    [[nodiscard]] auto count() const -> usize {
         return m_hash_set.count();
     }
-    [[nodiscard]] usize capacity() const {
+    [[nodiscard]] auto capacity() const -> usize {
         return m_hash_set.capacity();
     }
-    [[nodiscard]] bool is_empty() const {
+    [[nodiscard]] auto is_empty() const -> bool {
         return m_hash_set.is_empty();
     }
 
 private:
-    MapSet m_hash_set{};
+    explicit constexpr Map() noexcept
+        : m_hash_set{ Set<KeyValue, KeyValueTraits, IsOrdered>::construct_empty() } {
+    }
+
+private:
+    Set<KeyValue, KeyValueTraits, IsOrdered> m_hash_set;
 };
-
-template<Hashable K, typename T>
-using Map = BaseMap<K, T, false>;
-
-template<Hashable K, typename T>
-using OrderedMap = BaseMap<K, T, true>;
 
 } /* namespace Collection */
 

@@ -18,10 +18,10 @@
 namespace Details {
 
 void const* bitwise_memmem(void const* haystack, usize haystack_len, void const* needle, usize needle_len) {
-    u64            lookup   = 0xfffffffe;
     constexpr auto mask_len = static_cast<usize>(static_cast<u8>(-1)) + 1;
 
-    u64 needle_mask[mask_len];
+    u32 lookup = 0xfffffffe;
+    u32 needle_mask[mask_len];
     for ( auto& mask : needle_mask )
         mask = 0xffffffff;
 
@@ -40,8 +40,7 @@ void const* bitwise_memmem(void const* haystack, usize haystack_len, void const*
 
 void const* kmp_memmem(u8 const* haystack, usize haystack_len, u8 const* needle, usize needle_len) {
     auto prepare_kmp_partial_table = [&] {
-        TC::Vector<int> partial_table{};
-        partial_table.resize(needle_len);
+        auto partial_table = TC::Vector<i32>::construct_with_capacity(needle_len);
 
         usize position   = 1;
         int   candidate  = 0;
@@ -163,10 +162,7 @@ const void* memmem(const void* haystack, usize haystack_len, const void* needle,
     if ( needle_len < 32 )
         return Details::bitwise_memmem(haystack, haystack_len, needle, needle_len);
     else
-        return Details::kmp_memmem(reinterpret_cast<u8 const*>(haystack),
-                                   haystack_len,
-                                   reinterpret_cast<u8 const*>(needle),
-                                   needle_len);
+        return Details::kmp_memmem(reinterpret_cast<u8 const*>(haystack), haystack_len, reinterpret_cast<u8 const*>(needle), needle_len);
 }
 
 char* strcpy(char* dest, const char* src) {

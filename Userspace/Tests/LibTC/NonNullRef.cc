@@ -10,6 +10,7 @@
  * GNU General Public License version 3
  */
 
+#include <LibTC/Collection/List.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Memory/NonNullRef.hh>
@@ -19,16 +20,15 @@
 using namespace TC;
 
 TEST_CASE(construct) {
-    NonNullRef<i32> ref_i32{ FromArgs, 64u };
+    auto const ref_i32 = NonNullRef<i32>::construct_from_args(64);
 
     VERIFY_EQUAL(ref_i32.strong_ref_count(), 1);
     VERIFY_EQUAL(ref_i32.as_ref(), 64u);
 }
 
 TEST_CASE(copy) {
-    NonNullRef<i32> ref_i32{ FromArgs, 64u };
-
-    NonNullRef<i32> ref_i32_2{ ref_i32 };
+    auto const ref_i32   = NonNullRef<i32>::construct_from_args(64);
+    auto const ref_i32_2 = ref_i32.clone();
 
     VERIFY_EQUAL(ref_i32.strong_ref_count(), 2);
     VERIFY_EQUAL(ref_i32_2.strong_ref_count(), 2);
@@ -50,11 +50,9 @@ TEST_CASE(with_object) {
     };
 
     {
-        NonNullRef<Object> ref_object_0{ FromArgs };
-
+        auto const ref_object_0 = NonNullRef<Object>::construct_from_args();
         {
-            NonNullRef<Object> ref_object_1{ ref_object_0 };
-
+            auto const ref_object_1 = ref_object_0.clone();
             VERIFY_EQUAL(ref_object_1.strong_ref_count(), 2);
         }
 
@@ -64,74 +62,51 @@ TEST_CASE(with_object) {
     VERIFY(s_destructor_was_called);
 }
 
-TEST_CASE(reset_with_another_object) {
-    static bool s_destructor_was_called = false;
-
-    struct Object {
-    public:
-        usize m_value{ 0 };
-
-        ~Object() {
-            s_destructor_was_called = true;
-        }
-    };
-
-    NonNullRef<Object> ref_object_32{ FromArgs, 32 };
-    VERIFY_EQUAL(ref_object_32.as_ref().m_value, 32);
-
-    NonNullRef<Object> ref_object_64{ FromArgs, 64 };
-    VERIFY_EQUAL(ref_object_64.as_ref().m_value, 64);
-
-    ref_object_64 = ref_object_32;
-    VERIFY_EQUAL(ref_object_64.as_ref().m_value, 32);
-    VERIFY(s_destructor_was_called);
-}
-
 TEST_CASE(swap) {
-    NonNullRef<i32> ref_i32_512{ FromArgs, 512u };
+    auto ref_i32_512 = NonNullRef<i32>::construct_from_args(512);
     VERIFY_EQUAL(ref_i32_512.as_ref(), 512u);
     VERIFY_EQUAL(ref_i32_512.strong_ref_count(), 1);
 
-    NonNullRef<i32> ref_i32_768{ FromArgs, 768u };
+    auto ref_i32_768 = NonNullRef<i32>::construct_from_args(768);
     VERIFY_EQUAL(ref_i32_768.as_ref(), 768u);
     VERIFY_EQUAL(ref_i32_768.strong_ref_count(), 1);
 
-    NonNullRef<i32> ref_i32_768_ref{ ref_i32_768 };
+    auto const ref_i32_768_clone = ref_i32_768.clone();
 
     ref_i32_512.swap(ref_i32_768);
 
-    VERIFY_EQUAL(ref_i32_512.as_ref(), 768u);
+    VERIFY_EQUAL(ref_i32_512.as_ref(), 768);
     VERIFY_EQUAL(ref_i32_512.strong_ref_count(), 2);
-    VERIFY_EQUAL(ref_i32_768.as_ref(), 512u);
+    VERIFY_EQUAL(ref_i32_768.as_ref(), 512);
     VERIFY_EQUAL(ref_i32_768.strong_ref_count(), 1);
 }
 
+static i32 s_destructor_called_count = 0;
+
+struct Object {
+public:
+    usize m_value{ 0 };
+
+    ~Object() {
+        ++s_destructor_called_count;
+    }
+};
+
 TEST_CASE(ref_count_into_vector) {
-    static i32 s_destructor_called_count = 0;
-
-    struct Object {
-    public:
-        usize m_value{ 0 };
-
-        ~Object() {
-            ++s_destructor_called_count;
-        }
-    };
-
     {
-        NonNullRef<Object> ref_object{ FromArgs, 64u };
+        auto ref_object = NonNullRef<Object>::construct_from_args(64u);
 
-        Vector<NonNullRef<Object>> vector_1{ ref_object };
-        Vector<NonNullRef<Object>> vector_2{ ref_object };
-        Vector<NonNullRef<Object>> vector_3{ ref_object };
-        Vector<NonNullRef<Object>> vector_4{ ref_object };
+        auto list_1 = List<NonNullRef<Object>>::construct_from_list({ ref_object.clone() });
+        auto list_2 = List<NonNullRef<Object>>::construct_from_list({ ref_object.clone() });
+        auto const list_3 = List<NonNullRef<Object>>::construct_from_list({ ref_object.clone() });
+        auto const list_4 = List<NonNullRef<Object>>::construct_from_list({ ref_object.clone() });
         VERIFY_EQUAL(ref_object.strong_ref_count(), 5);
 
-        vector_1.append(ref_object);
+        list_1.append(ref_object.clone());
         VERIFY_EQUAL(ref_object.strong_ref_count(), 6);
 
-        vector_2.append(move(ref_object));
-        VERIFY_EQUAL(vector_2.last().strong_ref_count(), 6);
+        list_2.append(Cxx::move(ref_object));
+        VERIFY_EQUAL(list_2.last().strong_ref_count(), 6);
     }
 
     VERIFY_EQUAL(s_destructor_called_count, 1);

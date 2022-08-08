@@ -12,60 +12,74 @@
 
 #pragma once
 
-#include <initializer_list>
 #include <LibTC/Assertions.hh>
 #include <LibTC/Collection/Enums/KeepStorageCapacity.hh>
 #include <LibTC/Collection/Range.hh>
+#include <LibTC/Collection/ReverseIteratorSupport.hh>
 #include <LibTC/Cxx.hh>
+#include <LibTC/DenyCopy.hh>
+#include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Must.hh>
 #include <LibTC/Functional/Try.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Memory/Raw.hh>
-#include <LibTC/Trait/TypeIntrinsics.hh>
+#include <LibTC/TypeTraits.hh>
 
 namespace TC {
 namespace Collection {
 namespace Details {
 
-template<typename Collection, typename T>
+template<typename Collection, typename T, bool IsReverse>
 class VectorIterator {
 public:
     /**
      * @brief Construction functions
      */
-    static VectorIterator begin(Collection& collection) {
+    static auto begin(Collection& collection) -> VectorIterator {
         return VectorIterator{ collection, 0 };
     }
-    static VectorIterator end(Collection& collection) {
+    static auto end(Collection& collection) -> VectorIterator {
         return VectorIterator{ collection, collection.count() };
+    }
+
+    static auto rbegin(Collection& collection) -> VectorIterator {
+        return VectorIterator{ collection, collection.count() - 1 };
+    }
+    static auto rend(Collection& collection) -> VectorIterator {
+        return VectorIterator{ collection, 0 };
     }
 
     VectorIterator(VectorIterator const&) = default;
 
-    VectorIterator& operator=(VectorIterator const&) = default;
+    auto operator=(VectorIterator const&) -> VectorIterator& = default;
 
     /**
      * @brief Increment operators
      */
-    VectorIterator& operator++() {
-        ++m_index;
+    auto operator++() -> VectorIterator& {
+        if constexpr ( IsReverse ) {
+            --m_index;
+        } else {
+            ++m_index;
+        }
         return *this;
     }
-    VectorIterator operator++(int) {
+    auto operator++(int) -> VectorIterator {
         VectorIterator it{ *this };
-        ++m_index;
+
+        operator++();
         return it;
     }
 
     /**
      * @brief ValueReference access operators
      */
-    T& operator*() {
+    auto operator*() -> T& {
         VERIFY_FALSE(is_end());
         return m_collection->at(m_index);
     }
-    T const& operator*() const {
+    auto operator*() const -> T const& {
         VERIFY_FALSE(is_end());
         return m_collection->at(m_index);
     }
@@ -73,42 +87,42 @@ public:
     /**
      * @brief Pointer access operators
      */
-    T* operator->() {
+    auto operator->() -> T* {
         return &operator*();
     }
-    T const* operator->() const {
+    auto operator->() const -> T const* {
         return &operator*();
     }
 
     /**
      * @brief Getters
      */
-    [[nodiscard]] bool is_end() const {
+    [[nodiscard]] auto is_end() const -> bool {
         return m_index == end(*m_collection).index();
     }
-    [[nodiscard]] usize index() const {
+    [[nodiscard]] auto index() const -> usize {
         return m_index;
     }
 
     /**
      * @brief Comparison operators
      */
-    [[nodiscard]] bool operator==(VectorIterator const& rhs) const {
+    [[nodiscard]] auto operator==(VectorIterator const& rhs) const -> bool {
         return m_collection == rhs.m_collection && m_index == rhs.m_index;
     }
-    [[nodiscard]] bool operator!=(VectorIterator const& rhs) const {
+    [[nodiscard]] auto operator!=(VectorIterator const& rhs) const -> bool {
         return m_collection != rhs.m_collection || m_index != rhs.m_index;
     }
-    [[nodiscard]] bool operator<(VectorIterator const& rhs) const {
+    [[nodiscard]] auto operator<(VectorIterator const& rhs) const -> bool {
         return m_index < rhs.m_index;
     }
-    [[nodiscard]] bool operator>(VectorIterator const& rhs) const {
+    [[nodiscard]] auto operator>(VectorIterator const& rhs) const -> bool {
         return m_index > rhs.m_index;
     }
-    [[nodiscard]] bool operator<=(VectorIterator const& rhs) const {
+    [[nodiscard]] auto operator<=(VectorIterator const& rhs) const -> bool {
         return m_index <= rhs.m_index;
     }
-    [[nodiscard]] bool operator>=(VectorIterator const& rhs) const {
+    [[nodiscard]] auto operator>=(VectorIterator const& rhs) const -> bool {
         return m_index >= rhs.m_index;
     }
 
@@ -127,69 +141,98 @@ private:
 
 template<typename T>
 class Vector {
+    TC_DENY_COPY(Vector);
+
 public:
-    using Iterator      = Details::VectorIterator<Vector, T>;
-    using ConstIterator = Details::VectorIterator<Vector const, T const>;
+    using Iterator             = Details::VectorIterator<Vector, T, false>;
+    using ConstIterator        = Details::VectorIterator<Vector const, T const, false>;
+    using ReverseIterator      = Details::VectorIterator<Vector, T, true>;
+    using ConstReverseIterator = Details::VectorIterator<Vector const, T const, true>;
 
 public:
     /**
-     * @brief Constructors
+     * @brief Non-error safe Factory functions
      */
-    explicit Vector() = default;
-    explicit Vector(usize capacity) {
-        ensure_capacity(capacity);
+    static constexpr auto construct_empty() -> Vector<T> {
+        return Vector<T>{};
+    }
+    static auto construct_with_capacity(usize capacity) -> Vector<T> {
+        return MUST(try_construct_with_capacity(capacity));
+    }
+    static auto construct_from_other(Vector<T> const& rhs) -> Vector<T> {
+        return MUST(try_construct_from_other(rhs));
+    }
+    static auto construct_from_list(Cxx::initializer_list<T> initializer_list) -> Vector<T> {
+        return MUST(try_construct_from_list(initializer_list));
     }
 
-    Vector(Vector const& rhs)
-        : m_values_count{ rhs.m_values_count } {
-        if ( !is_empty() ) {
-            ensure_capacity(rhs.count());
-            for ( usize i : Range{ 0u, m_values_count } )
-                new (&m_data_storage[i]) T{ rhs.at(i) };
+    /**
+     * @brief Error safe Factory functions
+     */
+    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Vector<T>> {
+        auto vector = construct_empty();
+        TRY(vector.try_ensure_capacity(capacity));
+        return vector;
+    }
+    static auto try_construct_from_other(Vector<T> const& rhs) -> ErrorOr<Vector<T>> {
+        auto vector = TRY(try_construct_with_capacity(rhs.count()));
+        for ( auto const& element : rhs ) {
+            if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
+                TRY(vector.try_append(TRY(element.try_clone())));
+            } else if constexpr ( Cloneable<T> ) {
+                TRY(vector.try_append(element.clone()));
+            } else if constexpr ( CopyConstructible<T> ) {
+                TRY(vector.try_append(element));
+            }
         }
+
+        return vector;
     }
-    Vector(Vector&& rhs) noexcept
-        : m_data_storage{ exchange(rhs.m_data_storage, nullptr) }
-        , m_data_capacity{ exchange(rhs.m_data_capacity, 0) }
-        , m_values_count{ exchange(rhs.m_values_count, 0) } {
+    static auto try_construct_from_list(Cxx::initializer_list<T> initializer_list) -> ErrorOr<Vector<T>> {
+        auto vector = construct_empty();
+        for ( auto const& element : initializer_list ) /* even with auto initializer_list exposes only T const& */
+            TRY(vector.try_append(Cxx::move(const_cast<T&>(element))));
+
+        return vector;
     }
-    Vector(std::initializer_list<T> initializer_list) {
-        ensure_capacity(initializer_list.size());
-        for ( auto const& element : initializer_list )
-            append_unchecked(move(element));
+
+    /**
+     * @brief Move constructor and move assignment
+     */
+    Vector(Vector<T>&& rhs) noexcept
+        : m_data_storage{ Cxx::exchange(rhs.m_data_storage, nullptr) }
+        , m_data_capacity{ Cxx::exchange(rhs.m_data_capacity, 0) }
+        , m_values_count{ Cxx::exchange(rhs.m_values_count, 0) } {
     }
+    auto operator=(Vector<T>&& rhs) noexcept -> Vector<T>& {
+        Vector vector{ Cxx::move(rhs) };
+        swap(vector);
+        return *this;
+    }
+
     ~Vector() {
         clear(KeepStorageCapacity::No);
     }
 
-    Vector& operator=(Vector const& rhs) {
-        if ( this == &rhs )
-            return *this;
-
-        Vector vector{ rhs };
-        swap(vector);
-        return *this;
+    /**
+     * @brief Deep cloning
+     */
+    [[nodiscard]] auto clone() const -> Vector<T> {
+        return MUST(try_clone());
     }
-    Vector& operator=(Vector&& rhs) noexcept {
-        Vector vector{ move(rhs) };
-        swap(vector);
-        return *this;
-    }
-    Vector& operator=(std::initializer_list<T> initializer_list) {
-        Vector vector{ initializer_list };
-        swap(vector);
-        return *this;
+    [[nodiscard]] auto try_clone() const -> ErrorOr<Vector<T>> {
+        return Vector<T>::try_construct_from_other(*this);
     }
 
     /**
      * @brief Destroys all the stored values keeping the capacity of this vector if requested
      */
-    void clear(KeepStorageCapacity keep_storage_capacity = KeepStorageCapacity::Yes) {
+    auto clear(KeepStorageCapacity keep_storage_capacity = KeepStorageCapacity::Yes) {
         if ( m_data_storage == nullptr )
             return;
 
         /* call the destructors only for non-trivial types */
-        if constexpr ( !Trait::TypeIntrinsics<T>::is_trivial() ) {
+        if constexpr ( !TypeTraits<T>::is_trivial() ) {
             for ( usize i : Range{ 0u, m_values_count } )
                 m_data_storage[i].~T();
         }
@@ -206,7 +249,7 @@ public:
     /**
      * @brief Swaps in O(1) the content of this Vector with another
      */
-    void swap(Vector& rhs) noexcept {
+    auto swap(Vector& rhs) noexcept {
         Cxx::swap(m_data_storage, rhs.m_data_storage);
         Cxx::swap(m_data_capacity, rhs.m_data_capacity);
         Cxx::swap(m_values_count, rhs.m_values_count);
@@ -215,19 +258,10 @@ public:
     /**
      * @brief Inserts the given <value> to the given <index>
      */
-    void insert_at(usize index, T const& value) {
-        MUST(try_insert_at(index, T{ value }));
+    auto insert_at(usize index, T value) {
+        MUST(try_insert_at(index, Cxx::move(value)));
     }
-    template<typename U = T>
-    void insert_at(usize index, U&& value) {
-        MUST(try_insert_at(index, forward<U>(value)));
-    }
-
-    ErrorOr<void> try_insert_at(usize index, T const& value) {
-        return try_insert_at(index, T{ value });
-    }
-    template<typename U = T>
-    ErrorOr<void> try_insert_at(usize index, U&& value) {
+    auto try_insert_at(usize index, T value) -> ErrorOr<void> {
         if ( index > m_values_count )
             return Error{ EINVAL };
 
@@ -235,95 +269,46 @@ public:
 
         /* move the values after the insertion one place forward */
         if ( index < m_values_count ) {
-            if constexpr ( Trait::TypeIntrinsics<T>::is_trivial() )
+            if constexpr ( TypeTraits<T>::is_trivial() )
                 __builtin_memmove(data_slot(index + 1), data_slot(index), (m_values_count - index) * sizeof(T));
             else {
-                for ( usize i = m_values_count; i > index; --i ) {
-                    new (data_slot(i)) T{ forward<U>(m_data_storage[i - 1]) };
+                for ( usize i : Range{ m_values_count, index }.reverse_iter() ) {
+                    new (data_slot(i)) T{ Cxx::move(m_data_storage[i - 1]) };
                     at(i - 1).~T();
                 }
             }
         }
 
         /* move the value into the memory */
-        new (data_slot(index)) T{ forward<U>(value) };
+        new (data_slot(index)) T{ Cxx::move(value) };
         ++m_values_count;
         return {};
     }
 
     /**
-     * @brief Inserts the given <value> sorted
-     */
-    template<typename Comparator>
-    void insert_sorted(T const& value, Comparator comparator) {
-        MUST(try_insert_sorted(value, comparator));
-    }
-    void insert_sorted(T const& value) {
-        MUST(try_insert_sorted(value));
-    }
-
-    template<typename Comparator>
-    ErrorOr<void> try_insert_sorted(T const& value, Comparator comparator) {
-        /* find the insertion index */
-        usize insert_index = 0;
-        for ( usize i : Range{ 0u, m_values_count } ) {
-            if ( comparator(m_data_storage[i], value) )
-                insert_index = i + 1;
-            else
-                break;
-        }
-
-        /* insert at the position */
-        return try_insert_at(insert_index, value);
-    }
-    ErrorOr<void> try_insert_sorted(T const& value) {
-        return try_insert_sorted(value, [](T const& a, T const& b) { return a < b; });
-    }
-
-    /**
      * @brief Pushes the given <value> to the begin of the vector
      */
-    void prepend(T const& value) {
-        MUST(try_prepend(T{ value }));
+    auto prepend(T value) {
+        MUST(try_prepend(Cxx::move(value)));
     }
-    template<typename U = T>
-    void prepend(U&& value) {
-        MUST(try_prepend<U>(forward<U>(value)));
-    }
-
-    ErrorOr<void> try_prepend(T const& value) {
-        return try_prepend(T{ value });
-    }
-    template<typename U = T>
-    ErrorOr<void> try_prepend(U&& value) {
-        return try_insert_at<U>(0, forward<U>(value));
+    auto try_prepend(T value) -> ErrorOr<void> {
+        return try_insert_at(0, Cxx::move(value));
     }
 
     /**
      * @brief Pushes the given <value> to the end of the vector
      */
-    void append(T const& value) {
-        MUST(try_append(T{ value }));
+    void append(T value) {
+        MUST(try_append(Cxx::move(value)));
     }
-    template<typename U = T>
-    void append(U&& value) {
-        MUST(try_append<U>(forward<U>(value)));
-    }
-
-    ErrorOr<void> try_append(T const& value) {
-        return try_append(T{ value });
-    }
-    template<typename U = T>
-    ErrorOr<void> try_append(U&& value) {
-        return try_insert_at<U>(m_values_count, forward<U>(value));
+    auto try_append(T value) -> ErrorOr<void> {
+        TRY(try_ensure_capacity(m_values_count + 1));
+        append_unchecked(Cxx::move(value));
+        return {};
     }
 
-    void append_unchecked(T const& value) {
-        append_unchecked(T{ value });
-    }
-    template<typename U = T>
-    void append_unchecked(U&& value) {
-        new (data_slot(m_values_count)) T{ forward<U>(value) };
+    auto append_unchecked(T value) {
+        new (data_slot(m_values_count)) T{ Cxx::move(value) };
         ++m_values_count;
     }
 
@@ -331,25 +316,25 @@ public:
      * @brief Pushes a new value to the begin of the vector constructing it with the given arguments
      */
     template<typename... Args>
-    void emplace_first(Args&&... args) {
-        MUST(try_emplace_first(forward<Args>(args)...));
+    auto emplace_first(Args&&... args) {
+        MUST(try_emplace_first(Cxx::forward<Args>(args)...));
     }
     template<typename... Args>
-    ErrorOr<void> try_emplace_first(Args&&... args) {
+    auto try_emplace_first(Args&&... args) -> ErrorOr<void> {
         TRY(try_ensure_capacity(m_values_count + 1));
 
         /* move the values after the insertion one place forward */
-        if constexpr ( Trait::TypeIntrinsics<T>::is_trivial() )
+        if constexpr ( TypeTraits<T>::is_trivial() )
             __builtin_memmove(data_slot(1), m_data_storage, m_values_count * sizeof(T));
         else {
-            for ( usize i = m_values_count; i > 0; --i ) {
-                new (data_slot(i)) T{ move(m_data_storage[i - 1]) };
+            for ( usize i : Range{ m_values_count, 0u }.reverse_iter() ) {
+                new (data_slot(i)) T{ Cxx::move(m_data_storage[i - 1]) };
                 at(i - 1).~T();
             }
         }
 
         /* move the value into the memory */
-        new (data_slot(0)) T{ forward<Args>(args)... };
+        new (data_slot(0)) T{ Cxx::forward<Args>(args)... };
         ++m_values_count;
         return {};
     }
@@ -358,15 +343,13 @@ public:
      * @brief Pushes a new value to the end of the vector constructing it with the given arguments
      */
     template<typename... Args>
-    void emplace_last(Args&&... args) {
-        MUST(try_emplace_last(forward<Args>(args)...));
+    auto emplace_last(Args&&... args) {
+        MUST(try_emplace_last(Cxx::forward<Args>(args)...));
     }
     template<typename... Args>
-    ErrorOr<void> try_emplace_last(Args&&... args) {
+    auto try_emplace_last(Args&&... args) -> ErrorOr<void> {
         TRY(try_ensure_capacity(m_values_count + 1));
-
-        /* move the value into the memory */
-        new (data_slot(m_values_count)) T{ forward<Args>(args)... };
+        new (data_slot(m_values_count)) T{ Cxx::forward<Args>(args)... };
         ++m_values_count;
         return {};
     }
@@ -374,10 +357,10 @@ public:
     /**
      * @brief Returns a reference to the first element
      */
-    T& first() {
+    auto first() -> T& {
         return at(0);
     }
-    T const& first() const {
+    auto first() const -> T const& {
         return at(0);
     }
 
@@ -385,51 +368,34 @@ public:
      * @brief Returns a reference to the last element
      * @return
      */
-    T& last() {
+    auto last() -> T& {
         return at(m_values_count - 1);
     }
-    T const& last() const {
+    auto last() const -> T const& {
         return at(m_values_count - 1);
-    }
-
-    /**
-     * @brief Removes the element at the given index and returns it
-     */
-    [[nodiscard]] T take_first() {
-        return take_at(0);
-    }
-    [[nodiscard]] T take_last() {
-        return take_at(count() - 1);
-    }
-    [[nodiscard]] T take_at(usize index) {
-        VERIFY_LESS(index, m_values_count);
-
-        T value{ move(m_data_storage[index]) };
-        erase_at(index);
-        return value;
     }
 
     /**
      * @brief Removes the element(s)
      */
-    ErrorOr<void> erase_at(usize index) {
+    auto erase_at(usize index) -> ErrorOr<void> {
         if ( index >= m_values_count )
             return Error{ EINVAL };
 
         /* shift all the values one position back */
-        if constexpr ( Trait::TypeIntrinsics<T>::is_trivial() )
+        if constexpr ( TypeTraits<T>::is_trivial() )
             __builtin_memmove(data_slot(index), data_slot(index + 1), (m_values_count - index - 1) * sizeof(T));
         else {
             at(index).~T();
             for ( usize i : Range{ index + 1, m_values_count } ) {
-                new (data_slot(i - 1)) T{ move(m_data_storage[i]) };
+                new (data_slot(i - 1)) T{ Cxx::move(m_data_storage[i]) };
                 m_data_storage[i].~T();
             }
         }
         --m_values_count;
         return {};
     }
-    ErrorOr<void> erase_first_of(T const& value) {
+    auto erase_first_of(T const& value) -> ErrorOr<void> {
         for ( usize i : Range{ 0u, m_values_count } ) {
             if ( m_data_storage[i] == value ) {
                 TRY(erase_at(i));
@@ -438,11 +404,10 @@ public:
         }
         return Error{ ENOENT };
     }
-    ErrorOr<usize> erase_all_of(T const& value) {
-        return erase_all_matches([&value](T const& current) { return Trait::TypeIntrinsics<T>::equals(current, value); });
+    auto erase_all_of(T const& value) -> ErrorOr<usize> {
+        return erase_all_matches([&value](T const& current) { return TypeTraits<T>::equals(current, value); });
     }
-    template<typename TPredicate>
-    ErrorOr<usize> erase_all_matches(TPredicate predicate) {
+    auto erase_all_matches(Predicate<T const&> auto predicate) -> ErrorOr<usize> {
         usize erased_count = 0;
         for ( usize i = 0; i < m_values_count; ) {
             if ( predicate(m_data_storage[i]) ) {
@@ -461,8 +426,7 @@ public:
     /**
      * @brief Sorts the vector content using the given comparator
      */
-    template<typename Comparator>
-    void sort(Comparator comparator) {
+    auto sort(I32Predicate<T const&, T const&> auto comparator) {
         for ( usize i = 0; i + 1 < m_values_count; ++i ) {
             for ( usize j = i + 1; j < m_values_count; ++j ) {
                 if ( comparator(m_data_storage[i], m_data_storage[j]) > 0 )
@@ -472,35 +436,12 @@ public:
     }
 
     /**
-     * @brief Resizes the amount of elements inside this vector creating (by default constructor) if new_count >
-     * count(), destroying if new_count < count()
-     */
-    void resize(usize new_count) {
-        MUST(try_resize(new_count));
-    }
-    ErrorOr<void> try_resize(usize new_count) {
-        if ( new_count < m_values_count ) {
-            for ( usize i : Range{ new_count, m_values_count } )
-                at(i).~T();
-        } else if ( new_count > m_values_count ) {
-            TRY(try_ensure_capacity(new_count));
-
-            /* default construct the new values */
-            for ( usize i : Range{ m_values_count, new_count } )
-                new (data_slot(i)) T{};
-        }
-
-        m_values_count = new_count;
-        return {};
-    }
-
-    /**
      * @brief Allocates new capacity for this vector for at least the given capacity
      */
-    void ensure_capacity(usize capacity) {
+    auto ensure_capacity(usize capacity) {
         MUST(try_ensure_capacity(capacity));
     }
-    ErrorOr<void> try_ensure_capacity(usize capacity) {
+    auto try_ensure_capacity(usize capacity) -> ErrorOr<void> {
         VERIFY_GREATER(capacity, 0);
 
         if ( m_data_capacity >= capacity )
@@ -515,11 +456,11 @@ public:
 
         /* allocate new memory and move the content into it */
         auto new_data_storage = TRY(Memory::Raw::clean_alloc_array<T>(new_capacity));
-        if constexpr ( Trait::TypeIntrinsics<T>::is_trivial() )
+        if constexpr ( TypeTraits<T>::is_trivial() )
             __builtin_memmove(new_data_storage, m_data_storage, m_values_count * sizeof(T));
         else {
             for ( usize i : Range{ 0u, m_values_count } ) {
-                new (&new_data_storage[i]) T{ move(at(i)) };
+                new (&new_data_storage[i]) T{ Cxx::move(at(i)) };
                 at(i).~T();
             }
         }
@@ -536,35 +477,58 @@ public:
     /**
      * @brief for-each support
      */
-    Iterator begin() {
+    auto begin() -> Iterator {
         return Iterator::begin(*this);
     }
-    Iterator end() {
+    auto end() -> Iterator {
         return Iterator::end(*this);
     }
 
-    ConstIterator begin() const {
+    auto begin() const -> ConstIterator {
         return ConstIterator::begin(*this);
     }
-    ConstIterator end() const {
+    auto end() const -> ConstIterator {
         return ConstIterator::end(*this);
+    }
+
+    /**
+     * @brief reverse for-each support
+     */
+    auto rbegin() -> ReverseIterator {
+        return ReverseIterator::rbegin(*this);
+    }
+    auto rend() -> ReverseIterator {
+        return ReverseIterator::rend(*this);
+    }
+
+    auto rbegin() const -> ConstReverseIterator {
+        return ReverseIterator::rbegin(*this);
+    }
+    auto rend() const -> ConstReverseIterator {
+        return ReverseIterator::rend(*this);
+    }
+
+    auto reverse_iter() -> ReverseIteratorSupport::Wrapper<Vector<T>> {
+        return ReverseIteratorSupport::in_reverse(*this);
+    }
+    auto reverse_iter() const -> ReverseIteratorSupport::Wrapper<Vector<T> const> {
+        return ReverseIteratorSupport::in_reverse(*this);
     }
 
     /**
      * @brief Returns whether this vector contains the given value
      */
-    [[nodiscard]] bool contains(T const& value) const {
+    [[nodiscard]] auto contains(T const& value) const -> bool {
         return index_of(value).is_present();
     }
 
     /**
      * @brief Returns the index of the value if exists or when the callback returns true
      */
-    Option<usize> index_of(T const& value) const {
-        return index_if([&value](auto const& v) -> bool { return Trait::TypeIntrinsics<T>::equals(value, v); });
+    auto index_of(T const& value) const -> Option<usize> {
+        return index_if([&value](T const& v) -> bool { return TypeTraits<T>::equals(value, v); });
     }
-    template<typename TPredicate>
-    Option<usize> index_if(TPredicate predicate) const {
+    auto index_if(Predicate<T const&> auto predicate) const -> Option<usize> {
         for ( usize i : Range{ 0u, m_values_count } ) {
             if ( predicate(m_data_storage[i]) )
                 return i;
@@ -575,66 +539,66 @@ public:
     /**
      * @brief Returns a reference to the element into this Vector if exists
      */
-    Option<T&> find(T const& value) {
+    auto find(T const& value) -> Option<T&> {
         return index_of(value).template map<T&>([this](usize index) -> T& { return at(index); });
     }
-    Option<T const&> find(T const& value) const {
+    auto find(T const& value) const -> Option<T const&> {
         return index_of(value).template map<T const&>([this](usize index) -> T const& { return at(index); });
     }
 
     /**
      * @brief Returns a reference to the element if the callback returns true
      */
-    template<typename TPredicate>
-    Option<T&> find_if(TPredicate predicate) {
+    auto find_if(Predicate<T const&> auto predicate) -> Option<T&> {
         return index_if(predicate).template map<T&>([this](usize index) -> T& { return at(index); });
     }
-    template<typename TPredicate>
-    Option<T const&> find_if(TPredicate predicate) const {
+    auto find_if(Predicate<T const&> auto predicate) const -> Option<T const&> {
         return index_if(predicate).template map<T const&>([this](usize index) -> T const& { return at(index); });
     }
 
     /**
      * @brief Vector data access
      */
-    T& at(usize index) {
+    auto at(usize index) -> T& {
         VERIFY_LESS(index, m_values_count);
         return m_data_storage[index];
     }
-    T const& at(usize index) const {
+    auto at(usize index) const -> T const& {
         VERIFY_LESS(index, m_values_count);
         return m_data_storage[index];
     }
 
-    T& operator[](usize index) {
+    auto operator[](usize index) -> T& {
         return at(index);
     }
-    T const& operator[](usize index) const {
+    auto operator[](usize index) const -> T const& {
         return at(index);
     }
 
-    [[nodiscard]] usize count() const {
+    [[nodiscard]] auto count() const -> usize {
         return m_values_count;
     }
-    [[nodiscard]] usize capacity() const {
+    [[nodiscard]] auto capacity() const -> usize {
         return m_data_capacity;
     }
-    [[nodiscard]] T* data() {
+    [[nodiscard]] auto raw_data() -> T* {
         return m_data_storage;
     }
-    [[nodiscard]] T const* data() const {
+    [[nodiscard]] auto raw_data() const -> T const* {
         return m_data_storage;
     }
 
-    [[nodiscard]] bool is_empty() const {
+    [[nodiscard]] auto is_empty() const -> bool {
         return m_values_count == 0;
     }
-    [[nodiscard]] bool any() const {
+    [[nodiscard]] auto any() const -> bool {
         return !is_empty();
     }
 
 private:
-    T* data_slot(usize index) {
+    explicit constexpr Vector() noexcept = default;
+
+    [[gnu::always_inline]] auto data_slot(usize index) -> T* {
         return &m_data_storage[index];
     }
 

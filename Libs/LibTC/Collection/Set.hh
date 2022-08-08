@@ -18,7 +18,11 @@
 #include <LibTC/Collection/Enums/KeepStorageCapacity.hh>
 #include <LibTC/Collection/Enums/OnExistingEntry.hh>
 #include <LibTC/Collection/Range.hh>
+#include <LibTC/Collection/ReverseIteratorSupport.hh>
+#include <LibTC/Concept.hh>
 #include <LibTC/Cxx.hh>
+#include <LibTC/DenyCopy.hh>
+#include <LibTC/Forward.hh>
 #include <LibTC/Functional/Must.hh>
 #include <LibTC/Functional/Option.hh>
 #include <LibTC/Functional/Try.hh>
@@ -26,9 +30,8 @@
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Math.hh>
 #include <LibTC/Memory/Raw.hh>
-#include <LibTC/Trait/Conditional.hh>
-#include <LibTC/Trait/Hashable.hh>
-#include <LibTC/Trait/TypeIntrinsics.hh>
+#include <LibTC/Meta.hh>
+#include <LibTC/TypeTraits.hh>
 
 namespace TC {
 namespace Collection {
@@ -42,11 +45,11 @@ enum class SetBucketState : u8 {
     End      = 0xFF,
 };
 
-constexpr bool is_used_bucket(SetBucketState state) {
+constexpr auto is_used_bucket(SetBucketState state) -> bool {
     return (static_cast<u8>(state) & 0xf0) == 0x10;
 }
 
-constexpr bool is_free_bucket(SetBucketState state) {
+constexpr auto is_free_bucket(SetBucketState state) -> bool {
     return (static_cast<u8>(state) & 0xf0) == 0x00;
 }
 
@@ -61,12 +64,12 @@ public:
     }
     SetIterator(SetIterator const&) = default;
 
-    SetIterator& operator=(SetIterator const&) = default;
+    auto operator=(SetIterator const&) -> SetIterator& = default;
 
     /**
      * @brief Increment operators
      */
-    SetIterator& operator++() {
+    auto operator++() -> SetIterator& {
         if ( m_current_bucket == nullptr )
             return *this;
 
@@ -81,7 +84,7 @@ public:
 
         return *this;
     }
-    SetIterator operator++(int) {
+    auto operator++(int) -> SetIterator {
         SetIterator it{ *this };
 
         operator++();
@@ -91,21 +94,21 @@ public:
     /**
      * @brief ValueReference access operators
      */
-    T& operator*() {
+    auto operator*() -> T& {
         return *operator->();
     }
-    T const& operator*() const {
+    auto operator*() const -> T const& {
         return *operator->();
     }
 
     /**
      * @brief Pointer access operators
      */
-    T* operator->() {
+    auto operator->() -> T* {
         VERIFY_NOT_NULL(m_current_bucket);
         return m_current_bucket->slot();
     }
-    T const* operator->() const {
+    auto operator->() const -> T const* {
         VERIFY_NOT_NULL(m_current_bucket);
         return m_current_bucket->slot();
     }
@@ -113,19 +116,19 @@ public:
     /**
      * @brief Comparison operators
      */
-    bool operator==(SetIterator const& rhs) const {
+    auto operator==(SetIterator const& rhs) const -> bool {
         return m_current_bucket == rhs.m_current_bucket;
     }
-    bool operator!=(SetIterator const& rhs) const {
+    auto operator!=(SetIterator const& rhs) const -> bool {
         return m_current_bucket != rhs.m_current_bucket;
     }
-    bool operator<=>(SetIterator const& rhs) const = default;
+    auto operator<=>(SetIterator const& rhs) const -> bool = default;
 
 private:
     BucketType* m_current_bucket{ nullptr };
 };
 
-template<typename Collection, typename T, typename BucketType>
+template<typename Collection, typename T, typename BucketType, bool IsReverse>
 class OrderedSetIterator {
 public:
     /**
@@ -136,19 +139,23 @@ public:
     }
     OrderedSetIterator(OrderedSetIterator const&) = default;
 
-    OrderedSetIterator& operator=(OrderedSetIterator const&) = default;
+    auto operator=(OrderedSetIterator const&) -> OrderedSetIterator& = default;
 
     /**
      * @brief Increment operators
      */
-    OrderedSetIterator& operator++() {
+    auto operator++() -> OrderedSetIterator& {
         if ( m_current_bucket == nullptr )
             return *this;
 
-        m_current_bucket = m_current_bucket->m_next;
+        if constexpr ( IsReverse ) {
+            m_current_bucket = m_current_bucket->m_prev_bucket;
+        } else {
+            m_current_bucket = m_current_bucket->m_next_bucket;
+        }
         return *this;
     }
-    OrderedSetIterator operator++(int) {
+    auto operator++(int) -> OrderedSetIterator {
         OrderedSetIterator it{ *this };
 
         operator++();
@@ -156,43 +163,23 @@ public:
     }
 
     /**
-     * @brief Decrement operators
-     */
-    /**
-     * @brief Increment operators
-     */
-    OrderedSetIterator& operator--() {
-        if ( m_current_bucket == nullptr )
-            return *this;
-
-        m_current_bucket = m_current_bucket->m_previous;
-        return *this;
-    }
-    OrderedSetIterator operator--(int) {
-        OrderedSetIterator it{ *this };
-
-        operator--();
-        return it;
-    }
-
-    /**
      * @brief ValueReference access operators
      */
-    T& operator*() {
+    auto operator*() -> T& {
         return *operator->();
     }
-    T const& operator*() const {
+    auto operator*() const -> T const& {
         return *operator->();
     }
 
     /**
      * @brief Pointer access operators
      */
-    T* operator->() {
+    auto operator->() -> T* {
         VERIFY_NOT_NULL(m_current_bucket);
         return m_current_bucket->slot();
     }
-    T const* operator->() const {
+    auto operator->() const -> T const* {
         VERIFY_NOT_NULL(m_current_bucket);
         return m_current_bucket->slot();
     }
@@ -200,13 +187,13 @@ public:
     /**
      * @brief Comparison operators
      */
-    bool operator==(OrderedSetIterator const& rhs) const {
+    auto operator==(OrderedSetIterator const& rhs) const -> bool {
         return m_current_bucket == rhs.m_current_bucket;
     }
-    bool operator!=(OrderedSetIterator const& rhs) const {
+    auto operator!=(OrderedSetIterator const& rhs) const -> bool {
         return m_current_bucket != rhs.m_current_bucket;
     }
-    bool operator<=>(OrderedSetIterator const& rhs) const = default;
+    auto operator<=>(OrderedSetIterator const& rhs) const -> bool = default;
 
 private:
     BucketType* m_current_bucket{ nullptr };
@@ -214,10 +201,10 @@ private:
 
 template<typename T>
 struct SetBucket {
-    T* slot() {
+    auto slot() -> T* {
         return bit_cast<T*>(&m_storage);
     }
-    T const* slot() const {
+    auto slot() const -> T const* {
         return bit_cast<T const*>(&m_storage);
     }
 
@@ -227,15 +214,15 @@ struct SetBucket {
 
 template<typename T>
 struct OrderedSetBucket {
-    T* slot() {
+    auto slot() -> T* {
         return bit_cast<T*>(&m_storage);
     }
-    T const* slot() const {
+    auto slot() const -> T const* {
         return bit_cast<T const*>(&m_storage);
     }
 
-    OrderedSetBucket* m_previous;
-    OrderedSetBucket* m_next;
+    OrderedSetBucket* m_prev_bucket;
+    OrderedSetBucket* m_next_bucket;
     SetBucketState    m_bucket_state;
     alignas(T) u8 m_storage[sizeof(T)];
 };
@@ -252,75 +239,111 @@ struct OrderedCollectionData {
 
 } /* namespace Details */
 
-template<Hashable T, typename TIntrinsics, bool IsOrdered>
-class BaseSet {
+template<typename T, typename TTraits, bool IsOrdered>
+class Set {
+    TC_DENY_COPY(Set);
+
 private:
-    using BucketType         = Conditional<IsOrdered, Details::OrderedSetBucket<T>, Details::SetBucket<T>>;
-    using CollectionDataType = Conditional<IsOrdered, Details::OrderedCollectionData<BucketType>, Details::CollectionData>;
+    using Bucket         = Conditional<IsOrdered, Details::OrderedSetBucket<T>, Details::SetBucket<T>>;
+    using DataCollection = Conditional<IsOrdered, Details::OrderedCollectionData<Bucket>, Details::CollectionData>;
 
 public:
     static constexpr usize LOAD_FACTOR_PERCENT = 60;
 
-    using Iterator
-        = Conditional<IsOrdered, Details::OrderedSetIterator<BaseSet, T, BucketType>, Details::SetIterator<BaseSet, T, BucketType>>;
+    using Iterator      = Conditional<IsOrdered, Details::OrderedSetIterator<Set, T, Bucket, false>, Details::SetIterator<Set, T, Bucket>>;
     using ConstIterator = Conditional<IsOrdered,
-                                      Details::OrderedSetIterator<BaseSet const, T const, BucketType const>,
-                                      Details::SetIterator<BaseSet const, T const, BucketType const>>;
+                                      Details::OrderedSetIterator<Set const, T const, Bucket const, false>,
+                                      Details::SetIterator<Set const, T const, Bucket const>>;
+    using ReverseIterator      = Details::OrderedSetIterator<Set, T, Bucket, true>;
+    using ConstReverseIterator = Details::OrderedSetIterator<Set const, T const, Bucket const, true>;
 
 public:
     /**
-     * @brief Constructors
+     * @brief Non-error safe Factory functions
      */
-    BaseSet() = default;
-    explicit BaseSet(usize capacity) {
-        rehash(capacity);
+    static constexpr auto construct_empty() -> Set<T, TTraits, IsOrdered> {
+        return Set<T, TTraits, IsOrdered>{};
     }
-    BaseSet(BaseSet const& rhs) {
-        rehash(rhs.capacity());
-        for ( auto& value : rhs )
-            set(value);
+    static auto construct_with_capacity(usize capacity) -> Set<T, TTraits, IsOrdered> {
+        return MUST(try_construct_with_capacity(capacity));
     }
-    BaseSet(BaseSet&& rhs) noexcept
-        : m_buckets_storage{ exchange(rhs.m_buckets_storage, nullptr) }
-        , m_collection_data{ exchange(rhs.m_collection_data, CollectionDataType{}) }
-        , m_data_capacity{ exchange(rhs.m_data_capacity, 0) }
-        , m_values_count{ exchange(rhs.m_values_count, 0) }
-        , m_deleted_count{ exchange(rhs.m_deleted_count, 0) } {
+    static auto construct_from_other(Set<T, TTraits, IsOrdered> const& rhs) -> Set<T, TTraits, IsOrdered> {
+        return MUST(try_construct_from_other(rhs));
     }
-    BaseSet(std::initializer_list<T> initializer_list) {
-        ensure_capacity(initializer_list.size());
-        for ( auto const& value : initializer_list )
-            insert(Cxx::move(value));
+    static auto construct_from_list(std::initializer_list<T> initializer_list) -> Set<T, TTraits, IsOrdered> {
+        return MUST(try_construct_from_list(initializer_list));
     }
 
-    ~BaseSet() {
+    /**
+     * @brief Error safe Factory functions
+     */
+    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
+        auto set = construct_empty();
+        TRY(set.try_rehash(capacity));
+        return set;
+    }
+    static auto try_construct_from_other(Set<T, TTraits, IsOrdered> const& rhs) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
+        auto set = TRY(try_construct_with_capacity(rhs.count()));
+        for ( auto const& element : rhs ) {
+            if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
+                TRY(set.try_insert(TRY(element.try_clone())));
+            } else if constexpr ( Cloneable<T> ) {
+                TRY(set.try_insert(element.clone()));
+            } else if constexpr ( CopyConstructible<T> ) {
+                TRY(set.try_insert(element));
+            }
+        }
+
+        return set;
+    }
+    static auto try_construct_from_list(std::initializer_list<T> initializer_list) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
+        auto set = construct_empty();
+        for ( auto const& element : initializer_list ) /* even with auto initializer_list exposes only T const& */
+            TRY(set.try_insert(Cxx::move(const_cast<T&>(element))));
+
+        return set;
+    }
+
+    /**
+     * @brief Move constructor and move assignment
+     */
+    Set(Set<T, TTraits, IsOrdered>&& rhs) noexcept
+        : m_buckets_storage{ Cxx::exchange(rhs.m_buckets_storage, nullptr) }
+        , m_collection_data{ Cxx::exchange(rhs.m_collection_data, DataCollection{}) }
+        , m_data_capacity{ Cxx::exchange(rhs.m_data_capacity, 0) }
+        , m_values_count{ Cxx::exchange(rhs.m_values_count, 0) }
+        , m_deleted_count{ Cxx::exchange(rhs.m_deleted_count, 0) } {
+    }
+    auto operator=(Set<T, TTraits, IsOrdered>&& rhs) noexcept -> Set<T, TTraits, IsOrdered>& {
+        Set set{ Cxx::move(rhs) };
+        swap(set);
+        return *this;
+    }
+
+    ~Set() {
         clear(KeepStorageCapacity::No);
     }
 
-    BaseSet& operator=(BaseSet const& rhs) {
-        if ( this == &rhs )
-            return *this;
-
-        BaseSet set{ rhs };
-        swap(set);
-        return *this;
+    /**
+     * @brief Deep cloning
+     */
+    [[nodiscard]] auto clone() const -> Set<T, TTraits, IsOrdered> {
+        return MUST(try_clone());
     }
-    BaseSet& operator=(BaseSet&& rhs) noexcept {
-        BaseSet set{ move(rhs) };
-        swap(set);
-        return *this;
+    [[nodiscard]] auto try_clone() const -> ErrorOr<Set<T, TTraits, IsOrdered>> {
+        return Set<T, TTraits, IsOrdered>::try_construct_from_other(*this);
     }
 
     /**
      * @brief Destroys all the stored values keeping the capacity of this set if requested
      */
-    void clear(KeepStorageCapacity keep_storage_capacity = KeepStorageCapacity::Yes) {
+    auto clear(KeepStorageCapacity keep_storage_capacity = KeepStorageCapacity::Yes) {
         if ( m_buckets_storage == nullptr )
             return;
 
         /* call the destructors only for non-trivial types */
-        if constexpr ( !TIntrinsics::is_trivial() ) {
-            for ( usize i : Range{ 0u, m_data_capacity } ) {
+        if constexpr ( !TTraits::is_trivial() ) {
+            for ( auto const i : Range{ 0u, m_data_capacity } ) {
                 if ( Details::is_used_bucket(m_buckets_storage[i].m_bucket_state) )
                     m_buckets_storage[i].slot()->~T();
             }
@@ -331,7 +354,7 @@ public:
             __builtin_memset(m_buckets_storage, 0, size_in_bytes(capacity()));
 
             if constexpr ( IsOrdered )
-                m_collection_data = Details::OrderedCollectionData<BucketType>{ nullptr, nullptr };
+                m_collection_data = Details::OrderedCollectionData<Bucket>{ nullptr, nullptr };
             else
                 m_buckets_storage[m_data_capacity].m_bucket_state = Details::SetBucketState::End;
         } else {
@@ -345,7 +368,7 @@ public:
     /**
      * @brief Swaps in O(1) the content of this Set with another
      */
-    void swap(BaseSet& rhs) noexcept {
+    auto swap(Set<T, TTraits, IsOrdered>& rhs) noexcept {
         Cxx::swap(m_buckets_storage, rhs.m_buckets_storage);
         Cxx::swap(m_data_capacity, rhs.m_data_capacity);
         Cxx::swap(m_values_count, rhs.m_values_count);
@@ -359,41 +382,40 @@ public:
      * @brief Inserts a value using his hash. The value may already exists inside the set, then the given
      * OnExistingEntry value is used to perform a decision
      */
-    template<typename U = T>
-    InsertResult insert(U&& value, OnExistingEntry existing_entry_behaviour = OnExistingEntry::Replace) {
-        return MUST(try_insert(forward<U>(value), existing_entry_behaviour));
+    auto insert(T value, OnExistingEntry const on_existing_entry = OnExistingEntry::Replace) -> InsertResult {
+        return MUST(try_insert(Cxx::move(value), on_existing_entry));
     }
-    template<typename U = T>
-    ErrorOr<InsertResult> try_insert(U&& value, OnExistingEntry existing_entry_behavior = OnExistingEntry::Replace) {
-        /* find a bucket which is suitable for writing the value */
-        auto* bucket = TRY(try_lookup_for_writing(value));
-        if ( Details::is_used_bucket(bucket->m_bucket_state) ) {
+    auto try_insert(T value, OnExistingEntry const on_existing_entry = OnExistingEntry::Replace) -> ErrorOr<InsertResult> {
+        /* find a found_bucket which is suitable for writing the value */
+        auto found_bucket = TRY(try_lookup_for_writing(value));
+        if ( Details::is_used_bucket(found_bucket->m_bucket_state) ) {
             /* keep the existing value and return */
-            if ( existing_entry_behavior == OnExistingEntry::Keep )
+            if ( on_existing_entry == OnExistingEntry::Keep )
                 return InsertResult::KeptExisting;
 
             /* replace the value with the given one */
-            (*bucket->slot()) = forward<U>(value);
+            (*found_bucket->slot()) = Cxx::move(value); /* use move assignment to let the existing value to be correctly replaced */
             return InsertResult::ReplacedExisting;
         }
 
-        /* overwrite the already existing value and decrease the deleted count */
-        new (bucket->slot()) T{ forward<U>(value) };
-        if ( bucket->m_bucket_state == Details::SetBucketState::Deleted )
+        /* write the value into the new bucket.
+         * NOTE even if the bucket is in the Deleted state, we can overwrite using move constructor
+         * because destructor of previous value was already called by remove */
+        new (found_bucket->slot()) T{ Cxx::move(value) };
+        if ( found_bucket->m_bucket_state == Details::SetBucketState::Deleted )
             --m_deleted_count;
 
-        /* update his state */
-        bucket->m_bucket_state = Details::SetBucketState::Used;
+        found_bucket->m_bucket_state = Details::SetBucketState::Used;
 
         /* update linked list of ordered values if is ordered */
         if constexpr ( IsOrdered ) {
             if ( m_collection_data.m_head == nullptr ) [[unlikely]] {
-                m_collection_data.m_head = bucket;
+                m_collection_data.m_head = found_bucket;
             } else {
-                bucket->m_previous               = m_collection_data.m_tail;
-                m_collection_data.m_tail->m_next = bucket;
+                found_bucket->m_prev_bucket             = m_collection_data.m_tail;
+                m_collection_data.m_tail->m_next_bucket = found_bucket;
             }
-            m_collection_data.m_tail = bucket;
+            m_collection_data.m_tail = found_bucket;
         }
 
         ++m_values_count;
@@ -403,9 +425,9 @@ public:
     /**
      * @brief Removes the given value from this set and returns whether it was existing
      */
-    bool remove(T const& value) {
-        auto bucket = lookup_with_hash(TIntrinsics::hash(value),
-                                       [&value](auto const& current) -> bool { return TIntrinsics::equals(value, current); });
+    auto remove(T const& value) -> bool {
+        auto bucket
+            = lookup_with_hash(TTraits::hash(value), [&value](auto const& current) -> bool { return TTraits::equals(value, current); });
         if ( bucket != nullptr )
             return remove(*bucket);
         else
@@ -415,7 +437,7 @@ public:
     /**
      * @brief Removes the element referenced by the given iterator
      */
-    bool remove(Iterator iterator) {
+    auto remove(Iterator iterator) -> bool {
         if ( iterator != end() )
             return remove(*iterator.m_bucket);
         else
@@ -425,11 +447,10 @@ public:
     /**
      * @brief Removes all the elements for which the given call_back returns true
      */
-    template<typename TPredicate>
-    usize remove_all_matching(TPredicate predicate) {
+    auto remove_all_matching(Predicate<T const&> auto predicate) -> usize {
         /* iterate all the used buckets and give them to the given call_back */
         usize removed_count = 0;
-        for ( usize i : Range{ 0u, m_data_capacity } ) {
+        for ( auto const i : Range{ 0u, m_data_capacity } ) {
             auto& bucket = m_buckets_storage[i];
             if ( Details::is_used_bucket(bucket.m_bucket_state) && predicate(*bucket.slot()) ) {
                 delete_bucket(bucket);
@@ -451,11 +472,11 @@ public:
     /**
      * @brief Allocates new capacity for this set for at least the given capacity
      */
-    void ensure_capacity(usize capacity) {
+    auto ensure_capacity(usize capacity) {
         VERIFY_GREATER_EQUAL(capacity, count());
         rehash(capacity * 2);
     }
-    ErrorOr<void> try_ensure_capacity(usize capacity) {
+    auto try_ensure_capacity(usize capacity) -> ErrorOr<void> {
         VERIFY_GREATER_EQUAL(capacity, count());
         return try_rehash(capacity * 2);
     }
@@ -463,69 +484,93 @@ public:
     /**
      * @brief for-each support
      */
-    Iterator begin() {
+    auto begin() -> Iterator {
         if constexpr ( IsOrdered )
             return Iterator{ m_collection_data.m_head };
         else {
             /* find the first used bucket */
-            for ( usize i : Range{ 0u, m_data_capacity } ) {
+            for ( auto const i : Range{ 0u, m_data_capacity } ) {
                 if ( Details::is_used_bucket(m_buckets_storage[i].m_bucket_state) )
                     return Iterator{ &m_buckets_storage[i] };
             }
             return end();
         }
     }
-    Iterator end() {
+    auto end() -> Iterator {
         return Iterator{ nullptr };
     }
 
-    ConstIterator begin() const {
+    auto begin() const -> ConstIterator {
         if constexpr ( IsOrdered )
             return ConstIterator{ m_collection_data.m_head };
         else {
             /* find the first used bucket */
-            for ( usize i : Range{ 0u, m_data_capacity } ) {
+            for ( auto const i : Range{ 0u, m_data_capacity } ) {
                 if ( Details::is_used_bucket(m_buckets_storage[i].m_bucket_state) )
                     return ConstIterator{ &m_buckets_storage[i] };
             }
             return end();
         }
     }
-    ConstIterator end() const {
+    auto end() const -> ConstIterator {
         return ConstIterator{ nullptr };
+    }
+
+    /**
+     * @brief reverse for-each support
+     */
+    auto rbegin() -> ReverseIterator {
+        static_assert(IsOrdered, "Reverse iterator only available with OrderedSet/OrderedMap");
+        return ReverseIterator{ m_collection_data.m_head };
+    }
+    auto rend() -> ReverseIterator {
+        return ReverseIterator{ nullptr };
+    }
+
+    auto rbegin() const -> ConstReverseIterator {
+        static_assert(IsOrdered, "Reverse iterator only available with OrderedSet/OrderedMap");
+        return ConstReverseIterator{ m_collection_data.m_head };
+    }
+    auto rend() const -> ConstReverseIterator {
+        return ConstReverseIterator{ nullptr };
+    }
+
+    auto reverse_iter() -> ReverseIteratorSupport::Wrapper<Set<T, TTraits, IsOrdered>> {
+        return ReverseIteratorSupport::in_reverse(*this);
+    }
+    auto reverse_iter() const -> ReverseIteratorSupport::Wrapper<Set<T, TTraits, IsOrdered> const> {
+        return ReverseIteratorSupport::in_reverse(*this);
     }
 
     /**
      * @brief Returns whether this vector contains the given value
      */
-    [[nodiscard]] bool contains(T const& value) const {
+    [[nodiscard]] auto contains(T const& value) const -> bool {
         return find(value).is_present();
     }
 
     /**
      * @brief Returns a reference to the element into this Vector if exists
      */
-    Option<T&> find(T const& value) {
-        return find(TIntrinsics::hash(value), [&value](auto const& current) -> bool { return TIntrinsics::equals(value, current); });
+    auto find(T const& value) -> Option<T&> {
+        return find(TTraits::hash(value), [&value](auto const& current) -> bool { return TTraits::equals(value, current); });
     }
-    Option<T const&> find(T const& value) const {
-        return find(TIntrinsics::hash(value), [&value](auto const& current) -> bool { return TIntrinsics::equals(value, current); });
+    auto find(T const& value) const -> Option<T const&> {
+        return find(TTraits::hash(value), [&value](auto const& current) -> bool { return TTraits::equals(value, current); });
     }
 
     /**
      * @brief Returns a reference to the element for which the given call_back return true
      */
-    template<typename TPredicate>
-    Option<T&> find(usize hash, TPredicate predicate) {
-        BucketType* bucket_type = lookup_with_hash(hash, move(predicate));
+    auto find(usize hash, Predicate<T&> auto predicate) -> Option<T&> {
+        auto bucket_type = lookup_with_hash(hash, Cxx::move(predicate));
         if ( bucket_type != nullptr )
             return *bucket_type->slot();
         else
             return {};
     }
-    template<typename TPredicate>
-    Option<T const&> find(usize hash, TPredicate predicate) const {
-        BucketType* bucket_type = lookup_with_hash(hash, move(predicate));
+    auto find(usize hash, Predicate<T const&> auto predicate) const -> Option<T const&> {
+        auto const bucket_type = lookup_with_hash(hash, Cxx::move(predicate));
         if ( bucket_type != nullptr )
             return *bucket_type->slot();
         else
@@ -535,38 +580,42 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] usize count() const {
+    [[nodiscard]] auto count() const -> usize {
         return m_values_count;
     }
-    [[nodiscard]] usize capacity() const {
+    [[nodiscard]] auto capacity() const -> usize {
         return m_data_capacity;
     }
-    [[nodiscard]] bool is_empty() const {
+    [[nodiscard]] auto is_empty() const -> bool {
         return m_values_count == 0;
     }
 
 private:
-    void insert_during_rehash(T&& value) {
+    explicit constexpr Set() noexcept = default;
+
+    auto insert_during_rehash(T&& value) {
         auto& bucket = lookup_for_writing(value);
-        new (bucket.slot()) T{ move(value) };
+
+        /* fill the selected bucket */
         bucket.m_bucket_state = Details::SetBucketState::Used;
+        new (bucket.slot()) T{ Cxx::move(value) };
 
         /* link to the linked list if the set is ordered */
         if constexpr ( IsOrdered ) {
             if ( !m_collection_data.m_head ) [[unlikely]] {
                 m_collection_data.m_head = &bucket;
             } else {
-                bucket.m_previous                = m_collection_data.m_tail;
-                m_collection_data.m_tail->m_next = &bucket;
+                bucket.m_prev_bucket                    = m_collection_data.m_tail;
+                m_collection_data.m_tail->m_next_bucket = &bucket;
             }
             m_collection_data.m_tail = &bucket;
         }
     }
 
-    void rehash(usize new_capacity) {
+    auto rehash(usize new_capacity) {
         MUST(try_rehash(new_capacity));
     }
-    ErrorOr<void> try_rehash(usize new_capacity) {
+    auto try_rehash(usize new_capacity) -> ErrorOr<void> {
         if ( new_capacity == m_data_capacity && new_capacity >= 4 ) {
             rehash_in_place();
             return {};
@@ -574,21 +623,21 @@ private:
 
         /* roundup the given new capacity */
         new_capacity = Math::max(new_capacity, 4u);
-        new_capacity = new_capacity * sizeof(BucketType) / sizeof(BucketType);
+        new_capacity = new_capacity * sizeof(Bucket) / sizeof(Bucket);
 
         /* keep old references */
-        auto* old_buckets  = m_buckets_storage;
-        auto  old_capacity = m_data_capacity;
-        auto  old_iter     = begin();
+        auto const old_buckets  = m_buckets_storage;
+        auto const old_capacity = m_data_capacity;
+        auto       old_iter     = begin();
 
         /* allocate the new memory */
-        m_buckets_storage = TRY(Memory::Raw::clean_alloc_object<BucketType>(size_in_bytes(new_capacity)));
+        m_buckets_storage = TRY(Memory::Raw::clean_alloc_object<Bucket>(size_in_bytes(new_capacity)));
         m_data_capacity   = new_capacity;
         m_deleted_count   = 0;
 
         /* update the collection */
         if constexpr ( IsOrdered )
-            m_collection_data = Details::OrderedCollectionData<BucketType>{ nullptr, nullptr };
+            m_collection_data = Details::OrderedCollectionData<Bucket>{ nullptr, nullptr };
         else
             m_buckets_storage[m_data_capacity].m_bucket_state = Details::SetBucketState::End;
 
@@ -597,8 +646,8 @@ private:
             return {};
 
         /* move the values to the new memory */
-        for ( auto it = move(old_iter); it != end(); ++it ) {
-            insert_during_rehash(move(*it));
+        for ( auto it = Cxx::move(old_iter); it != end(); ++it ) {
+            insert_during_rehash(Cxx::move(*it));
             it->~T();
         }
 
@@ -613,7 +662,7 @@ private:
     }
 
     void rehash_in_place() {
-        for ( usize i : Range{ 0u, m_data_capacity } ) {
+        for ( auto const i : Range{ 0u, m_data_capacity } ) {
             auto& bucket = m_buckets_storage[i];
 
             if ( bucket.m_bucket_state == Details::SetBucketState::Rehashed || bucket.m_bucket_state == Details::SetBucketState::End
@@ -624,16 +673,16 @@ private:
                 continue;
             }
 
-            auto const new_hash = TIntrinsics::hash(*bucket.slot());
+            auto const new_hash = TTraits::hash(*bucket.slot());
             if ( new_hash % m_data_capacity == i ) {
                 bucket.m_bucket_state = Details::SetBucketState::Rehashed;
                 continue;
             }
 
-            auto        target_hash    = new_hash;
-            auto const  to_move_hash   = i;
-            BucketType* target_bucket  = &m_buckets_storage[target_hash % m_data_capacity];
-            BucketType* bucket_to_move = &m_buckets_storage[i];
+            auto       target_hash    = new_hash;
+            auto const to_move_hash   = i;
+            auto       target_bucket  = &m_buckets_storage[target_hash % m_data_capacity];
+            auto       bucket_to_move = &m_buckets_storage[i];
 
             /* Try to move the bucket to move into its correct spot.
              * During the procedure, we might re-hash or actually change the bucket to move
@@ -647,20 +696,20 @@ private:
 
                 if ( Details::is_free_bucket(target_bucket->m_bucket_state) ) {
                     /* we can just overwrite the target bucket and bail out */
-                    new (target_bucket->slot()) T(move(*bucket_to_move->slot()));
+                    new (target_bucket->slot()) T(Cxx::move(*bucket_to_move->slot()));
                     target_bucket->m_bucket_state  = Details::SetBucketState::Rehashed;
                     bucket_to_move->m_bucket_state = Details::SetBucketState::Free;
 
                     if constexpr ( IsOrdered ) {
-                        Cxx::swap(bucket_to_move->m_previous, target_bucket->m_previous);
-                        Cxx::swap(bucket_to_move->m_next, target_bucket->m_next);
+                        Cxx::swap(bucket_to_move->m_prev_bucket, target_bucket->m_prev_bucket);
+                        Cxx::swap(bucket_to_move->m_next_bucket, target_bucket->m_next_bucket);
 
-                        if ( target_bucket->m_previous )
-                            target_bucket->m_previous->m_next = target_bucket;
+                        if ( target_bucket->m_prev_bucket )
+                            target_bucket->m_prev_bucket->m_next_bucket = target_bucket;
                         else
                             m_collection_data.m_head = target_bucket;
-                        if ( target_bucket->m_next )
-                            target_bucket->m_next->m_previous = target_bucket;
+                        if ( target_bucket->m_next_bucket )
+                            target_bucket->m_next_bucket->m_prev_bucket = target_bucket;
                         else
                             m_collection_data.m_tail = target_bucket;
                     }
@@ -681,20 +730,20 @@ private:
 
                     if constexpr ( IsOrdered ) {
                         /* update state for the target bucket, we'll do the bucket to move later */
-                        Cxx::swap(bucket_to_move->m_previous, target_bucket->m_previous);
-                        Cxx::swap(bucket_to_move->m_next, target_bucket->m_next);
+                        Cxx::swap(bucket_to_move->m_prev_bucket, target_bucket->m_prev_bucket);
+                        Cxx::swap(bucket_to_move->m_next_bucket, target_bucket->m_next_bucket);
 
-                        if ( target_bucket->m_previous )
-                            target_bucket->m_previous->m_next = target_bucket;
+                        if ( target_bucket->m_prev_bucket )
+                            target_bucket->m_prev_bucket->m_next_bucket = target_bucket;
                         else
                             m_collection_data.m_head = target_bucket;
-                        if ( target_bucket->m_next )
-                            target_bucket->m_next->m_previous = target_bucket;
+                        if ( target_bucket->m_next_bucket )
+                            target_bucket->m_next_bucket->m_prev_bucket = target_bucket;
                         else
                             m_collection_data.m_tail = target_bucket;
                     }
 
-                    target_hash   = TIntrinsics::hash(*bucket_to_move->slot());
+                    target_hash   = TTraits::hash(*bucket_to_move->slot());
                     target_bucket = &m_buckets_storage[target_hash % m_data_capacity];
 
                     /* the data is already in the correct location: Adjust the pointers */
@@ -702,12 +751,12 @@ private:
                         bucket_to_move->m_bucket_state = Details::SetBucketState::Rehashed;
                         if constexpr ( IsOrdered ) {
                             /* update state for the bucket to move as it's not actually moved anymore */
-                            if ( bucket_to_move->m_previous )
-                                bucket_to_move->m_previous->m_next = bucket_to_move;
+                            if ( bucket_to_move->m_prev_bucket )
+                                bucket_to_move->m_prev_bucket->m_next_bucket = bucket_to_move;
                             else
                                 m_collection_data.m_head = bucket_to_move;
-                            if ( bucket_to_move->m_next )
-                                bucket_to_move->m_next->m_previous = bucket_to_move;
+                            if ( bucket_to_move->m_next_bucket )
+                                bucket_to_move->m_next_bucket->m_prev_bucket = bucket_to_move;
                             else
                                 m_collection_data.m_tail = bucket_to_move;
                         }
@@ -723,7 +772,7 @@ private:
                 bucket_to_move->m_bucket_state = Details::SetBucketState::Free;
         }
 
-        for ( usize i : Range{ 0u, m_data_capacity } ) {
+        for ( auto const i : Range{ 0u, m_data_capacity } ) {
             if ( m_buckets_storage[i].m_bucket_state == Details::SetBucketState::Rehashed )
                 m_buckets_storage[i].m_bucket_state = Details::SetBucketState::Used;
         }
@@ -731,8 +780,7 @@ private:
         m_deleted_count = 0;
     }
 
-    template<typename TPredicate>
-    [[nodiscard]] BucketType* lookup_with_hash(u32 hash, TPredicate predicate) const {
+    [[nodiscard]] auto lookup_with_hash(u32 hash, auto predicate) const -> Bucket* {
         if ( is_empty() )
             return nullptr;
 
@@ -753,20 +801,20 @@ private:
         }
     }
 
-    ErrorOr<BucketType*> try_lookup_for_writing(T const& value) {
+    auto try_lookup_for_writing(T const& value) -> ErrorOr<Bucket*> {
         if ( should_grow() )
             TRY(try_rehash(capacity() * 2));
 
         /* pre-calculate the hash value */
-        auto hash = TIntrinsics::hash(value);
+        auto hash = TTraits::hash(value);
 
         /* iterate each bucket to find the first usable */
-        BucketType* first_empty_bucket = nullptr;
+        Bucket* first_empty_bucket = nullptr;
         for ( ;; ) {
             auto& bucket = m_buckets_storage[hash % m_data_capacity];
 
             /* use the already used bucket if the value matches */
-            if ( Details::is_used_bucket(bucket.m_bucket_state) && TIntrinsics::equals(*bucket.slot(), value) )
+            if ( Details::is_used_bucket(bucket.m_bucket_state) && TTraits::equals(*bucket.slot(), value) )
                 return &bucket;
 
             /* use a new and empty bucket */
@@ -782,26 +830,26 @@ private:
             hash = Hashing::rehash_key(hash);
         }
     }
-    [[nodiscard]] BucketType& lookup_for_writing(T const& value) {
+    [[nodiscard]] auto lookup_for_writing(T const& value) -> Bucket& {
         return *MUST(try_lookup_for_writing(value));
     }
 
-    [[nodiscard]] usize used_bucket_count() const {
+    [[nodiscard]] auto used_bucket_count() const -> usize {
         return m_values_count + m_deleted_count;
     }
 
-    [[nodiscard]] bool should_grow() const {
+    [[nodiscard]] auto should_grow() const -> bool {
         return ((used_bucket_count() + 1) * 100) >= (m_data_capacity * LOAD_FACTOR_PERCENT);
     }
 
-    [[nodiscard]] static constexpr usize size_in_bytes(usize capacity) {
+    [[nodiscard]] static constexpr auto size_in_bytes(usize capacity) -> usize {
         if constexpr ( IsOrdered )
-            return sizeof(BucketType) * capacity;
+            return sizeof(Bucket) * capacity;
         else
-            return sizeof(BucketType) * (capacity + 1);
+            return sizeof(Bucket) * (capacity + 1);
     }
 
-    bool remove(BucketType& bucket) {
+    auto remove(Bucket& bucket) -> bool {
         VERIFY(Details::is_used_bucket(bucket.m_bucket_state));
 
         delete_bucket(bucket);
@@ -811,41 +859,32 @@ private:
         return true;
     }
 
-    void delete_bucket(BucketType& bucket) {
+    auto delete_bucket(Bucket& bucket) {
         bucket.slot()->~T();
         bucket.m_bucket_state = Details::SetBucketState::Deleted;
 
         if constexpr ( IsOrdered ) {
-            if ( bucket.m_previous != nullptr )
-                bucket.m_previous->m_next = bucket.m_next;
+            if ( bucket.m_prev_bucket != nullptr )
+                bucket.m_prev_bucket->m_next_bucket = bucket.m_next_bucket;
             else
-                m_collection_data.m_head = bucket.m_next;
+                m_collection_data.m_head = bucket.m_next_bucket;
 
-            if ( bucket.m_next != nullptr )
-                bucket.m_next->m_previous = bucket.m_previous;
+            if ( bucket.m_next_bucket != nullptr )
+                bucket.m_next_bucket->m_prev_bucket = bucket.m_prev_bucket;
             else
-                m_collection_data.m_tail = bucket.m_previous;
+                m_collection_data.m_tail = bucket.m_prev_bucket;
         }
     }
 
-    BucketType*        m_buckets_storage{ nullptr };
-    CollectionDataType m_collection_data;
-    usize              m_data_capacity{ 0 };
-    usize              m_values_count{ 0 };
-    usize              m_deleted_count{ 0 };
+    Bucket*        m_buckets_storage{ nullptr };
+    DataCollection m_collection_data{};
+    usize          m_data_capacity{ 0 };
+    usize          m_values_count{ 0 };
+    usize          m_deleted_count{ 0 };
 };
-
-template<Hashable T>
-using Set = BaseSet<T, TypeIntrinsics<T>, false>;
-
-template<Hashable T>
-using OrderedSet = BaseSet<T, TypeIntrinsics<T>, true>;
 
 } /* namespace Collection */
 
-using Collection::InsertResult;
-using Collection::KeepStorageCapacity;
-using Collection::OnExistingEntry;
 using Collection::OrderedSet;
 using Collection::Set;
 

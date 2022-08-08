@@ -10,13 +10,13 @@
  * GNU General Public License version 3
  */
 
+#include <LibTC/BitCast.hh>
 #include <LibTC/Collection/Range.hh>
 #include <LibTC/Hashing.hh>
-#include <LibTC/BitCast.hh>
 
 namespace TC::Hashing {
 
-usize u32_calculate_hash(u32 key) {
+auto u32_calculate_hash(u32 key) -> usize {
     key += ~(key << 15);
     key ^= (key >> 10);
     key += (key << 3);
@@ -26,20 +26,20 @@ usize u32_calculate_hash(u32 key) {
     return key;
 }
 
-usize u64_calculate_hash(u64 key) {
+auto u64_calculate_hash(u64 key) -> usize {
     u32 first = key & 0xffffffff;
     u32 last  = key >> 32;
     return u32_calculate_hash((u32_calculate_hash(first) * 209) ^ (u32_calculate_hash(last * 413)));
 }
 
-usize pointer_calculate_hash(void const* key) {
+auto pointer_calculate_hash(void const* key) -> usize {
     if constexpr ( sizeof(void const*) == 4 )
         return u32_calculate_hash(bit_cast<u32>(key));
     else
         return u64_calculate_hash(bit_cast<u64>(key));
 }
 
-usize string_calculate_hash(char const* key, usize len) {
+auto string_calculate_hash(char const* key, usize len) -> usize {
     u32 hash = 0;
     for ( usize i : Range{ 0u, len } ) {
         hash += static_cast<u32>(key[i]);
@@ -52,7 +52,7 @@ usize string_calculate_hash(char const* key, usize len) {
     return hash;
 }
 
-usize rehash_key(u32 key) {
+auto rehash_key(u32 key) -> usize {
     auto magic = 0xba5edb01;
     if ( key == magic )
         return 0;

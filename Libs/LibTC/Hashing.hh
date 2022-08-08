@@ -20,27 +20,27 @@ namespace Hashing {
 /**
  * @brief Calculates the hash value for the given u32 key
  */
-usize u32_calculate_hash(u32 key);
+auto u32_calculate_hash(u32 key) -> usize;
 
 /**
  * @brief Calculates the hash value for the given u64 key
  */
-usize u64_calculate_hash(u64 key);
+auto u64_calculate_hash(u64 key) -> usize;
 
 /**
  * @brief Calculates the hash value for the given pointer
  */
-usize pointer_calculate_hash(void const* key);
+auto pointer_calculate_hash(void const* key) -> usize;
 
 /**
  * @brief Calculates the hash value for the given string buffer
  */
-usize string_calculate_hash(char const* key, usize len);
+auto string_calculate_hash(char const* key, usize len) -> usize;
 
 /**
  * @brief Calculates another level of hashing for the given value
  */
-usize rehash_key(u32 key);
+auto rehash_key(u32 key) -> usize;
 
 } /* namespace Hashing */
 

@@ -16,9 +16,8 @@
 #include <LibTC/Assertions.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/DenyCopy.hh>
+#include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
-#include <LibTC/Memory/Tags.hh>
-#include <LibTC/Trait/TypeIntrinsics.hh>
 
 namespace TC {
 namespace Memory {
@@ -29,66 +28,65 @@ class NonNullBox {
 
 public:
     /**
-     * @brief Error safe constructors
+     * @brief Non-error safe Factory functions
      */
-    template<typename... Args>
-    static ErrorOr<NonNullBox<T>> try_construct_from_args(Args&&... args) {
-        auto ptr = new (nothrow) T{ forward<Args>(args)... };
-        if ( ptr != nullptr )
-            return NonNullBox<T>{ Adopt, *ptr };
+    template<typename... TArgs>
+    static auto construct_from_args(TArgs... args) -> NonNullBox<T> {
+        return MUST(try_construct_from_args(Cxx::forward<TArgs>(args)...));
+    }
+    static auto construct_from_adopt(T& unboxed_ref) -> NonNullBox<T> {
+        return NonNullBox<T>{ &unboxed_ref };
+    }
+
+    /**
+     * @brief Error safe Factory functions
+     */
+    template<typename... TArgs>
+    static auto try_construct_from_args(TArgs... args) -> ErrorOr<NonNullBox<T>> {
+        auto unboxed_ptr = new (nothrow) T{ forward<TArgs>(args)... };
+        if ( unboxed_ptr != nullptr ) [[likely]]
+            return NonNullBox<T>{ unboxed_ptr };
         else
             return Error{ ENOMEM };
     }
 
     /**
-     * @brief Constructors
+     * @brief Move constructor and move assignment
      */
-    NonNullBox() = delete;
-    NonNullBox(AdoptTag, T& ref)
-        : m_boxed_object_ptr{ &ref } {
-    }
-    NonNullBox(AdoptTag, T const& ref)
-        : m_boxed_object_ptr{ const_cast<T*>(&ref) } {
-    }
-    template<typename... Args>
-    NonNullBox(FromArgsTag, Args&&... args)
-        : m_boxed_object_ptr{ new (nothrow) T{ forward<Args>(args)... } } {
-        VERIFY_NOT_NULL(m_boxed_object_ptr);
-    }
-    NonNullBox(NonNullBox&& rhs) noexcept
+    NonNullBox(NonNullBox<T>&& rhs) noexcept
         : m_boxed_object_ptr{ exchange(rhs.m_boxed_object_ptr, nullptr) } {
     }
-    ~NonNullBox() {
-        delete m_boxed_object_ptr;
-    }
-
-    NonNullBox& operator=(NonNullBox&& rhs) noexcept {
+    auto operator=(NonNullBox<T>&& rhs) noexcept -> NonNullBox<T>& {
         NonNullBox non_null_box{ move(rhs) };
         swap(non_null_box);
         return *this;
     }
 
+    ~NonNullBox() {
+        delete m_boxed_object_ptr;
+    }
+
     /**
      * @brief Swaps this box with another
      */
-    void swap(NonNullBox& rhs) noexcept {
+    void swap(NonNullBox<T>& rhs) noexcept {
         Cxx::swap(m_boxed_object_ptr, rhs.m_boxed_object_ptr);
     }
 
     /**
      * @brief Access operators
      */
-    A_RETURN_NONNULL T* operator->() {
+    A_RETURN_NONNULL auto operator->() -> T* {
         return as_ptr();
     }
-    A_RETURN_NONNULL T const* operator->() const {
+    A_RETURN_NONNULL auto operator->() const -> T const* {
         return as_ptr();
     }
 
-    T& operator*() {
+    auto operator*() -> T& {
         return as_ref();
     }
-    T const& operator*() const {
+    auto operator*() const -> T const& {
         return as_ref();
     }
 
@@ -112,20 +110,25 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] A_RETURN_NONNULL T* as_ptr() {
+    [[nodiscard]] A_RETURN_NONNULL auto as_ptr() -> T* {
         VERIFY_NOT_NULL(m_boxed_object_ptr);
         return m_boxed_object_ptr;
     }
-    [[nodiscard]] A_RETURN_NONNULL T const* as_ptr() const {
+    [[nodiscard]] A_RETURN_NONNULL auto as_ptr() const -> T const* {
         VERIFY_NOT_NULL(m_boxed_object_ptr);
         return m_boxed_object_ptr;
     }
 
-    [[nodiscard]] T& as_ref() {
+    [[nodiscard]] auto as_ref() -> T& {
         return *as_ptr();
     }
-    [[nodiscard]] T const& as_ref() const {
+    [[nodiscard]] auto as_ref() const -> T const& {
         return *as_ptr();
+    }
+
+private:
+    explicit constexpr NonNullBox(T* unboxed_ptr) noexcept
+        : m_boxed_object_ptr{ unboxed_ptr } {
     }
 
 private:
@@ -136,22 +139,19 @@ private:
 
 using Memory::NonNullBox;
 
-namespace Trait {
-
 template<typename T>
-struct TypeIntrinsics<NonNullBox<T>> : public Details::TypeIntrinsics<NonNullBox<T>> {
-    static constexpr usize hash(NonNullBox<T> const& value) {
+struct TypeTraits<NonNullBox<T>> : public Details::TypeTraits<NonNullBox<T>> {
+    static constexpr auto hash(NonNullBox<T> const& value) -> usize {
         return Hashing::pointer_calculate_hash(value.as_ptr());
     }
 
-    static constexpr bool is_trivial() {
+    static constexpr auto is_trivial() -> bool {
         return false;
     }
 
-    static constexpr bool equals(NonNullBox<T> const& a, NonNullBox<T> const& b) {
+    static constexpr auto equals(NonNullBox<T> const& a, NonNullBox<T> const& b) -> bool {
         return a.as_ptr() == b.as_ptr();
     }
 };
 
-} /* namespace Trait */
 } /* namespace TC */
