@@ -254,8 +254,10 @@ public:
     using ConstIterator = Conditional<IsOrdered,
                                       Details::OrderedSetIterator<Set const, T const, Bucket const, false>,
                                       Details::SetIterator<Set const, T const, Bucket const>>;
-    using ReverseIterator      = Details::OrderedSetIterator<Set, T, Bucket, true>;
-    using ConstReverseIterator = Details::OrderedSetIterator<Set const, T const, Bucket const, true>;
+    using ReverseIterator             = Details::OrderedSetIterator<Set, T, Bucket, true>;
+    using ConstReverseIterator        = Details::OrderedSetIterator<Set const, T const, Bucket const, true>;
+    using ReverseIteratorWrapper      = ReverseIteratorSupport::Wrapper<Set<T, TTraits, IsOrdered>>;
+    using ConstReverseIteratorWrapper = ReverseIteratorSupport::Wrapper<Set<T, TTraits, IsOrdered> const>;
 
 public:
     /**
@@ -427,7 +429,7 @@ public:
      */
     auto remove(T const& value) -> bool {
         auto bucket
-            = lookup_with_hash(TTraits::hash(value), [&value](auto const& current) -> bool { return TTraits::equals(value, current); });
+            = lookup_with_hash(TTraits::hash(value), [&value](T const& current) -> bool { return TTraits::equals(value, current); });
         if ( bucket != nullptr )
             return remove(*bucket);
         else
@@ -521,7 +523,7 @@ public:
      */
     auto rbegin() -> ReverseIterator {
         static_assert(IsOrdered, "Reverse iterator only available with OrderedSet/OrderedMap");
-        return ReverseIterator{ m_collection_data.m_head };
+        return ReverseIterator{ m_collection_data.m_tail };
     }
     auto rend() -> ReverseIterator {
         return ReverseIterator{ nullptr };
@@ -529,16 +531,16 @@ public:
 
     auto rbegin() const -> ConstReverseIterator {
         static_assert(IsOrdered, "Reverse iterator only available with OrderedSet/OrderedMap");
-        return ConstReverseIterator{ m_collection_data.m_head };
+        return ConstReverseIterator{ m_collection_data.m_tail };
     }
     auto rend() const -> ConstReverseIterator {
         return ConstReverseIterator{ nullptr };
     }
 
-    auto reverse_iter() -> ReverseIteratorSupport::Wrapper<Set<T, TTraits, IsOrdered>> {
+    auto reverse_iter() -> ReverseIteratorWrapper {
         return ReverseIteratorSupport::in_reverse(*this);
     }
-    auto reverse_iter() const -> ReverseIteratorSupport::Wrapper<Set<T, TTraits, IsOrdered> const> {
+    auto reverse_iter() const -> ConstReverseIteratorWrapper {
         return ReverseIteratorSupport::in_reverse(*this);
     }
 

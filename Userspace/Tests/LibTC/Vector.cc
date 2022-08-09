@@ -259,6 +259,8 @@ TEST_CASE(reverse_iterator) {
     i32 i = 10;
     for ( auto const& value : vector.reverse_iter() )
         VERIFY_EQUAL(value, i--);
+
+    VERIFY_EQUAL(i, 0);
 }
 
 TEST_CASE(contains_and_index_of) {

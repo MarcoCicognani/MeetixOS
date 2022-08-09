@@ -60,7 +60,7 @@ TEST_CASE(iterate) {
 
     i32 i = 0;
     for ( auto const& pair : map ) {
-        VERIFY_FALSE(pair.m_key.is_empty());
+        VERIFY_FALSE(pair.m_key.is_null_or_empty());
         VERIFY_NOT_EQUAL(pair.m_value, 0);
 
         ++i;
@@ -84,11 +84,11 @@ TEST_CASE(iterate) {
 TEST_CASE(ordered_reverse_iterate) {
     auto const ordered_map = OrderedMap<i32, i32>::construct_from_list({ { 1, 3 }, { 2, 2 }, { 3, 1 } });
 
-    i32 expected_key   = 1;
-    i32 expected_value = 3;
+    i32 expected_key   = 3;
+    i32 expected_value = 1;
     for ( auto const& pair : ordered_map.reverse_iter() ) {
         VERIFY_EQUAL(pair.m_key, expected_key--);
-        VERIFY_EQUAL(pair.m_value, expected_value--);
+        VERIFY_EQUAL(pair.m_value, expected_value++);
     }
 }
 

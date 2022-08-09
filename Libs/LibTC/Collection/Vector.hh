@@ -24,6 +24,7 @@
 #include <LibTC/Functional/Try.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Memory/Raw.hh>
+#include <LibTC/Meta.hh>
 #include <LibTC/TypeTraits.hh>
 
 namespace TC {
@@ -32,6 +33,8 @@ namespace Details {
 
 template<typename Collection, typename T, bool IsReverse>
 class VectorIterator {
+    using TIndex = Conditional<IsReverse, isize, usize>;
+
 public:
     /**
      * @brief Construction functions
@@ -47,7 +50,7 @@ public:
         return VectorIterator{ collection, collection.count() - 1 };
     }
     static auto rend(Collection& collection) -> VectorIterator {
-        return VectorIterator{ collection, 0 };
+        return VectorIterator{ collection, -1 };
     }
 
     VectorIterator(VectorIterator const&) = default;
@@ -77,11 +80,19 @@ public:
      */
     auto operator*() -> T& {
         VERIFY_FALSE(is_end());
-        return m_collection->at(m_index);
+        if constexpr ( IsReverse ) {
+            return m_collection->at(static_cast<usize>(m_index));
+        } else {
+            return m_collection->at(m_index);
+        }
     }
     auto operator*() const -> T const& {
         VERIFY_FALSE(is_end());
-        return m_collection->at(m_index);
+        if constexpr ( IsReverse ) {
+            return m_collection->at(static_cast<usize>(m_index));
+        } else {
+            return m_collection->at(m_index);
+        }
     }
 
     /**
@@ -98,7 +109,11 @@ public:
      * @brief Getters
      */
     [[nodiscard]] auto is_end() const -> bool {
-        return m_index == end(*m_collection).index();
+        if constexpr ( IsReverse ) {
+            return m_index == rend(*m_collection).index();
+        } else {
+            return m_index == end(*m_collection).index();
+        }
     }
     [[nodiscard]] auto index() const -> usize {
         return m_index;
@@ -127,14 +142,14 @@ public:
     }
 
 private:
-    VectorIterator(Collection& collection, usize index)
+    VectorIterator(Collection& collection, TIndex index)
         : m_collection{ &collection }
         , m_index{ index } {
     }
 
 private:
     Collection* m_collection{ nullptr };
-    usize       m_index{ 0 };
+    TIndex      m_index{ 0 };
 };
 
 } /* namespace Details */
@@ -144,10 +159,12 @@ class Vector {
     TC_DENY_COPY(Vector);
 
 public:
-    using Iterator             = Details::VectorIterator<Vector, T, false>;
-    using ConstIterator        = Details::VectorIterator<Vector const, T const, false>;
-    using ReverseIterator      = Details::VectorIterator<Vector, T, true>;
-    using ConstReverseIterator = Details::VectorIterator<Vector const, T const, true>;
+    using Iterator                    = Details::VectorIterator<Vector, T, false>;
+    using ConstIterator               = Details::VectorIterator<Vector const, T const, false>;
+    using ReverseIterator             = Details::VectorIterator<Vector, T, true>;
+    using ConstReverseIterator        = Details::VectorIterator<Vector const, T const, true>;
+    using ReverseIteratorWrapper      = ReverseIteratorSupport::Wrapper<Vector<T>>;
+    using ConstReverseIteratorWrapper = ReverseIteratorSupport::Wrapper<Vector<T> const>;
 
 public:
     /**
@@ -508,10 +525,10 @@ public:
         return ReverseIterator::rend(*this);
     }
 
-    auto reverse_iter() -> ReverseIteratorSupport::Wrapper<Vector<T>> {
+    auto reverse_iter() -> ReverseIteratorWrapper {
         return ReverseIteratorSupport::in_reverse(*this);
     }
-    auto reverse_iter() const -> ReverseIteratorSupport::Wrapper<Vector<T> const> {
+    auto reverse_iter() const -> ConstReverseIteratorWrapper {
         return ReverseIteratorSupport::in_reverse(*this);
     }
 

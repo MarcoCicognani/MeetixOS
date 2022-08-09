@@ -10,6 +10,7 @@
  * GNU General Public License version 3
  */
 
+#include <cstring>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringView.hh>
 #include <LibUnitTest/Assertions.hh>
@@ -229,10 +230,10 @@ TEST_CASE(find_all) {
 }
 
 TEST_CASE(to_lowercase) {
-    VERIFY_EQUAL(String::construct_from_view("HI TO EVERYONE"sv).to_uppercase(), "hi to everyone"sv);
-    VERIFY_EQUAL(String::construct_from_view("hi to everyone"sv).to_uppercase(), "hi to everyone"sv);
-    VERIFY_EQUAL(String::construct_from_view("Hi tO EvErYOnE"sv).to_uppercase(), "hi to everyone"sv);
-    VERIFY_EQUAL(String::construct_from_view("Hi tO 6 % $ EvErYOnE 67"sv).to_uppercase(), "hi to 6 % $ everyone 67"sv);
+    VERIFY_EQUAL(String::construct_from_view("HI TO EVERYONE"sv).to_lowercase(), "hi to everyone"sv);
+    VERIFY_EQUAL(String::construct_from_view("hi to everyone"sv).to_lowercase(), "hi to everyone"sv);
+    VERIFY_EQUAL(String::construct_from_view("Hi tO EvErYOnE"sv).to_lowercase(), "hi to everyone"sv);
+    VERIFY_EQUAL(String::construct_from_view("Hi tO 6 % $ EvErYOnE 67"sv).to_lowercase(), "hi to 6 % $ everyone 67"sv);
 }
 
 TEST_CASE(to_uppercase) {
@@ -240,6 +241,15 @@ TEST_CASE(to_uppercase) {
     VERIFY_EQUAL(String::construct_from_view("HI TO EVERYONE"sv).to_uppercase(), "HI TO EVERYONE"sv);
     VERIFY_EQUAL(String::construct_from_view("Hi tO EvErYOnE"sv).to_uppercase(), "HI TO EVERYONE"sv);
     VERIFY_EQUAL(String::construct_from_view("Hi tO 6 % $ EvErYOnE 67"sv).to_uppercase(), "HI TO 6 % $ EVERYONE 67"sv);
+}
+
+TEST_CASE(to_reverse) {
+    auto const string = String::construct_from_view("hello everyone"sv).to_reverse();
+    char buf[512];
+    std::strncpy(buf, string.as_cstr(), string.len());
+    printf("-> \"%s\"\n", buf);
+    VERIFY_EQUAL(String::construct_from_view("hello everyone"sv).to_reverse(), "enoyreve olleh"sv);
+    VERIFY_EQUAL(String::construct_from_view("1234567"sv).to_reverse(), "7654321"sv);
 }
 
 TEST_CASE(contains) {
@@ -262,6 +272,16 @@ TEST_CASE(iterator) {
     auto const string = String::construct_from_view("0123456789"sv);
 
     char i = '0';
-    for ( auto c : string )
+    for ( auto const c : string )
         VERIFY_EQUAL(c, i++);
+}
+
+TEST_CASE(reverse_iterator) {
+    auto const string = String::construct_from_view("9876543210"sv);
+
+    char i = '0';
+    for ( auto const c : string.reverse_iter() )
+        VERIFY_EQUAL(c, i++);
+
+    VERIFY_EQUAL(i, '9' + 1);
 }

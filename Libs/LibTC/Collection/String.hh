@@ -15,6 +15,7 @@
 #include <LibTC/Collection/Enums/CaseSensitivity.hh>
 #include <LibTC/Collection/Enums/TrimMode.hh>
 #include <LibTC/Collection/Enums/TrimWhitespace.hh>
+#include <LibTC/Collection/ReverseIteratorSupport.hh>
 #include <LibTC/Collection/StringStorage.hh>
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/DenyCopy.hh>
@@ -33,7 +34,9 @@ class String {
     TC_DENY_COPY(String);
 
 public:
-    using ConstIterator = StringView::ConstIterator;
+    using ConstIterator               = StringView::ConstIterator;
+    using ConstReverseIterator        = StringView::ConstReverseIterator;
+    using ConstReverseIteratorWrapper = StringView::ConstReverseIteratorWrapper;
 
 public:
     /**
@@ -158,6 +161,12 @@ public:
     [[nodiscard]] auto try_to_uppercase() const -> ErrorOr<String>;
 
     /**
+     * @brief Returns a new string with the reverse of this one
+     */
+    [[nodiscard]] auto to_reverse() const -> String;
+    [[nodiscard]] auto try_to_reverse() const -> ErrorOr<String>;
+
+    /**
      * @brief Comparison operators
      */
     [[nodiscard]] auto operator==(String const& rhs) const -> bool;
@@ -186,10 +195,18 @@ public:
     auto end() const -> ConstIterator;
 
     /**
+     * @brief For-each support
+     */
+    auto rbegin() const -> ConstReverseIterator;
+    auto rend() const -> ConstReverseIterator;
+    auto reverse_iter() const -> ConstReverseIteratorWrapper;
+
+    /**
      * @brief Getters
      */
     [[nodiscard]] auto as_cstr() const -> char const*;
     [[nodiscard]] auto len() const -> usize;
+    [[nodiscard]] auto count() const -> usize;
 
     [[nodiscard]] auto is_empty() const -> bool;
 

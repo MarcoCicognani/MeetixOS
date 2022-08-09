@@ -46,15 +46,15 @@ TEST_CASE(assignment_operators) {
     string_view2 = string_view;
     VERIFY_FALSE(string_view.is_null_or_empty());
     VERIFY_FALSE(string_view2.is_null_or_empty());
-    VERIFY_EQUAL(string_view, "MeetixOS"sv);
-    VERIFY_EQUAL(string_view2, "MeetixOS"sv);
+    VERIFY_EQUAL(string_view, "Hello World"sv);
+    VERIFY_EQUAL(string_view2, "Hello World"sv);
 
     StringView string_view3{};
     string_view3 = Cxx::move(string_view);
     VERIFY(string_view.is_null_or_empty());
-    VERIFY_EQUAL(string_view3.len(), 8);
+    VERIFY_EQUAL(string_view3.len(), 11);
     VERIFY_FALSE(string_view3.is_null_or_empty());
-    VERIFY_EQUAL(string_view3, "MeetixOS"sv);
+    VERIFY_EQUAL(string_view3, "Hello World"sv);
 }
 
 TEST_CASE(swap) {
@@ -256,6 +256,16 @@ TEST_CASE(iterator) {
     auto const string_view = "0123456789"sv;
 
     char i = '0';
-    for ( auto c : string_view )
+    for ( auto const c : string_view )
         VERIFY_EQUAL(c, i++);
+}
+
+TEST_CASE(reverse_iterator) {
+    auto const string_view = "9876543210"sv;
+
+    char i = '0';
+    for ( auto const c : string_view.reverse_iter() )
+        VERIFY_EQUAL(c, i++);
+
+    VERIFY_EQUAL(i, '9' + 1);
 }

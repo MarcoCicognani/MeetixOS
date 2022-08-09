@@ -444,6 +444,18 @@ auto StringView::end() const -> StringView::ConstIterator {
     return ConstIterator::end(*this);
 }
 
+auto StringView::rbegin() const -> StringView::ConstReverseIterator {
+    return ConstReverseIterator::rbegin(*this);
+}
+
+auto StringView::rend() const -> StringView::ConstReverseIterator {
+    return ConstReverseIterator::rend(*this);
+}
+
+auto StringView::reverse_iter() const -> StringView::ConstReverseIteratorWrapper {
+    return ReverseIteratorSupport::in_reverse(*this);
+}
+
 auto StringView::as_cstr() const -> char const* {
     return m_chars_ptr;
 }

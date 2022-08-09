@@ -82,9 +82,9 @@ TEST_CASE(iterate) {
     auto const ordered_set = OrderedSet<i32>::construct_from_list({ 1, 2, 3, 4 });
 
     i            = 0;
-    i32 expected = 10;
+    i32 expected = 1;
     for ( auto const& value : ordered_set ) {
-        VERIFY_EQUAL(value, expected--);
+        VERIFY_EQUAL(value, expected++);
 
         ++i;
     }

@@ -82,8 +82,9 @@ private:
 template<Integral T>
 class Range {
 public:
-    using Iterator        = Details::RangeIterator<T, false>;
-    using ReverseIterator = Details::RangeIterator<T, true>;
+    using Iterator               = Details::RangeIterator<T, false>;
+    using ReverseIterator        = Details::RangeIterator<T, true>;
+    using ReverseIteratorWrapper = ReverseIteratorSupport::Wrapper<Range<T>>;
 
 public:
     /**
@@ -111,7 +112,7 @@ public:
         return ReverseIterator{ m_first };
     }
 
-    auto reverse_iter() const -> ReverseIteratorSupport::Wrapper<Range<T>> {
+    auto reverse_iter() const -> ReverseIteratorWrapper {
         return ReverseIteratorSupport::in_reverse(*this);
     }
 

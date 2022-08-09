@@ -143,11 +143,14 @@ class List {
     TC_DENY_COPY(List);
 
 public:
-    using Iterator             = Details::ListIterator<List, T, false>;
-    using ConstIterator        = Details::ListIterator<List const, T const, false>;
-    using ReverseIterator      = Details::ListIterator<List, T, true>;
-    using ConstReverseIterator = Details::ListIterator<List const, T const, true>;
-    using Node                 = Details::ListNode<T>;
+    using Iterator                    = Details::ListIterator<List, T, false>;
+    using ConstIterator               = Details::ListIterator<List const, T const, false>;
+    using ReverseIterator             = Details::ListIterator<List, T, true>;
+    using ConstReverseIterator        = Details::ListIterator<List const, T const, true>;
+    using ReverseIteratorWrapper      = ReverseIteratorSupport::Wrapper<List<T>>;
+    using ConstReverseIteratorWrapper = ReverseIteratorSupport::Wrapper<List<T> const>;
+
+    using Node = Details::ListNode<T>;
 
 public:
     /**
@@ -386,10 +389,10 @@ public:
         return ConstReverseIterator{ *this };
     }
 
-    auto reverse_iter() -> ReverseIteratorSupport::Wrapper<List<T>> {
+    auto reverse_iter() -> ReverseIteratorWrapper {
         return ReverseIteratorSupport::in_reverse(*this);
     }
-    auto reverse_iter() const -> ReverseIteratorSupport::Wrapper<List<T> const> {
+    auto reverse_iter() const -> ConstReverseIteratorWrapper {
         return ReverseIteratorSupport::in_reverse(*this);
     }
 

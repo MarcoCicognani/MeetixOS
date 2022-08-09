@@ -72,10 +72,12 @@ private:
     };
 
 public:
-    using Iterator             = typename Set<KeyValue, KeyValueTraits, IsOrdered>::Iterator;
-    using ConstIterator        = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ConstIterator;
-    using ReverseIterator      = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ReverseIterator;
-    using ConstReverseIterator = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ConstReverseIterator;
+    using Iterator                    = typename Set<KeyValue, KeyValueTraits, IsOrdered>::Iterator;
+    using ConstIterator               = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ConstIterator;
+    using ReverseIterator             = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ReverseIterator;
+    using ConstReverseIterator        = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ConstReverseIterator;
+    using ReverseIteratorWrapper      = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ReverseIteratorWrapper;
+    using ConstReverseIteratorWrapper = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ConstReverseIteratorWrapper;
 
 public:
     /**
@@ -211,8 +213,8 @@ public:
      * @brief Erases from this map the given key or alle the keys related to the given value
      */
     auto remove(K const& key) -> bool {
-        find(key)
-            .template map<bool>([this](auto const& pair) {
+        return find(key)
+            .template map<bool>([this](KeyValue const& pair) {
                 m_hash_set.remove(pair);
                 return true;
             })
@@ -266,10 +268,10 @@ public:
         return m_hash_set.rend();
     }
 
-    auto reverse_iter() -> ReverseIteratorSupport::Wrapper<Set<KeyValue, KeyValueTraits, IsOrdered>> {
+    auto reverse_iter() -> ReverseIteratorWrapper {
         return m_hash_set.reverse_iter();
     }
-    auto reverse_iter() const -> ReverseIteratorSupport::Wrapper<Set<KeyValue, KeyValueTraits, IsOrdered> const> {
+    auto reverse_iter() const -> ConstReverseIteratorWrapper {
         return m_hash_set.reverse_iter();
     }
 

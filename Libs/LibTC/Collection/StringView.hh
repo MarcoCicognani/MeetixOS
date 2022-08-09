@@ -15,6 +15,7 @@
 #include <LibTC/Collection/Enums/CaseSensitivity.hh>
 #include <LibTC/Collection/Enums/TrimMode.hh>
 #include <LibTC/Collection/Enums/TrimWhitespace.hh>
+#include <LibTC/Collection/ReverseIteratorSupport.hh>
 #include <LibTC/Collection/Vector.hh>
 #include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
@@ -28,7 +29,9 @@ namespace Collection {
 
 class StringView {
 public:
-    using ConstIterator = Details::VectorIterator<StringView const, char const, false>;
+    using ConstIterator               = Details::VectorIterator<StringView const, char const, false>;
+    using ConstReverseIterator        = Details::VectorIterator<StringView const, char const, true>;
+    using ConstReverseIteratorWrapper = ReverseIteratorSupport::Wrapper<StringView const>;
 
 public:
     /**
@@ -142,6 +145,13 @@ public:
      */
     auto begin() const -> ConstIterator;
     auto end() const -> ConstIterator;
+
+    /**
+     * @brief Reverse for-each support
+     */
+    auto rbegin() const -> ConstReverseIterator;
+    auto rend() const -> ConstReverseIterator;
+    auto reverse_iter() const -> ConstReverseIteratorWrapper;
 
     /**
      * @brief Getters

@@ -207,7 +207,7 @@ auto String::to_lowercase() const -> String {
 }
 
 auto String::try_to_lowercase() const -> ErrorOr<String> {
-    auto string_builder = StringBuilder::construct_with_capacity(len());
+    auto string_builder = TRY(StringBuilder::try_construct_with_capacity(len()));
     for ( auto const c : *this ) {
         if ( is_ascii_uppercase_alpha(c) )
             TRY(string_builder.try_append(to_ascii_lowercase(c)));
@@ -222,13 +222,25 @@ auto String::to_uppercase() const -> String {
 }
 
 auto String::try_to_uppercase() const -> ErrorOr<String> {
-    auto string_builder = StringBuilder::construct_with_capacity(len());
+    auto string_builder = TRY(StringBuilder::try_construct_with_capacity(len()));
     for ( auto const c : *this ) {
         if ( is_ascii_lowercase_alpha(c) )
             TRY(string_builder.try_append(to_ascii_uppercase(c)));
         else
             TRY(string_builder.try_append(c));
     }
+    return string_builder.try_to_string();
+}
+
+auto String::to_reverse() const -> String {
+    return MUST(try_to_reverse());
+}
+
+auto String::try_to_reverse() const -> ErrorOr<String> {
+    auto string_builder = TRY(StringBuilder::try_construct_with_capacity(len()));
+    for ( auto const c : reverse_iter() )
+        TRY(string_builder.try_append(c));
+
     return string_builder.try_to_string();
 }
 
@@ -296,11 +308,27 @@ auto String::end() const -> String::ConstIterator {
     return as_string_view().end();
 }
 
+auto String::rbegin() const -> String::ConstReverseIterator {
+    return as_string_view().rbegin();
+}
+
+auto String::rend() const -> String::ConstReverseIterator {
+    return as_string_view().rend();
+}
+
+auto String::reverse_iter() const -> String::ConstReverseIteratorWrapper {
+    return as_string_view().reverse_iter();
+}
+
 auto String::as_cstr() const -> char const* {
     return m_string_storage_ref->data_storage();
 }
 
 auto String::len() const -> usize {
+    return m_string_storage_ref->char_count();
+}
+
+auto String::count() const -> usize {
     return m_string_storage_ref->char_count();
 }
 
