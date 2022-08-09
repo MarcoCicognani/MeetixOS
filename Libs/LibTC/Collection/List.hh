@@ -27,16 +27,16 @@ namespace TC {
 namespace Collection {
 namespace Details {
 
-template<typename Collection, typename T, bool IsReverse>
+template<typename TCollection, typename T, bool IsReverse>
 class ListIterator {
 public:
     /**
      * @brief Constructors
      */
-    explicit ListIterator(Collection& collection)
+    explicit ListIterator(TCollection& collection)
         : m_collection{ &collection } {
     }
-    ListIterator(Collection& collection, typename Collection::Node* node)
+    ListIterator(TCollection& collection, typename TCollection::Node* node)
         : m_collection{ &collection }
         , m_current_node{ node } {
     }
@@ -116,7 +116,7 @@ public:
     auto operator<=>(ListIterator const& rhs) const -> bool = default;
 
 private:
-    friend Collection;
+    friend TCollection;
 
     void delete_node() {
         delete m_current_node;
@@ -124,8 +124,8 @@ private:
     }
 
 private:
-    Collection*                m_collection{ nullptr };
-    typename Collection::Node* m_current_node{ nullptr };
+    TCollection*                m_collection{ nullptr };
+    typename TCollection::Node* m_current_node{ nullptr };
 };
 
 template<typename T>

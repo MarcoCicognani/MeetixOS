@@ -53,13 +53,13 @@ constexpr auto is_free_bucket(SetBucketState state) -> bool {
     return (static_cast<u8>(state) & 0xf0) == 0x00;
 }
 
-template<typename Collection, typename T, typename BucketType>
+template<typename T, typename TBucket>
 class SetIterator {
 public:
     /**
      * @brief Constructors
      */
-    explicit SetIterator(BucketType* bucket)
+    explicit SetIterator(TBucket* bucket)
         : m_current_bucket{ bucket } {
     }
     SetIterator(SetIterator const&) = default;
@@ -125,16 +125,16 @@ public:
     auto operator<=>(SetIterator const& rhs) const -> bool = default;
 
 private:
-    BucketType* m_current_bucket{ nullptr };
+    TBucket* m_current_bucket{ nullptr };
 };
 
-template<typename Collection, typename T, typename BucketType, bool IsReverse>
+template<typename T, typename TBucket, bool IsReverse>
 class OrderedSetIterator {
 public:
     /**
      * @brief Constructors
      */
-    explicit OrderedSetIterator(BucketType* bucket)
+    explicit OrderedSetIterator(TBucket* bucket)
         : m_current_bucket{ bucket } {
     }
     OrderedSetIterator(OrderedSetIterator const&) = default;
@@ -196,7 +196,7 @@ public:
     auto operator<=>(OrderedSetIterator const& rhs) const -> bool = default;
 
 private:
-    BucketType* m_current_bucket{ nullptr };
+    TBucket* m_current_bucket{ nullptr };
 };
 
 template<typename T>
@@ -250,12 +250,11 @@ private:
 public:
     static constexpr usize LOAD_FACTOR_PERCENT = 60;
 
-    using Iterator      = Conditional<IsOrdered, Details::OrderedSetIterator<Set, T, Bucket, false>, Details::SetIterator<Set, T, Bucket>>;
-    using ConstIterator = Conditional<IsOrdered,
-                                      Details::OrderedSetIterator<Set const, T const, Bucket const, false>,
-                                      Details::SetIterator<Set const, T const, Bucket const>>;
-    using ReverseIterator             = Details::OrderedSetIterator<Set, T, Bucket, true>;
-    using ConstReverseIterator        = Details::OrderedSetIterator<Set const, T const, Bucket const, true>;
+    using Iterator = Conditional<IsOrdered, Details::OrderedSetIterator<T, Bucket, false>, Details::SetIterator<T, Bucket>>;
+    using ConstIterator
+        = Conditional<IsOrdered, Details::OrderedSetIterator<T const, Bucket const, false>, Details::SetIterator<T const, Bucket const>>;
+    using ReverseIterator             = Details::OrderedSetIterator<T, Bucket, true>;
+    using ConstReverseIterator        = Details::OrderedSetIterator<T const, Bucket const, true>;
     using ReverseIteratorWrapper      = ReverseIteratorSupport::Wrapper<Set<T, TTraits, IsOrdered>>;
     using ConstReverseIteratorWrapper = ReverseIteratorSupport::Wrapper<Set<T, TTraits, IsOrdered> const>;
 

@@ -31,7 +31,7 @@ namespace TC {
 namespace Collection {
 namespace Details {
 
-template<typename Collection, typename T, bool IsReverse>
+template<typename TCollection, typename T, bool IsReverse>
 class VectorIterator {
     using TIndex = Conditional<IsReverse, isize, usize>;
 
@@ -39,17 +39,17 @@ public:
     /**
      * @brief Construction functions
      */
-    static auto begin(Collection& collection) -> VectorIterator {
+    static auto begin(TCollection& collection) -> VectorIterator {
         return VectorIterator{ collection, 0 };
     }
-    static auto end(Collection& collection) -> VectorIterator {
+    static auto end(TCollection& collection) -> VectorIterator {
         return VectorIterator{ collection, collection.count() };
     }
 
-    static auto rbegin(Collection& collection) -> VectorIterator {
+    static auto rbegin(TCollection& collection) -> VectorIterator {
         return VectorIterator{ collection, collection.count() - 1 };
     }
-    static auto rend(Collection& collection) -> VectorIterator {
+    static auto rend(TCollection& collection) -> VectorIterator {
         return VectorIterator{ collection, -1 };
     }
 
@@ -142,14 +142,14 @@ public:
     }
 
 private:
-    VectorIterator(Collection& collection, TIndex index)
+    VectorIterator(TCollection& collection, TIndex index)
         : m_collection{ &collection }
         , m_index{ index } {
     }
 
 private:
-    Collection* m_collection{ nullptr };
-    TIndex      m_index{ 0 };
+    TCollection* m_collection{ nullptr };
+    TIndex       m_index{ 0 };
 };
 
 } /* namespace Details */
