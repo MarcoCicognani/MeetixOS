@@ -34,10 +34,18 @@ public:
     /**
      * @brief Constructors
      */
-    constexpr StringView() = default;
-    constexpr StringView(char const* str, usize count) noexcept;
-    StringView(StringView const& rhs) noexcept;
-    StringView(StringView&& rhs) noexcept;
+    constexpr explicit(false) StringView() = default;
+    constexpr explicit(false) StringView(char const* c_str, usize count) noexcept
+        : m_chars_ptr{ c_str }
+        , m_chars_count{ count } {
+    }
+    constexpr explicit(false) StringView(StringView const& rhs) noexcept
+        : StringView{ rhs.m_chars_ptr, rhs.m_chars_count } {
+    }
+    constexpr explicit(false) StringView(StringView&& rhs) noexcept
+        : m_chars_ptr{ Cxx::exchange(rhs.m_chars_ptr, nullptr) }
+        , m_chars_count{ Cxx::exchange(rhs.m_chars_count, 0) } {
+    }
     ~StringView() = default;
 
     auto operator=(StringView const& rhs) -> StringView&;

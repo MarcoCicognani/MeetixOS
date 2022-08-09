@@ -41,7 +41,6 @@ auto String::try_construct_from_other(const String& rhs) -> ErrorOr<String> {
 }
 
 auto String::try_construct_from_view(StringView string_view) -> ErrorOr<String> {
-    auto const string_storage = StringStorage::try_construct_from_view(string_view);
     return String{ TRY(StringStorage::try_construct_from_view(string_view)) };
 }
 
@@ -233,24 +232,48 @@ auto String::try_to_uppercase() const -> ErrorOr<String> {
     return string_builder.try_to_string();
 }
 
+auto String::operator==(const String& rhs) const -> bool {
+    return as_string_view() == rhs.as_string_view();
+}
+
 auto String::operator==(const StringView& rhs) const -> bool {
     return as_string_view() == rhs;
+}
+
+auto String::operator!=(const String& rhs) const -> bool {
+    return as_string_view() != rhs.as_string_view();
 }
 
 auto String::operator!=(const StringView& rhs) const -> bool {
     return as_string_view() != rhs;
 }
 
+auto String::operator<(const String& rhs) const -> bool {
+    return as_string_view() < rhs.as_string_view();
+}
+
 auto String::operator<(const StringView& rhs) const -> bool {
     return as_string_view() < rhs;
+}
+
+auto String::operator<=(const String& rhs) const -> bool {
+    return as_string_view() <= rhs.as_string_view();
 }
 
 auto String::operator<=(const StringView& rhs) const -> bool {
     return as_string_view() <= rhs;
 }
 
+auto String::operator>(const String& rhs) const -> bool {
+    return as_string_view() > rhs.as_string_view();
+}
+
 auto String::operator>(const StringView& rhs) const -> bool {
     return as_string_view() > rhs;
+}
+
+auto String::operator>=(const String& rhs) const -> bool {
+    return as_string_view() >= rhs.as_string_view();
 }
 
 auto String::operator>=(const StringView& rhs) const -> bool {
@@ -289,7 +312,7 @@ auto String::as_string_view() const -> StringView {
     return StringView{ as_cstr(), len() };
 }
 
-String::String(NonNullRef<StringStorage>&& string_storage)
+String::String(NonNullRef<StringStorage> string_storage)
     : m_string_storage_ref{ Cxx::move(string_storage) } {
 }
 

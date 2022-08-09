@@ -33,26 +33,29 @@ BaseFormatter::BaseFormatter(StringBuilder& string_builder, FormatParser::Specif
     , m_specifications{ Cxx::move(specifications) } {
 }
 
-ErrorOr<void> BaseFormatter::try_put_padding(char fill, usize amount) {
+auto BaseFormatter::try_put_padding(char fill, usize amount) -> ErrorOr<void> {
     for ( [[maybe_unused]] usize i : Range{ 0u, amount } )
         TRY(m_string_builder.try_append(fill));
     return {};
 }
 
-ErrorOr<void> BaseFormatter::try_put_literal(StringView value) {
-    for ( usize i : Range{ 0u, value.len() } ) {
+auto BaseFormatter::try_put_literal(StringView value) -> ErrorOr<void> {
+    for ( usize i = 0; i < value.len(); ++i ) {
         TRY(m_string_builder.try_append(value[i]));
 
         /* skip escaped placeholders */
-        if ( (value[i] == '{' && i + 1 < value.len() && value[i + 1] == '{')
-             || (value[i] == '}' && i + 1 < value.len() && value[i + 1] == '}') )
+        auto const sub_string_view = value.sub_string_view(i);
+        if ( sub_string_view.starts_with("{{"sv) || sub_string_view.starts_with("}}"sv) )
             ++i;
     }
     return {};
 }
 
-ErrorOr<void>
-BaseFormatter::try_put_string(StringView value, usize min_width, usize max_width, FormatParser::Alignment alignment, char alignment_fill) {
+auto BaseFormatter::try_put_string(StringView              value,
+                                   usize                   min_width,
+                                   usize                   max_width,
+                                   FormatParser::Alignment alignment,
+                                   char                    alignment_fill) -> ErrorOr<void> {
     /* ensure the alignment */
     if ( alignment == FormatParser::Alignment::Default )
         alignment = FormatParser::Alignment::Left;
@@ -89,16 +92,16 @@ BaseFormatter::try_put_string(StringView value, usize min_width, usize max_width
     return {};
 }
 
-ErrorOr<void> BaseFormatter::try_put_u64(u64                           value,
-                                         u8                            base,
-                                         FormatParser::ShowBase        show_base_prefix,
-                                         bool                          upper_case,
-                                         FormatParser::ZeroPad         zero_pad,
-                                         usize                         min_width,
-                                         FormatParser::Alignment       alignment,
-                                         char                          alignment_fill,
-                                         FormatParser::ShowIntegerSign integer_sign,
-                                         bool                          is_negative) {
+auto BaseFormatter::try_put_u64(u64                           value,
+                                u8                            base,
+                                FormatParser::ShowBase        show_base_prefix,
+                                bool                          upper_case,
+                                FormatParser::ZeroPad         zero_pad,
+                                usize                         min_width,
+                                FormatParser::Alignment       alignment,
+                                char                          alignment_fill,
+                                FormatParser::ShowIntegerSign integer_sign,
+                                bool                          is_negative) -> ErrorOr<void> {
     /* ensure the alignment */
     if ( alignment == FormatParser::Alignment::Default )
         alignment = FormatParser::Alignment::Right;
@@ -211,15 +214,15 @@ ErrorOr<void> BaseFormatter::try_put_u64(u64                           value,
     return {};
 }
 
-ErrorOr<void> BaseFormatter::try_put_i64(i64                           value,
-                                         u8                            base,
-                                         FormatParser::ShowBase        show_base_prefix,
-                                         bool                          upper_case,
-                                         FormatParser::ZeroPad         zero_pad,
-                                         usize                         min_width,
-                                         FormatParser::Alignment       alignment,
-                                         char                          alignment_fill,
-                                         FormatParser::ShowIntegerSign integer_sign) {
+auto BaseFormatter::try_put_i64(i64                           value,
+                                u8                            base,
+                                FormatParser::ShowBase        show_base_prefix,
+                                bool                          upper_case,
+                                FormatParser::ZeroPad         zero_pad,
+                                usize                         min_width,
+                                FormatParser::Alignment       alignment,
+                                char                          alignment_fill,
+                                FormatParser::ShowIntegerSign integer_sign) -> ErrorOr<void> {
     bool is_negative = value < 0;
 
     /* module of the value */
@@ -236,16 +239,16 @@ ErrorOr<void> BaseFormatter::try_put_i64(i64                           value,
 }
 
 #ifndef IN_KERNEL
-ErrorOr<void> BaseFormatter::try_put_f64(double                        value,
-                                         u8                            base,
-                                         bool                          upper_case,
-                                         FormatParser::ZeroPad         zero_pad,
-                                         FormatParser::Alignment       alignment,
-                                         usize                         min_width,
-                                         usize                         precision,
-                                         char                          alignment_fill,
-                                         FormatParser::ShowIntegerSign integer_sign) {
-    auto string_builder = StringBuilder::construct_empty();
+auto BaseFormatter::try_put_f64(double                        value,
+                                u8                            base,
+                                bool                          upper_case,
+                                FormatParser::ZeroPad         zero_pad,
+                                FormatParser::Alignment       alignment,
+                                usize                         min_width,
+                                usize                         precision,
+                                char                          alignment_fill,
+                                FormatParser::ShowIntegerSign integer_sign) -> ErrorOr<void> {
+    auto          string_builder = StringBuilder::construct_empty();
     BaseFormatter base_formatter{ string_builder };
 
     /* write-out the NotANumber and Infinite values */
@@ -322,15 +325,15 @@ ErrorOr<void> BaseFormatter::try_put_f64(double                        value,
     return try_put_string(string_builder.as_string_view(), min_width, 0xffffff, alignment, alignment_fill);
 }
 
-ErrorOr<void> BaseFormatter::try_put_f80(long double                   value,
-                                         u8                            base,
-                                         bool                          upper_case,
-                                         FormatParser::Alignment       alignment,
-                                         usize                         min_width,
-                                         usize                         precision,
-                                         char                          alignment_fill,
-                                         FormatParser::ShowIntegerSign integer_sign) {
-    auto string_builder = StringBuilder::construct_empty();
+auto BaseFormatter::try_put_f80(long double                   value,
+                                u8                            base,
+                                bool                          upper_case,
+                                FormatParser::Alignment       alignment,
+                                usize                         min_width,
+                                usize                         precision,
+                                char                          alignment_fill,
+                                FormatParser::ShowIntegerSign integer_sign) -> ErrorOr<void> {
+    auto          string_builder = StringBuilder::construct_empty();
     BaseFormatter base_formatter{ string_builder };
 
     /* write-out the NotANumber and Infinite values */
@@ -403,79 +406,79 @@ ErrorOr<void> BaseFormatter::try_put_f80(long double                   value,
 }
 #endif
 
-StringBuilder& BaseFormatter::string_builder() {
+auto BaseFormatter::string_builder() -> StringBuilder& {
     return m_string_builder;
 }
 
-char BaseFormatter::alignment_fill() const {
+auto BaseFormatter::alignment_fill() const -> char {
     return m_specifications.m_alignment_fill;
 }
 
-FormatParser::Alignment BaseFormatter::alignment() const {
+auto BaseFormatter::alignment() const -> FormatParser::Alignment {
     return m_specifications.m_alignment;
 }
 
-FormatParser::ShowIntegerSign BaseFormatter::show_integer_sign() const {
+auto BaseFormatter::show_integer_sign() const -> FormatParser::ShowIntegerSign {
     return m_specifications.m_show_integer_sign;
 }
 
-FormatParser::ShowBase BaseFormatter::show_base() const {
+auto BaseFormatter::show_base() const -> FormatParser::ShowBase {
     return m_specifications.m_show_base;
 }
 
-FormatParser::ZeroPad BaseFormatter::zero_pad() const {
+auto BaseFormatter::zero_pad() const -> FormatParser::ZeroPad {
     return m_specifications.m_zero_pad;
 }
 
-Option<usize> BaseFormatter::width() const {
+auto BaseFormatter::width() const -> Option<usize> {
     return m_specifications.m_width;
 }
 
-Option<usize> BaseFormatter::precision() const {
+auto BaseFormatter::precision() const -> Option<usize> {
     return m_specifications.m_precision;
 }
 
-FormatParser::DisplayAs BaseFormatter::display_as() const {
+auto BaseFormatter::display_as() const -> FormatParser::DisplayAs {
     return m_specifications.m_display_as;
 }
 
-bool BaseFormatter::display_as_is_numeric() const {
+auto BaseFormatter::display_as_is_numeric() const -> bool {
     return m_specifications.display_as_is_numeric();
 }
 
-void BaseFormatter::set_alignment_fill(char alignment_fill) {
+auto BaseFormatter::set_alignment_fill(char alignment_fill) -> void {
     m_specifications.m_alignment_fill = alignment_fill;
 }
 
-void BaseFormatter::set_alignment(FormatParser::Alignment alignment) {
+auto BaseFormatter::set_alignment(FormatParser::Alignment alignment) -> void {
     m_specifications.m_alignment = alignment;
 }
 
-void BaseFormatter::set_show_integer_sign(FormatParser::ShowIntegerSign show_integer_sign) {
+auto BaseFormatter::set_show_integer_sign(FormatParser::ShowIntegerSign show_integer_sign) -> void {
     m_specifications.m_show_integer_sign = show_integer_sign;
 }
 
-void BaseFormatter::set_show_base(FormatParser::ShowBase show_base) {
+auto BaseFormatter::set_show_base(FormatParser::ShowBase show_base) -> void {
     m_specifications.m_show_base = show_base;
 }
 
-void BaseFormatter::set_zero_pad(FormatParser::ZeroPad zero_pad) {
+auto BaseFormatter::set_zero_pad(FormatParser::ZeroPad zero_pad) -> void {
     m_specifications.m_zero_pad = zero_pad;
 }
 
-void BaseFormatter::set_width(Option<usize> width) {
+auto BaseFormatter::set_width(Option<usize> width) -> void {
     m_specifications.m_width = width;
 }
 
-void BaseFormatter::set_precision(Option<usize> precision) {
+auto BaseFormatter::set_precision(Option<usize> precision) -> void {
     m_specifications.m_precision = precision;
 }
 
-void BaseFormatter::set_display_as(FormatParser::DisplayAs display_as) {
+auto BaseFormatter::set_display_as(FormatParser::DisplayAs display_as) -> void {
     m_specifications.m_display_as = display_as;
 }
 
-usize BaseFormatter::convert_unsigned_to_chars(u64 value, char to_chars_buffer[128], u8 base, bool upper_case) {
+auto BaseFormatter::convert_unsigned_to_chars(u64 value, char to_chars_buffer[128], u8 base, bool upper_case) -> usize {
     VERIFY_GREATER_EQUAL(base, 2);
     VERIFY_LESS_EQUAL(base, 16);
 
@@ -505,7 +508,7 @@ Formatter<nullptr_t>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ Cxx::move(base_formatter) } {
 }
 
-ErrorOr<void> Formatter<nullptr_t>::format(nullptr_t) {
+auto Formatter<nullptr_t>::format(nullptr_t) -> ErrorOr<void> {
     return try_put_string("nullptr"sv, width().value_or(0), precision().value_or(0xffffff), alignment(), alignment_fill());
 }
 
@@ -513,7 +516,7 @@ Formatter<StringView>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ Cxx::move(base_formatter) } {
 }
 
-ErrorOr<void> Formatter<StringView>::format(StringView value) {
+auto Formatter<StringView>::format(StringView value) -> ErrorOr<void> {
     if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
         VERIFY_NOT_REACHED();
     if ( show_base() != FormatParser::ShowBase::No )
@@ -533,7 +536,7 @@ Formatter<T>::Formatter(BaseFormatter base_formatter)
 }
 
 template<Integral T>
-ErrorOr<void> Formatter<T>::format(T value) {
+auto Formatter<T>::format(T value) -> ErrorOr<void> {
     if ( display_as() == FormatParser::DisplayAs::Char ) {
         VERIFY_GREATER_EQUAL(value, 0);
         VERIFY_LESS_EQUAL(value, 127);
@@ -633,7 +636,7 @@ Formatter<bool>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ Cxx::move(base_formatter) } {
 }
 
-ErrorOr<void> Formatter<bool>::format(bool value) const {
+auto Formatter<bool>::format(bool value) const -> ErrorOr<void> {
     if ( display_as_is_numeric() ) {
         Formatter<u8> formatter{ *this };
         return formatter.format(static_cast<u8>(value));
@@ -647,7 +650,7 @@ Formatter<char>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ Cxx::move(base_formatter) } {
 }
 
-ErrorOr<void> Formatter<char>::format(char value) const {
+auto Formatter<char>::format(char value) const -> ErrorOr<void> {
     if ( display_as_is_numeric() ) {
         Formatter<i8> formatter{ *this };
         return formatter.format(value);
@@ -662,7 +665,7 @@ Formatter<float>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ Cxx::move(base_formatter) } {
 }
 
-ErrorOr<void> Formatter<float>::format(float value) const {
+auto Formatter<float>::format(float value) const -> ErrorOr<void> {
     Formatter<double> formatter{ *this };
     return formatter.format(static_cast<double>(value));
 }
@@ -671,7 +674,7 @@ Formatter<double>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ Cxx::move(base_formatter) } {
 }
 
-ErrorOr<void> Formatter<double>::format(double value) {
+auto Formatter<double>::format(double value) -> ErrorOr<void> {
     /* prepare the base and the case */
     u8   base       = 0;
     bool upper_case = false;
@@ -707,7 +710,7 @@ Formatter<long double>::Formatter(BaseFormatter base_formatter)
     : BaseFormatter{ Cxx::move(base_formatter) } {
 }
 
-ErrorOr<void> Formatter<long double>::format(long double value) {
+auto Formatter<long double>::format(long double value) -> ErrorOr<void> {
     /* prepare the base and the case */
     u8   base       = 0;
     bool upper_case = false;
@@ -739,7 +742,7 @@ ErrorOr<void> Formatter<long double>::format(long double value) {
 }
 #endif
 
-ErrorOr<void> Formatter<char const*>::format(char const* value) {
+auto Formatter<char const*>::format(char const* value) -> ErrorOr<void> {
     if ( display_as() == FormatParser::DisplayAs::Pointer ) {
         Formatter<usize> formatter{ *this };
         return formatter.format(bit_cast<usize>(value));
@@ -747,7 +750,7 @@ ErrorOr<void> Formatter<char const*>::format(char const* value) {
         return Formatter<StringView>::format({ value, __builtin_strlen(value) });
 }
 
-ErrorOr<void> Formatter<StringBuilder>::format(StringBuilder const& value) {
+auto Formatter<StringBuilder>::format(StringBuilder const& value) -> ErrorOr<void> {
     return Formatter<StringView>::format(value.as_string_view());
 }
 

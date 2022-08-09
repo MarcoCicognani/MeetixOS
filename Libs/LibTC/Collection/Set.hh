@@ -261,28 +261,28 @@ public:
     /**
      * @brief Non-error safe Factory functions
      */
-    static constexpr auto construct_empty() -> Set<T, TTraits, IsOrdered> {
+    [[nodiscard]] static constexpr auto construct_empty() -> Set<T, TTraits, IsOrdered> {
         return Set<T, TTraits, IsOrdered>{};
     }
-    static auto construct_with_capacity(usize capacity) -> Set<T, TTraits, IsOrdered> {
+    [[nodiscard]] static auto construct_with_capacity(usize capacity) -> Set<T, TTraits, IsOrdered> {
         return MUST(try_construct_with_capacity(capacity));
     }
-    static auto construct_from_other(Set<T, TTraits, IsOrdered> const& rhs) -> Set<T, TTraits, IsOrdered> {
+    [[nodiscard]] static auto construct_from_other(Set<T, TTraits, IsOrdered> const& rhs) -> Set<T, TTraits, IsOrdered> {
         return MUST(try_construct_from_other(rhs));
     }
-    static auto construct_from_list(std::initializer_list<T> initializer_list) -> Set<T, TTraits, IsOrdered> {
+    [[nodiscard]] static auto construct_from_list(std::initializer_list<T> initializer_list) -> Set<T, TTraits, IsOrdered> {
         return MUST(try_construct_from_list(initializer_list));
     }
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
+    [[nodiscard]] static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
         auto set = construct_empty();
         TRY(set.try_rehash(capacity));
         return set;
     }
-    static auto try_construct_from_other(Set<T, TTraits, IsOrdered> const& rhs) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
+    [[nodiscard]] static auto try_construct_from_other(Set<T, TTraits, IsOrdered> const& rhs) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
         auto set = TRY(try_construct_with_capacity(rhs.count()));
         for ( auto const& element : rhs ) {
             if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
@@ -296,7 +296,7 @@ public:
 
         return set;
     }
-    static auto try_construct_from_list(std::initializer_list<T> initializer_list) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
+    [[nodiscard]] static auto try_construct_from_list(std::initializer_list<T> initializer_list) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
         auto set = construct_empty();
         for ( auto const& element : initializer_list ) /* even with auto initializer_list exposes only T const& */
             TRY(set.try_insert(Cxx::move(const_cast<T&>(element))));

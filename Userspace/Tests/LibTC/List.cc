@@ -18,9 +18,6 @@
 using namespace TC;
 
 TEST_CASE(empty_list) {
-    auto const immutable_list = List<i32>::construct_from_list({ 1, 2, 3, 4, 5 });
-    auto       mutable_list   = List<i32>::construct_from_list({ 1, 2, 3, 4, 5 });
-
     auto const empty_list = List<i32>::construct_empty();
 
     VERIFY(empty_list.is_empty());

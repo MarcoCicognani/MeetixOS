@@ -153,28 +153,28 @@ public:
     /**
      * @brief Non-error safe Factory functions
      */
-    static constexpr auto construct_empty() -> Vector<T> {
+    [[nodiscard]] static constexpr auto construct_empty() -> Vector<T> {
         return Vector<T>{};
     }
-    static auto construct_with_capacity(usize capacity) -> Vector<T> {
+    [[nodiscard]] static auto construct_with_capacity(usize capacity) -> Vector<T> {
         return MUST(try_construct_with_capacity(capacity));
     }
-    static auto construct_from_other(Vector<T> const& rhs) -> Vector<T> {
+    [[nodiscard]] static auto construct_from_other(Vector<T> const& rhs) -> Vector<T> {
         return MUST(try_construct_from_other(rhs));
     }
-    static auto construct_from_list(Cxx::initializer_list<T> initializer_list) -> Vector<T> {
+    [[nodiscard]] static auto construct_from_list(Cxx::initializer_list<T> initializer_list) -> Vector<T> {
         return MUST(try_construct_from_list(initializer_list));
     }
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Vector<T>> {
+    [[nodiscard]] static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Vector<T>> {
         auto vector = construct_empty();
         TRY(vector.try_ensure_capacity(capacity));
         return vector;
     }
-    static auto try_construct_from_other(Vector<T> const& rhs) -> ErrorOr<Vector<T>> {
+    [[nodiscard]] static auto try_construct_from_other(Vector<T> const& rhs) -> ErrorOr<Vector<T>> {
         auto vector = TRY(try_construct_with_capacity(rhs.count()));
         for ( auto const& element : rhs ) {
             if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
@@ -188,7 +188,7 @@ public:
 
         return vector;
     }
-    static auto try_construct_from_list(Cxx::initializer_list<T> initializer_list) -> ErrorOr<Vector<T>> {
+    [[nodiscard]] static auto try_construct_from_list(Cxx::initializer_list<T> initializer_list) -> ErrorOr<Vector<T>> {
         auto vector = construct_empty();
         for ( auto const& element : initializer_list ) /* even with auto initializer_list exposes only T const& */
             TRY(vector.try_append(Cxx::move(const_cast<T&>(element))));

@@ -81,35 +81,36 @@ public:
     /**
      * @brief Non-error safe Factory functions
      */
-    static constexpr auto construct_empty() -> Map<K, T, KTraits, IsOrdered> {
+    [[nodiscard]] static constexpr auto construct_empty() -> Map<K, T, KTraits, IsOrdered> {
         return Map<K, T, KTraits, IsOrdered>{};
     }
-    static auto construct_with_capacity(usize capacity) -> Map<K, T, KTraits, IsOrdered> {
+    [[nodiscard]] static auto construct_with_capacity(usize capacity) -> Map<K, T, KTraits, IsOrdered> {
         return MUST(try_construct_with_capacity(capacity));
     }
-    static auto construct_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> Map<K, T, KTraits, IsOrdered> {
+    [[nodiscard]] static auto construct_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> Map<K, T, KTraits, IsOrdered> {
         return MUST(try_construct_from_other(rhs));
     }
-    static auto construct_from_list(std::initializer_list<KeyValue> initializer_list) -> Map<K, T, KTraits, IsOrdered> {
+    [[nodiscard]] static auto construct_from_list(std::initializer_list<KeyValue> initializer_list) -> Map<K, T, KTraits, IsOrdered> {
         return MUST(try_construct_from_list(initializer_list));
     }
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+    [[nodiscard]] static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
         auto map = construct_empty();
         TRY(map.try_ensure_capacity(capacity));
         return map;
     }
-    static auto try_construct_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+    [[nodiscard]] static auto try_construct_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
         auto map = TRY(try_construct_with_capacity(rhs.count()));
         for ( auto const& key_value : rhs )
             TRY(map.try_insert(TRY(key_value.try_clone())));
 
         return map;
     }
-    static auto try_construct_from_list(std::initializer_list<KeyValue> initializer_list) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+    [[nodiscard]] static auto try_construct_from_list(std::initializer_list<KeyValue> initializer_list)
+        -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
         auto map = construct_empty();
         for ( auto const& key_value : initializer_list ) /* even with auto initializer_list exposes only T const& */
             TRY(map.try_insert(Cxx::move(const_cast<KeyValue&>(key_value))));

@@ -17,13 +17,13 @@
 using namespace TC;
 
 TEST_CASE(construct) {
-    Function<int()> function{ []() { return 0; } };
+    Function<i32()> function = []() -> i32 { return 0; };
 
     VERIFY_EQUAL(function(), 0);
 }
 
 TEST_CASE(construct_complex_function) {
-    Function<long(int, char, long)> sum_function([](int a, char b, long c) { return a + b + c; });
+    Function<usize(i32, char, usize)> sum_function = [](i32 a, char b, usize c) -> usize { return a + b + c; };
 
     VERIFY_EQUAL(sum_function(1, 2, 3), 6);
     VERIFY_EQUAL(sum_function(10, 10, 10), 30);
@@ -31,10 +31,10 @@ TEST_CASE(construct_complex_function) {
 }
 
 TEST_CASE(swap) {
-    Function<char()> a_function{ []() { return 'a'; } };
+    Function<char()> a_function = []() -> char { return 'a'; };
     VERIFY_EQUAL(a_function(), 'a');
 
-    Function<char()> b_function{ []() { return 'b'; } };
+    Function<char()> b_function = []() -> char { return 'b'; };
     VERIFY_EQUAL(b_function(), 'b');
 
     b_function.swap(a_function);
@@ -44,45 +44,47 @@ TEST_CASE(swap) {
 }
 
 TEST_CASE(move) {
-    Function<int()> function_0{ []() { return 0; } };
+    Function<i32()> function_0 = []() -> i32 { return 0; };
     VERIFY_EQUAL(function_0(), 0);
 
-    Function<int()> function_1{ []() { return 1; } };
+    Function<i32()> function_1 = []() -> i32 { return 1; };
     VERIFY_EQUAL(function_1(), 1);
 
-    function_1 = move(function_0);
+    function_1 = Cxx::move(function_0);
     VERIFY_EQUAL(function_1(), 0);
 }
 
 TEST_CASE(reference_capturing_lambda) {
     int i = 0;
 
-    Function<void()> inc_function{ [&i]() { i = 100; } };
+    Function<void()> inc_function = [&i]() { i = 100; };
     inc_function();
 
     VERIFY_EQUAL(i, 100);
 }
 
 TEST_CASE(copy_capturing_lambda) {
-    int a = 1;
-    int b = 2;
-    int c = 3;
-    int d = 4;
-    int e = 5;
-    int f = 6;
+    i32 a = 1;
+    i32 b = 2;
+    i32 c = 3;
+    i32 d = 4;
+    i32 e = 5;
+    i32 f = 6;
 
-    Function<int()> calc_function{ [=]() mutable {
+    Function<i32()> calc_function = [=]() mutable {
         c = a + b;    /* 3 */
         d = e + f;    /* 11 */
         c *= 2;       /* 6 */
         return d - c; /* 5 */
-    } };
+    };
 
     VERIFY_EQUAL(calc_function(), 5);
+    VERIFY_EQUAL(c, 3);
+    VERIFY_EQUAL(d, 4);
 }
 
 void ensure_call_equals_with_functor(Function<usize()> function) {
-    for ( usize i : Range{ 0, 100'000 } ) {
+    for ( usize i : Range{ 0, 1'000'000 } ) {
         VERIFY_EQUAL(function(), i);
     }
 }
@@ -93,9 +95,8 @@ BENCHMARK_CASE(call_one_hundred_thousand_times) {
     ensure_call_equals_with_functor([&counter]() -> usize { return counter++; });
 }
 
-template<Callable<usize> TPredicate>
-void ensure_call_equals_with_template(TPredicate function) {
-    for ( usize i : Range{ 0, 100'000 } ) {
+void ensure_call_equals_with_template(Callable<usize> auto function) {
+    for ( usize i : Range{ 0, 1'000'000 } ) {
         VERIFY_EQUAL(function(), i);
     }
 }

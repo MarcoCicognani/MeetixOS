@@ -90,4 +90,15 @@ template<typename T, typename E>
 class Result;
 
 } /* namespace Functional */
+
+namespace Text {
+
+class Lexer;
+class FormatLexer;
+class FormatParser;
+
+template<typename, typename = void>
+class Formatter;
+
+} /* namespace Text */
 } /* namespace TC */

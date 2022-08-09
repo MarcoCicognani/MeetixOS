@@ -153,20 +153,20 @@ public:
     /**
      * @brief Non-error safe Factory functions
      */
-    static constexpr auto construct_empty() -> List<T> {
+    [[nodiscard]] static constexpr auto construct_empty() -> List<T> {
         return List<T>{};
     }
-    static auto construct_from_other(List<T> const& rhs) -> List<T> {
+    [[nodiscard]] static auto construct_from_other(List<T> const& rhs) -> List<T> {
         return MUST(try_construct_from_other(rhs));
     }
-    static auto construct_from_list(Cxx::initializer_list<T> initializer_list) -> List<T> {
+    [[nodiscard]] static auto construct_from_list(Cxx::initializer_list<T> initializer_list) -> List<T> {
         return MUST(try_construct_from_list(initializer_list));
     }
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_construct_from_other(List<T> const& rhs) -> ErrorOr<List<T>> {
+    [[nodiscard]] static auto try_construct_from_other(List<T> const& rhs) -> ErrorOr<List<T>> {
         auto list = construct_empty();
         for ( auto const& element : rhs ) {
             if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
@@ -180,7 +180,7 @@ public:
 
         return list;
     }
-    static auto try_construct_from_list(Cxx::initializer_list<T> initializer_list) -> ErrorOr<List<T>> {
+    [[nodiscard]] static auto try_construct_from_list(Cxx::initializer_list<T> initializer_list) -> ErrorOr<List<T>> {
         auto list = construct_empty();
         for ( auto const& element : initializer_list ) /* even with auto initializer_list exposes only T const& */
             TRY(list.try_append(Cxx::move(const_cast<T&>(element))));

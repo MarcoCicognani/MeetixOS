@@ -13,7 +13,6 @@
 #include <LibTC/Collection/Map.hh>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringView.hh>
-#include <LibTC/IntTypes.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
@@ -94,7 +93,7 @@ TEST_CASE(ordered_reverse_iterate) {
 }
 
 TEST_CASE(at) {
-    auto map = Map<StringView, StringView>::construct_from_list({ { "One"sv, "1"sv }, { "Two"sv, "2" }, { "Three"sv, "3"sv } });
+    auto map = Map<StringView, StringView>::construct_from_list({ { "One"sv, "1"sv }, { "Two"sv, "2"sv }, { "Three"sv, "3"sv } });
 
     VERIFY_IS_PRESENT_EQUAL(map["One"sv], "1"sv);
     VERIFY_IS_PRESENT_EQUAL(map.at("Three"sv), "3"sv);
@@ -105,7 +104,7 @@ TEST_CASE(at) {
     auto value_or_none    = map.at("One"sv);
     value_or_none.value() = "15"sv;
 
-    VERIFY_IS_PRESENT_EQUAL(map["One"], "15");
+    VERIFY_IS_PRESENT_EQUAL(map["One"sv], "15"sv);
 }
 
 TEST_CASE(has_key_has_value) {

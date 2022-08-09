@@ -15,11 +15,7 @@
 
 namespace TC::Text {
 
-FormatLexer::FormatLexer(StringView source_view)
-    : Lexer(source_view) {
-}
-
-StringView FormatLexer::consume_literal() {
+auto FormatLexer::consume_literal() -> StringView {
     auto begin = index();
     while ( !is_end() ) {
         if ( consume_specific("{{"sv) )
@@ -34,7 +30,7 @@ StringView FormatLexer::consume_literal() {
     return source_view().sub_string_view(begin);
 }
 
-bool FormatLexer::consume_number(usize& value) {
+auto FormatLexer::consume_number(usize& value) -> bool {
     value = 0;
 
     bool consumed_at_least_one = false;

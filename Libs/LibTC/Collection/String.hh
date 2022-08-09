@@ -39,16 +39,16 @@ public:
     /**
      * @brief Non-error safe Factory functions
      */
-    static auto construct_empty() -> String;
-    static auto construct_from_other(String const& rhs) -> String;
-    static auto construct_from_view(StringView string_view) -> String;
+    [[nodiscard]] static auto construct_empty() -> String;
+    [[nodiscard]] static auto construct_from_other(String const& rhs) -> String;
+    [[nodiscard]] static auto construct_from_view(StringView string_view) -> String;
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_construct_empty() -> ErrorOr<String>;
-    static auto try_construct_from_other(String const& rhs) -> ErrorOr<String>;
-    static auto try_construct_from_view(StringView string_view) -> ErrorOr<String>;
+    [[nodiscard]] static auto try_construct_empty() -> ErrorOr<String>;
+    [[nodiscard]] static auto try_construct_from_other(String const& rhs) -> ErrorOr<String>;
+    [[nodiscard]] static auto try_construct_from_view(StringView string_view) -> ErrorOr<String>;
 
     /**
      * @brief Move constructor and move assignment
@@ -160,11 +160,17 @@ public:
     /**
      * @brief Comparison operators
      */
+    [[nodiscard]] auto operator==(String const& rhs) const -> bool;
     [[nodiscard]] auto operator==(StringView const& rhs) const -> bool;
+    [[nodiscard]] auto operator!=(String const& rhs) const -> bool;
     [[nodiscard]] auto operator!=(StringView const& rhs) const -> bool;
+    [[nodiscard]] auto operator<(String const& rhs) const -> bool;
     [[nodiscard]] auto operator<(StringView const& rhs) const -> bool;
+    [[nodiscard]] auto operator<=(String const& rhs) const -> bool;
     [[nodiscard]] auto operator<=(StringView const& rhs) const -> bool;
+    [[nodiscard]] auto operator>(String const& rhs) const -> bool;
     [[nodiscard]] auto operator>(StringView const& rhs) const -> bool;
+    [[nodiscard]] auto operator>=(String const& rhs) const -> bool;
     [[nodiscard]] auto operator>=(StringView const& rhs) const -> bool;
 
     /**
@@ -190,7 +196,7 @@ public:
     [[nodiscard]] auto as_string_view() const -> StringView;
 
 private:
-    explicit String(NonNullRef<StringStorage>&& string_storage);
+    explicit String(NonNullRef<StringStorage> string_storage);
 
 private:
     NonNullRef<StringStorage> m_string_storage_ref;

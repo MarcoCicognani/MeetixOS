@@ -22,20 +22,6 @@
 
 namespace TC::Collection {
 
-constexpr StringView::StringView(char const* str, usize count) noexcept
-    : m_chars_ptr{ str }
-    , m_chars_count{ count } {
-}
-
-StringView::StringView(StringView const& rhs) noexcept
-    : StringView{ rhs.as_cstr(), rhs.len() } {
-}
-
-StringView::StringView(StringView&& rhs) noexcept
-    : m_chars_ptr{ Cxx::exchange(rhs.m_chars_ptr, nullptr) }
-    , m_chars_count{ Cxx::exchange(rhs.m_chars_count, 0) } {
-}
-
 auto StringView::operator=(StringView const& rhs) -> StringView& {
     if ( this == &rhs )
         return *this;

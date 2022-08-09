@@ -95,10 +95,10 @@ public:
      * @brief Non-error safe Factory functions
      */
     template<typename... TArgs>
-    static auto construct_from_args(TArgs... args) -> NonNullRef<T> {
+    [[nodiscard]] static auto construct_from_args(TArgs... args) -> NonNullRef<T> {
         return MUST(try_construct_from_args(Cxx::forward<TArgs>(args)...));
     }
-    static auto construct_from_adopt(Details::RefCounted<T>& ref_counted_ref) -> NonNullRef<T> {
+    [[nodiscard]] static auto construct_from_adopt(Details::RefCounted<T>& ref_counted_ref) -> NonNullRef<T> {
         return NonNullRef<T>{ &ref_counted_ref };
     }
 
@@ -106,7 +106,7 @@ public:
      * @brief Error safe Factory functions
      */
     template<typename... TArgs>
-    static auto try_construct_from_args(TArgs... args) -> ErrorOr<NonNullRef<T>> {
+    [[nodiscard]] static auto try_construct_from_args(TArgs... args) -> ErrorOr<NonNullRef<T>> {
         auto ref_counted_ptr = new (nothrow) Details::RefCounted<T>{ Details::FromArgsTag::FromArgs, forward<TArgs>(args)... };
         if ( ref_counted_ptr != nullptr ) [[likely]]
             return NonNullRef<T>{ ref_counted_ptr };

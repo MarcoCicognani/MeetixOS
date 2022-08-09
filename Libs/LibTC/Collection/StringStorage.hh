@@ -30,7 +30,7 @@ public:
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_construct_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>>;
+    [[nodiscard]] static auto try_construct_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>>;
 
     explicit StringStorage(StringView string_view);
     ~StringStorage() = default;

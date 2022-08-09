@@ -111,15 +111,15 @@ TEST_CASE(find) {
 TEST_CASE(remove) {
     auto ordered_set = OrderedSet<StringView>::construct_from_list({ "Hi"sv, "I'm"sv, "Marco"sv });
 
-    VERIFY(ordered_set.remove("I'm"));
+    VERIFY(ordered_set.remove("I'm"sv));
     VERIFY_EQUAL(ordered_set.count(), 2);
 
-    VERIFY(ordered_set.remove("Hi"));
+    VERIFY(ordered_set.remove("Hi"sv));
     VERIFY_EQUAL(ordered_set.count(), 1);
 
-    VERIFY_IS_VALUE_EQUAL(ordered_set.try_insert("Hello"), InsertResult::InsertedNew);
+    VERIFY_IS_VALUE_EQUAL(ordered_set.try_insert("Hello"sv), InsertResult::InsertedNew);
 
-    VERIFY_FALSE(ordered_set.remove("Eee"));
+    VERIFY_FALSE(ordered_set.remove("Eee"sv));
     VERIFY_EQUAL(ordered_set.count(), 2);
 }
 

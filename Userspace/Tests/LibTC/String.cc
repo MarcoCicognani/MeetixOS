@@ -11,39 +11,32 @@
  */
 
 #include <LibTC/Collection/String.hh>
-#include <LibTC/Cxx.hh>
+#include <LibTC/Collection/StringView.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
 using namespace TC;
 
 TEST_CASE(try_construct_from) {
-    auto error_or_empty_string = String::try_construct_from("");
+    auto error_or_empty_string = String::try_construct_from_view(""sv);
     VERIFY(error_or_empty_string.is_value());
 
-    auto empty_string = error_or_empty_string.unwrap_value();
+    auto const empty_string = error_or_empty_string.unwrap_value();
     VERIFY(empty_string.is_empty());
     VERIFY_EQUAL(empty_string.len(), 0);
-    VERIFY_EQUAL(empty_string, "");
+    VERIFY_EQUAL(empty_string, ""sv);
 
-    auto error_or_filled_string = String::try_construct_from("MeetixOS C++");
+    auto error_or_filled_string = String::try_construct_from_view("MeetixOS C++"sv);
     VERIFY(error_or_filled_string.is_value());
 
-    auto filled_string = error_or_filled_string.unwrap_value();
+    auto const filled_string = error_or_filled_string.unwrap_value();
     VERIFY_FALSE(filled_string.is_empty());
     VERIFY_EQUAL(filled_string.len(), 12);
-    VERIFY_EQUAL(filled_string, "MeetixOS C++");
+    VERIFY_EQUAL(filled_string, "MeetixOS C++"sv);
 
-    auto error_or_sub_string = String::try_construct_from("MeetixOS C++", 8);
-    VERIFY(error_or_sub_string.is_value());
+    auto const string_view = "Hello World Gun!"sv;
 
-    auto sub_string = error_or_sub_string.unwrap_value();
-    VERIFY_FALSE(sub_string.is_empty());
-    VERIFY_EQUAL(sub_string.len(), 8);
-    VERIFY_EQUAL(sub_string, "MeetixOS");
-
-    StringView string_view{ "Hello World Gun!" };
-    auto       error_or_string_from_view = String::try_construct_from(string_view);
+    auto error_or_string_from_view = String::try_construct_from_view(string_view);
     VERIFY(error_or_string_from_view.is_value());
 
     auto string_from_view = error_or_string_from_view.unwrap_value();
@@ -52,46 +45,21 @@ TEST_CASE(try_construct_from) {
     VERIFY_EQUAL(string_from_view, "Hello World Gun!"sv);
 }
 
-TEST_CASE(cxx_construction) {
-    String empty_string{};
-    VERIFY(empty_string.is_empty());
-    VERIFY_EQUAL(empty_string.len(), 0);
-    VERIFY_EQUAL(empty_string, "");
-
-    String filled_string{ "MeetixOS C++" };
-    VERIFY_FALSE(filled_string.is_empty());
-    VERIFY_EQUAL(filled_string.len(), 12);
-    VERIFY_EQUAL(filled_string, "MeetixOS C++");
-
-    String sub_string{ "MeetixOS C++", 8 };
-    VERIFY_FALSE(sub_string.is_empty());
-    VERIFY_EQUAL(sub_string.len(), 8);
-    VERIFY_EQUAL(sub_string, "MeetixOS");
-
-    empty_string = "Hello world!";
-    VERIFY_FALSE(empty_string.is_empty());
-    VERIFY_EQUAL(empty_string, "Hello world!"sv);
-
-    empty_string = "Hello OSDevelopers"sv;
-    VERIFY_FALSE(empty_string.is_empty());
-    VERIFY_EQUAL(empty_string, "Hello OSDevelopers"sv);
-}
-
 TEST_CASE(swap) {
-    String string{ "Hello World!" };
-    String string_2{ "Oh My God!" };
+    auto string   = String::construct_from_view("Hello World!"sv);
+    auto string_2 = String::construct_from_view("Oh My God!"sv);
 
-    VERIFY_EQUAL(string, "Hello World!");
-    VERIFY_EQUAL(string_2, "Oh My God!");
+    VERIFY_EQUAL(string, "Hello World!"sv);
+    VERIFY_EQUAL(string_2, "Oh My God!"sv);
 
     string.swap(string_2);
 
-    VERIFY_EQUAL(string, "Oh My God!");
-    VERIFY_EQUAL(string_2, "Hello World!");
+    VERIFY_EQUAL(string, "Oh My God!"sv);
+    VERIFY_EQUAL(string_2, "Hello World!"sv);
 }
 
 TEST_CASE(at_and_braces) {
-    String string{ "MeetixOS C++" };
+    auto const string = String::construct_from_view("MeetixOS C++"sv);
     VERIFY_EQUAL(string[0], 'M');
     VERIFY_EQUAL(string[1], 'e');
     VERIFY_EQUAL(string[2], 'e');
@@ -120,16 +88,16 @@ TEST_CASE(at_and_braces) {
 }
 
 TEST_CASE(compare) {
-    String string{ "Hello world OSDev" };
+    auto const string = String::construct_from_view("Hello world OSDev"sv);
 
-    VERIFY_EQUAL(string.compare("Hello"), 1);
-    VERIFY_EQUAL(string.compare(""), 1);
-    VERIFY_EQUAL(string.compare("Hello world OSDev"), 0);
-    VERIFY_EQUAL(string.compare("Hello world OSDeveloper"), -1);
+    VERIFY_EQUAL(string.compare("Hello"sv), 1);
+    VERIFY_EQUAL(string.compare(""sv), 1);
+    VERIFY_EQUAL(string.compare("Hello world OSDev"sv), 0);
+    VERIFY_EQUAL(string.compare("Hello world OSDeveloper"sv), -1);
 
-    String less_string{ "Hello" };
-    String more_string{ "Hello world OSDeveloper" };
-    String equal_string{ "Hello World OSDev" };
+    auto const less_string  = String::construct_from_view("Hello"sv);
+    auto const more_string  = String::construct_from_view("Hello world OSDeveloper"sv);
+    auto const equal_string = String::construct_from_view("Hello World OSDev"sv);
 
     VERIFY_LESS(less_string, string);
     VERIFY_GREATER(more_string, string);
@@ -138,219 +106,120 @@ TEST_CASE(compare) {
 }
 
 TEST_CASE(equals_ignore_case) {
-    String string{ "Next generation Operating System" };
+    auto const string = String::construct_from_view("Next generation Operating System"sv);
 
-    VERIFY(string.equals_ignore_case("nExT GeneRAtIoN OpERatiNg SYStem"));
+    VERIFY(string.equals_ignore_case("nExT GeneRAtIoN OpERatiNg SYStem"sv));
 }
 
 TEST_CASE(sub_string) {
-    String string{ "SplittableString" };
+    auto const string = String::construct_from_view("SplittableString"sv);
 
-    VERIFY_EQUAL(string.sub_string(10), "String");
-    VERIFY_EQUAL(string.sub_string(3, 10), "ittableStr");
+    VERIFY_EQUAL(string.sub_string(10), "String"sv);
+    VERIFY_EQUAL(string.sub_string(3, 10), "ittableStr"sv);
 
     VERIFY_EQUAL(string.sub_string_view(5, 3), "tab"sv);
     VERIFY_EQUAL(string.sub_string_view(10, 6), "String"sv);
 
-    auto error_or_sub_string = string.try_sub_string(12);
-    VERIFY(error_or_sub_string.is_value());
-
-    auto sub_string = error_or_sub_string.unwrap_value();
-    VERIFY_EQUAL(sub_string, "ring");
+    VERIFY_IS_VALUE_EQUAL(string.try_sub_string(12), "ring"sv);
 }
 
 TEST_CASE(trim) {
-    String string{ "   \tYeah Buddy! \n \f \r" };
+    auto const string = String::construct_from_view("   \tYeah Buddy! \n \f \r"sv);
+    VERIFY_EQUAL(string.trim_whitespaces(), "Yeah Buddy!"sv);
 
-    VERIFY_EQUAL(string.trim_whitespaces(), "Yeah Buddy!");
+    auto const string_2 = String::construct_from_view("---Yeah Buddy+++"sv);
+    VERIFY_EQUAL(string_2.trim("-+"sv, TrimMode::Left), "Yeah Buddy+++"sv);
+    VERIFY_EQUAL(string_2.trim("-+"sv, TrimMode::Right), "---Yeah Buddy"sv);
+    VERIFY_EQUAL(string_2.trim("-+"sv, TrimMode::Both), "Yeah Buddy"sv);
 
-    String string_2{ "---Yeah Buddy+++" };
-    VERIFY_EQUAL(string_2.trim("-+", TrimMode::Left), "Yeah Buddy+++");
-    VERIFY_EQUAL(string_2.trim("-+", TrimMode::Right), "---Yeah Buddy");
-    VERIFY_EQUAL(string_2.trim("-+", TrimMode::Both), "Yeah Buddy");
+    auto const string_3 = String::construct_from_view("  \vDestroy  \nEverything "sv);
+    VERIFY_IS_VALUE_EQUAL(string_3.try_trim_whitespaces(), "Destroy  \nEverything"sv);
 
-    String string_3{ "  \vDestroy  \nEverything " };
-
-    auto error_or_trim_string = string_3.try_trim_whitespaces();
-    VERIFY(error_or_trim_string.is_value());
-
-    auto trim_string = error_or_trim_string.unwrap_value();
-    VERIFY_EQUAL(trim_string, "Destroy  \nEverything");
-
-    String string_4{ "//////Path/To/Sub....." };
-
-    auto error_or_trim_string_2 = string_4.try_trim("./");
-    VERIFY(error_or_trim_string_2.is_value());
-
-    auto trim_string_2 = error_or_trim_string_2.unwrap_value();
-    VERIFY_EQUAL(trim_string_2, "Path/To/Sub");
+    auto const string_4 = String::construct_from_view("//////Path/To/Sub....."sv);
+    VERIFY_IS_VALUE_EQUAL(string_4.try_trim("./"sv), "Path/To/Sub"sv);
 }
 
 TEST_CASE(starts_with) {
-    String string{};
-    string = "Hi I'm a StringView test"sv;
+    auto const string = String::construct_from_view("Hi I'm a StringView test"sv);
 
     VERIFY(string.starts_with('H'));
     VERIFY(string.starts_with('h', CaseSensitivity::Insensitive));
-    VERIFY(string.starts_with("Hi"));
-    VERIFY(string.starts_with("hi i'm a", CaseSensitivity::Insensitive));
+    VERIFY(string.starts_with("Hi"sv));
+    VERIFY(string.starts_with("hi i'm a"sv, CaseSensitivity::Insensitive));
 }
 
 TEST_CASE(ends_with) {
-    String string{ "Beautiful world and beautiful country" };
+    auto const string = String::construct_from_view("Beautiful world and beautiful country"sv);
 
     VERIFY(string.ends_with('y'));
     VERIFY(string.ends_with('Y', CaseSensitivity::Insensitive));
-    VERIFY(string.ends_with("country"));
-    VERIFY(string.ends_with("BeAuTifUl cOuNtRy", CaseSensitivity::Insensitive));
+    VERIFY(string.ends_with("country"sv));
+    VERIFY(string.ends_with("BeAuTifUl cOuNtRy"sv, CaseSensitivity::Insensitive));
 }
 
 TEST_CASE(as_int) {
-    String i8_string{ "67" };
-    auto   i8_or_none = i8_string.as_int<i8>();
-    VERIFY(i8_or_none.is_present());
-    VERIFY_EQUAL(i8_or_none.value(), 67);
-
-    i8_string  = "-43";
-    i8_or_none = i8_string.as_int<i8>();
-    VERIFY(i8_or_none.is_present());
-    VERIFY_EQUAL(i8_or_none.value(), -43);
-
-    i8_string  = "\n 88";
-    i8_or_none = i8_string.as_int<i8>(TrimWhitespace::No);
-    VERIFY_FALSE(i8_or_none.is_present());
-
-    i8_string  = "3l2r";
-    i8_or_none = i8_string.as_int<i8>();
-    VERIFY_FALSE(i8_or_none.is_present());
-
-    i8_string  = "384";
-    i8_or_none = i8_string.as_int<i8>();
-    VERIFY_FALSE(i8_or_none.is_present());
-
-    String i32_string{ " \v \r89\n" };
-    auto   i32_or_none = i32_string.as_int();
-    VERIFY(i32_or_none.is_present());
-    VERIFY_EQUAL(i32_or_none.value(), 89);
-
-    i32_string  = "-89654";
-    i32_or_none = i32_string.as_int();
-    VERIFY(i32_or_none.is_present());
-    VERIFY_EQUAL(i32_or_none.value(), -89654);
+    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("67"sv).as_int<i8>(), 67);
+    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("-43"sv).as_int<i8>(), -43);
+    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("\n 88"sv).as_int<i8>(), 88);
+    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view(" \v \r89\n"sv).as_int(), 89);
+    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("-89654"sv).as_int(), -89654);
+    VERIFY_IS_NONE(String::construct_from_view("\n 88"sv).as_int<i8>(TrimWhitespace::No));
+    VERIFY_IS_NONE(String::construct_from_view("384"sv).as_int<i8>());
 }
 
 TEST_CASE(as_uint) {
-    String u16_string{ "6752" };
-    auto   u16_or_none = u16_string.as_uint<u16>();
-    VERIFY(u16_or_none.is_present());
-    VERIFY_EQUAL(u16_or_none.value(), 6752);
-
-    u16_string  = "-35";
-    u16_or_none = u16_string.as_uint<u16>();
-    VERIFY_FALSE(u16_or_none.is_present());
-
-    String u64_string{ "8652164" };
-    auto   u64_or_none = u64_string.as_uint<u64>();
-    VERIFY(u64_or_none.is_present());
-    VERIFY_EQUAL(u64_or_none.value(), 8652164);
-
-    u64_string  = "00000657";
-    u64_or_none = u64_string.as_uint<u64>();
-    VERIFY(u64_or_none.is_present());
-    VERIFY_EQUAL(u64_or_none.value(), 657);
-
-    u64_string  = "56x7J9";
-    u64_or_none = u64_string.as_uint<u64>();
-    VERIFY_FALSE(u64_or_none.is_present());
+    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("6752"sv).as_uint<u16>(), 6752);
+    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("8652164"sv).as_uint<u64>(), 8652164);
+    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("00000657"sv).as_uint<u64>(), 657);
+    VERIFY_IS_NONE(String::construct_from_view("-35"sv).as_uint());
+    VERIFY_IS_NONE(String::construct_from_view("56x7J9"sv).as_uint());
 }
 
 TEST_CASE(as_uint_from_hex) {
-    String string{ "0x1a2b3c" };
-    auto   u32_or_none = string.as_uint_from_hex();
-    VERIFY(u32_or_none.is_present());
-    VERIFY_EQUAL(u32_or_none.value(), 0x1a2b3c);
-
-    string      = "0f6d7a";
-    u32_or_none = string.as_uint_from_hex();
-    VERIFY(u32_or_none.is_present());
-    VERIFY_EQUAL(u32_or_none.value(), 0x0f6d7a);
-
-    string      = "i94hr";
-    u32_or_none = string.as_uint_from_hex();
-    VERIFY_FALSE(u32_or_none.is_present());
-
-    string      = "0x";
-    u32_or_none = string.as_uint_from_hex();
-    VERIFY_FALSE(u32_or_none.is_present());
+    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("0x1a2b3c"sv).as_uint_from_hex(), 0x1a2b3c);
+    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("0f6d7a"sv).as_uint_from_hex(), 0x0f6d7a);
+    VERIFY_IS_NONE(String::construct_from_view("i94hr"sv).as_uint_from_hex());
+    VERIFY_IS_NONE(String::construct_from_view("0x"sv).as_uint_from_hex());
 }
 
 TEST_CASE(as_uint_from_octal) {
-    String string{ "0612" };
-    auto   u32_or_none = string.as_uint_from_octal();
-    VERIFY(u32_or_none.is_present());
-    VERIFY_EQUAL(u32_or_none.value(), 0612);
-
-    string      = "35172";
-    u32_or_none = string.as_uint_from_octal();
-    VERIFY(u32_or_none.is_present());
-    VERIFY_EQUAL(u32_or_none.value(), 035172);
-
-    string      = "12634529";
-    u32_or_none = string.as_uint_from_octal();
-    VERIFY_FALSE(u32_or_none.is_present());
+    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("0612"sv).as_uint_from_octal(), 0612);
+    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("35172"sv).as_uint_from_octal(), 035172);
+    VERIFY_IS_NONE(String::construct_from_view("12634529"sv).as_uint_from_octal());
 }
 
 TEST_CASE(find) {
-    String string{ "Hi everyone, this is a string" };
+    auto const string = String::construct_from_view("Hi everyone, this is a string"sv);
 
-    auto index_or_none = string.find('i');
-    VERIFY(index_or_none.is_present());
-    VERIFY_EQUAL(index_or_none.value(), 1);
-
-    index_or_none = string.find('a');
-    VERIFY(index_or_none.is_present());
-    VERIFY_EQUAL(index_or_none.value(), 21);
-
-    index_or_none = string.find('a', 35);
-    VERIFY_FALSE(index_or_none.is_present());
-
-    index_or_none = string.find("this");
-    VERIFY(index_or_none.is_present());
-    VERIFY_EQUAL(index_or_none.value(), 13);
-
-    index_or_none = string.find("tr");
-    VERIFY(index_or_none.is_present());
-    VERIFY_EQUAL(index_or_none.value(), 24);
+    VERIFY_IS_PRESENT_EQUAL(string.find('i'), 1);
+    VERIFY_IS_PRESENT_EQUAL(string.find('a'), 21);
+    VERIFY_IS_PRESENT_EQUAL(string.find("this"sv), 13);
+    VERIFY_IS_PRESENT_EQUAL(string.find("tr"sv), 24);
+    VERIFY_IS_PRESENT_EQUAL(string.find('a'), 21);
+    VERIFY_IS_NONE(string.find('a', 35));
 }
 
 TEST_CASE(find_last) {
-    String string{ "Hi everyone, this is a string" };
+    auto const string = String::construct_from_view("Hi everyone, this is a string"sv);
 
-    auto index_or_none = string.find_last('i');
-    VERIFY(index_or_none.is_present());
-    VERIFY_EQUAL(index_or_none.value(), 26);
-
-    index_or_none = string.find_last('a');
-    VERIFY(index_or_none.is_present());
-    VERIFY_EQUAL(index_or_none.value(), 21);
-
-    index_or_none = string.find_last('z');
-    VERIFY_FALSE(index_or_none.is_present());
+    VERIFY_IS_PRESENT_EQUAL(string.find_last('i'), 26);
+    VERIFY_IS_PRESENT_EQUAL(string.find_last('a'), 21);
+    VERIFY_IS_NONE(string.find_last('z'));
 }
 
 TEST_CASE(find_all) {
-    String string{ "AbaCibbo Holy AbaCucca ly" };
+    auto const string = String::construct_from_view("AbaCibbo Holy AbaCucca ly"sv);
 
-    auto positions = string.find_all("Aba");
+    auto positions = string.find_all("Aba"sv);
     VERIFY_FALSE(positions.is_empty());
     VERIFY_EQUAL(positions.count(), 2);
     VERIFY_EQUAL(positions.first(), 0);
     VERIFY_EQUAL(positions.last(), 14);
 
-    positions = string.find_all("xx");
+    positions = string.find_all("xx"sv);
     VERIFY(positions.is_empty());
 
-    auto error_or_positions = string.try_find_all("ly");
+    auto error_or_positions = string.try_find_all("ly"sv);
     VERIFY(error_or_positions.is_value());
 
     positions = error_or_positions.unwrap_value();
@@ -360,43 +229,21 @@ TEST_CASE(find_all) {
 }
 
 TEST_CASE(to_lowercase) {
-    String string{ "HI TO EVERYONE" };
-
-    auto error_or_lowercase_string = string.try_to_lowercase();
-    VERIFY(error_or_lowercase_string.is_value());
-
-    auto lowercase_string = error_or_lowercase_string.unwrap_value();
-    VERIFY_EQUAL(lowercase_string, "hi to everyone");
-
-    VERIFY_EQUAL(string.to_lowercase(), "hi to everyone");
-
-    string = "Hi tO EvErYOnE";
-    VERIFY_EQUAL(string.to_lowercase(), "hi to everyone");
-
-    string = "Hi tO 6 % $ EvErYOnE 67";
-    VERIFY_EQUAL(string.to_lowercase(), "hi to 6 % $ everyone 67");
+    VERIFY_EQUAL(String::construct_from_view("HI TO EVERYONE"sv).to_uppercase(), "hi to everyone"sv);
+    VERIFY_EQUAL(String::construct_from_view("hi to everyone"sv).to_uppercase(), "hi to everyone"sv);
+    VERIFY_EQUAL(String::construct_from_view("Hi tO EvErYOnE"sv).to_uppercase(), "hi to everyone"sv);
+    VERIFY_EQUAL(String::construct_from_view("Hi tO 6 % $ EvErYOnE 67"sv).to_uppercase(), "hi to 6 % $ everyone 67"sv);
 }
 
 TEST_CASE(to_uppercase) {
-    String string{ "hi to everyone" };
-
-    auto error_or_uppercase_string = string.try_to_uppercase();
-    VERIFY(error_or_uppercase_string.is_value());
-
-    auto lowercase_string = error_or_uppercase_string.unwrap_value();
-    VERIFY_EQUAL(lowercase_string, "HI TO EVERYONE");
-
-    VERIFY_EQUAL(string.to_uppercase(), "HI TO EVERYONE");
-
-    string = "Hi tO EvErYOnE";
-    VERIFY_EQUAL(string.to_uppercase(), "HI TO EVERYONE");
-
-    string = "Hi tO 6 % $ EvErYOnE 67";
-    VERIFY_EQUAL(string.to_uppercase(), "HI TO 6 % $ EVERYONE 67");
+    VERIFY_EQUAL(String::construct_from_view("hi to everyone"sv).to_uppercase(), "HI TO EVERYONE"sv);
+    VERIFY_EQUAL(String::construct_from_view("HI TO EVERYONE"sv).to_uppercase(), "HI TO EVERYONE"sv);
+    VERIFY_EQUAL(String::construct_from_view("Hi tO EvErYOnE"sv).to_uppercase(), "HI TO EVERYONE"sv);
+    VERIFY_EQUAL(String::construct_from_view("Hi tO 6 % $ EvErYOnE 67"sv).to_uppercase(), "HI TO 6 % $ EVERYONE 67"sv);
 }
 
 TEST_CASE(contains) {
-    String string{ "Hi to everyone 1,2,3,4" };
+    auto const string = String::construct_from_view("Hi to everyone 1,2,3,4"sv);
 
     VERIFY(string.contains('1'));
     VERIFY(string.contains('e'));
@@ -404,17 +251,17 @@ TEST_CASE(contains) {
     VERIFY_FALSE(string.contains('x'));
     VERIFY_FALSE(string.contains('E', CaseSensitivity::Sensitive));
 
-    VERIFY(string.contains("to"));
-    VERIFY(string.contains("2,3,4"));
-    VERIFY(string.contains("eVeRyoNe", CaseSensitivity::Insensitive));
-    VERIFY_FALSE(string.contains("not"));
-    VERIFY_FALSE(string.contains("HI", CaseSensitivity::Sensitive));
+    VERIFY(string.contains("to"sv));
+    VERIFY(string.contains("2,3,4"sv));
+    VERIFY(string.contains("eVeRyoNe"sv, CaseSensitivity::Insensitive));
+    VERIFY_FALSE(string.contains("not"sv));
+    VERIFY_FALSE(string.contains("HI"sv, CaseSensitivity::Sensitive));
 }
 
 TEST_CASE(iterator) {
-    String string{ "0123456789" };
+    auto const string = String::construct_from_view("0123456789"sv);
 
-    char expected_value = '0';
+    char i = '0';
     for ( auto c : string )
-        VERIFY_EQUAL(c, expected_value++);
+        VERIFY_EQUAL(c, i++);
 }

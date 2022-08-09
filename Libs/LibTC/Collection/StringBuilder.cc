@@ -54,7 +54,7 @@ auto StringBuilder::clear(KeepStorageCapacity keep_storage_capacity) {
     m_char_vector.clear(keep_storage_capacity);
 }
 
-auto StringBuilder::append(char c) {
+auto StringBuilder::append(char c) -> void {
     MUST(try_append(c));
 }
 
@@ -62,7 +62,7 @@ auto StringBuilder::try_append(char c) -> ErrorOr<void> {
     return m_char_vector.try_append(c);
 }
 
-auto StringBuilder::append(StringView string_view) {
+auto StringBuilder::append(StringView string_view) -> void {
     MUST(try_append(string_view));
 }
 

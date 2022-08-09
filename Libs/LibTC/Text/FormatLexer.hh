@@ -26,19 +26,26 @@ class FormatLexer : public Lexer {
 
 public:
     /**
-     * @brief Constructors
+     * @brief Error safe Factory functions
      */
-    explicit FormatLexer(StringView source_view);
+    [[nodiscard]] static constexpr auto construct_from_view(StringView source_view) -> FormatLexer {
+        return FormatLexer{ source_view };
+    }
 
     /**
      * @brief Consumes all the non format and escaped characters
      */
-    StringView consume_literal();
+    auto consume_literal() -> StringView;
 
     /**
      * @brief Consumes all the contiguous ASCII numbers
      */
-    bool consume_number(usize& value);
+    auto consume_number(usize& value) -> bool;
+
+private:
+    explicit constexpr FormatLexer(StringView source_view) noexcept
+        : Lexer{ source_view } {
+    }
 };
 
 } /* namespace Text */

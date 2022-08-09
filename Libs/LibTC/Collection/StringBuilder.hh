@@ -32,15 +32,15 @@ public:
     /**
      * @brief Non-error safe Factory functions
      */
-    static auto construct_empty() -> StringBuilder;
-    static auto construct_with_capacity(usize capacity) -> StringBuilder;
-    static auto construct_from_other(StringBuilder const& rhs) -> StringBuilder;
+    [[nodiscard]] static auto construct_empty() -> StringBuilder;
+    [[nodiscard]] static auto construct_with_capacity(usize capacity) -> StringBuilder;
+    [[nodiscard]] static auto construct_from_other(StringBuilder const& rhs) -> StringBuilder;
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<StringBuilder>;
-    static auto try_construct_from_other(StringBuilder const& rhs) -> ErrorOr<StringBuilder>;
+    [[nodiscard]] static auto try_construct_with_capacity(usize capacity) -> ErrorOr<StringBuilder>;
+    [[nodiscard]] static auto try_construct_from_other(StringBuilder const& rhs) -> ErrorOr<StringBuilder>;
 
     /**
      * @brief Move constructor and move assignment
@@ -64,13 +64,13 @@ public:
     /**
      * @brief Appends a character to the builder
      */
-    auto append(char c);
+    auto append(char c) -> void;
     auto try_append(char c) -> ErrorOr<void>;
 
     /**
      * @brief Appends a string to the builder
      */
-    auto append(StringView string_view);
+    auto append(StringView string_view) -> void;
     auto try_append(StringView string_view) -> ErrorOr<void>;
 
     /**

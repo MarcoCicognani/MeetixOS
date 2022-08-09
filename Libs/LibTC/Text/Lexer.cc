@@ -17,16 +17,12 @@
 
 namespace TC::Text {
 
-Lexer::Lexer(StringView source_view)
-    : m_source_view{ Cxx::move(source_view) } {
-}
-
-char Lexer::consume() {
+auto Lexer::consume() -> char {
     VERIFY_FALSE(is_end());
     return m_source_view[m_index++];
 }
 
-bool Lexer::consume_specific(char c) {
+auto Lexer::consume_specific(char c) -> bool {
     if ( !next_is(c) )
         return false;
     else {
@@ -35,7 +31,7 @@ bool Lexer::consume_specific(char c) {
     }
 }
 
-bool Lexer::consume_specific(StringView word) {
+auto Lexer::consume_specific(StringView word) -> bool {
     if ( !next_is(word) )
         return false;
     else {
@@ -44,7 +40,7 @@ bool Lexer::consume_specific(StringView word) {
     }
 }
 
-StringView Lexer::consume_all() {
+auto Lexer::consume_all() -> StringView {
     if ( is_end() )
         return {};
 
@@ -53,7 +49,7 @@ StringView Lexer::consume_all() {
     return remaining_view;
 }
 
-StringView Lexer::consume_line() {
+auto Lexer::consume_line() -> StringView {
     usize start_index = m_index;
     while ( !is_end() && peek() != '\r' && peek() != '\n' )
         ++m_index;
@@ -67,7 +63,7 @@ StringView Lexer::consume_line() {
         return m_source_view.sub_string_view(start_index, len);
 }
 
-StringView Lexer::consume_until(char c) {
+auto Lexer::consume_until(char c) -> StringView {
     usize start_index = m_index;
     while ( !is_end() && next_is(c) )
         ++m_index;
@@ -79,7 +75,7 @@ StringView Lexer::consume_until(char c) {
         return m_source_view.sub_string_view(start_index, len);
 }
 
-StringView Lexer::consume_until(StringView word) {
+auto Lexer::consume_until(StringView word) -> StringView {
     usize start_index = m_index;
     while ( !is_end() && next_is(word) )
         ++m_index;
@@ -91,36 +87,36 @@ StringView Lexer::consume_until(StringView word) {
         return m_source_view.sub_string_view(start_index, len);
 }
 
-void Lexer::ignore(usize count) {
+auto Lexer::ignore(usize count) -> void {
     m_index += min(count, m_source_view.len() - m_index);
 }
 
-void Lexer::ignore_until(char stop_c) {
+auto Lexer::ignore_until(char stop_c) {
     while ( !is_end() && !next_is(stop_c) )
         ++m_index;
 
     ignore();
 }
 
-void Lexer::ignore_until(StringView stop_word) {
+auto Lexer::ignore_until(StringView stop_word) {
     while ( !is_end() && !next_is(stop_word) )
         ++m_index;
 
     ignore(stop_word.len());
 }
 
-char Lexer::peek(usize offset) const {
+auto Lexer::peek(usize offset) const -> char {
     if ( m_index + offset < m_source_view.len() )
         return m_source_view[m_index + offset];
     else
         return '\0';
 }
 
-bool Lexer::next_is(char c) const {
+auto Lexer::next_is(char c) const -> bool {
     return peek() == c;
 }
 
-bool Lexer::next_is(StringView word) const {
+auto Lexer::next_is(StringView word) const -> bool {
     for ( usize i = 0; i < word.len(); ++i ) {
         if ( peek(i) != word[i] )
             return false;
@@ -128,23 +124,23 @@ bool Lexer::next_is(StringView word) const {
     return true;
 }
 
-StringView Lexer::remaining() const {
+auto Lexer::remaining() const -> StringView {
     return m_source_view.sub_string_view(m_index);
 }
 
-StringView Lexer::source_view() const {
+auto Lexer::source_view() const -> StringView {
     return m_source_view;
 }
 
-usize Lexer::index() const {
+auto Lexer::index() const -> usize {
     return m_index;
 }
 
-usize Lexer::left_char_count() const {
+auto Lexer::left_char_count() const -> usize {
     return m_source_view.len() - m_index;
 }
 
-bool Lexer::is_end() const {
+auto Lexer::is_end() const -> bool {
     return m_index >= m_source_view.len();
 }
 

@@ -31,11 +31,10 @@ TEST_CASE(value_and_error) {
 
 TEST_CASE(unwrap_value) {
     struct USize {
-    public:
         usize m_value{ 0 };
     };
 
-    ErrorOr<USize> error_or_usize{ USize{ 0xcafebabe } };
+    ErrorOr<USize> error_or_usize = USize{ 0xcafebabe };
     VERIFY(error_or_usize.is_value());
 
     auto& usize_ref = error_or_usize.value();
@@ -50,7 +49,7 @@ TEST_CASE(unwrap_value) {
 }
 
 TEST_CASE(unwrap_error) {
-    ErrorOr<i32> error_or_i32{ Error{ ENOENT, "No Entry Found" } };
+    ErrorOr<i32> error_or_i32 = Error{ ENOENT, "No Entry Found" };
     VERIFY(error_or_i32.is_error());
 
     auto& error = error_or_i32.error();
@@ -65,7 +64,7 @@ TEST_CASE(unwrap_error) {
 }
 
 TEST_CASE(reference_as_value) {
-    NonNullBox<i32> boxed_i32{ FromArgs, 123 };
+    auto boxed_i32 = NonNullBox<i32>::construct_from_args(123);
 
     auto& i32_ref = boxed_i32.as_ref();
 
@@ -100,6 +99,6 @@ TEST_CASE(assignment_operator) {
     error_or_void = Error{ EINVAL };
     VERIFY_IS_ERROR_EQUAL(error_or_void, EINVAL);
 
-    ErrorOr<NonNullBox<i32>> error_or_boxed_i32{ NonNullBox<i32>{ FromArgs, 64 } };
+    ErrorOr<NonNullBox<i32>> error_or_boxed_i32 = NonNullBox<i32>::construct_from_args(64);
     VERIFY(error_or_boxed_i32.is_value());
 }

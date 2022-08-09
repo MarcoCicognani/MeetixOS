@@ -18,6 +18,7 @@
 #include <LibTC/DenyCopy.hh>
 #include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
+#include <LibTC/Functional/Must.hh>
 
 namespace TC {
 namespace Memory {
@@ -31,10 +32,10 @@ public:
      * @brief Non-error safe Factory functions
      */
     template<typename... TArgs>
-    static auto construct_from_args(TArgs... args) -> NonNullBox<T> {
+    [[nodiscard]] static auto construct_from_args(TArgs... args) -> NonNullBox<T> {
         return MUST(try_construct_from_args(Cxx::forward<TArgs>(args)...));
     }
-    static auto construct_from_adopt(T& unboxed_ref) -> NonNullBox<T> {
+    [[nodiscard]] static auto construct_from_adopt(T& unboxed_ref) -> NonNullBox<T> {
         return NonNullBox<T>{ &unboxed_ref };
     }
 
@@ -42,7 +43,7 @@ public:
      * @brief Error safe Factory functions
      */
     template<typename... TArgs>
-    static auto try_construct_from_args(TArgs... args) -> ErrorOr<NonNullBox<T>> {
+    [[nodiscard]] static auto try_construct_from_args(TArgs... args) -> ErrorOr<NonNullBox<T>> {
         auto unboxed_ptr = new (nothrow) T{ forward<TArgs>(args)... };
         if ( unboxed_ptr != nullptr ) [[likely]]
             return NonNullBox<T>{ unboxed_ptr };

@@ -14,16 +14,11 @@
 
 namespace TC::Text {
 
-bool FormatParser::Specifications::display_as_is_numeric() const {
-    return m_display_as == DisplayAs::Binary || m_display_as == DisplayAs::BinaryUpperCase || m_display_as == DisplayAs::Octal
-        || m_display_as == DisplayAs::Decimal || m_display_as == DisplayAs::Hex || m_display_as == DisplayAs::HexUpperCase;
-}
-
 FormatParser::FormatParser(FormatLexer& format_lexer)
     : m_format_lexer{ format_lexer } {
 }
 
-ErrorOr<FormatParser::Specifications> FormatParser::try_parse() {
+auto FormatParser::try_parse() -> ErrorOr<FormatParser::Specifications> {
     if ( !m_format_lexer.consume_specific('{') )
         return Error{ EINVAL };
 
@@ -55,13 +50,13 @@ ErrorOr<FormatParser::Specifications> FormatParser::try_parse() {
         return specifications;
 }
 
-void FormatParser::parse_alignment_fill(FormatParser::Specifications& specifications) {
+auto FormatParser::parse_alignment_fill(FormatParser::Specifications& specifications) -> void {
     /* eat the fill character for alignment if the after next character is an alignment specifier */
     if ( "<^>"sv.contains(m_format_lexer.peek(1)) )
         specifications.m_alignment_fill = m_format_lexer.consume();
 }
 
-void FormatParser::parse_alignment(FormatParser::Specifications& specifications) {
+auto FormatParser::parse_alignment(FormatParser::Specifications& specifications) -> void {
     /* parse the alignment specification */
     if ( m_format_lexer.consume_specific('<') )
         specifications.m_alignment = Alignment::Left;
@@ -71,7 +66,7 @@ void FormatParser::parse_alignment(FormatParser::Specifications& specifications)
         specifications.m_alignment = Alignment::Right;
 }
 
-void FormatParser::parse_integer_sign(FormatParser::Specifications& specifications) {
+auto FormatParser::parse_integer_sign(FormatParser::Specifications& specifications) -> void {
     /* parse the sign specification */
     if ( m_format_lexer.consume_specific('-') )
         specifications.m_show_integer_sign = ShowIntegerSign::IfNegative;
@@ -81,25 +76,25 @@ void FormatParser::parse_integer_sign(FormatParser::Specifications& specificatio
         specifications.m_show_integer_sign = ShowIntegerSign::KeepSpace;
 }
 
-void FormatParser::parse_show_base(FormatParser::Specifications& specifications) {
+auto FormatParser::parse_show_base(FormatParser::Specifications& specifications) -> void {
     /* parse the show base specification */
     if ( m_format_lexer.consume_specific('#') )
         specifications.m_show_base = ShowBase::Yes;
 }
 
-void FormatParser::parse_zero_pad(Specifications& specifications) {
+auto FormatParser::parse_zero_pad(Specifications& specifications) -> void {
     /* parse the zero pad specification */
     if ( m_format_lexer.consume_specific('0') )
         specifications.m_zero_pad = ZeroPad::Yes;
 }
 
-void FormatParser::parse_width(FormatParser::Specifications& specifications) {
+auto FormatParser::parse_width(FormatParser::Specifications& specifications) -> void {
     /* parse the max width specification */
     if ( usize width; m_format_lexer.consume_number(width) )
         specifications.m_width = width;
 }
 
-void FormatParser::parse_display_as(FormatParser::Specifications& specifications) {
+auto FormatParser::parse_display_as(FormatParser::Specifications& specifications) -> void {
     /* parse the display as specification */
     if ( m_format_lexer.consume_specific('b') )
         specifications.m_display_as = DisplayAs::Binary;
@@ -125,6 +120,15 @@ void FormatParser::parse_display_as(FormatParser::Specifications& specifications
         specifications.m_display_as = DisplayAs::HexFloat;
     else if ( m_format_lexer.consume_specific('A') )
         specifications.m_display_as = DisplayAs::HexFloatUpperCase;
+}
+
+auto FormatParser::Specifications::display_as_is_numeric() const -> bool {
+    return m_display_as == DisplayAs::Binary
+        || m_display_as == DisplayAs::BinaryUpperCase
+        || m_display_as == DisplayAs::Octal
+        || m_display_as == DisplayAs::Decimal
+        || m_display_as == DisplayAs::Hex
+        || m_display_as == DisplayAs::HexUpperCase;
 }
 
 } /* namespace TC::Text */
