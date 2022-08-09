@@ -11,10 +11,10 @@
 #
 
 cmake_minimum_required(VERSION 3.16.3)
-project(MeetixOS C CXX ASM ASM_NASM)
+project(MeetixOS C CXX ASM)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 
 include(Meta/CMake/CMakeUtils.txt)
 

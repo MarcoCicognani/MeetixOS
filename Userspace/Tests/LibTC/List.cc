@@ -152,7 +152,7 @@ TEST_CASE(erase_if) {
 
     auto list = List<Pair>::construct_from_list({ {}, { 'b', 1 }, { 'c', 2 }, { 'd', 3 }, { 'x', 3 }, { 'k', 3 }, { 'e', 4 }, { 'f', 5 } });
 
-    list.erase_if([](Pair const& p) -> bool { return p.m_key != 'd' && p.m_value == 3; });
+    list.erase_if([](Pair const& p) { return p.m_key != 'd' && p.m_value == 3; });
 
     VERIFY_EQUAL(list.count(), 6);
 }
@@ -181,7 +181,7 @@ TEST_CASE(find) {
     VERIFY_IS_NONE(list.find(4));
 
     auto const list2 = List<i32>::construct_from_list({ 1, 2, 3, 4 });
-    VERIFY_IS_PRESENT_EQUAL(list.find(2), 2);
+    VERIFY_IS_PRESENT_EQUAL(list2.find(2), 2);
 }
 
 TEST_CASE(find_if) {
@@ -197,7 +197,7 @@ TEST_CASE(find_if) {
     auto list = List<USize>::construct_from_list({ { 100 }, { 200 }, { 300 }, { 400 } });
     VERIFY_IS_PRESENT_EQUAL(list.find_if([](USize const& o) { return o == 400; }), 400);
 
-    auto& usize_value   = list.find_if([](USize& o) { return o == 100; }).value();
+    auto& usize_value   = list.find_if([](USize const& o) { return o == 100; }).value();
     usize_value.m_value = 500;
     VERIFY_IS_PRESENT_EQUAL(list.find_if([](USize const& o) { return o == 500; }), 500);
 

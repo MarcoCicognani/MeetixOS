@@ -250,12 +250,11 @@ public:
         if ( new_node == nullptr )
             return Error{ ENOMEM };
 
-        if ( m_tail_node == nullptr )
-            m_head_node = new_node;
-        else {
+        if ( m_tail_node != nullptr ) {
             m_tail_node->m_next_node = new_node;
             new_node->m_prev_node    = m_tail_node;
-        }
+        } else
+            m_head_node = new_node;
 
         m_tail_node = new_node;
         ++m_values_count;
@@ -273,12 +272,11 @@ public:
         if ( new_node == nullptr )
             return Error{ ENOMEM };
 
-        if ( m_head_node == nullptr )
-            m_tail_node = new_node;
-        else {
+        if ( m_head_node != nullptr ) {
             m_head_node->m_prev_node = new_node;
             new_node->m_next_node    = m_head_node;
-        }
+        } else
+            m_tail_node = new_node;
 
         m_head_node = new_node;
         ++m_values_count;
@@ -375,14 +373,14 @@ public:
      * @brief reverse for-each support
      */
     auto rbegin() -> ReverseIterator {
-        return ReverseIterator{ *this, m_head_node };
+        return ReverseIterator{ *this, m_tail_node };
     }
     auto rend() -> ReverseIterator {
         return ReverseIterator{ *this };
     }
 
     auto rbegin() const -> ConstReverseIterator {
-        return ConstReverseIterator{ *this, m_head_node };
+        return ConstReverseIterator{ *this, m_tail_node };
     }
     auto rend() const -> ConstReverseIterator {
         return ConstReverseIterator{ *this };

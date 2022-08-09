@@ -43,7 +43,7 @@ org 0x1000
 ; Initial setup
 BITS 16
 startup:
-	; Load the GDT
+    ; Load the GDT
     lgdt [gdtPointer]
 
     ; Enable protected mode
@@ -51,14 +51,14 @@ startup:
     or eax, 1
     mov cr0, eax
 
-	; Far-JMP into protected mode code
+    ; Far-JMP into protected mode code
     jmp 0x8:protectedStart
 
 
 ; Protected mode
 BITS 32
 protectedStart:
-	; Code segments were set by far JMP, set data segments
+    ; Code segments were set by far JMP, set data segments
     mov ax, 0x10
     mov ds, ax
     mov es, ax
@@ -66,72 +66,72 @@ protectedStart:
     mov gs, ax
     mov ss, ax
 
-	; Lock all cores
-	acquireLock:
+    ; Lock all cores
+    acquireLock:
     lock bts dword [interlock], 0
     jc acquireLock
 
-	    ; Set page directory
-	    mov eax, [0x500]
-	    mov cr3, eax
+        ; Set page directory
+        mov eax, [0x500]
+        mov cr3, eax
 
-		; Enable paging
-	    mov eax, cr0
-	    or eax, 0x80000000
-	    mov cr0, eax
+        ; Enable paging
+        mov eax, cr0
+        or eax, 0x80000000
+        mov cr0, eax
 
-	    ; Set "global pages" flag
-	    mov eax, cr4
-	    or eax, 80
-	    mov cr4, eax
+        ; Set "global pages" flag
+        mov eax, cr4
+        or eax, 80
+        mov cr4, eax
 
-		; Load stack from stack array
-		mov eax, [0x508]		; current index
-		shl eax, 2				; multiply by 4 (size of one entry)
-		mov esp, [0x50C + eax]	; move entry to ESP
-		mov ebp, esp
+        ; Load stack from stack array
+        mov eax, [0x508]        ; current index
+        shl eax, 2              ; multiply by 4 (size of one entry)
+        mov esp, [0x50C + eax]  ; move entry to ESP
+        mov ebp, esp
 
-		; Increment AP counter
-		inc dword [0x508]
+        ; Increment AP counter
+        inc dword [0x508]
 
-	; Release lock
+    ; Release lock
     lock btr dword [interlock], 0
 
-	; Jump to kernel
-	call [0x504]
+    ; Jump to kernel
+    call [0x504]
 
-	; AP should never exit, just for safety
-	hang:
-	hlt
-	jmp hang
+    ; AP should never exit, just for safety
+    hang:
+    hlt
+    jmp hang
 
 
 ; Inter-core synchronization
 interlock:
-	dd 0x00000000
+    dd 0x00000000
 
 
 ; Pointer to the GDT
 gdtPointer:
-	dw 24
-	dd gdt
+    dw 24
+    dd gdt
 
 ; Basic setup GDT
 gdt:
-	; null descriptor
-	dw 0x0000
-	dw 0x0000
-	dw 0x0000
-	dw 0x0000
+    ; null descriptor
+    dw 0x0000
+    dw 0x0000
+    dw 0x0000
+    dw 0x0000
 
-	; code descriptor
-	dw 0xFFFF
-	dw 0x0000
-	dw 0x9800
-	dw 0x00CF
+    ; code descriptor
+    dw 0xFFFF
+    dw 0x0000
+    dw 0x9800
+    dw 0x00CF
 
-	; data descriptor
-	dw 0xFFFF
-	dw 0x0000
-	dw 0x9200
-	dw 0x00CF
+    ; data descriptor
+    dw 0xFFFF
+    dw 0x0000
+    dw 0x9200
+    dw 0x00CF
