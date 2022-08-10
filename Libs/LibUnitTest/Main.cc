@@ -10,18 +10,15 @@
  * GNU General Public License version 3
  */
 
+#include <LibMain/Main.hh>
+#include <LibTC/Collection/Vector.hh>
+#include <LibTC/Cxx.hh>
 #include <LibUnitTest/Suite.hh>
-#include <stdio.h>
-#include <stdlib.h>
 
-int main(int argc, char const* const* argv) {
-    if ( argc == 0 || argv[0][0] == '\0' ) {
-        fprintf(stderr, "UnitTest - Bad or null test name, aborting\n");
-        return EXIT_FAILURE;
-    }
-
-    /* run the test suite */
-    auto result = UnitTest::Suite::inst().main(argc, argv);
-    UnitTest::Suite::finalize();
-    return result;
+/**
+ * @brief Test suite entry point, it only calls the run method
+ */
+auto entry(Vector<StringView> args) -> ErrorOr<void> {
+    TRY(UnitTest::Suite::inst().run(Cxx::move(args)));
+    return {};
 }

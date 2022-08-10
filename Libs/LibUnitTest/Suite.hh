@@ -13,29 +13,43 @@
 #pragma once
 
 #include <LibTC/Collection/Vector.hh>
+#include <LibTC/Functional/ErrorOr.hh>
+#include <LibTC/Memory/NonNullRef.hh>
 #include <LibUnitTest/Case.hh>
 
 namespace UnitTest {
 
 class Suite {
 public:
-    static Suite& inst();
-    static void   finalize();
+    /**
+     * @brief Singleton provider
+     */
+    static auto inst() -> Suite&;
 
-    int main(int argc, char const* const* argv);
+    /**
+     * @brief Runs the registered tests
+     */
+    auto run(Vector<StringView> args) -> ErrorOr<void>;
 
-    void add_case_to_suite(Case& test_case);
+    /**
+     * @brief Adds the given <test_case> to the tests to execute
+     */
+    auto add_case_to_suite(Case& test_case) -> void;
 
-    void current_test_must_fail();
+    /**
+     * @brief Called by the overloaded <VERIFY_> macros when the assertion fails
+     */
+    auto current_test_must_fail() -> void;
 
 private:
-    explicit constexpr Suite();
+    explicit constexpr Suite() noexcept;
 
 private:
-    static Suite* s_instance;
+    static Suite s_instance;
 
-    TC::Vector<Case*> m_test_cases;
-    bool              m_current_test_have_failed{ false };
+private:
+    Vector<Case*> m_test_cases;
+    bool          m_current_test_have_failed{ false };
 };
 
 } /* namespace UnitTest */

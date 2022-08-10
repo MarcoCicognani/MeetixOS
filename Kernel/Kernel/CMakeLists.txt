@@ -24,6 +24,7 @@ set(LIBTC_SOURCES
         ../../Libs/LibTC/Collection/StringView.cc
         ../../Libs/LibTC/Text/FormatParser.cc
         ../../Libs/LibTC/Text/Formatter.cc
+        ../../Libs/LibTC/Text/Format.cc
         ../../Libs/LibTC/Text/Lexer.cc
         ../../Libs/LibTC/Text/FormatLexer.cc
         ../../Libs/LibTC/SourceLocation.cc

@@ -10,5 +10,5 @@
 # GNU General Public License version 3
 #
 
-add_library(LibUnitTest STATIC Suite.cc Case.cc Main.cc)
-target_link_libraries(LibUnitTest LibTC LibFmtIO)
+add_library(LibMain STATIC Main.cc)
+target_link_libraries(LibMain LibC LibTC LibFmtIO)

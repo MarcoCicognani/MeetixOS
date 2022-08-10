@@ -10,23 +10,24 @@
  * GNU General Public License version 3
  */
 
+#include <LibTC/Cxx.hh>
 #include <LibUnitTest/Case.hh>
 #include <LibUnitTest/Suite.hh>
 
 namespace UnitTest {
 
-Case::Case(const char* name, bool is_benchmark)
-    : m_name{ name }
-    , m_is_benchmark{ is_benchmark } {
-    Suite::inst().add_case_to_suite(*this);
-}
-
-char const* Case::name() const {
+auto Case::name() const -> StringView {
     return m_name;
 }
 
-bool Case::is_benchmark() const {
+auto Case::is_benchmark() const -> bool {
     return m_is_benchmark;
+}
+
+Case::Case(StringView name, bool is_benchmark) noexcept
+    : m_name{ Cxx::move(name) }
+    , m_is_benchmark{ is_benchmark } {
+    Suite::inst().add_case_to_suite(*this);
 }
 
 } /* namespace UnitTest */

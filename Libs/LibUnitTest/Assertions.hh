@@ -12,8 +12,8 @@
 
 #pragma once
 
+#include <LibC/stdio.h>
 #include <LibUnitTest/Suite.hh>
-#include <stdio.h>
 
 #undef VERIFY
 #undef VERIFY_EQUAL
@@ -41,7 +41,7 @@
 
 #define VERIFY_EQUAL(first, second)                                                                                                        \
     do {                                                                                                                                   \
-        if ( !(first == second) ) [[unlikely]] {                                                                                           \
+        if ( !((first) == (second)) ) [[unlikely]] {                                                                                       \
             printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_EQUAL(\033[31m%s == %s\033[0m) Failed...\n",                             \
                    __FILE__,                                                                                                               \
                    __LINE__,                                                                                                               \
@@ -64,7 +64,7 @@
 
 #define VERIFY_GREATER(first, second)                                                                                                      \
     do {                                                                                                                                   \
-        if ( !(first > second) ) [[unlikely]] {                                                                                            \
+        if ( !((first) > (second)) ) [[unlikely]] {                                                                                        \
             printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_GREATER(\033[31m%s > %s\033[0m) Failed...\n",                            \
                    __FILE__,                                                                                                               \
                    __LINE__,                                                                                                               \
@@ -76,7 +76,7 @@
 
 #define VERIFY_GREATER_EQUAL(first, second)                                                                                                \
     do {                                                                                                                                   \
-        if ( !(first >= second) ) [[unlikely]] {                                                                                           \
+        if ( !((first) >= (second)) ) [[unlikely]] {                                                                                       \
             printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_GREATER_EQUAL(\033[31m%s >= %s\033[0m) Failed...\n",                     \
                    __FILE__,                                                                                                               \
                    __LINE__,                                                                                                               \
@@ -88,7 +88,7 @@
 
 #define VERIFY_LESS(first, second)                                                                                                         \
     do {                                                                                                                                   \
-        if ( !(first < second) ) [[unlikely]] {                                                                                            \
+        if ( !((first) < (second)) ) [[unlikely]] {                                                                                        \
             printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_LESS(\033[31m%s < %s\033[0m) Failed...\n",                               \
                    __FILE__,                                                                                                               \
                    __LINE__,                                                                                                               \
@@ -100,7 +100,7 @@
 
 #define VERIFY_LESS_EQUAL(first, second)                                                                                                   \
     do {                                                                                                                                   \
-        if ( !(first <= second) ) [[unlikely]] {                                                                                           \
+        if ( !((first) <= (second)) ) [[unlikely]] {                                                                                       \
             printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_LESS_EQUAL(\033[31m%s <= %s\033[0m) Failed...\n",                        \
                    __FILE__,                                                                                                               \
                    __LINE__,                                                                                                               \
@@ -112,7 +112,7 @@
 
 #define VERIFY_NOT_EQUAL(first, second)                                                                                                    \
     do {                                                                                                                                   \
-        if ( !(first != second) ) [[unlikely]] {                                                                                           \
+        if ( !((first) != (second)) ) [[unlikely]] {                                                                                       \
             printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_NOT_EQUAL(\033[31m%s != %s\033[0m) Failed...\n",                         \
                    __FILE__,                                                                                                               \
                    __LINE__,                                                                                                               \
@@ -124,7 +124,7 @@
 
 #define VERIFY_NOT_NULL(expression)                                                                                                        \
     do {                                                                                                                                   \
-        if ( !(expression != nullptr) ) [[unlikely]] {                                                                                     \
+        if ( !((expression) != nullptr) ) [[unlikely]] {                                                                                   \
             printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_NOT_NULL(\033[31m%s != nullptr\033[0m) Failed...\n",                     \
                    __FILE__,                                                                                                               \
                    __LINE__,                                                                                                               \
@@ -135,7 +135,7 @@
 
 #define VERIFY_NULL(expression)                                                                                                            \
     do {                                                                                                                                   \
-        if ( !(expression == nullptr) ) [[unlikely]] {                                                                                     \
+        if ( !((expression) == nullptr) ) [[unlikely]] {                                                                                   \
             printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_NULL(\033[31m%s == nullptr\033[0m) Failed...\n",                         \
                    __FILE__,                                                                                                               \
                    __LINE__,                                                                                                               \
@@ -159,7 +159,7 @@
 #define VERIFY_IS_PRESENT_EQUAL(expression, expected_value)                                                                                \
     do {                                                                                                                                   \
         auto value_or_none = (expression);                                                                                                 \
-        if ( !value_or_none.is_present() || !(value_or_none.value() == expected_value) ) [[unlikely]] {                                    \
+        if ( !value_or_none.is_present() || !(value_or_none.value() == (expected_value)) ) [[unlikely]] {                                  \
             printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_PRESENT_EQUAL(\033[31m%s == %s\033[0m) Failed...\n",                     \
                    __FILE__,                                                                                                               \
                    __LINE__,                                                                                                               \
@@ -190,7 +190,7 @@
 #define VERIFY_IS_VALUE_EQUAL(expression, expected_value)                                                                                  \
     do {                                                                                                                                   \
         auto error_or_value = (expression);                                                                                                \
-        if ( !error_or_value.is_value() || !(error_or_value.value() == expected_value) ) [[unlikely]] {                                    \
+        if ( !error_or_value.is_value() || !(error_or_value.value() == (expected_value)) ) [[unlikely]] {                                  \
             printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_VALUE_EQUAL(\033[31m%s == %s\033[0m) Failed...\n",                       \
                    __FILE__,                                                                                                               \
                    __LINE__,                                                                                                               \
@@ -203,7 +203,7 @@
 #define VERIFY_IS_ERROR_EQUAL(expression, expected_error)                                                                                  \
     do {                                                                                                                                   \
         auto error_or_value = (expression);                                                                                                \
-        if ( !error_or_value.is_error() || !(error_or_value.error() == expected_error) ) [[unlikely]] {                                    \
+        if ( !error_or_value.is_error() || !(error_or_value.error() == (expected_error)) ) [[unlikely]] {                                  \
             printf("\t\033[31mFAILURE\033[0m in %s:%d\n\t\tVERIFY_ERROR_EQUAL(\033[31m%s == %s\033[0m) Failed...\n",                       \
                    __FILE__,                                                                                                               \
                    __LINE__,                                                                                                               \

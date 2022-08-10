@@ -19,6 +19,7 @@
 #include <LibTC/DenyMove.hh>
 #include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
+#include <LibTC/Functional/Must.hh>
 #include <LibTC/IntTypes.hh>
 
 namespace TC {

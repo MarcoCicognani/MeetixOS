@@ -34,9 +34,10 @@ auto format(StringBuilder& string_builder, StringView literals_view) -> ErrorOr<
  * @brief Formats the given StringView and writes out into the given StringBuilder
  */
 template<typename... Args>
-auto format(StringBuilder& string_builder, StringView format_view, Args... variadic_args) -> ErrorOr<void> {
+auto format(StringBuilder& string_builder, StringView format_view, Args&&... variadic_args) -> ErrorOr<void> {
     auto format_lexer = FormatLexer::construct_from_view(format_view);
-    return format(string_builder, format_lexer, Cxx::forward<Args>(variadic_args)...);
+    TRY(format(string_builder, format_lexer, Cxx::forward<Args>(variadic_args)...));
+    return {};
 }
 
 /**
@@ -44,7 +45,7 @@ auto format(StringBuilder& string_builder, StringView format_view, Args... varia
  * variadic_args are > 0
  */
 template<typename T, typename... Args>
-auto format(StringBuilder& string_builder, FormatLexer& format_lexer, T first_arg, Args... variadic_args) -> ErrorOr<void> {
+auto format(StringBuilder& string_builder, FormatLexer& format_lexer, T first_arg, Args&&... variadic_args) -> ErrorOr<void> {
     /* consume all the non format literals */
     TRY(format(string_builder, format_lexer.consume_literal()));
 

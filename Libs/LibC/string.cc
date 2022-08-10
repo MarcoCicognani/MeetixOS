@@ -160,9 +160,9 @@ const void* memmem(const void* haystack, usize haystack_len, const void* needle,
     }
 
     if ( needle_len < 32 )
-        return Details::bitwise_memmem(haystack, haystack_len, needle, needle_len);
+        return ::Details::bitwise_memmem(haystack, haystack_len, needle, needle_len);
     else
-        return Details::kmp_memmem(reinterpret_cast<u8 const*>(haystack), haystack_len, reinterpret_cast<u8 const*>(needle), needle_len);
+        return ::Details::kmp_memmem(reinterpret_cast<u8 const*>(haystack), haystack_len, reinterpret_cast<u8 const*>(needle), needle_len);
 }
 
 char* strcpy(char* dest, const char* src) {

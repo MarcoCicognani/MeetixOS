@@ -23,3 +23,4 @@ add_library(LibTC STATIC
         Error.cc
         Hashing.cc
         SourceLocation.cc)
+target_link_libraries(LibTC LibC)

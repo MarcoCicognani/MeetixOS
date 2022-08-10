@@ -12,51 +12,73 @@
 
 #pragma once
 
-#define TEST_CASE(name)                                                                                                \
-    class TestCaseImpl##name : public UnitTest::Case {                                                                 \
-    public:                                                                                                            \
-        TestCaseImpl##name()                                                                                           \
-            : UnitTest::Case{ #name, false } {}                                                                        \
-                                                                                                                       \
-        ~TestCaseImpl##name() override = default;                                                                      \
-                                                                                                                       \
-        void run_test() override;                                                                                      \
-    };                                                                                                                 \
-                                                                                                                       \
-    static TestCaseImpl##name s_test_case_inst_##name{};                                                               \
-                                                                                                                       \
+#include <LibTC/Collection/StringView.hh>
+
+/**
+ * @brief Define a Case for testing an aspect of something
+ */
+#define TEST_CASE(name)                                                                                                                    \
+    class TestCaseImpl##name : public UnitTest::Case {                                                                                     \
+    public:                                                                                                                                \
+        [[nodiscard]] static auto construct_and_register() noexcept -> TestCaseImpl##name { return TestCaseImpl##name{}; }                 \
+                                                                                                                                           \
+        ~TestCaseImpl##name() override = default;                                                                                          \
+                                                                                                                                           \
+        void run_test() override;                                                                                                          \
+                                                                                                                                           \
+    private:                                                                                                                               \
+        explicit TestCaseImpl##name() noexcept                                                                                             \
+            : UnitTest::Case{ #name##sv, false } {}                                                                                        \
+    };                                                                                                                                     \
+    [[gnu::used]]                                                                                                                          \
+    static auto const s_test_case_inst_##name = TestCaseImpl##name::construct_and_register();                                              \
+                                                                                                                                           \
     void TestCaseImpl##name::run_test()
 
-#define BENCHMARK_CASE(name)                                                                                           \
-    class BenchmarkCaseImpl##name : public UnitTest::Case {                                                            \
-    public:                                                                                                            \
-        BenchmarkCaseImpl##name()                                                                                      \
-            : UnitTest::Case{ #name, true } {}                                                                         \
-                                                                                                                       \
-        ~BenchmarkCaseImpl##name() override = default;                                                                 \
-                                                                                                                       \
-        void run_test() override;                                                                                      \
-    };                                                                                                                 \
-                                                                                                                       \
-    static BenchmarkCaseImpl##name s_benchmark_case_inst_##name{};                                                     \
-                                                                                                                       \
+/**
+ * @brief Define a Case for testing the performances of something
+ */
+#define BENCHMARK_CASE(name)                                                                                                               \
+    class BenchmarkCaseImpl##name : public UnitTest::Case {                                                                                \
+    public:                                                                                                                                \
+        [[nodiscard]] static auto construct_and_register() noexcept -> BenchmarkCaseImpl##name { return BenchmarkCaseImpl##name{}; }       \
+                                                                                                                                           \
+        ~BenchmarkCaseImpl##name() override = default;                                                                                     \
+                                                                                                                                           \
+        void run_test() override;                                                                                                          \
+                                                                                                                                           \
+    private:                                                                                                                               \
+        explicit BenchmarkCaseImpl##name() noexcept                                                                                        \
+            : UnitTest::Case{ #name##sv, true } {}                                                                                         \
+    };                                                                                                                                     \
+    [[gnu::used]]                                                                                                                          \
+    static auto const s_benchmark_case_inst_##name = BenchmarkCaseImpl##name::construct_and_register();                                    \
+                                                                                                                                           \
     void BenchmarkCaseImpl##name::run_test()
 
 namespace UnitTest {
 
 class Case {
 public:
-    Case(char const* name, bool is_benchmark);
     virtual ~Case() = default;
 
+    /**
+     * @brief Test main
+     */
     virtual void run_test() = 0;
 
-    [[nodiscard]] char const* name() const;
-    [[nodiscard]] bool        is_benchmark() const;
+    /**
+     * @brief Getters
+     */
+    [[nodiscard]] auto name() const -> StringView;
+    [[nodiscard]] auto is_benchmark() const -> bool;
+
+protected:
+    explicit Case(StringView name, bool is_benchmark) noexcept;
 
 private:
-    char const* m_name{ nullptr }; /* REM use TC::Collection::String when implemented */
-    bool        m_is_benchmark{ false };
+    StringView m_name;
+    bool       m_is_benchmark{ false };
 };
 
 } /* namespace UnitTest */

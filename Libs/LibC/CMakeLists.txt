@@ -168,6 +168,7 @@ add_library(LibC
         sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc getopt.cc libgen.cc locale.cc pthread.cc sched.cc signal.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
+target_link_libraries(LibC LibApi LibMath)
 add_custom_command(
         TARGET LibC
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibC> ${TOOLCHAIN_LIB}/libc.a

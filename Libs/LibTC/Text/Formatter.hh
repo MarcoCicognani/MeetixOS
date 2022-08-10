@@ -274,7 +274,8 @@ public:
 
         /* forward to the integral formatter */
         Formatter<usize> formatter{ *this };
-        return formatter.format(bit_cast<usize>(value));
+        TRY(formatter.format(bit_cast<usize>(value)));
+        return {};
     }
 };
 
@@ -312,10 +313,27 @@ public:
     [[nodiscard]] auto format(unsigned char const* value) -> ErrorOr<void> {
         if ( display_as() == FormatParser::DisplayAs::Pointer ) {
             Formatter<usize> formatter{ *this };
-            return formatter.format(bit_cast<usize>(value));
+            TRY(formatter.format(bit_cast<usize>(value)));
         } else
-            return Formatter<StringView>::format(StringView{ bit_cast<char const*>(value), SIZE });
+            TRY(Formatter<StringView>::format(StringView{ bit_cast<char const*>(value), SIZE }));
+
+        return {};
     }
+};
+
+template<>
+class Formatter<Error> : public BaseFormatter {
+public:
+    /**
+     * @brief Constructors
+     */
+    using BaseFormatter::BaseFormatter;
+    explicit Formatter(BaseFormatter base_formatter);
+
+    /**
+     * @brief Performs the format on the given string-builder
+     */
+    [[nodiscard]] auto format(Error const& value) const -> ErrorOr<void>;
 };
 
 template<typename T>
@@ -345,7 +363,8 @@ public:
 
             TRY(element_formatter.format(element));
         }
-        return try_put_literal(" ]"sv);
+        TRY(try_put_literal(" ]"sv));
+        return {};
     }
 };
 
@@ -376,7 +395,8 @@ public:
 
             TRY(element_formatter.format(element));
         }
-        return try_put_literal(" ]"sv);
+        TRY(try_put_literal(" ]"sv));
+        return {};
     }
 };
 
@@ -407,7 +427,8 @@ public:
 
             TRY(element_formatter.format(element));
         }
-        return try_put_literal(" ]"sv);
+        TRY(try_put_literal(" ]"sv));
+        return {};
     }
 };
 
@@ -442,7 +463,8 @@ public:
             TRY(try_put_literal(": "sv));
             TRY(value_formatter.format(pair.m_value));
         }
-        return try_put_literal(" }"sv);
+        TRY(try_put_literal(" }"sv));
+        return {};
     }
 };
 
@@ -477,7 +499,8 @@ public:
             TRY(try_put_literal(": "sv));
             TRY(value_formatter.format(pair.m_value));
         }
-        return try_put_literal(" }"sv);
+        TRY(try_put_literal(" }"sv));
+        return {};
     }
 };
 
@@ -499,7 +522,9 @@ public:
         Formatter<T> formatter{ *this };
         TRY(formatter.format(value.begin().value()));
         TRY(try_put_literal(".."sv));
-        return formatter.format(value.end().value());
+        TRY(formatter.format(value.end().value()));
+
+        return {};
     }
 };
 
@@ -521,7 +546,9 @@ public:
         Formatter<T> formatter{ *this };
         TRY(formatter.format(value.begin().value()));
         TRY(try_put_literal("..="sv));
-        return formatter.format(value.end().value() - 1);
+        TRY( formatter.format(value.end().value() - 1));
+
+        return {};
     }
 };
 
@@ -559,7 +586,9 @@ public:
     [[nodiscard]] auto format(Vector<T> const& value) -> ErrorOr<void> {
         if ( display_as() == FormatParser::DisplayAs::Pointer ) {
             Formatter<T*> formatter{ *this };
-            return formatter.format(value.data());
+            TRY(formatter.format(value.data()));
+
+            return {};
         }
 
         TRY(try_put_literal("[ "sv));
@@ -574,7 +603,8 @@ public:
 
             TRY(element_formatter.format(element));
         }
-        return try_put_literal(" ]"sv);
+        TRY(try_put_literal(" ]"sv));
+        return {};
     }
 };
 
@@ -598,14 +628,16 @@ public:
 
             TRY(try_put_literal("Value("sv));
             TRY(value_formatter.format(value.value()));
-            return try_put_literal(")"sv);
+            TRY(try_put_literal(")"sv));
         } else {
             Formatter<E> error_formatter{ *this };
 
             TRY(try_put_literal("Error("sv));
             TRY(error_formatter.format(value.error()));
-            return try_put_literal(")"sv);
+            TRY(try_put_literal(")"sv));
         }
+
+        return {};
     }
 };
 
@@ -629,9 +661,11 @@ public:
 
             TRY(try_put_literal("Some("sv));
             TRY(value_formatter.format(value.value()));
-            return try_put_literal(")"sv);
+            TRY(try_put_literal(")"sv));
         } else
-            return try_put_literal("None"sv);
+            TRY(try_put_literal("None"sv));
+
+        return {};
     }
 };
 

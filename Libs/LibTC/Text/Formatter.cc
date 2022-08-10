@@ -16,6 +16,7 @@
 #include <LibTC/Cxx.hh>
 #include <LibTC/Functional/Try.hh>
 #include <LibTC/Math.hh>
+#include <LibTC/Text/Format.hh>
 #include <LibTC/Text/Formatter.hh>
 
 #ifndef IN_KERNEL
@@ -223,19 +224,20 @@ auto BaseFormatter::try_put_i64(i64                           value,
                                 FormatParser::Alignment       alignment,
                                 char                          alignment_fill,
                                 FormatParser::ShowIntegerSign integer_sign) -> ErrorOr<void> {
-    bool is_negative = value < 0;
-
     /* module of the value */
-    return try_put_u64(static_cast<u64>(is_negative ? -value : value),
-                       base,
-                       show_base_prefix,
-                       upper_case,
-                       zero_pad,
-                       min_width,
-                       alignment,
-                       alignment_fill,
-                       integer_sign,
-                       is_negative);
+    bool is_negative = value < 0;
+    TRY(try_put_u64(static_cast<u64>(is_negative ? -value : value),
+                    base,
+                    show_base_prefix,
+                    upper_case,
+                    zero_pad,
+                    min_width,
+                    alignment,
+                    alignment_fill,
+                    integer_sign,
+                    is_negative));
+
+    return {};
 }
 
 #ifndef IN_KERNEL
@@ -322,7 +324,8 @@ auto BaseFormatter::try_put_f64(double                        value,
     }
 
     /* put into this builder the values */
-    return try_put_string(string_builder.as_string_view(), min_width, 0xffffff, alignment, alignment_fill);
+    TRY(try_put_string(string_builder.as_string_view(), min_width, 0xffffff, alignment, alignment_fill));
+    return {};
 }
 
 auto BaseFormatter::try_put_f80(long double                   value,
@@ -402,7 +405,8 @@ auto BaseFormatter::try_put_f80(long double                   value,
     }
 
     /* put into this builder the values */
-    return try_put_string(string_builder.as_string_view(), min_width, 0xffffff, alignment, alignment_fill);
+    TRY(try_put_string(string_builder.as_string_view(), min_width, 0xffffff, alignment, alignment_fill));
+    return {};
 }
 #endif
 
@@ -509,7 +513,8 @@ Formatter<nullptr_t>::Formatter(BaseFormatter base_formatter)
 }
 
 auto Formatter<nullptr_t>::format(nullptr_t) -> ErrorOr<void> {
-    return try_put_string("nullptr"sv, width().value_or(0), precision().value_or(0xffffff), alignment(), alignment_fill());
+    TRY(try_put_string("nullptr"sv, width().value_or(0), precision().value_or(0xffffff), alignment(), alignment_fill()));
+    return {};
 }
 
 Formatter<StringView>::Formatter(BaseFormatter base_formatter)
@@ -527,7 +532,8 @@ auto Formatter<StringView>::format(StringView value) -> ErrorOr<void> {
          && display_as() != FormatParser::DisplayAs::Char )
         VERIFY_NOT_REACHED();
 
-    return try_put_string(value, width().value_or(0), precision().value_or(0xfffff), alignment(), alignment_fill());
+    TRY(try_put_string(value, width().value_or(0), precision().value_or(0xfffff), alignment(), alignment_fill()));
+    return {};
 }
 
 template<Integral T>
@@ -546,7 +552,9 @@ auto Formatter<T>::format(T value) -> ErrorOr<void> {
 
         /* forward to the string-view formatter */
         Formatter<StringView> formatter{ *this };
-        return formatter.format(StringView{ bit_cast<char const*>(&value), 1 });
+        TRY(formatter.format(StringView{ bit_cast<char const*>(&value), 1 }));
+
+        return {};
     }
 
     /* integral format does not support precision */
@@ -599,27 +607,29 @@ auto Formatter<T>::format(T value) -> ErrorOr<void> {
 
     /* put the number into the string-builder */
     if constexpr ( IsSame<MakeUnsigned<T>, T> ) {
-        return try_put_u64(value,
-                           base,
-                           show_base(),
-                           upper_case,
-                           zero_pad(),
-                           width().value_or(0),
-                           alignment(),
-                           alignment_fill(),
-                           show_integer_sign(),
-                           false);
+        TRY(try_put_u64(value,
+                        base,
+                        show_base(),
+                        upper_case,
+                        zero_pad(),
+                        width().value_or(0),
+                        alignment(),
+                        alignment_fill(),
+                        show_integer_sign(),
+                        false));
     } else {
-        return try_put_i64(value,
-                           base,
-                           show_base(),
-                           upper_case,
-                           zero_pad(),
-                           width().value_or(0),
-                           alignment(),
-                           alignment_fill(),
-                           show_integer_sign());
+        TRY(try_put_i64(value,
+                        base,
+                        show_base(),
+                        upper_case,
+                        zero_pad(),
+                        width().value_or(0),
+                        alignment(),
+                        alignment_fill(),
+                        show_integer_sign()));
     }
+
+    return {};
 }
 
 template class Formatter<u8>;
@@ -639,11 +649,13 @@ Formatter<bool>::Formatter(BaseFormatter base_formatter)
 auto Formatter<bool>::format(bool value) const -> ErrorOr<void> {
     if ( display_as_is_numeric() ) {
         Formatter<u8> formatter{ *this };
-        return formatter.format(static_cast<u8>(value));
+        TRY(formatter.format(static_cast<u8>(value)));
     } else {
         Formatter<StringView> formatter{ *this };
-        return formatter.format(value ? "true"sv : "false"sv);
+        TRY(formatter.format(value ? "true"sv : "false"sv));
     }
+
+    return {};
 }
 
 Formatter<char>::Formatter(BaseFormatter base_formatter)
@@ -653,11 +665,13 @@ Formatter<char>::Formatter(BaseFormatter base_formatter)
 auto Formatter<char>::format(char value) const -> ErrorOr<void> {
     if ( display_as_is_numeric() ) {
         Formatter<i8> formatter{ *this };
-        return formatter.format(value);
+        TRY(formatter.format(value));
     } else {
         Formatter<StringView> formatter{ *this };
-        return formatter.format(StringView{ &value, 1 });
+        TRY(formatter.format(StringView{ &value, 1 }));
     }
+
+    return {};
 }
 
 #ifndef IN_KERNEL
@@ -667,7 +681,9 @@ Formatter<float>::Formatter(BaseFormatter base_formatter)
 
 auto Formatter<float>::format(float value) const -> ErrorOr<void> {
     Formatter<double> formatter{ *this };
-    return formatter.format(static_cast<double>(value));
+    TRY(formatter.format(static_cast<double>(value)));
+
+    return {};
 }
 
 Formatter<double>::Formatter(BaseFormatter base_formatter)
@@ -695,15 +711,16 @@ auto Formatter<double>::format(double value) -> ErrorOr<void> {
     }
 
     /* put the double value into the string-builder */
-    return try_put_f64(value,
-                       base,
-                       upper_case,
-                       zero_pad(),
-                       alignment(),
-                       width().value_or(0),
-                       precision().value_or(6),
-                       alignment_fill(),
-                       show_integer_sign());
+    TRY(try_put_f64(value,
+                    base,
+                    upper_case,
+                    zero_pad(),
+                    alignment(),
+                    width().value_or(0),
+                    precision().value_or(6),
+                    alignment_fill(),
+                    show_integer_sign()));
+    return {};
 }
 
 Formatter<long double>::Formatter(BaseFormatter base_formatter)
@@ -731,27 +748,43 @@ auto Formatter<long double>::format(long double value) -> ErrorOr<void> {
     }
 
     /* put the double value into the string-builder */
-    return try_put_f80(value,
-                       base,
-                       upper_case,
-                       alignment(),
-                       width().value_or(0),
-                       precision().value_or(6),
-                       alignment_fill(),
-                       show_integer_sign());
+    TRY(try_put_f80(value,
+                    base,
+                    upper_case,
+                    alignment(),
+                    width().value_or(0),
+                    precision().value_or(6),
+                    alignment_fill(),
+                    show_integer_sign()));
+    return {};
 }
 #endif
 
 auto Formatter<char const*>::format(char const* value) -> ErrorOr<void> {
     if ( display_as() == FormatParser::DisplayAs::Pointer ) {
         Formatter<usize> formatter{ *this };
-        return formatter.format(bit_cast<usize>(value));
+        TRY(formatter.format(bit_cast<usize>(value)));
     } else
-        return Formatter<StringView>::format({ value, __builtin_strlen(value) });
+        TRY(Formatter<StringView>::format({ value, __builtin_strlen(value) }));
+
+    return {};
 }
 
 auto Formatter<StringBuilder>::format(StringBuilder const& value) -> ErrorOr<void> {
     return Formatter<StringView>::format(value.as_string_view());
+}
+
+Formatter<Error>::Formatter(BaseFormatter base_formatter)
+    : BaseFormatter{ Cxx::move(base_formatter) } {
+}
+
+auto Formatter<Error>::format(Error const& value) const -> ErrorOr<void> {
+    auto string_builder = StringBuilder::construct_empty();
+    TRY(Text::format(string_builder, "{}: {}"sv, value.string_literal(), static_cast<i32>(value.os_error())));
+
+    Formatter<StringView> formatter{ *this };
+    TRY(formatter.format(string_builder.as_string_view()));
+    return {};
 }
 
 } /* namespace TC::Text */

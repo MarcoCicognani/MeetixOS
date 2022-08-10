@@ -102,3 +102,5 @@ class Formatter;
 
 } /* namespace Text */
 } /* namespace TC */
+
+using namespace TC;

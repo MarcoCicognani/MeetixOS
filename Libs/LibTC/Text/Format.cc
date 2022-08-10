@@ -28,7 +28,8 @@ auto format(StringBuilder& string_builder, StringView literals_view) -> ErrorOr<
 }
 
 auto format(StringBuilder& string_builder, FormatLexer& format_lexer) -> ErrorOr<void> {
-    return format(string_builder, format_lexer.consume_all());
+    TRY(format(string_builder, format_lexer.consume_all()));
+    return {};
 }
 
 } /* namespace TC::Text */
