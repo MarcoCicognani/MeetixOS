@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <LibC/time.h>
+#include <time.h>
 
 #ifdef __cplusplus
 extern "C" {

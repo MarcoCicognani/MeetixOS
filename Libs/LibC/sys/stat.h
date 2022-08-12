@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include <LibC/fcntl.h>
-#include <LibC/stdint.h>
-#include <LibC/sys/types.h>
-#include <LibC/time.h>
+#include <fcntl.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <time.h>
 
 #ifdef __cplusplus
 extern "C" {

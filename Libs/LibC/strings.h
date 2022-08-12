@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <LibC/stdint.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

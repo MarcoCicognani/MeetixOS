@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <LibC/sys/stat.h>
-#include <LibC/sys/types.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {

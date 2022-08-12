@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <LibApi/Api/FileSystem.h>
-#include <LibApi/Api/StdInt.h>
+#include <Api/FileSystem.h>
+#include <Api/StdInt.h>
 
 #ifdef __cplusplus
 extern "C" {

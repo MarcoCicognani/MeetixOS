@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <LibApi/Api/signal.h>
+#include <Api/signal.h>
 
 #ifdef __cplusplus
 extern "C" {
