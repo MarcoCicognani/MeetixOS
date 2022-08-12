@@ -126,6 +126,7 @@ add_library(LibC
         stdlib/atof.cc
         string.cc
         unistd.cc
+        OptionsParser.cc
         abi_support.cc
         ctype.cc
         time/ctime.cc
