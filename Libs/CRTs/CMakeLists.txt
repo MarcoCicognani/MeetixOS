@@ -10,7 +10,7 @@
 # GNU General Public License version 3
 #
 
-add_library(crt0 STATIC crt0.S)
+add_library(crt0 STATIC crt0.cc)
 add_custom_command(
         TARGET crt0
         POST_BUILD
