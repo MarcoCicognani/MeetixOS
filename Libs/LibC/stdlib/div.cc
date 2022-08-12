@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <stdlib.h>
+#include <LibC/stdlib.h>
 
 extern "C" div_t div(int numer, int denom) {
     div_t result;

@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <getopt.h>
+#include <LibC/getopt.h>
 #include <string_view>
 #include <vector>
 

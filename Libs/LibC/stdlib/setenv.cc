@@ -11,7 +11,7 @@
  */
 
 #include <sstream>
-#include <stdlib.h>
+#include <LibC/stdlib.h>
 
 /* TODO find a better way to do this */
 

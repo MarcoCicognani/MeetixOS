@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <libgen.h>
-#include <string.h>
+#include <LibC/libgen.h>
+#include <LibC/string.h>
 #include <LibTC/Assertions.hh>
 
 static char s_dot[]   = ".";

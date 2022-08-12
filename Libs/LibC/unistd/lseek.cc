@@ -10,10 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <Api.h>
-#include <errno.h>
-#include <stdio.h>
-#include <unistd.h>
+#include <LibApi/Api.h>
+#include <LibC/errno.h>
+#include <LibC/stdio.h>
+#include <LibC/unistd.h>
 
 extern "C" off_t lseek(int fd, off_t offset, int whence) {
     FsSeekMode mode{};

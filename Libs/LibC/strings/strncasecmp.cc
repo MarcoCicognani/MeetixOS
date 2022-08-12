@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
-#include <strings.h>
+#include <LibC/ctype.h>
+#include <LibC/strings.h>
 
 extern "C" int strncasecmp(const char* str_a, const char* str_b, usize max) {
     for ( ; max--; ++str_a, ++str_b ) {

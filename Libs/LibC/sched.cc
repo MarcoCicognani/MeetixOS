@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <Api/User.h>
-#include <sched.h>
+#include <LibApi/Api/User.h>
+#include <LibC/sched.h>
 
 extern "C" {
 

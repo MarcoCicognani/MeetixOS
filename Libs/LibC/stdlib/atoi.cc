@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <errno.h>
-#include <limits.h>
-#include <stdlib.h>
+#include <LibC/errno.h>
+#include <LibC/limits.h>
+#include <LibC/stdlib.h>
 
 extern "C" int atoi(const char* str) {
     auto long_int = strtol(str, nullptr, 10);

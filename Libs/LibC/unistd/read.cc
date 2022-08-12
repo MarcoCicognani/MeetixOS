@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <Api.h>
-#include <errno.h>
-#include <unistd.h>
+#include <LibApi/Api.h>
+#include <LibC/errno.h>
+#include <LibC/unistd.h>
 
 extern "C" isize read(int fd, void* buf, usize count) {
     FsReadStatus read_status;

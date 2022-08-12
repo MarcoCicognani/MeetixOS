@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <Api.h>
-#include <malloc.h>
+#include <LibApi/Api.h>
+#include <LibC/malloc.h>
 
 #ifdef __cplusplus
 extern "C" {

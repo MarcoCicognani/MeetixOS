@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <Api/Common.h>
-#include <stdint.h>
+#include <LibApi/Api/Common.h>
+#include <LibC/stdint.h>
 #include <stddef.h>
 
 #ifdef __cplusplus

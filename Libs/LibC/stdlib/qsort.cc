@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <stdint.h>
-#include <stdlib.h>
+#include <LibC/stdint.h>
+#include <LibC/stdlib.h>
 
 static void swap(u8* x, u8* y, usize element_size) {
     auto a = x;

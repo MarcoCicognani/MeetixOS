@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <dir.h>
-#include <stdint.h>
-#include <sys/types.h>
+#include <LibC/dir.h>
+#include <LibC/stdint.h>
+#include <LibC/sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {

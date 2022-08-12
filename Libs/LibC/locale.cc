@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <Api.h>
-#include <locale.h>
+#include <LibApi/Api.h>
+#include <LibC/locale.h>
 
 extern "C" {
 

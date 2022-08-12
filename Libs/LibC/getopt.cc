@@ -12,7 +12,7 @@
 
 #include "OptionsParser.hh"
 
-#include <getopt.h>
+#include <LibC/getopt.h>
 
 extern "C" {
 char* g_optarg   = nullptr;

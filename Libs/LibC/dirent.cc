@@ -10,10 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <Api/FileSystem.h>
-#include <dirent.h>
-#include <errno.h>
-#include <string.h>
+#include <LibApi/Api/FileSystem.h>
+#include <LibC/dirent.h>
+#include <LibC/errno.h>
+#include <LibC/string.h>
 #include <LibTC/Assertions.hh>
 
 extern "C" {

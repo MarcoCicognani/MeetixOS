@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <Api.h>
-#include <errno.h>
-#include <unistd.h>
+#include <LibApi/Api.h>
+#include <LibC/errno.h>
+#include <LibC/unistd.h>
 
 extern "C" int close(int fd) {
     auto close_status = s_close(fd);

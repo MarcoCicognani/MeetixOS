@@ -10,8 +10,8 @@
 * GNU General Public License version 3
 */
 
-#include <Api.h>
-#include <sys/stat.h>
+#include <LibApi/Api.h>
+#include <LibC/sys/stat.h>
 
 extern "C" int fchmod(int, mode_t) {
    __NOT_IMPLEMENTED(fchmod);
