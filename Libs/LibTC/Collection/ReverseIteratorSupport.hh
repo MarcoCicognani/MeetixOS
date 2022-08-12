@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 namespace TC::Collection::ReverseIteratorSupport {
 
 template<typename TContainer>

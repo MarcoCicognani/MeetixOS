@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <libgen.h>
+#include <LibC/libgen.h>
+#include <LibC/string.h>
 #include <LibTC/Assertions.hh>
-#include <string.h>
 
 static char s_dot[]   = ".";
 static char s_slash[] = "/";

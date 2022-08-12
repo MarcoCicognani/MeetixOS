@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Assertions.hh>
 #include <LibTC/BitCast.hh>
 #include <LibTC/Collection/Enums/InsertResult.hh>
@@ -22,7 +24,6 @@
 #include <LibTC/Concept.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/DenyCopy.hh>
-#include <LibTC/Forward.hh>
 #include <LibTC/Functional/Must.hh>
 #include <LibTC/Functional/Option.hh>
 #include <LibTC/Functional/Try.hh>

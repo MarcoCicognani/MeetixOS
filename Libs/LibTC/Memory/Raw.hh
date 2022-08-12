@@ -18,6 +18,8 @@
 #    include <malloc.h>
 #endif
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/BitCast.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 

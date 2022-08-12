@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Concept.hh>
 #include <LibTC/Hashing.hh>
 #include <LibTC/IntTypes.hh>

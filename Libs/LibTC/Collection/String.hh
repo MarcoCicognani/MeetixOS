@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Collection/Enums/CaseSensitivity.hh>
 #include <LibTC/Collection/Enums/TrimMode.hh>
 #include <LibTC/Collection/Enums/TrimWhitespace.hh>
@@ -19,7 +21,6 @@
 #include <LibTC/Collection/StringStorage.hh>
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/DenyCopy.hh>
-#include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Option.hh>
 #include <LibTC/Hashing.hh>

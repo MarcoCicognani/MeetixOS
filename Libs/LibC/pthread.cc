@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <Api.h>
-#include <errno.h>
-#include <pthread.h>
+#include <LibApi/Api.h>
+#include <LibC/errno.h>
+#include <LibC/pthread.h>
 
 struct pthread_t {
     Tid            m_thread_id;
@@ -30,7 +30,8 @@ struct PThreadArgs {
     PThreadArgs(void* arg_ptr, pthread_t* pthread, PThreadFn user_routine)
         : m_arg_ptr{ arg_ptr }
         , m_pthread{ pthread }
-        , m_user_routine{ user_routine } {}
+        , m_user_routine{ user_routine } {
+    }
 };
 
 static A_NOINLINE void pthread_entry_point(PThreadArgs* pthread_args) {
@@ -40,10 +41,7 @@ static A_NOINLINE void pthread_entry_point(PThreadArgs* pthread_args) {
 
 extern "C" {
 
-int pthread_create(pthread_t*            pthread,
-                   const pthread_attr_t* pthread_attr,
-                   void* (*start_routine)(void*),
-                   void* arg_ptr) {
+int pthread_create(pthread_t* pthread, const pthread_attr_t* pthread_attr, void* (*start_routine)(void*), void* arg_ptr) {
     if ( !pthread ) {
         errno = EINVAL;
         return -1;

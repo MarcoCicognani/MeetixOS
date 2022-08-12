@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <Api.h>
-#include <file.h>
+#include <LibApi/Api.h>
+#include <LibC/file.h>
+#include <LibC/sys/types.h>
 #include <stdarg.h>
 #include <stddef.h>
-#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {

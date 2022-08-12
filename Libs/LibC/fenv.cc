@@ -12,7 +12,7 @@
 
 /* Implementation taken from https://github.com/SerenityOS/serenity/blob/master/Userland/Libraries/LibC/fenv.cpp */
 
-#include <fenv.h>
+#include <LibC/fenv.h>
 
 static_assert(sizeof(__x87_floating_point_environment) == 28);
 

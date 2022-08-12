@@ -12,13 +12,14 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Collection/Enums/InsertResult.hh>
 #include <LibTC/Collection/Enums/KeepStorageCapacity.hh>
 #include <LibTC/Collection/Enums/OnExistingEntry.hh>
 #include <LibTC/Collection/Set.hh>
 #include <LibTC/Concept.hh>
 #include <LibTC/DenyCopy.hh>
-#include <LibTC/Forward.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/TypeTraits.hh>
 

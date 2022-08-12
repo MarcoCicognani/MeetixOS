@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <ctype.h>
+#include <LibC/ctype.h>
 
 extern "C" {
 

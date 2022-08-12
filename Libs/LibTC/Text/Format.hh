@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Collection/StringBuilder.hh>
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/Cxx.hh>

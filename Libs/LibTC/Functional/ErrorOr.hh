@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Error.hh>
 #include <LibTC/Functional/Result.hh>
 

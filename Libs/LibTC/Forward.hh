@@ -19,6 +19,9 @@ namespace TC {
 template<typename T>
 struct TypeTraits;
 
+template<typename T>
+struct NumericLimits;
+
 class Error;
 class SourceLocation;
 

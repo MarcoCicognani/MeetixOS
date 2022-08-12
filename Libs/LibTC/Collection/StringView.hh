@@ -12,12 +12,13 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Collection/Enums/CaseSensitivity.hh>
 #include <LibTC/Collection/Enums/TrimMode.hh>
 #include <LibTC/Collection/Enums/TrimWhitespace.hh>
 #include <LibTC/Collection/ReverseIteratorSupport.hh>
 #include <LibTC/Collection/Vector.hh>
-#include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Option.hh>
 #include <LibTC/Hashing.hh>

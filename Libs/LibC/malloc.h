@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <Api/Common.h>
+#include <LibApi/Api/Common.h>
+#include <LibC/stdint.h>
 #include <stddef.h>
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

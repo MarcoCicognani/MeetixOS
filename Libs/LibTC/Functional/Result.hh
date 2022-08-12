@@ -12,9 +12,10 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Concept.hh>
 #include <LibTC/Cxx.hh>
-#include <LibTC/Forward.hh>
 #include <LibTC/Functional/Option.hh>
 #include <LibTC/Meta.hh>
 

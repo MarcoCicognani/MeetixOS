@@ -12,12 +12,13 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Assertions.hh>
 #include <LibTC/BitCast.hh>
 #include <LibTC/Collection/Function.hh>
 #include <LibTC/Concept.hh>
 #include <LibTC/Cxx.hh>
-#include <LibTC/Forward.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Meta.hh>
 

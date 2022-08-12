@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Assertions.hh>
 #include <LibTC/IntTypes.hh>
 

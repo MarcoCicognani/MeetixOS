@@ -12,9 +12,10 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Assertions.hh>
 #include <LibTC/Collection/ReverseIteratorSupport.hh>
-#include <LibTC/Forward.hh>
 #include <LibTC/Meta.hh>
 #include <LibTC/TypeTraits.hh>
 

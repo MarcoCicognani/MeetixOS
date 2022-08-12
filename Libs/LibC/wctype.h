@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <Api/Common.h>
 #include <stddef.h>
 
 #ifdef __cplusplus

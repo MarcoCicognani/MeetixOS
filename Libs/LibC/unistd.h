@@ -12,9 +12,8 @@
 
 #pragma once
 
-#include <Api/Common.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+#include <LibC/sys/stat.h>
+#include <LibC/sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {

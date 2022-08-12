@@ -12,11 +12,12 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/Concept.hh>
 #include <LibTC/DenyCopy.hh>
 #include <LibTC/DenyMove.hh>
-#include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/IntTypes.hh>
 

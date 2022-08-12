@@ -13,11 +13,12 @@
 #pragma once
 
 #include <LibTC/Forward.hh>
+
 #include <LibTC/IntTypes.hh>
 
 namespace TC {
 
-/* TODO Once refactor all to C++ modules use StringView instead of char const* */
+/* TODO When refactor all to C++ modules use StringView instead of char const* */
 
 class SourceLocation {
 public:

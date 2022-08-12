@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <Api/Common.h>
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Assertions.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/DenyCopy.hh>
-#include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Must.hh>
 

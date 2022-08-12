@@ -10,12 +10,13 @@
  * GNU General Public License version 3
  */
 
-#include <errno.h>
+#include <LibC/errno.h>
+#include <LibTC/BitCast.hh>
 
 extern "C" {
 __thread OSError g_errno_value = ENOERR;
 
 int* errno_location() {
-    return reinterpret_cast<int*>(&g_errno_value);
+    return bit_cast<int*>(&g_errno_value);
 }
 }

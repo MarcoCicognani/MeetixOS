@@ -12,13 +12,14 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Assertions.hh>
 #include <LibTC/Collection/Enums/KeepStorageCapacity.hh>
 #include <LibTC/Collection/Range.hh>
 #include <LibTC/Collection/ReverseIteratorSupport.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/DenyCopy.hh>
-#include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Must.hh>
 #include <LibTC/Functional/Try.hh>

@@ -12,8 +12,7 @@
 
 #pragma once
 
-#include <Api/Common.h>
-#include <file.h>
+#include <LibC/file.h>
 #include <stdarg.h>
 
 #ifdef __cplusplus

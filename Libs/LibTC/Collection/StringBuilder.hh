@@ -12,13 +12,14 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Collection/Enums/KeepStorageCapacity.hh>
 #include <LibTC/Collection/String.hh>
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/Collection/Vector.hh>
 #include <LibTC/DenyCopy.hh>
 #include <LibTC/DenyMove.hh>
-#include <LibTC/Forward.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/IntTypes.hh>
 

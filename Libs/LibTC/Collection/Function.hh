@@ -12,13 +12,14 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Assertions.hh>
 #include <LibTC/BitCast.hh>
 #include <LibTC/Collection/Range.hh>
 #include <LibTC/Concept.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/DenyCopy.hh>
-#include <LibTC/Forward.hh>
 #include <LibTC/Math.hh>
 
 namespace TC {
@@ -32,7 +33,7 @@ template<typename TReturn, typename... TArgs>
 constexpr bool IsFunctionObject<Function<TReturn(TArgs...)>> = true;
 
 template<typename T, typename TReturn, typename... TArgs>
-concept CallableNotFunction = Callable<T, TReturn, TArgs...> && !IsFunctionObject<T>;
+concept CallableNotFunction = (Callable<T, TReturn, TArgs...> && !IsFunctionObject<T>);
 
 } /* namespace Details */
 

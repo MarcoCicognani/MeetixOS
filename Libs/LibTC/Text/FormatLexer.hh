@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibTC/Collection/StringView.hh>
 #include <LibTC/DenyCopy.hh>
 #include <LibTC/DenyMove.hh>

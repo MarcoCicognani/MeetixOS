@@ -46,7 +46,7 @@ void libc_main() {
 
 void libc_init() {
     /* call pre-init constructors */
-    auto pre_init_array_len = __preinit_array_end - __preinit_array_start;
+    auto const pre_init_array_len = __preinit_array_end - __preinit_array_start;
     for ( auto i = 0; i < pre_init_array_len; i++ )
         (*__preinit_array_start[i])();
 
@@ -54,7 +54,7 @@ void libc_init() {
     _init();
 
     /* call init constructors */
-    auto init_array_len = __init_array_end - __init_array_start;
+    auto const init_array_len = __init_array_end - __init_array_start;
     for ( auto i = 0; i < init_array_len; i++ )
         (*__init_array_start[i])();
 
@@ -67,7 +67,7 @@ void libc_init() {
 
 void libc_fini() {
     /* call all the destructors */
-    auto fini_array_len = __fini_array_end - __fini_array_start;
+    auto const fini_array_len = __fini_array_end - __fini_array_start;
     for ( auto i = 0; i < fini_array_len; i++ )
         (*__fini_array_start[i])();
 

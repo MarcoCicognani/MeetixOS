@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <LibTC/Forward.hh>
+
 #include <LibC/string.h>
 #include <LibTC/BitCast.hh>
 #include <LibTC/Functional/Option.hh>

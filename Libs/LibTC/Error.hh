@@ -12,13 +12,14 @@
 
 #pragma once
 
-#include <LibC/errno.h>
 #include <LibTC/Forward.hh>
+
+#include <LibC/errno.h>
 #include <LibTC/SourceLocation.hh>
 
 namespace TC {
 
-/* TODO Once refactor all to C++ modules use StringView instead of char const* */
+/* TODO When refactor all to C++ modules use StringView instead of char const* */
 
 class Error {
 public:
