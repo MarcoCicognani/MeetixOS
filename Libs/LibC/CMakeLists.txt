@@ -101,8 +101,7 @@ add_library(LibC
         stdio/fsetpos.cc
         stdio/fwrite_unlocked.cc
         libc_main.cc
-        strings/strncasecmp.cc
-        strings/strcasecmp.cc
+        strings.cc
         stdlib/abort.cc
         stdlib/strtod.cc
         stdlib/parse_cli_args.cc

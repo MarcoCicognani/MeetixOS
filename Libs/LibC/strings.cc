@@ -1,7 +1,7 @@
 /**
  * @brief
  * This file is part of the MeetiX Operating System.
- * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
+ * Copyright (c) 2017-2021, Marco Cicognani (marco.cicognani@meetixos.org)
  *
  * @developers
  * Marco Cicognani (marco.cicognani@meetixos.org)
@@ -13,7 +13,9 @@
 #include <LibC/ctype.h>
 #include <LibC/strings.h>
 
-extern "C" int strcasecmp(const char* str_a, const char* str_b) {
+extern "C" {
+
+int strcasecmp(const char* str_a, const char* str_b) {
     for ( ;; ++str_a, ++str_b ) {
         auto a = tolower(*str_a);
         auto b = tolower(*str_b);
@@ -25,4 +27,20 @@ extern "C" int strcasecmp(const char* str_a, const char* str_b) {
         else if ( a > b )
             return 1;
     }
+}
+
+int strncasecmp(const char* str_a, const char* str_b, usize max) {
+    for ( ; max--; ++str_a, ++str_b ) {
+        auto a = tolower(*str_a);
+        auto b = tolower(*str_b);
+
+        if ( !a && !b )
+            return 0;
+        else if ( a < b )
+            return -1;
+        else if ( a > b )
+            return 1;
+    }
+    return 0;
+}
 }
