@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <Api.h>
-#include <time.h>
+#include <LibApi/Api.h>
+#include <LibC/time.h>
 
 extern "C" clock_t clock() {
     __NOT_IMPLEMENTED(clock);

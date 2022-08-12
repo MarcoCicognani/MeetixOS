@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <Api.h>
-#include <unistd.h>
+#include <LibApi/Api.h>
+#include <LibC/unistd.h>
 
 extern "C" int isatty(A_UNUSED int fd) {
     __NOT_IMPLEMENTED(isatty);

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <stdlib.h>
+#include <LibC/stdlib.h>
 
 extern "C" usize mbstowcs(wchar_t*, const char*, usize) {
     __NOT_IMPLEMENTED(mbstowcs);

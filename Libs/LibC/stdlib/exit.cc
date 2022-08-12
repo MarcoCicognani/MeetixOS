@@ -12,8 +12,8 @@
 
 #include "../libc_main_internal.hh"
 
-#include <Api.h>
-#include <stdlib.h>
+#include <LibApi/Api.h>
+#include <LibC/stdlib.h>
 
 extern "C" void exit(int code) {
     libc_fini();

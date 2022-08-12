@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <stdlib.h>
+#include <LibC/stdlib.h>
 
 extern "C" void* bsearch(const void*, const void*, usize, usize, int (*)(const void*, const void*)) {
     __NOT_IMPLEMENTED(bsearch);

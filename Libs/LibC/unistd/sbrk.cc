@@ -10,13 +10,12 @@
  * GNU General Public License version 3
  */
 
-#include <Api.h>
-#include <errno.h>
-#include <unistd.h>
+#include <LibApi/Api.h>
+#include <LibC/errno.h>
+#include <LibC/unistd.h>
 
 extern "C" void* sbrk(intptr_t increment) {
-    void* result;
-    if ( s_set_break(increment, &result) )
+    if ( void* result;  s_set_break(increment, &result) )
         return result;
 
     /* the kernel or the process have finished the memory */
