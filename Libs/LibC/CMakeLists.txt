@@ -125,24 +125,7 @@ add_library(LibC
         stdlib/atol.cc
         stdlib/atof.cc
         string.cc
-        unistd/write.cc
-        unistd/tell.cc
-        unistd/lseek.cc
-        unistd/rmdir.cc
-        unistd/isatty.cc
-        unistd/read.cc
-        unistd/getcwd.cc
-        unistd/access.cc
-        OptionsParser.cc
-        unistd/close.cc
-        unistd/getppid.cc
-        unistd/symlink.cc
-        unistd/sleep.cc
-        unistd/environ.cc
-        unistd/fcntl.cc
-        unistd/sbrk.cc
-        unistd/chdir.cc
-        unistd/getpid.cc
+        unistd.cc
         abi_support.cc
         ctype.cc
         time/ctime.cc

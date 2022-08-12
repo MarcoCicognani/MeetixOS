@@ -12,33 +12,33 @@
 
 #include <Api.h>
 #include <LibC/ctype.h>
-#include <LibC/string.h>
 #include <LibC/libgen.h>
 #include <LibC/stdlib.h>
+#include <LibC/string.h>
 
-#define SKIP_WHITESPACE(pos)                                                                                           \
-    do {                                                                                                               \
-        while ( *pos && isspace(*pos) )                                                                                \
-            ++pos;                                                                                                     \
+#define SKIP_WHITESPACE(pos)                                                                                                               \
+    do {                                                                                                                                   \
+        while ( *pos && isspace(*pos) )                                                                                                    \
+            ++pos;                                                                                                                         \
     } while ( 0 )
 
-#define SKIP_ARGUMENT(pos)                                                                                             \
-    do {                                                                                                               \
-        auto instr = false;                                                                                            \
-        auto esc   = false;                                                                                            \
-        while ( *pos ) {                                                                                               \
-            if ( *pos == '"' && !esc ) {                                                                               \
-                instr = !instr;                                                                                        \
-                esc   = false;                                                                                         \
-            } else if ( *pos == '\\' && !esc )                                                                         \
-                esc = true;                                                                                            \
-            else if ( isspace(*pos) && !instr && !esc )                                                                \
-                break;                                                                                                 \
-            else                                                                                                       \
-                esc = false;                                                                                           \
-                                                                                                                       \
-            ++pos;                                                                                                     \
-        }                                                                                                              \
+#define SKIP_ARGUMENT(pos)                                                                                                                 \
+    do {                                                                                                                                   \
+        auto instr = false;                                                                                                                \
+        auto esc   = false;                                                                                                                \
+        while ( *pos ) {                                                                                                                   \
+            if ( *pos == '"' && !esc ) {                                                                                                   \
+                instr = !instr;                                                                                                            \
+                esc   = false;                                                                                                             \
+            } else if ( *pos == '\\' && !esc )                                                                                             \
+                esc = true;                                                                                                                \
+            else if ( isspace(*pos) && !instr && !esc )                                                                                    \
+                break;                                                                                                                     \
+            else                                                                                                                           \
+                esc = false;                                                                                                               \
+                                                                                                                                           \
+            ++pos;                                                                                                                         \
+        }                                                                                                                                  \
     } while ( 0 )
 
 static char* get_executable_name() {
