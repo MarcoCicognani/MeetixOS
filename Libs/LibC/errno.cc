@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/errno.h>
+#include <errno.h>
 #include <LibTC/BitCast.hh>
 
 extern "C" {

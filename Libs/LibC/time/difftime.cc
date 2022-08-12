@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api.h>
-#include <LibC/time.h>
+#include <Api.h>
+#include <time.h>
 
 extern "C" double difftime(time_t, time_t) {
     __NOT_IMPLEMENTED(difftime);

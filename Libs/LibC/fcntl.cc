@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api.h>
-#include <LibC/errno.h>
-#include <LibC/fcntl.h>
+#include <Api.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdarg.h>
 
 extern "C" {

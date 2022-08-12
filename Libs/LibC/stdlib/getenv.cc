@@ -12,7 +12,7 @@
 
 #include <cstring>
 #include <fstream>
-#include <LibC/stdlib.h>
+#include <stdlib.h>
 #include <string>
 
 extern "C" char* getenv(const char* key) {

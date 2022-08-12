@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api.h>
-#include <LibC/errno.h>
-#include <LibC/pthread.h>
+#include <Api.h>
+#include <errno.h>
+#include <pthread.h>
 
 struct pthread_t {
     Tid            m_thread_id;

@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api.h>
-#include <LibC/time.h>
+#include <Api.h>
+#include <time.h>
 
 extern "C" time_t time(time_t* out) {
     auto millis = static_cast<time_t>(s_millis());

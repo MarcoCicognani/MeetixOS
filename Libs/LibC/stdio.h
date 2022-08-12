@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <LibApi/Api.h>
-#include <LibC/file.h>
-#include <LibC/sys/types.h>
+#include <Api.h>
+#include <file.h>
+#include <sys/types.h>
 #include <stdarg.h>
 #include <stddef.h>
 

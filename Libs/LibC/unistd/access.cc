@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api.h>
-#include <LibC/unistd.h>
+#include <Api.h>
+#include <unistd.h>
 
 extern "C" int access(const char*, int) {
     __NOT_IMPLEMENTED(access);

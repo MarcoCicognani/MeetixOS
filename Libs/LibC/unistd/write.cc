@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api.h>
-#include <LibC/errno.h>
-#include <LibC/unistd.h>
+#include <Api.h>
+#include <errno.h>
+#include <unistd.h>
 
 extern "C" isize write(int fd, const void* buf, usize count) {
     FsWriteStatus write_status;

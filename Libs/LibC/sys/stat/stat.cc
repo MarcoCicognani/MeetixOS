@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api.h>
-#include <LibC/sys/stat.h>
+#include <Api.h>
+#include <sys/stat.h>
 
 extern "C" int stat(const char*, struct stat*) {
     __NOT_IMPLEMENTED(stat);

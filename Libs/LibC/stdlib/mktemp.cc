@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/errno.h>
-#include <LibC/stdlib.h>
-#include <LibC/string.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 
 extern "C" char* mktemp(char* templ) {
     if ( !templ )

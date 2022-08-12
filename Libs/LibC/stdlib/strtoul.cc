@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/stdlib.h>
+#include <stdlib.h>
 
 extern "C" unsigned long strtoul(const char*, char**, int) {
     __NOT_IMPLEMENTED(strtoul);

@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/assert.h>
-#include <LibC/stdio.h>
-#include <LibC/stdlib.h>
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 extern "C" A_NORETURN void assert_failed(const char* message) {
     fprintf(stdout, "\033[31mASSERTION FAILED: %s\033[0m\n", message);

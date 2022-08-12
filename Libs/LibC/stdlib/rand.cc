@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/stdint.h>
-#include <LibC/stdlib.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 static u64 g_seed;
 

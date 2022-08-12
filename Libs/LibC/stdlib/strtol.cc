@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/assert.h>
-#include <LibC/ctype.h>
+#include <assert.h>
+#include <ctype.h>
 
 extern "C" long strtol(const char* str, char** endptr, int base) {
     char c;

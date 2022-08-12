@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/dlfcn.h>
+#include <dlfcn.h>
 #include <LibTC/Collection/StringView.hh>
 
 static auto const g_dl_error_string_view = "dlfcn not available"sv;

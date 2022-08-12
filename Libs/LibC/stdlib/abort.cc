@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api.h>
-#include <LibC/stdlib.h>
+#include <Api.h>
+#include <stdlib.h>
 
 extern "C" void abort() {
     s_exit(EXIT_FAILURE);

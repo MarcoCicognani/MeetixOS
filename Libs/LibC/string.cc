@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/malloc.h>
-#include <LibC/string.h>
+#include <malloc.h>
+#include <string.h>
 #include <LibTC/Collection/Vector.hh>
 #include <LibTC/Memory/Raw.hh>
 

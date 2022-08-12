@@ -13,9 +13,9 @@
 #include "libc_main_internal.hh"
 #include "stdio/stdio_internal.hh"
 
-#include <LibApi/Api.h>
-#include <LibC/signal.h>
-#include <LibC/stdlib.h>
+#include <Api.h>
+#include <signal.h>
+#include <stdlib.h>
 
 extern "C" void _init();
 extern "C" void _fini();

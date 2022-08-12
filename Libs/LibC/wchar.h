@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <LibC/file.h>
+#include <file.h>
 #include <stdarg.h>
 
 #ifdef __cplusplus

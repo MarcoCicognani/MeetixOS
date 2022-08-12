@@ -11,10 +11,10 @@
  */
 
 #include <Api.h>
-#include <LibC/ctype.h>
-#include <LibC/string.h>
-#include <LibC/libgen.h>
-#include <LibC/stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include <libgen.h>
+#include <stdlib.h>
 
 #define SKIP_WHITESPACE(pos)                                                                                           \
     do {                                                                                                               \

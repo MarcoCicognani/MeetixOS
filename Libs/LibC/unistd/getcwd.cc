@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api.h>
-#include <LibC/errno.h>
-#include <LibC/unistd.h>
+#include <Api.h>
+#include <errno.h>
+#include <unistd.h>
 
 extern "C" char* getcwd(char* buf, usize size) {
     auto work_dir_stat = s_get_working_directory_l(buf, size);

@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/stdlib.h>
+#include <stdlib.h>
 
 extern "C" int system(const char*) {
     __NOT_IMPLEMENTED(system);

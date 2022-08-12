@@ -10,10 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api/User.h>
-#include <LibC/errno.h>
-#include <LibC/signal.h>
-#include <LibC/stdlib.h>
+#include <Api/User.h>
+#include <errno.h>
+#include <signal.h>
+#include <stdlib.h>
 
 extern "C" {
 

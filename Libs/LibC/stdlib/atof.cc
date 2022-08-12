@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <LibC/stdlib.h>
+#include <stdlib.h>
 
 extern "C" double atof(const char* str) {
     return strtof(str, nullptr);

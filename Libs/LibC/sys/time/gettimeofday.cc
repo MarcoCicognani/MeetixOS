@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api.h>
-#include <LibC/sys/time.h>
+#include <Api.h>
+#include <sys/time.h>
 
 extern "C" int gettimeofday(struct timeval*, struct timezone*) {
     __NOT_IMPLEMENTED(gettimeofday);

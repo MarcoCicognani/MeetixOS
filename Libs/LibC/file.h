@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <LibApi/Api/FileSystem.h>
-#include <LibC/stdint.h>
-#include <LibC/sys/types.h>
+#include <Api/FileSystem.h>
+#include <stdint.h>
+#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {

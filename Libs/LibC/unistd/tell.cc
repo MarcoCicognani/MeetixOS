@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api.h>
-#include <LibC/unistd.h>
+#include <Api.h>
+#include <unistd.h>
 
 extern "C" long int tell(int fd) {
     return static_cast<long int>(s_tell(fd));

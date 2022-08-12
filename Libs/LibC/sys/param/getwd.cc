@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api.h>
-#include <LibC/sys/param.h>
+#include <Api.h>
+#include <sys/param.h>
 
 extern "C" char* getwd(char* buf) {
     s_get_working_directory(buf);
