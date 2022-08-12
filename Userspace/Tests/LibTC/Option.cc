@@ -75,7 +75,7 @@ TEST_CASE(assignment_operator) {
     VERIFY(option.is_present());
     VERIFY_EQUAL(option.value(), 'b');
 
-    option = nullptr;
+    option = None;
     VERIFY_FALSE(option.is_present());
 
     auto boxed_ptr = NonNullBox<u32>::construct_from_args(0xcafebabe);

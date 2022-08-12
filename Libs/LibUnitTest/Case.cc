@@ -27,7 +27,7 @@ auto Case::is_benchmark() const -> bool {
 Case::Case(StringView name, bool is_benchmark) noexcept
     : m_name{ Cxx::move(name) }
     , m_is_benchmark{ is_benchmark } {
-    Suite::inst().add_case_to_suite(*this);
+    Suite::inst().as_ref().add_case_to_suite(*this);
 }
 
 } /* namespace UnitTest */

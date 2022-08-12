@@ -20,11 +20,13 @@
 namespace UnitTest {
 
 class Suite {
+    TC_NON_NULL_REF_CONSTRUCTIBLE(Suite);
+
 public:
     /**
      * @brief Singleton provider
      */
-    static auto inst() -> Suite&;
+    static auto inst() -> NonNullRef<Suite>;
 
     /**
      * @brief Runs the registered tests
@@ -43,9 +45,6 @@ public:
 
 private:
     explicit constexpr Suite() noexcept;
-
-private:
-    static Suite s_instance;
 
 private:
     Vector<Case*> m_test_cases;

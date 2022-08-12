@@ -73,7 +73,7 @@ public:
         swap(option);
         return *this;
     }
-    constexpr auto operator=(nullptr_t) -> Option<T>& {
+    constexpr auto operator=(OptionNoneTag) -> Option<T>& {
         reset();
         return *this;
     }
@@ -221,7 +221,7 @@ public:
         swap(option);
         return *this;
     }
-    constexpr auto operator=(nullptr_t) -> Option<T>& {
+    constexpr auto operator=(OptionNoneTag) -> Option<T>& {
         reset();
         return *this;
     }
@@ -327,6 +327,7 @@ private:
 } /* namespace Functional */
 
 using Functional::Option;
+using Functional::OptionNoneTag::None;
 
 } /* namespace TC */
 

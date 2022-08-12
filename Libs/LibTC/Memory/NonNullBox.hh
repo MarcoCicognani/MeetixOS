@@ -20,6 +20,10 @@
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Must.hh>
 
+#define TC_NON_NULL_BOX_CONSTRUCTIBLE(ClassName)                                                                                           \
+    template<typename T>                                                                                                                   \
+    friend class Memory::NonNullBox
+
 namespace TC {
 namespace Memory {
 

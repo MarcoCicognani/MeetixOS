@@ -22,6 +22,12 @@
 #include <LibTC/Functional/Must.hh>
 #include <LibTC/IntTypes.hh>
 
+#define TC_NON_NULL_REF_CONSTRUCTIBLE(ClassName)                                                                                           \
+    template<typename T>                                                                                                                   \
+    friend class Memory::Details::RefCounted;                                                                                              \
+    template<typename T>                                                                                                                   \
+    friend class Memory::NonNullRef
+
 namespace TC {
 namespace Memory {
 namespace Details {

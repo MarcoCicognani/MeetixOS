@@ -585,8 +585,8 @@ public:
      */
     [[nodiscard]] auto format(Vector<T> const& value) -> ErrorOr<void> {
         if ( display_as() == FormatParser::DisplayAs::Pointer ) {
-            Formatter<T*> formatter{ *this };
-            TRY(formatter.format(value.data()));
+            Formatter<T const*> formatter{ *this };
+            TRY(formatter.format(value.raw_data()));
 
             return {};
         }

@@ -45,7 +45,7 @@ auto format(StringBuilder& string_builder, StringView format_view, Args&&... var
  * variadic_args are > 0
  */
 template<typename T, typename... Args>
-auto format(StringBuilder& string_builder, FormatLexer& format_lexer, T first_arg, Args&&... variadic_args) -> ErrorOr<void> {
+auto format(StringBuilder& string_builder, FormatLexer& format_lexer, T const& first_arg, Args&&... variadic_args) -> ErrorOr<void> {
     /* consume all the non format literals */
     TRY(format(string_builder, format_lexer.consume_literal()));
 

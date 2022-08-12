@@ -13,14 +13,19 @@
 #include <Api/User.h>
 #include <LibFmtIO/Out.hh>
 #include <LibTC/Collection/StringView.hh>
+#include <LibTC/Functional/Option.hh>
+#include <LibTC/Memory/NonNullRef.hh>
 #include <LibUnitTest/Suite.hh>
 
 namespace UnitTest {
 
-Suite Suite::s_instance{};
+static Option<NonNullRef<Suite>> s_instance = None;
 
-auto Suite::inst() -> Suite& {
-    return s_instance;
+auto Suite::inst() -> NonNullRef<Suite> {
+    if ( !s_instance.is_present() )
+        s_instance = NonNullRef<Suite>::construct_from_args();
+
+    return s_instance.value().clone();
 }
 
 auto Suite::run(Vector<StringView> args) -> ErrorOr<void> {
@@ -28,6 +33,9 @@ auto Suite::run(Vector<StringView> args) -> ErrorOr<void> {
     usize test_failed         = 0;
     usize benchmark_completed = 0;
     usize benchmark_failed    = 0;
+
+    FmtIO::outln("- Starting test suite {}...running {} tests"sv, args[0], m_test_cases.count());
+    FmtIO::outln("args = {}"sv, args);
 
     auto const all_tests_start_timestamp = s_millis();
     for ( auto test_case : m_test_cases ) {
@@ -63,7 +71,7 @@ auto Suite::run(Vector<StringView> args) -> ErrorOr<void> {
     }
     auto all_tests_end_timestamp = s_millis();
 
-    FmtIO::outln("{} - Executed \033[32m{}\033[0m tests (\033[32m{}\033[0m tests/\033[32m{}\033[0m benchmarks) in %{} ms"sv,
+    FmtIO::outln("{} - Executed \033[32m{}\033[0m tests (\033[32m{}\033[0m tests/\033[32m{}\033[0m benchmarks) in {} ms"sv,
                  args[0],
                  m_test_cases.count(),
                  test_completed + test_failed,

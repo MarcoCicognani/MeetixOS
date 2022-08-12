@@ -19,6 +19,6 @@
  * @brief Test suite entry point, it only calls the run method
  */
 auto entry(Vector<StringView> args) -> ErrorOr<void> {
-    TRY(UnitTest::Suite::inst().run(Cxx::move(args)));
+    TRY(UnitTest::Suite::inst().as_ref().run(Cxx::move(args)));
     return {};
 }

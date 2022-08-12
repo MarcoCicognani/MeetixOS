@@ -28,7 +28,8 @@
                                                                                                                                            \
     private:                                                                                                                               \
         explicit TestCaseImpl##name() noexcept                                                                                             \
-            : UnitTest::Case{ #name##sv, false } {}                                                                                        \
+            : UnitTest::Case{ #name##sv, false } {                                                                                         \
+        }                                                                                                                                  \
     };                                                                                                                                     \
     [[gnu::used]]                                                                                                                          \
     static auto const s_test_case_inst_##name = TestCaseImpl##name::construct_and_register();                                              \
@@ -49,7 +50,8 @@
                                                                                                                                            \
     private:                                                                                                                               \
         explicit BenchmarkCaseImpl##name() noexcept                                                                                        \
-            : UnitTest::Case{ #name##sv, true } {}                                                                                         \
+            : UnitTest::Case{ #name##sv, true } {                                                                                          \
+        }                                                                                                                                  \
     };                                                                                                                                     \
     [[gnu::used]]                                                                                                                          \
     static auto const s_benchmark_case_inst_##name = BenchmarkCaseImpl##name::construct_and_register();                                    \
