@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <LibApi/Api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
