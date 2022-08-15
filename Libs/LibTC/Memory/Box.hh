@@ -143,7 +143,7 @@ public:
     }
 
     [[nodiscard]] auto is_null() -> bool {
-        return m_boxed_object_ptr != nullptr;
+        return m_boxed_object_ptr == nullptr;
     }
 
 private:

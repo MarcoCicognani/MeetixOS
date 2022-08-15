@@ -43,30 +43,30 @@ TEST_CASE(construct_object) {
     VERIFY(s_destructor_called);
 }
 
-static bool s_destructor_called = false;
+static bool s_destructor_private_called = false;
 
-struct USize {
-    TC_BOX_CONSTRUCTIBLE(USize);
+struct USizePrivate {
+    TC_BOX_CONSTRUCTIBLE(USizePrivate);
 
 public:
     usize m_value{ 0 };
 
-    ~USize() {
-        s_destructor_called = true;
+    ~USizePrivate() {
+        s_destructor_private_called = true;
     }
 
 private:
-    explicit constexpr USize(usize value)
+    explicit constexpr USizePrivate(usize value)
         : m_value{ value } {
     }
 };
 
 TEST_CASE(construct_object_with_private_constructor) {
     {
-        auto const boxed_usize = Box<USize>::construct_from_args(512u);
+        auto const boxed_usize = Box<USizePrivate>::construct_from_args(512u);
         VERIFY_EQUAL(boxed_usize->m_value, 512u);
     }
-    VERIFY(s_destructor_called);
+    VERIFY(s_destructor_private_called);
 }
 
 template<usize SIZE>
@@ -125,6 +125,15 @@ TEST_CASE(move) {
     boxed_usize_pair = Cxx::move(boxed_usize_pair_3);
     VERIFY_EQUAL(boxed_usize_pair->m_first_value, 0xab);
     VERIFY_EQUAL(boxed_usize_pair->m_second_value, 0xcd);
+}
+
+TEST_CASE(leak) {
+    auto boxed_i32 = Box<i32>::construct_from_args(512);
+
+    auto const& unmanaged_i32_ref = boxed_i32.leak_ref();
+    VERIFY(boxed_i32.is_null());
+
+    delete &unmanaged_i32_ref;
 }
 
 TEST_CASE(vector_of_boxes) {
