@@ -128,15 +128,7 @@ add_library(LibC
         OptionsParser.cc
         abi_support.cc
         ctype.cc
-        time/ctime.cc
-        time/difftime.cc
-        time/mktime.cc
-        time/gmtime.cc
-        time/clock.cc
-        time/strptime.cc
-        time/localtime.cc
-        time/strftime.cc
-        time/time.cc
+        time.cc
         assert.cc
         malloc.c
         sys/time/gettimeofday.cc
