@@ -49,7 +49,7 @@ public:
     RefCounted() = delete;
     template<typename... Args>
     explicit RefCounted(FromArgsTag, Args... args)
-        : m_shared_object{ T{ forward<Args>(args)... } } {
+        : m_shared_object{ T{ Cxx::forward<Args>(args)... } } {
     }
 
     ~RefCounted() = default;
@@ -115,7 +115,7 @@ public:
      */
     template<typename... TArgs>
     [[nodiscard]] static auto try_construct_from_args(TArgs... args) -> ErrorOr<NonNullRef<T>> {
-        auto ref_counted_ptr = new (nothrow) Details::RefCounted<T>{ Details::FromArgsTag::FromArgs, forward<TArgs>(args)... };
+        auto ref_counted_ptr = new (nothrow) Details::RefCounted<T>{ Details::FromArgsTag::FromArgs, Cxx::forward<TArgs>(args)... };
         if ( ref_counted_ptr != nullptr ) [[likely]]
             return NonNullRef<T>{ ref_counted_ptr };
         else
@@ -126,10 +126,10 @@ public:
      * @brief Move constructor and move assignment
      */
     NonNullRef(NonNullRef<T>&& rhs) noexcept
-        : m_ref_counted_ptr{ exchange(rhs.m_ref_counted_ptr, nullptr) } {
+        : m_ref_counted_ptr{ Cxx::exchange(rhs.m_ref_counted_ptr, nullptr) } {
     }
     auto operator=(NonNullRef<T>&& rhs) noexcept -> NonNullRef<T>& {
-        NonNullRef non_null_ref{ move(rhs) };
+        NonNullRef non_null_ref{ Cxx::move(rhs) };
         swap(non_null_ref);
         return *this;
     }

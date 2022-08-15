@@ -48,7 +48,7 @@ public:
      */
     template<typename... TArgs>
     [[nodiscard]] static auto try_construct_from_args(TArgs... args) -> ErrorOr<Box<T>> {
-        auto unboxed_ptr = new (nothrow) T{ forward<TArgs>(args)... };
+        auto unboxed_ptr = new (nothrow) T{ Cxx::forward<TArgs>(args)... };
         if ( unboxed_ptr != nullptr ) [[likely]]
             return Box<T>{ unboxed_ptr };
         else
@@ -59,10 +59,10 @@ public:
      * @brief Move constructor and move assignment
      */
     Box(Box<T>&& rhs) noexcept
-        : m_boxed_object_ptr{ exchange(rhs.m_boxed_object_ptr, nullptr) } {
+        : m_boxed_object_ptr{ Cxx::exchange(rhs.m_boxed_object_ptr, nullptr) } {
     }
     auto operator=(Box<T>&& rhs) noexcept -> Box<T>& {
-        Box non_null_box{ move(rhs) };
+        Box non_null_box{ Cxx::move(rhs) };
         swap(non_null_box);
         return *this;
     }
