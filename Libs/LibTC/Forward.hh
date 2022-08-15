@@ -77,7 +77,7 @@ class Vector;
 namespace Memory {
 
 template<typename T>
-class NonNullBox;
+class Box;
 
 template<typename T>
 class NonNullRef;

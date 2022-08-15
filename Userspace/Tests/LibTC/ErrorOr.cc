@@ -11,7 +11,7 @@
  */
 
 #include <LibTC/Functional/ErrorOr.hh>
-#include <LibTC/Memory/NonNullBox.hh>
+#include <LibTC/Memory/Box.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
@@ -64,7 +64,7 @@ TEST_CASE(unwrap_error) {
 }
 
 TEST_CASE(reference_as_value) {
-    auto boxed_i32 = NonNullBox<i32>::construct_from_args(123);
+    auto boxed_i32 = Box<i32>::construct_from_args(123);
 
     auto& i32_ref = boxed_i32.as_ref();
 
@@ -99,6 +99,6 @@ TEST_CASE(assignment_operator) {
     error_or_void = Error{ EINVAL };
     VERIFY_IS_ERROR_EQUAL(error_or_void, EINVAL);
 
-    ErrorOr<NonNullBox<i32>> error_or_boxed_i32 = NonNullBox<i32>::construct_from_args(64);
+    ErrorOr<Box<i32>> error_or_boxed_i32 = Box<i32>::construct_from_args(64);
     VERIFY(error_or_boxed_i32.is_value());
 }

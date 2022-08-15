@@ -13,14 +13,14 @@
 #include <LibTC/Collection/Vector.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/IntTypes.hh>
-#include <LibTC/Memory/NonNullBox.hh>
+#include <LibTC/Memory/Box.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
 using namespace TC;
 
 TEST_CASE(construct) {
-    auto const boxed_u64 = NonNullBox<u64>::construct_from_args(0xcafebabe);
+    auto const boxed_u64 = Box<u64>::construct_from_args(0xcafebabe);
     VERIFY_EQUAL(boxed_u64.as_ref(), 0xcafebabe);
 }
 
@@ -37,7 +37,33 @@ TEST_CASE(construct_object) {
     };
 
     {
-        auto const boxed_usize = NonNullBox<USize>::construct_from_args(512u);
+        auto const boxed_usize = Box<USize>::construct_from_args(512u);
+        VERIFY_EQUAL(boxed_usize->m_value, 512u);
+    }
+    VERIFY(s_destructor_called);
+}
+
+static bool s_destructor_called = false;
+
+struct USize {
+    TC_BOX_CONSTRUCTIBLE(USize);
+
+public:
+    usize m_value{ 0 };
+
+    ~USize() {
+        s_destructor_called = true;
+    }
+
+private:
+    explicit constexpr USize(usize value)
+        : m_value{ value } {
+    }
+};
+
+TEST_CASE(construct_object_with_private_constructor) {
+    {
+        auto const boxed_usize = Box<USize>::construct_from_args(512u);
         VERIFY_EQUAL(boxed_usize->m_value, 512u);
     }
     VERIFY(s_destructor_called);
@@ -55,21 +81,21 @@ public:
 };
 
 TEST_CASE(try_construct_from_args) {
-    auto error_or_boxed_array = NonNullBox<Array<0x1000>>::try_construct_from_args();
+    auto error_or_boxed_array = Box<Array<0x1000>>::try_construct_from_args();
     VERIFY(error_or_boxed_array.is_value());
 
     auto object_box = error_or_boxed_array.unwrap_value();
     VERIFY_EQUAL(object_box->m_values[0], 0xcafebabe);
     VERIFY_EQUAL(object_box->m_values[1], 0xdeadbeef);
 
-    VERIFY_IS_ERROR_EQUAL(NonNullBox<Array<0xfffffff>>::try_construct_from_args(), ENOMEM);
+    VERIFY_IS_ERROR_EQUAL(Box<Array<0xfffffff>>::try_construct_from_args(), ENOMEM);
 }
 
 TEST_CASE(swap) {
-    auto boxed_i32_64 = NonNullBox<i32>::construct_from_args(64);
+    auto boxed_i32_64 = Box<i32>::construct_from_args(64);
     VERIFY_EQUAL(boxed_i32_64.as_ref(), 64);
 
-    auto boxed_i32_128 = NonNullBox<i32>::construct_from_args(128);
+    auto boxed_i32_128 = Box<i32>::construct_from_args(128);
     VERIFY_EQUAL(boxed_i32_128.as_ref(), 128);
 
     boxed_i32_64.swap(boxed_i32_128);
@@ -84,7 +110,7 @@ TEST_CASE(move) {
         usize m_second_value{ 0 };
     };
 
-    auto boxed_usize_pair = NonNullBox<USizePair>::construct_from_args(512u, 1024u);
+    auto boxed_usize_pair = Box<USizePair>::construct_from_args(512u, 1024u);
     VERIFY_EQUAL(boxed_usize_pair->m_first_value, 512u);
     VERIFY_EQUAL(boxed_usize_pair->m_second_value, 1024u);
 
@@ -92,7 +118,7 @@ TEST_CASE(move) {
     VERIFY_EQUAL(boxed_usize_pair_2->m_first_value, 512uL);
     VERIFY_EQUAL(boxed_usize_pair_2->m_second_value, 1024uL);
 
-    auto boxed_usize_pair_3 = NonNullBox<USizePair>::construct_from_args(0xab, 0xcd);
+    auto boxed_usize_pair_3 = Box<USizePair>::construct_from_args(0xab, 0xcd);
     VERIFY_EQUAL(boxed_usize_pair_3->m_first_value, 0xab);
     VERIFY_EQUAL(boxed_usize_pair_3->m_second_value, 0xcd);
 
@@ -102,13 +128,13 @@ TEST_CASE(move) {
 }
 
 TEST_CASE(vector_of_boxes) {
-    auto vector_of_boxes = Vector<Memory::NonNullBox<i32>>::construct_with_capacity(4);
+    auto vector_of_boxes = Vector<Box<i32>>::construct_with_capacity(4);
 
-    vector_of_boxes.append(NonNullBox<i32>::construct_from_args(256));
-    vector_of_boxes.append(NonNullBox<i32>::construct_from_args(512));
-    vector_of_boxes.append(NonNullBox<i32>::construct_from_args(1024));
+    vector_of_boxes.append(Box<i32>::construct_from_args(256));
+    vector_of_boxes.append(Box<i32>::construct_from_args(512));
+    vector_of_boxes.append(Box<i32>::construct_from_args(1024));
 
-    auto boxed_i32 = NonNullBox<i32>::construct_from_args(4096);
+    auto boxed_i32 = Box<i32>::construct_from_args(4096);
     vector_of_boxes.append(Cxx::move(boxed_i32));
 
     VERIFY_EQUAL(vector_of_boxes[0].as_ref(), 256);

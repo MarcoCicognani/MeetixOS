@@ -20,37 +20,37 @@
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Must.hh>
 
-#define TC_NON_NULL_BOX_CONSTRUCTIBLE(ClassName)                                                                                           \
+#define TC_BOX_CONSTRUCTIBLE(ClassName)                                                                                                    \
     template<typename T>                                                                                                                   \
-    friend class Memory::NonNullBox
+    friend class TC::Memory::Box
 
 namespace TC {
 namespace Memory {
 
 template<typename T>
-class NonNullBox {
-    TC_DENY_COPY(NonNullBox);
+class Box {
+    TC_DENY_COPY(Box);
 
 public:
     /**
      * @brief Non-error safe Factory functions
      */
     template<typename... TArgs>
-    [[nodiscard]] static auto construct_from_args(TArgs... args) -> NonNullBox<T> {
+    [[nodiscard]] static auto construct_from_args(TArgs... args) -> Box<T> {
         return MUST(try_construct_from_args(Cxx::forward<TArgs>(args)...));
     }
-    [[nodiscard]] static auto construct_from_adopt(T& unboxed_ref) -> NonNullBox<T> {
-        return NonNullBox<T>{ &unboxed_ref };
+    [[nodiscard]] static auto construct_from_adopt(T& unboxed_ref) -> Box<T> {
+        return Box<T>{ &unboxed_ref };
     }
 
     /**
      * @brief Error safe Factory functions
      */
     template<typename... TArgs>
-    [[nodiscard]] static auto try_construct_from_args(TArgs... args) -> ErrorOr<NonNullBox<T>> {
+    [[nodiscard]] static auto try_construct_from_args(TArgs... args) -> ErrorOr<Box<T>> {
         auto unboxed_ptr = new (nothrow) T{ forward<TArgs>(args)... };
         if ( unboxed_ptr != nullptr ) [[likely]]
-            return NonNullBox<T>{ unboxed_ptr };
+            return Box<T>{ unboxed_ptr };
         else
             return Error{ ENOMEM };
     }
@@ -58,23 +58,24 @@ public:
     /**
      * @brief Move constructor and move assignment
      */
-    NonNullBox(NonNullBox<T>&& rhs) noexcept
+    Box(Box<T>&& rhs) noexcept
         : m_boxed_object_ptr{ exchange(rhs.m_boxed_object_ptr, nullptr) } {
     }
-    auto operator=(NonNullBox<T>&& rhs) noexcept -> NonNullBox<T>& {
-        NonNullBox non_null_box{ move(rhs) };
+    auto operator=(Box<T>&& rhs) noexcept -> Box<T>& {
+        Box non_null_box{ move(rhs) };
         swap(non_null_box);
         return *this;
     }
 
-    ~NonNullBox() {
-        delete m_boxed_object_ptr;
+    ~Box() {
+        if ( !is_null() ) [[likely]]
+            delete m_boxed_object_ptr;
     }
 
     /**
      * @brief Swaps this box with another
      */
-    void swap(NonNullBox<T>& rhs) noexcept {
+    void swap(Box<T>& rhs) noexcept {
         Cxx::swap(m_boxed_object_ptr, rhs.m_boxed_object_ptr);
     }
 
@@ -131,8 +132,22 @@ public:
         return *as_ptr();
     }
 
+    [[nodiscard]] auto leak_ptr() -> T* {
+        auto boxed_object_ptr = m_boxed_object_ptr;
+        m_boxed_object_ptr    = nullptr;
+        return boxed_object_ptr;
+    }
+    [[nodiscard]] auto leak_ref() -> T& {
+        VERIFY_NOT_NULL(m_boxed_object_ptr);
+        return *leak_ptr();
+    }
+
+    [[nodiscard]] auto is_null() -> bool {
+        return m_boxed_object_ptr != nullptr;
+    }
+
 private:
-    explicit constexpr NonNullBox(T* unboxed_ptr) noexcept
+    explicit constexpr Box(T* unboxed_ptr) noexcept
         : m_boxed_object_ptr{ unboxed_ptr } {
     }
 
@@ -142,11 +157,11 @@ private:
 
 } /* namespace Memory */
 
-using Memory::NonNullBox;
+using Memory::Box;
 
 template<typename T>
-struct TypeTraits<NonNullBox<T>> : public Details::TypeTraits<NonNullBox<T>> {
-    static constexpr auto hash(NonNullBox<T> const& value) -> usize {
+struct TypeTraits<Box<T>> : public Details::TypeTraits<Box<T>> {
+    static constexpr auto hash(Box<T> const& value) -> usize {
         return Hashing::pointer_calculate_hash(value.as_ptr());
     }
 
@@ -154,7 +169,7 @@ struct TypeTraits<NonNullBox<T>> : public Details::TypeTraits<NonNullBox<T>> {
         return false;
     }
 
-    static constexpr auto equals(NonNullBox<T> const& a, NonNullBox<T> const& b) -> bool {
+    static constexpr auto equals(Box<T> const& a, Box<T> const& b) -> bool {
         return a.as_ptr() == b.as_ptr();
     }
 };

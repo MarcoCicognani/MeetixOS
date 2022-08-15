@@ -39,8 +39,8 @@
 #include <LibTC/Hashing.hh>
 #include <LibTC/IntTypes.hh>
 #include <LibTC/Math.hh>
+#include <LibTC/Memory/Box.hh>
 #include <LibTC/Memory/Find.hh>
-#include <LibTC/Memory/NonNullBox.hh>
 #include <LibTC/Memory/NonNullRef.hh>
 #include <LibTC/Memory/Raw.hh>
 #include <LibTC/Meta.hh>
