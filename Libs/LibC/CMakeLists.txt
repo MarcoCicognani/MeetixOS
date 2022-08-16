@@ -102,27 +102,8 @@ add_library(LibC
         stdio/fwrite_unlocked.cc
         libc_main.cc
         strings.cc
-        stdlib/abort.cc
-        stdlib/strtod.cc
+        stdlib.cc
         parse_cli_args.cc
-        stdlib/atoi.cc
-        stdlib/setenv.cc
-        stdlib/mbstowcs.cc
-        stdlib/strtoul.cc
-        stdlib/strtof.cc
-        stdlib/div.cc
-        stdlib/bsearch.cc
-        stdlib/rand.cc
-        stdlib/strtol.cc
-        stdlib/mktemp.cc
-        stdlib/lldiv.cc
-        stdlib/ldiv.cc
-        stdlib/qsort.cc
-        stdlib/exit.cc
-        stdlib/System.cc
-        stdlib/getenv.cc
-        stdlib/atol.cc
-        stdlib/atof.cc
         string.cc
         unistd.cc
         OptionsParser.cc
@@ -140,7 +121,17 @@ add_library(LibC
         sys/stat/lstat.cc
         sys/stat/chmod.cc
         setjmp.S
-        sys/stat/fchmod.cc dirent.cc dlfcn.cc errno.cc fcntl.cc getopt.cc libgen.cc locale.cc pthread.cc sched.cc signal.cc)
+        sys/stat/fchmod.cc
+        dirent.cc
+        dlfcn.cc
+        errno.cc
+        fcntl.cc
+        getopt.cc
+        libgen.cc
+        locale.cc
+        pthread.cc
+        sched.cc
+        signal.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 target_link_libraries(LibC LibApi LibMath)
