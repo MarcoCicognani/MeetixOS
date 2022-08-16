@@ -122,16 +122,21 @@ SYSCALL_HANDLER(cliArgsRelease) {
 
     // Copy args if available
     if ( process->cliArguments != 0 ) {
-        Memory::copy(data->m_out_buffer, process->cliArguments, CLIARGS_BUFFER_LENGTH);
-        data->m_out_buffer[String::length(process->cliArguments)] = 0;
+        auto args_len = String::length(process->cliArguments);
+
+        Memory::copy(data->m_out_buffer, process->cliArguments, args_len);
+        data->m_out_buffer[args_len] = 0;
+        data->m_len = args_len;
 
         delete process->cliArguments;
         process->cliArguments = 0;
     }
 
     // Null-terminate in case of failure
-    else
+    else {
         data->m_out_buffer[0] = 0;
+        data->m_len=0;
+    }
 
     return currentThread;
 }

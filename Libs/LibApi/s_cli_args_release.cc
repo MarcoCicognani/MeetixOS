@@ -12,7 +12,8 @@
 
 #include <Api/User.h>
 
-void s_cli_args_release(char* buffer) {
+usize s_cli_args_release(char* buffer) {
     SyscallCliArgsRelease data{ buffer };
     do_syscall(SYSCALL_PROCESS_RELEASE_CLI_ARGUMENTS, (usize)&data);
+    return data.m_len;
 }

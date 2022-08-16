@@ -69,10 +69,13 @@ SYSCALL_HANDLER(getExecutablePath) {
     SyscallFsGetExecutablePath* data
         = (SyscallFsGetExecutablePath*)SYSCALL_DATA(currentThread->cpuState);
 
-    if ( !currentThread->process->sourcePath )
+    if ( !currentThread->process->sourcePath ) {
         data->m_out_buffer[0] = 0;
-    else
+        data->m_len           = 0;
+    } else {
         String::copy(data->m_out_buffer, currentThread->process->sourcePath);
+        data->m_len = String::length(currentThread->process->sourcePath);
+    }
 
     return currentThread;
 }

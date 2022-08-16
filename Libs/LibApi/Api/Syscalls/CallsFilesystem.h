@@ -166,6 +166,7 @@ typedef struct {
  */
 typedef struct {
     char* m_out_buffer;
+    usize m_len;
 } A_PACKED SyscallFsGetExecutablePath;
 
 /**

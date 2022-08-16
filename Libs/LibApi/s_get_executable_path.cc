@@ -12,7 +12,8 @@
 
 #include <Api/User.h>
 
-void s_get_executable_path(char* buffer) {
+usize s_get_executable_path(char* buffer) {
     SyscallFsGetExecutablePath data{ buffer };
     do_syscall(SYSCALL_GET_EXECUTABLE_PATH, (usize)&data);
+    return data.m_len;
 }

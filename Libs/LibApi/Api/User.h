@@ -322,10 +322,11 @@ GetWorkingDirectoryStatus s_get_working_directory_l(char* buffer, usize buffer_l
  * string is written to the buffer.
  *
  * @param path:     buffer of at least {PATH_MAX} bytes size
+ * @return the length of the buffer filled
  *
  * @security-level APPLICATION
  */
-void s_get_executable_path(char* buffer);
+usize s_get_executable_path(char* buffer);
 
 /**
  * Reads bytes from the file to the buffer.
@@ -745,10 +746,11 @@ void s_cli_args_store(ProcessCreationIdentifier process, char* arguments);
  * If no arguments were supplied for the executing process, the buffer is null-terminated only.
  *
  * @param buffer:       target buffer to store the arguments to
+ * @return the length of the string stored
  *
  * @security-level KERNEL
  */
-void s_cli_args_release(char* buffer);
+usize s_cli_args_release(char* buffer);
 
 /**
  * Creates an empty process.
