@@ -159,34 +159,27 @@ TEST_CASE(ends_with) {
 }
 
 TEST_CASE(as_int) {
-    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("67"sv).as_int<i8>(), 67);
-    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("-43"sv).as_int<i8>(), -43);
-    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("\n 88"sv).as_int<i8>(), 88);
-    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view(" \v \r89\n"sv).as_int(), 89);
-    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("-89654"sv).as_int(), -89654);
-    VERIFY_IS_NONE(String::construct_from_view("\n 88"sv).as_int<i8>(TrimWhitespace::No));
-    VERIFY_IS_NONE(String::construct_from_view("384"sv).as_int<i8>());
+    VERIFY_IS_VALUE_EQUAL(String::construct_from_view("127"sv).as_int<i8>(), 127);
+    VERIFY_IS_VALUE_EQUAL(String::construct_from_view("-32"sv).as_int<i8>(), -32);
+    VERIFY_IS_VALUE_EQUAL(String::construct_from_view("450\n"sv).as_int(), 450);
+    VERIFY_IS_VALUE_EQUAL(String::construct_from_view("-65536"sv).as_int(), -65536);
+    VERIFY_IS_VALUE_EQUAL(String::construct_from_view("  \t64begin"sv).as_int(IntBase::Decimal, ParseMode::TrimWhitesAndBegin), 64);
+
+    VERIFY_IS_VALUE_EQUAL(String::construct_from_view("0xabc45"sv).as_int<i32>(IntBase::Hex), 0xabc45);
+    VERIFY_IS_VALUE_EQUAL(String::construct_from_view("-1ff24bc"sv).as_int<i32>(IntBase::Hex), -0x1ff24bc);
+
+    VERIFY_IS_ERROR_EQUAL(String::construct_from_view("\n 75"sv).as_int<i8>(IntBase::Decimal, ParseMode::BeginToEnd), EINVAL);
+    VERIFY_IS_ERROR_EQUAL(String::construct_from_view("7p5"sv).as_int<i8>(IntBase::Decimal), EINVAL);
+    VERIFY_IS_ERROR_EQUAL(String::construct_from_view("512"sv).as_int<i8>(IntBase::Decimal), EOVERFLOW);
 }
 
 TEST_CASE(as_uint) {
-    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("6752"sv).as_uint<u16>(), 6752);
-    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("8652164"sv).as_uint<u64>(), 8652164);
-    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("00000657"sv).as_uint<u64>(), 657);
-    VERIFY_IS_NONE(String::construct_from_view("-35"sv).as_uint());
-    VERIFY_IS_NONE(String::construct_from_view("56x7J9"sv).as_uint());
-}
+    VERIFY_IS_VALUE_EQUAL(String::construct_from_view("9753"sv).as_uint<u16>(), 9753);
+    VERIFY_IS_VALUE_EQUAL(String::construct_from_view("6542037"sv).as_uint<u64>(), 6542037);
+    VERIFY_IS_VALUE_EQUAL(String::construct_from_view("000917"sv).as_uint<u64>(), 917);
 
-TEST_CASE(as_uint_from_hex) {
-    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("0x1a2b3c"sv).as_uint_from_hex(), 0x1a2b3c);
-    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("0f6d7a"sv).as_uint_from_hex(), 0x0f6d7a);
-    VERIFY_IS_NONE(String::construct_from_view("i94hr"sv).as_uint_from_hex());
-    VERIFY_IS_NONE(String::construct_from_view("0x"sv).as_uint_from_hex());
-}
-
-TEST_CASE(as_uint_from_octal) {
-    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("0612"sv).as_uint_from_octal(), 0612);
-    VERIFY_IS_PRESENT_EQUAL(String::construct_from_view("35172"sv).as_uint_from_octal(), 035172);
-    VERIFY_IS_NONE(String::construct_from_view("12634529"sv).as_uint_from_octal());
+    VERIFY_IS_ERROR_EQUAL(String::construct_from_view("-64"sv).as_uint<u16>(), EINVAL);
+    VERIFY_IS_ERROR_EQUAL(String::construct_from_view("56AC"sv).as_uint<u64>(), EINVAL);
 }
 
 TEST_CASE(find) {

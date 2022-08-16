@@ -18,17 +18,19 @@ namespace TC {
 namespace Collection {
 namespace Enums {
 
-enum class TrimWhitespace {
-    Yes,
-    No
+enum class IntBase {
+    Binary  = 2,
+    Octal   = 8,
+    Decimal = 10,
+    Hex     = 16
 };
 
 } /* namespace Enums */
 
-using Enums::TrimWhitespace;
+using Enums::IntBase;
 
 } /* namespace Collection */
 
-using Collection::TrimWhitespace;
+using Collection::IntBase;
 
 } /* namespace TC */

@@ -15,9 +15,10 @@
 #include <LibTC/Forward.hh>
 
 #include <LibTC/Collection/Enums/CaseSensitivity.hh>
+#include <LibTC/Collection/Enums/IntBase.hh>
 #include <LibTC/Collection/Enums/KeepEmpty.hh>
+#include <LibTC/Collection/Enums/ParseMode.hh>
 #include <LibTC/Collection/Enums/TrimMode.hh>
-#include <LibTC/Collection/Enums/TrimWhitespace.hh>
 #include <LibTC/Collection/ReverseIteratorSupport.hh>
 #include <LibTC/Collection/Vector.hh>
 #include <LibTC/Concept.hh>
@@ -99,16 +100,10 @@ public:
      * @brief Converts this StringView into an integer
      */
     template<typename T = i32>
-    [[nodiscard]] auto as_int(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const -> Option<T>;
+    [[nodiscard]] auto as_int(IntBase int_base = IntBase::Decimal, ParseMode parse_mode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
 
     template<typename T = u32>
-    [[nodiscard]] auto as_uint(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const -> Option<T>;
-
-    template<typename T = u32>
-    [[nodiscard]] auto as_uint_from_hex(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const -> Option<T>;
-
-    template<typename T = u32>
-    [[nodiscard]] auto as_uint_from_octal(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const -> Option<T>;
+    [[nodiscard]] auto as_uint(IntBase int_base = IntBase::Decimal, ParseMode parse_mode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
 
     /**
      * @brief Returns the index of the given needle into the src StringView
@@ -120,6 +115,13 @@ public:
      * @brief Returns the last index of the given needle into the src StringView
      */
     [[nodiscard]] auto find_last(char needle) const -> Option<usize>;
+    [[nodiscard]] auto find_last_if(Predicate<char> auto predicate) const -> Option<usize> {
+        for ( usize i = len() - 1; i > 0; --i ) {
+            if ( predicate(at(i)) )
+                return i;
+        }
+        return {};
+    }
 
     /**
      * @brief Returns all the indexes of needle inside the src StringView

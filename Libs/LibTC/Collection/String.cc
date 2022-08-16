@@ -143,44 +143,24 @@ auto String::ends_with(char rhs, CaseSensitivity case_sensitivity) const -> bool
 }
 
 template<typename T>
-auto String::as_int(TrimWhitespace trim_whitespace) const -> Option<T> {
-    return as_string_view().as_int<T>(trim_whitespace);
+auto String::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<T> {
+    return as_string_view().as_int<T>(int_base, parse_mode);
 }
 
-template auto String::as_int(TrimWhitespace trim_whitespace) const -> Option<i8>;
-template auto String::as_int(TrimWhitespace trim_whitespace) const -> Option<i16>;
-template auto String::as_int(TrimWhitespace trim_whitespace) const -> Option<i32>;
-template auto String::as_int(TrimWhitespace trim_whitespace) const -> Option<i64>;
+template auto String::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<i8>;
+template auto String::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<i16>;
+template auto String::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<i32>;
+template auto String::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<i64>;
 
 template<typename T>
-auto String::as_uint(TrimWhitespace trim_whitespace) const -> Option<T> {
-    return as_string_view().as_uint<T>(trim_whitespace);
+auto String::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<T> {
+    return as_string_view().as_uint<T>(int_base, parse_mode);
 }
 
-template auto String::as_uint(TrimWhitespace trim_whitespace) const -> Option<u8>;
-template auto String::as_uint(TrimWhitespace trim_whitespace) const -> Option<u16>;
-template auto String::as_uint(TrimWhitespace trim_whitespace) const -> Option<u32>;
-template auto String::as_uint(TrimWhitespace trim_whitespace) const -> Option<u64>;
-
-template<typename T>
-auto String::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<T> {
-    return as_string_view().as_uint_from_hex<T>(trim_whitespace);
-}
-
-template auto String::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u8>;
-template auto String::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u16>;
-template auto String::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u32>;
-template auto String::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u64>;
-
-template<typename T>
-auto String::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<T> {
-    return as_string_view().as_uint_from_octal<T>(trim_whitespace);
-}
-
-template auto String::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u8>;
-template auto String::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u16>;
-template auto String::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u32>;
-template auto String::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u64>;
+template auto String::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<u8>;
+template auto String::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<u16>;
+template auto String::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<u32>;
+template auto String::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<u64>;
 
 auto String::find(char needle, size_t start) const -> Option<usize> {
     return as_string_view().find(needle, start);

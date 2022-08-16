@@ -163,38 +163,27 @@ TEST_CASE(ends_with) {
 }
 
 TEST_CASE(as_int) {
-    VERIFY_IS_PRESENT_EQUAL("127"sv.as_int<i8>(), 127);
-    VERIFY_IS_PRESENT_EQUAL("-32"sv.as_int<i8>(), -32);
-    VERIFY_IS_PRESENT_EQUAL("450\n"sv.as_int(), 450);
-    VERIFY_IS_PRESENT_EQUAL("-65536"sv.as_int(), -65536);
-    VERIFY_IS_NONE("\n 75"sv.as_int<i8>(TrimWhitespace::No));
-    VERIFY_IS_NONE("\n 75"sv.as_int<i8>(TrimWhitespace::No));
-    VERIFY_IS_NONE("7p5"sv.as_int<i8>());
-    VERIFY_IS_NONE("512"sv.as_int<i8>());
+    VERIFY_IS_VALUE_EQUAL("127"sv.as_int<i8>(), 127);
+    VERIFY_IS_VALUE_EQUAL("-32"sv.as_int<i8>(), -32);
+    VERIFY_IS_VALUE_EQUAL("450\n"sv.as_int(), 450);
+    VERIFY_IS_VALUE_EQUAL("-65536"sv.as_int(), -65536);
+    VERIFY_IS_VALUE_EQUAL("  \t64begin"sv.as_int(IntBase::Decimal, ParseMode::TrimWhitesAndBegin), 64);
+
+    VERIFY_IS_VALUE_EQUAL("0xabc45"sv.as_int<i32>(IntBase::Hex), 0xabc45);
+    VERIFY_IS_VALUE_EQUAL("-1ff24bc"sv.as_int<i32>(IntBase::Hex), -0x1ff24bc);
+
+    VERIFY_IS_ERROR_EQUAL("\n 75"sv.as_int<i8>(IntBase::Decimal, ParseMode::BeginToEnd), EINVAL);
+    VERIFY_IS_ERROR_EQUAL("7p5"sv.as_int<i8>(IntBase::Decimal), EINVAL);
+    VERIFY_IS_ERROR_EQUAL("512"sv.as_int<i8>(IntBase::Decimal), EOVERFLOW);
 }
 
 TEST_CASE(as_uint) {
-    VERIFY_IS_PRESENT_EQUAL("9753"sv.as_uint<u16>(), 9753);
-    VERIFY_IS_PRESENT_EQUAL("6542037"sv.as_uint<u64>(), 6542037);
-    VERIFY_IS_PRESENT_EQUAL("000917"sv.as_uint<u64>(), 917);
+    VERIFY_IS_VALUE_EQUAL("9753"sv.as_uint<u16>(), 9753);
+    VERIFY_IS_VALUE_EQUAL("6542037"sv.as_uint<u64>(), 6542037);
+    VERIFY_IS_VALUE_EQUAL("000917"sv.as_uint<u64>(), 917);
 
-    VERIFY_IS_NONE("-64"sv.as_uint<u16>());
-    VERIFY_IS_NONE("56AC"sv.as_uint<u64>());
-}
-
-TEST_CASE(as_uint_from_hex) {
-    VERIFY_IS_PRESENT_EQUAL("0xabc45"sv.as_uint_from_hex(), 0xabc45);
-    VERIFY_IS_PRESENT_EQUAL("1ff24bc"sv.as_uint_from_hex(), 0x1ff24bc);
-
-    VERIFY_IS_NONE("3adg45"sv.as_uint_from_hex());
-    VERIFY_IS_NONE("0x"sv.as_uint_from_hex());
-}
-
-TEST_CASE(as_uint_from_octal) {
-    VERIFY_IS_PRESENT_EQUAL("05672"sv.as_uint_from_octal(), 05672);
-    VERIFY_IS_PRESENT_EQUAL("3546"sv.as_uint_from_octal(), 03546);
-
-    VERIFY_IS_NONE("458"sv.as_uint_from_octal());
+    VERIFY_IS_ERROR_EQUAL("-64"sv.as_uint<u16>(), EINVAL);
+    VERIFY_IS_ERROR_EQUAL("56AC"sv.as_uint<u64>(), EINVAL);
 }
 
 TEST_CASE(find) {

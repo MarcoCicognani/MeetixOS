@@ -16,7 +16,6 @@
 
 #include <LibTC/Collection/Enums/CaseSensitivity.hh>
 #include <LibTC/Collection/Enums/TrimMode.hh>
-#include <LibTC/Collection/Enums/TrimWhitespace.hh>
 #include <LibTC/Collection/ReverseIteratorSupport.hh>
 #include <LibTC/Collection/StringStorage.hh>
 #include <LibTC/Collection/StringView.hh>
@@ -121,16 +120,10 @@ public:
      * @brief Converts this String into an integer
      */
     template<typename T = i32>
-    [[nodiscard]] auto as_int(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const -> Option<T>;
+    [[nodiscard]] auto as_int(IntBase int_base = IntBase::Decimal, ParseMode parse_mode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
 
     template<typename T = u32>
-    [[nodiscard]] auto as_uint(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const -> Option<T>;
-
-    template<typename T = u32>
-    [[nodiscard]] auto as_uint_from_hex(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const -> Option<T>;
-
-    template<typename T = u32>
-    [[nodiscard]] auto as_uint_from_octal(TrimWhitespace trim_whitespace = TrimWhitespace::Yes) const -> Option<T>;
+    [[nodiscard]] auto as_uint(IntBase int_base = IntBase::Decimal, ParseMode parse_mode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
 
     /**
      * @brief Returns the index of the given needle into the src StringView

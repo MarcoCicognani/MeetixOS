@@ -30,11 +30,12 @@ namespace Enums {
 
 enum class CaseSensitivity;
 enum class InsertResult;
+enum class IntBase;
 enum class KeepEmpty;
 enum class KeepStorageCapacity;
 enum class OnExistingEntry;
+enum class ParseMode;
 enum class TrimMode;
-enum class TrimWhitespace;
 
 } /* namespace Enums */
 

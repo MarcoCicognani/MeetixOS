@@ -56,6 +56,10 @@ constexpr auto is_ascii_hex_digit(u32 code_point) -> bool {
     return is_ascii_digit(code_point) || (code_point >= 'A' && code_point <= 'F') || (code_point >= 'a' && code_point <= 'f');
 }
 
+constexpr auto is_ascii_int_sign(u32 code_point) -> bool {
+    return code_point == '+' || code_point == '-';
+}
+
 constexpr auto is_ascii_blank(u32 code_point) -> bool {
     return code_point == '\t' || code_point == ' ';
 }
@@ -152,6 +156,7 @@ using CharTypes::is_ascii_lowercase_alpha;
 using CharTypes::is_ascii_octal_digit;
 using CharTypes::is_ascii_printable;
 using CharTypes::is_ascii_punctuation;
+using CharTypes::is_ascii_int_sign;
 using CharTypes::is_ascii_space;
 using CharTypes::is_ascii_uppercase_alpha;
 using CharTypes::is_unicode;

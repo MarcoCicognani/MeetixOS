@@ -39,5 +39,5 @@
 #    define VERIFY_NOT_EQUAL(first, second)     assert(first != second)
 #    define VERIFY_NOT_NULL(expression)         assert(expression != nullptr)
 #    define VERIFY_NULL(expression)             assert(expression == nullptr)
-#    define VERIFY_NOT_REACHED()                assert(false)
+#    define VERIFY_NOT_REACHED()                { assert(false); __builtin_unreachable(); }
 #endif

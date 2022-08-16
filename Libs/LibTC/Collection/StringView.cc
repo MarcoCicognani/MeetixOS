@@ -190,137 +190,134 @@ auto StringView::ends_with(char rhs, CaseSensitivity case_sensitivity) const -> 
         return to_ascii_lowercase(at(len() - 1)) == to_ascii_lowercase(rhs);
 }
 
+static constexpr auto without_base_prefix(IntBase int_base, StringView string_view) -> StringView {
+    if ( (int_base == IntBase::Binary && string_view[0] == 'b') || (int_base == IntBase::Octal && string_view[0] == '0') )
+        return string_view.sub_string_view(1);
+    else if ( int_base == IntBase::Hex && string_view.starts_with("0x"sv, CaseSensitivity::Insensitive) )
+        return string_view.sub_string_view(2);
+    else
+        return string_view;
+}
+static constexpr auto is_valid_digit(IntBase int_base, char c) -> bool {
+    switch ( int_base ) {
+        case IntBase::Binary:
+            return is_ascii_binary_digit(c);
+        case IntBase::Octal:
+            return is_ascii_octal_digit(c);
+        case IntBase::Decimal:
+            return is_ascii_digit(c);
+        case IntBase::Hex:
+            return is_ascii_hex_digit(c);
+        default:
+            return false;
+    }
+}
 template<typename T>
-auto StringView::as_int(TrimWhitespace trim_whitespace) const -> Option<T> {
-    auto string_view = trim_whitespace == TrimWhitespace::Yes ? trim_whitespaces() : *this;
+static constexpr auto digit_value(char c) -> T {
+    if ( c >= '0' && c <= '9' )
+        return c - '0';
+    else if ( c >= 'a' && c <= 'z' )
+        return c - 'a' + 10;
+    else if ( c >= 'A' && c <= 'Z' )
+        return c - 'A' + 10;
+    else
+        return 0;
+}
+
+template<typename T>
+auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<T> {
+    /* trim the whitespaces if requested */
+    auto string_view = *this;
+    if ( parse_mode == ParseMode::TrimWhitesAndBegin )
+        string_view = string_view.trim_whitespaces(TrimMode::Left);
+    else if ( parse_mode == ParseMode::TrimWhitesAndBeginToEnd )
+        string_view = string_view.trim_whitespaces(TrimMode::Both);
+
+    /* check for only whitespaces string */
     if ( string_view.is_empty() )
-        return {};
+        return Error{ EINVAL };
 
     /* extract the sign from the beginning of the string */
-    T     sign = 1;
-    usize i    = 0;
-    if ( string_view[0] == '-' || string_view[0] == '+' ) {
+    T sign = 1;
+    if ( is_ascii_int_sign(string_view[0]) ) {
         if ( string_view.len() == 1 )
-            return {};
+            return Error{ EINVAL };
 
-        ++i;
+        /* for minus set the sign to negative */
         if ( string_view[0] == '-' )
             sign = -1;
+
+        /* remove the sign from the beginning */
+        string_view = string_view.sub_string_view(1);
     }
 
     /* convert the string into the integer */
     T int_value = 0;
-    for ( ; i < string_view.len(); ++i ) {
-        if ( string_view[i] < '0' || string_view[i] > '9' )
-            return {};
+    for ( auto const c : without_base_prefix(int_base, string_view) ) {
+        if ( !is_valid_digit(int_base, c) ) {
+            /* according to the parse all flag we decide here if the parser must return
+             * with an error or simply break the cycle returning the value parsed until now */
+            if ( parse_mode == ParseMode::BeginToEnd || parse_mode == ParseMode::TrimWhitesAndBeginToEnd )
+                return Error{ EINVAL };
+            else
+                break;
+        }
 
-        if ( __builtin_mul_overflow(int_value, 10, &int_value) )
-            return {};
-        if ( __builtin_add_overflow(int_value, sign * (string_view[i] - '0'), &int_value) )
-            return {};
+        if ( __builtin_mul_overflow(int_value, static_cast<T>(int_base), &int_value) )
+            return Error{ EOVERFLOW };
+        if ( __builtin_add_overflow(int_value, digit_value<T>(c), &int_value) )
+            return Error{ EOVERFLOW };
+    }
+
+    /* apply the sign to the final value */
+    int_value *= sign;
+    return int_value;
+}
+
+template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<signed char>;
+template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<signed short>;
+template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<signed int>;
+template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<signed long>;
+template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<signed long long>;
+
+template<typename T>
+auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<T> {
+    /* trim the whitespaces if requested */
+    auto string_view = *this;
+    if ( parse_mode == ParseMode::TrimWhitesAndBegin )
+        string_view = string_view.trim_whitespaces(TrimMode::Left);
+    else if ( parse_mode == ParseMode::TrimWhitesAndBeginToEnd )
+        string_view = string_view.trim_whitespaces(TrimMode::Both);
+
+    /* check for only whitespaces string */
+    if ( string_view.is_empty() )
+        return Error{ EINVAL };
+
+    /* convert the string into the integer */
+    T int_value = 0;
+    for ( auto const c : without_base_prefix(int_base, string_view) ) {
+        if ( !is_valid_digit(int_base, c) ) {
+            /* according to the parse all flag we decide here if the parser must return
+             * with an error or simply break the cycle returning the value parsed until now */
+            if ( parse_mode == ParseMode::BeginToEnd || parse_mode == ParseMode::TrimWhitesAndBeginToEnd )
+                return Error{ EINVAL };
+            else
+                break;
+        }
+
+        if ( __builtin_mul_overflow(int_value, static_cast<T>(int_base), &int_value) )
+            return Error{ EOVERFLOW };
+        if ( __builtin_add_overflow(int_value, digit_value<T>(c), &int_value) )
+            return Error{ EOVERFLOW };
     }
     return int_value;
 }
 
-template auto StringView::as_int(TrimWhitespace trim_whitespace) const -> Option<i8>;
-template auto StringView::as_int(TrimWhitespace trim_whitespace) const -> Option<i16>;
-template auto StringView::as_int(TrimWhitespace trim_whitespace) const -> Option<i32>;
-template auto StringView::as_int(TrimWhitespace trim_whitespace) const -> Option<i64>;
-
-template<typename T>
-auto StringView::as_uint(TrimWhitespace trim_whitespace) const -> Option<T> {
-    auto string_view = trim_whitespace == TrimWhitespace::Yes ? trim_whitespaces() : *this;
-    if ( string_view.is_empty() )
-        return {};
-
-    /* convert the string into the integer */
-    T uint_value = 0;
-    for ( auto const c : string_view ) {
-        if ( c < '0' || c > '9' )
-            return {};
-
-        if ( __builtin_mul_overflow(uint_value, 10, &uint_value) )
-            return {};
-        if ( __builtin_add_overflow(uint_value, c - '0', &uint_value) )
-            return {};
-    }
-    return uint_value;
-}
-
-template auto StringView::as_uint(TrimWhitespace trim_whitespace) const -> Option<u8>;
-template auto StringView::as_uint(TrimWhitespace trim_whitespace) const -> Option<u16>;
-template auto StringView::as_uint(TrimWhitespace trim_whitespace) const -> Option<u32>;
-template auto StringView::as_uint(TrimWhitespace trim_whitespace) const -> Option<u64>;
-
-template<typename T>
-auto StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<T> {
-    auto string_view = trim_whitespace == TrimWhitespace::Yes ? trim_whitespaces() : *this;
-    if ( string_view.is_empty() )
-        return {};
-
-    /* remove base prefix */
-    if ( string_view.starts_with("0x"sv, CaseSensitivity::Insensitive) ) {
-        if ( string_view.len() <= 2 )
-            return {};
-
-        string_view = string_view.sub_string_view(2);
-    }
-
-    /* convert the string into the integer */
-    T    uint_value = 0;
-    auto max_value  = NumericLimits<T>::max();
-    for ( auto const c : string_view ) {
-        if ( uint_value > (max_value >> 4) )
-            return {};
-
-        u8 value;
-        if ( c >= '0' && c <= '9' )
-            value = c - '0';
-        else if ( c >= 'a' && c <= 'f' )
-            value = 10 + (c - 'a');
-        else if ( c >= 'A' && c <= 'F' )
-            value = 10 + (c - 'A');
-        else
-            return {};
-
-        uint_value = (uint_value << 4) + value;
-    }
-    return uint_value;
-}
-
-template auto StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u8>;
-template auto StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u16>;
-template auto StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u32>;
-template auto StringView::as_uint_from_hex(TrimWhitespace trim_whitespace) const -> Option<u64>;
-
-template<typename T>
-auto StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<T> {
-    auto string_view = trim_whitespace == TrimWhitespace::Yes ? trim_whitespaces() : *this;
-    if ( string_view.is_empty() )
-        return {};
-
-    /* convert the string into the integer */
-    T    uint_value = 0;
-    auto max_value  = NumericLimits<T>::max();
-    for ( auto const c : string_view ) {
-        if ( uint_value > max_value >> 3 )
-            return {};
-
-        u8 value;
-        if ( c >= '0' && c <= '7' )
-            value = c - '0';
-        else
-            return {};
-
-        uint_value = (uint_value << 3) + value;
-    }
-    return uint_value;
-}
-
-template auto StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u8>;
-template auto StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u16>;
-template auto StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u32>;
-template auto StringView::as_uint_from_octal(TrimWhitespace trim_whitespace) const -> Option<u64>;
+template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<unsigned char>;
+template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<unsigned short>;
+template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<unsigned int>;
+template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<unsigned long>;
+template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<unsigned long long>;
 
 auto StringView::find(char needle, size_t start) const -> Option<usize> {
     if ( start >= len() )
