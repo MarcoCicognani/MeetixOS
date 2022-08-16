@@ -34,15 +34,11 @@ auto Suite::run(Vector<StringView> args) -> ErrorOr<void> {
     usize benchmark_completed = 0;
     usize benchmark_failed    = 0;
 
-    FmtIO::outln("- Starting test suite {}...running {} tests"sv, args[0], m_test_cases.count());
-    FmtIO::outln("args = {}"sv, args);
-
+    FmtIO::outln("- Starting test suite {}..."sv, args[0], m_test_cases.count());
     auto const all_tests_start_timestamp = s_millis();
-    for ( auto test_case : m_test_cases ) {
-        if ( args.count() > 1 && !args.find(test_case->name()).is_present() ) {
-            FmtIO::outln("\tSkipping test {}"sv, test_case->name());
+    for ( auto const* test_case : m_test_cases ) {
+        if ( args.count() > 1 && !args.find(test_case->name()).is_present() )
             continue;
-        }
 
         m_current_test_have_failed = false;
 
@@ -78,9 +74,9 @@ auto Suite::run(Vector<StringView> args) -> ErrorOr<void> {
                  benchmark_completed + benchmark_failed,
                  all_tests_end_timestamp - all_tests_start_timestamp);
     if ( test_completed + test_failed > 0 )
-        FmtIO::outln("\tTests      - \033[32m{}\033[0m Completed/\033[31m{}\033[0m Failed\n"sv, test_completed, test_failed);
+        FmtIO::outln("\tTests      - \033[32m{:3}\033[0m Completed/\033[31m{:3}\033[0m Failed"sv, test_completed, test_failed);
     if ( benchmark_completed + benchmark_failed > 0 )
-        FmtIO::outln("\tBenchmarks - \033[32m{}\033[0m Completed/\033[31m{}\033[0m Failed\n"sv, benchmark_completed, benchmark_failed);
+        FmtIO::outln("\tBenchmarks - \033[32m{:3}\033[0m Completed/\033[31m{:3}\033[0m Failed"sv, benchmark_completed, benchmark_failed);
 
     if ( test_failed != 0 || benchmark_failed != 0 )
         return Error{ "Some tests are failed" };

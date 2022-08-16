@@ -24,7 +24,7 @@
                                                                                                                                            \
         ~TestCaseImpl##name() override = default;                                                                                          \
                                                                                                                                            \
-        void run_test() override;                                                                                                          \
+        void run_test() const override;                                                                                                    \
                                                                                                                                            \
     private:                                                                                                                               \
         explicit TestCaseImpl##name() noexcept                                                                                             \
@@ -34,7 +34,7 @@
     [[gnu::used]]                                                                                                                          \
     static auto const s_test_case_inst_##name = TestCaseImpl##name::construct_and_register();                                              \
                                                                                                                                            \
-    void TestCaseImpl##name::run_test()
+    void TestCaseImpl##name::run_test() const
 
 /**
  * @brief Define a Case for testing the performances of something
@@ -46,7 +46,7 @@
                                                                                                                                            \
         ~BenchmarkCaseImpl##name() override = default;                                                                                     \
                                                                                                                                            \
-        void run_test() override;                                                                                                          \
+        void run_test() const override;                                                                                                    \
                                                                                                                                            \
     private:                                                                                                                               \
         explicit BenchmarkCaseImpl##name() noexcept                                                                                        \
@@ -56,7 +56,7 @@
     [[gnu::used]]                                                                                                                          \
     static auto const s_benchmark_case_inst_##name = BenchmarkCaseImpl##name::construct_and_register();                                    \
                                                                                                                                            \
-    void BenchmarkCaseImpl##name::run_test()
+    void BenchmarkCaseImpl##name::run_test() const
 
 namespace UnitTest {
 
@@ -67,7 +67,7 @@ public:
     /**
      * @brief Test main
      */
-    virtual void run_test() = 0;
+    virtual void run_test() const = 0;
 
     /**
      * @brief Getters
