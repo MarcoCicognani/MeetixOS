@@ -372,6 +372,27 @@ auto StringView::try_find_all(StringView needle) const -> ErrorOr<Vector<usize>>
     return positions;
 }
 
+auto StringView::split_view(char separator, KeepEmpty keep_empty) const -> Vector<StringView> {
+    return split_view(StringView{ &separator, 1 }, keep_empty);
+}
+
+auto StringView::split_view(StringView separator, KeepEmpty keep_empty) const -> Vector<StringView> {
+    return MUST(try_split_view(separator, keep_empty));
+}
+
+auto StringView::try_split_view(char separator, KeepEmpty keep_empty) const -> ErrorOr<Vector<StringView>> {
+    return try_split_view(StringView{ &separator, 1 }, keep_empty);
+}
+
+auto StringView::try_split_view(StringView separator, KeepEmpty keep_empty) const -> ErrorOr<Vector<StringView>> {
+    auto vector = Vector<StringView>::construct_empty();
+    TRY(split_view(separator, keep_empty, [&vector](StringView string_view) -> ErrorOr<void> {
+        TRY(vector.try_append(string_view));
+        return {};
+    }));
+    return vector;
+}
+
 auto StringView::operator==(StringView const& rhs) const -> bool {
     return len() == rhs.len() && compare(rhs) == 0;
 }

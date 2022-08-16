@@ -30,6 +30,7 @@ namespace Enums {
 
 enum class CaseSensitivity;
 enum class InsertResult;
+enum class KeepEmpty;
 enum class KeepStorageCapacity;
 enum class OnExistingEntry;
 enum class TrimMode;

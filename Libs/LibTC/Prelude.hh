@@ -15,6 +15,7 @@
 #include <LibTC/Assertions.hh>
 #include <LibTC/BitCast.hh>
 #include <LibTC/CharTypes.hh>
+#include <LibTC/Collection/Enums/KeepEmpty.hh>
 #include <LibTC/Collection/Function.hh>
 #include <LibTC/Collection/List.hh>
 #include <LibTC/Collection/Map.hh>

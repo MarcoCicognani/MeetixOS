@@ -15,10 +15,12 @@
 #include <LibTC/Forward.hh>
 
 #include <LibTC/Collection/Enums/CaseSensitivity.hh>
+#include <LibTC/Collection/Enums/KeepEmpty.hh>
 #include <LibTC/Collection/Enums/TrimMode.hh>
 #include <LibTC/Collection/Enums/TrimWhitespace.hh>
 #include <LibTC/Collection/ReverseIteratorSupport.hh>
 #include <LibTC/Collection/Vector.hh>
+#include <LibTC/Concept.hh>
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Option.hh>
 #include <LibTC/Hashing.hh>
@@ -124,6 +126,41 @@ public:
      */
     [[nodiscard]] auto find_all(StringView needle) const -> Vector<usize>;
     [[nodiscard]] auto try_find_all(StringView needle) const -> ErrorOr<Vector<usize>>;
+
+    /**
+     * @brief Splits this StringView and puts the split_view values into a vector or pass them to a predicate
+     */
+    [[nodiscard]] auto split_view(char separator, KeepEmpty keep_empty = KeepEmpty::No) const -> Vector<StringView>;
+    [[nodiscard]] auto split_view(StringView separator, KeepEmpty keep_empty = KeepEmpty::No) const -> Vector<StringView>;
+    [[nodiscard]] auto split_view(StringView separator, KeepEmpty keep_empty, Callable<ErrorOr<void>, StringView> auto predicate) const
+        -> ErrorOr<void> {
+        if ( is_empty() )
+            return {};
+
+        auto view_cursor   = *this;
+        auto index_or_none = find(separator);
+        while ( index_or_none.is_present() ) {
+            auto const separator_index     = index_or_none.value();
+            auto const part_with_separator = view_cursor.sub_string_view(0, separator_index + separator.len());
+            if ( keep_empty == KeepEmpty::Yes || separator_index > 0 )
+                TRY(predicate(part_with_separator.sub_string_view(0, separator_index)));
+
+            /* advance the cursor to the next step */
+            auto const remaining_chars = part_with_separator.as_cstr() + part_with_separator.len();
+
+            view_cursor   = StringView{ remaining_chars, view_cursor.len() - (remaining_chars - view_cursor.as_cstr()) };
+            index_or_none = view_cursor.find(separator);
+        }
+
+        /* provide to the predicate the last part of the view */
+        if ( keep_empty == KeepEmpty::Yes || !view_cursor.is_empty() )
+            TRY(predicate(view_cursor));
+
+        return {};
+    }
+
+    [[nodiscard]] auto try_split_view(char separator, KeepEmpty keep_empty = KeepEmpty::No) const -> ErrorOr<Vector<StringView>>;
+    [[nodiscard]] auto try_split_view(StringView separator, KeepEmpty keep_empty = KeepEmpty::No) const -> ErrorOr<Vector<StringView>>;
 
     /**
      * @brief Comparison operators

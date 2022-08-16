@@ -22,6 +22,7 @@ namespace Cxx {
 using std::nullptr_t;
 
 using std::nothrow;
+using std::nothrow_t;
 
 using std::declval;
 using std::exchange;
@@ -36,6 +37,7 @@ using std::initializer_list;
 using Cxx::nullptr_t;
 
 using Cxx::nothrow;
+using Cxx::nothrow_t;
 
 using Cxx::declval;
 using Cxx::exchange;

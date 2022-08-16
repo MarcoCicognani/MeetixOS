@@ -171,7 +171,7 @@ public:
     /**
      * @brief Non-error safe Factory functions
      */
-    [[nodiscard]] static constexpr auto construct_empty() -> Vector<T> {
+    [[nodiscard]] static constexpr auto construct_empty() noexcept -> Vector<T>  {
         return Vector<T>{};
     }
     [[nodiscard]] static auto construct_with_capacity(usize capacity) -> Vector<T> {
