@@ -1,6 +1,7 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
     <option name="LINE_SEPARATOR" value="&#10;" />
+    <option name="RIGHT_MARGIN" value="150" />
     <Objective-C>
       <option name="INDENT_NAMESPACE_MEMBERS" value="0" />
       <option name="INDENT_C_STRUCT_MEMBERS" value="2" />
