@@ -104,7 +104,7 @@ add_library(LibC
         strings.cc
         stdlib/abort.cc
         stdlib/strtod.cc
-        stdlib/parse_cli_args.cc
+        parse_cli_args.cc
         stdlib/atoi.cc
         stdlib/setenv.cc
         stdlib/mbstowcs.cc

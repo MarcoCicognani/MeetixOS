@@ -78,8 +78,6 @@ int   setenv(const char*, const char*, int);
 
 int system(const char*);
 
-bool parse_cli_args(int*, char***);
-
 void* bsearch(const void*, const void*, usize, usize, int (*)(const void*, const void*));
 void  qsort(void*, usize, usize, int (*)(const void*, const void*));
 

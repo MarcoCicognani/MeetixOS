@@ -32,12 +32,14 @@ void libc_main() {
     libc_init();
 
     /* parse arguments and call application main */
-    int    argc;
+    i32    argc;
     char** argv;
     int    ret = EXIT_FAILURE;
-    if ( parse_cli_args(&argc, &argv) )
+
+    auto error_or_void = parse_cli_args(argc, argv);
+    if ( error_or_void.is_value() )
         ret = main(argc, argv);
-    else
+    else /* TODO print out the error */
         s_log("failed to parse command line arguments");
 
     /* execution finished */

@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <LibTC/Functional/ErrorOr.hh>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -25,3 +27,5 @@ void libc_fini();
 #ifdef __cplusplus
 }
 #endif
+
+auto parse_cli_args(i32&, char**&) -> ErrorOr<void>;
