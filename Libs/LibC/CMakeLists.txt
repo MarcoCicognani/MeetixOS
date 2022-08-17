@@ -112,16 +112,10 @@ add_library(LibC
         time.cc
         assert.cc
         malloc.c
-        sys/time/gettimeofday.cc
-        sys/param/getwd.cc
-        sys/stat/mkdir.cc
-        sys/stat/stat.cc
-        sys/stat/fstat.cc
-        sys/stat/umask.cc
-        sys/stat/lstat.cc
-        sys/stat/chmod.cc
+        sys/stat.cc
+        sys/param.cc
+        sys/time.cc
         setjmp.S
-        sys/stat/fchmod.cc
         dirent.cc
         dlfcn.cc
         errno.cc
