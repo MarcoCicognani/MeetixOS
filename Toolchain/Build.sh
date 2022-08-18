@@ -90,6 +90,8 @@ MAKE_JOBS=-j$BUILD_JOBS
 # -------------------------------------------- Script Code: Tools Checking ------------------------------------------- #
 
 require_tool g++
+require_tool nasm
+require_tool pkg-config
 require_tool patch
 require_tool wget
 require_tool tar
