@@ -112,8 +112,7 @@ public:
 
         return map;
     }
-    [[nodiscard]] static auto try_construct_from_list(std::initializer_list<KeyValue> initializer_list)
-        -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+    [[nodiscard]] static auto try_construct_from_list(std::initializer_list<KeyValue> initializer_list) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
         auto map = construct_empty();
         for ( auto const& key_value : initializer_list ) /* even with auto initializer_list exposes only T const& */
             TRY(map.try_insert(Cxx::move(const_cast<KeyValue&>(key_value))));

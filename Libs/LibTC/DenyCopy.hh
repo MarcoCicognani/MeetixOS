@@ -12,8 +12,8 @@
 
 #pragma once
 
-#define TC_DENY_COPY(ClassName)                                                                                                            \
-                                                                                                                                           \
-public:                                                                                                                                    \
-    ClassName(ClassName const&)                    = delete;                                                                               \
-    auto operator=(ClassName const&) -> ClassName& = delete;
+#define TC_DENY_COPY(ClassName)                                                                                                                                \
+                                                                                                                                                               \
+public:                                                                                                                                                        \
+    ClassName(ClassName const&)                  = delete;                                                                                                     \
+    auto operator=(ClassName const&)->ClassName& = delete;

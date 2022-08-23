@@ -12,8 +12,8 @@
 
 #pragma once
 
-#define TC_DENY_MOVE(ClassName)                                                                                                            \
-                                                                                                                                           \
-public:                                                                                                                                    \
-    ClassName(ClassName&&)                    = delete;                                                                                    \
-    auto operator=(ClassName&&) -> ClassName& = delete;
+#define TC_DENY_MOVE(ClassName)                                                                                                                                \
+                                                                                                                                                               \
+public:                                                                                                                                                        \
+    ClassName(ClassName&&)                  = delete;                                                                                                          \
+    auto operator=(ClassName&&)->ClassName& = delete;

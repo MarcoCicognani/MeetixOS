@@ -251,11 +251,10 @@ private:
 public:
     static constexpr usize LOAD_FACTOR_PERCENT = 60;
 
-    using Iterator = Conditional<IsOrdered, Details::OrderedSetIterator<T, Bucket, false>, Details::SetIterator<T, Bucket>>;
-    using ConstIterator
-        = Conditional<IsOrdered, Details::OrderedSetIterator<T const, Bucket const, false>, Details::SetIterator<T const, Bucket const>>;
-    using ReverseIterator             = Details::OrderedSetIterator<T, Bucket, true>;
-    using ConstReverseIterator        = Details::OrderedSetIterator<T const, Bucket const, true>;
+    using Iterator             = Conditional<IsOrdered, Details::OrderedSetIterator<T, Bucket, false>, Details::SetIterator<T, Bucket>>;
+    using ConstIterator        = Conditional<IsOrdered, Details::OrderedSetIterator<T const, Bucket const, false>, Details::SetIterator<T const, Bucket const>>;
+    using ReverseIterator      = Details::OrderedSetIterator<T, Bucket, true>;
+    using ConstReverseIterator = Details::OrderedSetIterator<T const, Bucket const, true>;
     using ReverseIteratorWrapper      = ReverseIteratorSupport::Wrapper<Set<T, TTraits, IsOrdered>>;
     using ConstReverseIteratorWrapper = ReverseIteratorSupport::Wrapper<Set<T, TTraits, IsOrdered> const>;
 
@@ -428,8 +427,7 @@ public:
      * @brief Removes the given value from this set and returns whether it was existing
      */
     auto remove(T const& value) -> bool {
-        auto bucket
-            = lookup_with_hash(TTraits::hash(value), [&value](T const& current) -> bool { return TTraits::equals(value, current); });
+        auto bucket = lookup_with_hash(TTraits::hash(value), [&value](T const& current) -> bool { return TTraits::equals(value, current); });
         if ( bucket != nullptr )
             return remove(*bucket);
         else

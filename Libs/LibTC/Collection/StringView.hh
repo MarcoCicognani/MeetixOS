@@ -134,8 +134,7 @@ public:
      */
     [[nodiscard]] auto split_view(char separator, KeepEmpty keep_empty = KeepEmpty::No) const -> Vector<StringView>;
     [[nodiscard]] auto split_view(StringView separator, KeepEmpty keep_empty = KeepEmpty::No) const -> Vector<StringView>;
-    [[nodiscard]] auto split_view(StringView separator, KeepEmpty keep_empty, Callable<ErrorOr<void>, StringView> auto predicate) const
-        -> ErrorOr<void> {
+    [[nodiscard]] auto split_view(StringView separator, KeepEmpty keep_empty, Callable<ErrorOr<void>, StringView> auto predicate) const -> ErrorOr<void> {
         if ( is_empty() )
             return {};
 

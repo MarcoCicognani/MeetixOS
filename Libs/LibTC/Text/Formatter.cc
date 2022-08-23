@@ -52,11 +52,7 @@ auto BaseFormatter::try_put_literal(StringView value) -> ErrorOr<void> {
     return {};
 }
 
-auto BaseFormatter::try_put_string(StringView              value,
-                                   usize                   min_width,
-                                   usize                   max_width,
-                                   FormatParser::Alignment alignment,
-                                   char                    alignment_fill) -> ErrorOr<void> {
+auto BaseFormatter::try_put_string(StringView value, usize min_width, usize max_width, FormatParser::Alignment alignment, char alignment_fill) -> ErrorOr<void> {
     /* ensure the alignment */
     if ( alignment == FormatParser::Alignment::Default )
         alignment = FormatParser::Alignment::Left;
@@ -310,16 +306,11 @@ auto BaseFormatter::try_put_f64(double                        value,
         if ( zero_pad == FormatParser::ZeroPad::Yes || visible_precision > 0 )
             TRY(string_builder.try_append('.'));
         if ( visible_precision > 0 ) {
-            TRY(base_formatter.try_put_u64(static_cast<u64>(value),
-                                           base,
-                                           FormatParser::ShowBase::No,
-                                           upper_case,
-                                           FormatParser::ZeroPad::Yes,
-                                           visible_precision));
+            TRY(base_formatter
+                    .try_put_u64(static_cast<u64>(value), base, FormatParser::ShowBase::No, upper_case, FormatParser::ZeroPad::Yes, visible_precision));
         }
         if ( zero_pad == FormatParser::ZeroPad::Yes && (precision - visible_precision) > 0 ) {
-            TRY(base_formatter
-                    .try_put_u64(0, base, FormatParser::ShowBase::No, false, FormatParser::ZeroPad::Yes, precision - visible_precision));
+            TRY(base_formatter.try_put_u64(0, base, FormatParser::ShowBase::No, false, FormatParser::ZeroPad::Yes, precision - visible_precision));
         }
     }
 
@@ -395,12 +386,8 @@ auto BaseFormatter::try_put_f80(long double                   value,
 
         if ( visible_precision > 0 ) {
             TRY(string_builder.try_append('.'));
-            TRY(base_formatter.try_put_u64(static_cast<u64>(value),
-                                           base,
-                                           FormatParser::ShowBase::No,
-                                           upper_case,
-                                           FormatParser::ZeroPad::Yes,
-                                           visible_precision));
+            TRY(base_formatter
+                    .try_put_u64(static_cast<u64>(value), base, FormatParser::ShowBase::No, upper_case, FormatParser::ZeroPad::Yes, visible_precision));
         }
     }
 
@@ -528,8 +515,7 @@ auto Formatter<StringView>::format(StringView value) -> ErrorOr<void> {
         VERIFY_NOT_REACHED();
     if ( zero_pad() != FormatParser::ZeroPad::No )
         VERIFY_NOT_REACHED();
-    if ( display_as() != FormatParser::DisplayAs::Default && display_as() != FormatParser::DisplayAs::String
-         && display_as() != FormatParser::DisplayAs::Char )
+    if ( display_as() != FormatParser::DisplayAs::Default && display_as() != FormatParser::DisplayAs::String && display_as() != FormatParser::DisplayAs::Char )
         VERIFY_NOT_REACHED();
 
     TRY(try_put_string(value, width().value_or(0), precision().value_or(0xfffff), alignment(), alignment_fill()));
@@ -607,26 +593,9 @@ auto Formatter<T>::format(T value) -> ErrorOr<void> {
 
     /* put the number into the string-builder */
     if constexpr ( IsSame<MakeUnsigned<T>, T> ) {
-        TRY(try_put_u64(value,
-                        base,
-                        show_base(),
-                        upper_case,
-                        zero_pad(),
-                        width().value_or(0),
-                        alignment(),
-                        alignment_fill(),
-                        show_integer_sign(),
-                        false));
+        TRY(try_put_u64(value, base, show_base(), upper_case, zero_pad(), width().value_or(0), alignment(), alignment_fill(), show_integer_sign(), false));
     } else {
-        TRY(try_put_i64(value,
-                        base,
-                        show_base(),
-                        upper_case,
-                        zero_pad(),
-                        width().value_or(0),
-                        alignment(),
-                        alignment_fill(),
-                        show_integer_sign()));
+        TRY(try_put_i64(value, base, show_base(), upper_case, zero_pad(), width().value_or(0), alignment(), alignment_fill(), show_integer_sign()));
     }
 
     return {};
@@ -711,15 +680,7 @@ auto Formatter<double>::format(double value) -> ErrorOr<void> {
     }
 
     /* put the double value into the string-builder */
-    TRY(try_put_f64(value,
-                    base,
-                    upper_case,
-                    zero_pad(),
-                    alignment(),
-                    width().value_or(0),
-                    precision().value_or(6),
-                    alignment_fill(),
-                    show_integer_sign()));
+    TRY(try_put_f64(value, base, upper_case, zero_pad(), alignment(), width().value_or(0), precision().value_or(6), alignment_fill(), show_integer_sign()));
     return {};
 }
 
@@ -748,14 +709,7 @@ auto Formatter<long double>::format(long double value) -> ErrorOr<void> {
     }
 
     /* put the double value into the string-builder */
-    TRY(try_put_f80(value,
-                    base,
-                    upper_case,
-                    alignment(),
-                    width().value_or(0),
-                    precision().value_or(6),
-                    alignment_fill(),
-                    show_integer_sign()));
+    TRY(try_put_f80(value, base, upper_case, alignment(), width().value_or(0), precision().value_or(6), alignment_fill(), show_integer_sign()));
     return {};
 }
 #endif

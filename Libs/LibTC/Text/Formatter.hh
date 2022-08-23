@@ -548,7 +548,7 @@ public:
         Formatter<T> formatter{ *this };
         TRY(formatter.format(value.begin().value()));
         TRY(try_put_literal("..="sv));
-        TRY( formatter.format(value.end().value() - 1));
+        TRY(formatter.format(value.end().value() - 1));
 
         return {};
     }

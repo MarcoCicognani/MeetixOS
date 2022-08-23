@@ -26,8 +26,8 @@ public:
      * @brief Returns a SourceLocation from the current location
      */
     [[nodiscard]] static auto here(char const* file_path = __builtin_FILE(),
-                                   char const* function  = __builtin_FUNCTION(),
-                                   u32         line      = __builtin_LINE()) -> SourceLocation;
+                                   char const* function = __builtin_FUNCTION(),
+                                   u32 line = __builtin_LINE()) -> SourceLocation;
 
     /**
      * @brief Constructors

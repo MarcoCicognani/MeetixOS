@@ -16,11 +16,11 @@
  * @brief Works like Rust's try!() macro: If <expression> produces an empty or error variant then it returns the error to the
  * caller function, otherwise unwraps the value to the current function
  */
-#define TRY(expression)                                                                                                                    \
-    ({                                                                                                                                     \
-        auto tryable = (expression);                                                                                                       \
-        if ( !tryable ) [[unlikely]] {                                                                                                     \
-            return tryable.backward();                                                                                                     \
-        }                                                                                                                                  \
-        tryable.unwrap();                                                                                                                  \
+#define TRY(expression)                                                                                                                                        \
+    ({                                                                                                                                                         \
+        auto tryable = (expression);                                                                                                                           \
+        if ( !tryable ) [[unlikely]] {                                                                                                                         \
+            return tryable.backward();                                                                                                                         \
+        }                                                                                                                                                      \
+        tryable.unwrap();                                                                                                                                      \
     })

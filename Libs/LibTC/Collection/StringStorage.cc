@@ -13,7 +13,6 @@
 #include <LibTC/BitCast.hh>
 #include <LibTC/Collection/StringStorage.hh>
 #include <LibTC/Collection/StringView.hh>
-#include <LibTC/Functional/Must.hh>
 #include <LibTC/Functional/Try.hh>
 #include <LibTC/Memory/NonNullRef.hh>
 #include <LibTC/Memory/Raw.hh>
@@ -27,7 +26,7 @@ auto StringStorage::try_construct_from_view(StringView string_view) -> ErrorOr<N
         return Error{ EINVAL };
 
     auto ref_counted_string_storage = TRY(Memory::Raw::clean_alloc_object<void>(alloc_size(string_view.len())));
-    auto ref_counted_string_ptr = new (ref_counted_string_storage) RCStringStorage{ Memory::Details::FromArgsTag::FromArgs, string_view };
+    auto ref_counted_string_ptr     = new (ref_counted_string_storage) RCStringStorage{ Memory::Details::FromArgsTag::FromArgs, string_view };
 
     return NonNullRef<StringStorage>::construct_from_adopt(*ref_counted_string_ptr);
 }

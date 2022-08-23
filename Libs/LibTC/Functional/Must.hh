@@ -14,9 +14,9 @@
 
 #include <LibTC/Assertions.hh>
 
-#define MUST(expression)                                                                                                                   \
-    ({                                                                                                                                     \
-        auto expression_result = (expression);                                                                                             \
-        VERIFY(expression_result.is_value());                                                                                              \
-        expression_result.unwrap_value();                                                                                                  \
+#define MUST(expression)                                                                                                                                       \
+    ({                                                                                                                                                         \
+        auto expression_result = (expression);                                                                                                                 \
+        VERIFY(expression_result.is_value());                                                                                                                  \
+        expression_result.unwrap_value();                                                                                                                      \
     })

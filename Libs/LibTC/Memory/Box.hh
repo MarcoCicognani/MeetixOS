@@ -20,8 +20,8 @@
 #include <LibTC/Functional/ErrorOr.hh>
 #include <LibTC/Functional/Must.hh>
 
-#define TC_BOX_CONSTRUCTIBLE(ClassName)                                                                                                    \
-    template<typename T>                                                                                                                   \
+#define TC_BOX_CONSTRUCTIBLE(ClassName)                                                                                                                        \
+    template<typename T>                                                                                                                                       \
     friend class TC::Memory::Box
 
 namespace TC {
