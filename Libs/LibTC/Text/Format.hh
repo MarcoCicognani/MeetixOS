@@ -49,12 +49,13 @@ auto format(StringBuilder& string_builder, StringView format_view, Args&&... var
 template<typename T, typename... Args>
 auto format(StringBuilder& string_builder, FormatLexer& format_lexer, T const& first_arg, Args&&... variadic_args) -> ErrorOr<void> {
     /* consume all the non format literals */
-    TRY(format(string_builder, format_lexer.consume_literal()));
+    if ( auto literals = format_lexer.consume_literal(); !literals.is_null_or_empty() )
+        TRY(format(string_builder, literals));
 
     /* format the value at the placeholder */
     if ( format_lexer.next_is('{') ) {
-        FormatParser format_parser{ format_lexer };
-        Formatter<T> formatter{ string_builder, TRY(format_parser.try_parse()) };
+        auto format_parser = FormatParser::construct_from_lexer(format_lexer);
+        auto formatter     = Formatter<T>::construct_from_parser_result(string_builder, TRY(format_parser.try_parse()));
 
         /* try to format the argument value using the Formatter implementation for the type */
         TRY(formatter.format(first_arg));

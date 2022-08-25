@@ -28,6 +28,9 @@
 #include <LibTC/IntTypes.hh>
 #include <LibTC/TypeTraits.hh>
 
+#define __FILE_SV__                   StringView{ __FILE__, __builtin_strlen(__FILE__) }
+#define __EXPRESSION_SV__(expression) StringView{ #expression, __builtin_strlen(#expression) }
+
 namespace TC {
 namespace Collection {
 

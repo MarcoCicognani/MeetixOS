@@ -16,6 +16,7 @@
 #include <LibTC/Cxx.hh>
 #include <LibTC/Functional/Try.hh>
 #include <LibTC/Math.hh>
+#include <LibTC/NumericLimits.hh>
 #include <LibTC/Text/Format.hh>
 #include <LibTC/Text/Formatter.hh>
 
@@ -25,22 +26,41 @@
 
 namespace TC::Text {
 
-BaseFormatter::BaseFormatter(StringBuilder& string_builder)
-    : m_string_builder{ string_builder } {
+auto FormatApplier::construct_from_string_builder(StringBuilder& string_builder) -> FormatApplier {
+    return FormatApplier{ string_builder, FormatParser::Result{} };
 }
 
-BaseFormatter::BaseFormatter(StringBuilder& string_builder, FormatParser::Specifications specifications)
-    : m_string_builder{ string_builder }
-    , m_specifications{ Cxx::move(specifications) } {
+auto FormatApplier::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> FormatApplier {
+    return FormatApplier{ string_builder, Cxx::move(result) };
 }
 
-auto BaseFormatter::try_put_padding(char fill, usize amount) -> ErrorOr<void> {
+FormatApplier::FormatApplier(FormatApplier&& rhs) noexcept
+    : m_string_builder{ rhs.m_string_builder }
+    , m_parser_result{ Cxx::move(rhs.m_parser_result) } {
+}
+
+auto FormatApplier::operator=(FormatApplier&& rhs) noexcept -> FormatApplier& {
+    FormatApplier format_applier{ Cxx::move(rhs) };
+    swap(format_applier);
+    return *this;
+}
+
+auto FormatApplier::clone_format_applier() const -> FormatApplier {
+    return FormatApplier{ m_string_builder, m_parser_result };
+}
+
+auto FormatApplier::swap(FormatApplier& rhs) noexcept -> void {
+    Cxx::swap(m_string_builder, rhs.m_string_builder);
+    Cxx::swap(m_parser_result, rhs.m_parser_result);
+}
+
+auto FormatApplier::try_put_padding(char fill, usize amount) -> ErrorOr<void> {
     for ( [[maybe_unused]] usize i : Range{ 0u, amount } )
         TRY(m_string_builder.try_append(fill));
     return {};
 }
 
-auto BaseFormatter::try_put_literal(StringView value) -> ErrorOr<void> {
+auto FormatApplier::try_put_literal(StringView value) -> ErrorOr<void> {
     for ( usize i = 0; i < value.len(); ++i ) {
         TRY(m_string_builder.try_append(value[i]));
 
@@ -52,7 +72,8 @@ auto BaseFormatter::try_put_literal(StringView value) -> ErrorOr<void> {
     return {};
 }
 
-auto BaseFormatter::try_put_string(StringView value, usize min_width, usize max_width, FormatParser::Alignment alignment, char alignment_fill) -> ErrorOr<void> {
+auto FormatApplier::try_put_string(StringView value, usize min_width, usize max_width, FormatParser::Alignment alignment, char alignment_fill)
+    -> ErrorOr<void> {
     /* ensure the alignment */
     if ( alignment == FormatParser::Alignment::Default )
         alignment = FormatParser::Alignment::Left;
@@ -89,7 +110,7 @@ auto BaseFormatter::try_put_string(StringView value, usize min_width, usize max_
     return {};
 }
 
-auto BaseFormatter::try_put_u64(u64                           value,
+auto FormatApplier::try_put_u64(u64                           value,
                                 u8                            base,
                                 FormatParser::ShowBase        show_base_prefix,
                                 bool                          upper_case,
@@ -211,7 +232,7 @@ auto BaseFormatter::try_put_u64(u64                           value,
     return {};
 }
 
-auto BaseFormatter::try_put_i64(i64                           value,
+auto FormatApplier::try_put_i64(i64                           value,
                                 u8                            base,
                                 FormatParser::ShowBase        show_base_prefix,
                                 bool                          upper_case,
@@ -237,7 +258,7 @@ auto BaseFormatter::try_put_i64(i64                           value,
 }
 
 #ifndef IN_KERNEL
-auto BaseFormatter::try_put_f64(double                        value,
+auto FormatApplier::try_put_f64(double                        value,
                                 u8                            base,
                                 bool                          upper_case,
                                 FormatParser::ZeroPad         zero_pad,
@@ -246,8 +267,8 @@ auto BaseFormatter::try_put_f64(double                        value,
                                 usize                         precision,
                                 char                          alignment_fill,
                                 FormatParser::ShowIntegerSign integer_sign) -> ErrorOr<void> {
-    auto          string_builder = StringBuilder::construct_empty();
-    BaseFormatter base_formatter{ string_builder };
+    auto string_builder = StringBuilder::construct_empty();
+    auto format_applier = FormatApplier::construct_from_string_builder(string_builder);
 
     /* write-out the NotANumber and Infinite values */
     if ( isnan(value) || isinf(value) ) [[unlikely]] {
@@ -273,7 +294,7 @@ auto BaseFormatter::try_put_f64(double                        value,
         value = -value;
 
     /* put out the integer part */
-    TRY(base_formatter.try_put_u64(static_cast<u64>(value),
+    TRY(format_applier.try_put_u64(static_cast<u64>(value),
                                    base,
                                    FormatParser::ShowBase::No,
                                    upper_case,
@@ -306,11 +327,11 @@ auto BaseFormatter::try_put_f64(double                        value,
         if ( zero_pad == FormatParser::ZeroPad::Yes || visible_precision > 0 )
             TRY(string_builder.try_append('.'));
         if ( visible_precision > 0 ) {
-            TRY(base_formatter
+            TRY(format_applier
                     .try_put_u64(static_cast<u64>(value), base, FormatParser::ShowBase::No, upper_case, FormatParser::ZeroPad::Yes, visible_precision));
         }
         if ( zero_pad == FormatParser::ZeroPad::Yes && (precision - visible_precision) > 0 ) {
-            TRY(base_formatter.try_put_u64(0, base, FormatParser::ShowBase::No, false, FormatParser::ZeroPad::Yes, precision - visible_precision));
+            TRY(format_applier.try_put_u64(0, base, FormatParser::ShowBase::No, false, FormatParser::ZeroPad::Yes, precision - visible_precision));
         }
     }
 
@@ -319,7 +340,7 @@ auto BaseFormatter::try_put_f64(double                        value,
     return {};
 }
 
-auto BaseFormatter::try_put_f80(long double                   value,
+auto FormatApplier::try_put_f80(long double                   value,
                                 u8                            base,
                                 bool                          upper_case,
                                 FormatParser::Alignment       alignment,
@@ -327,8 +348,8 @@ auto BaseFormatter::try_put_f80(long double                   value,
                                 usize                         precision,
                                 char                          alignment_fill,
                                 FormatParser::ShowIntegerSign integer_sign) -> ErrorOr<void> {
-    auto          string_builder = StringBuilder::construct_empty();
-    BaseFormatter base_formatter{ string_builder };
+    auto string_builder = StringBuilder::construct_empty();
+    auto format_applier = FormatApplier::construct_from_string_builder(string_builder);
 
     /* write-out the NotANumber and Infinite values */
     if ( isnan(value) || isinf(value) ) [[unlikely]] {
@@ -354,7 +375,7 @@ auto BaseFormatter::try_put_f80(long double                   value,
         value = -value;
 
     /* put out the integer part */
-    TRY(base_formatter.try_put_u64(static_cast<u64>(value),
+    TRY(format_applier.try_put_u64(static_cast<u64>(value),
                                    base,
                                    FormatParser::ShowBase::No,
                                    upper_case,
@@ -386,7 +407,7 @@ auto BaseFormatter::try_put_f80(long double                   value,
 
         if ( visible_precision > 0 ) {
             TRY(string_builder.try_append('.'));
-            TRY(base_formatter
+            TRY(format_applier
                     .try_put_u64(static_cast<u64>(value), base, FormatParser::ShowBase::No, upper_case, FormatParser::ZeroPad::Yes, visible_precision));
         }
     }
@@ -397,79 +418,84 @@ auto BaseFormatter::try_put_f80(long double                   value,
 }
 #endif
 
-auto BaseFormatter::string_builder() -> StringBuilder& {
+auto FormatApplier::string_builder() -> StringBuilder& {
     return m_string_builder;
 }
 
-auto BaseFormatter::alignment_fill() const -> char {
-    return m_specifications.m_alignment_fill;
+auto FormatApplier::alignment_fill() const -> char {
+    return m_parser_result.m_alignment_fill;
 }
 
-auto BaseFormatter::alignment() const -> FormatParser::Alignment {
-    return m_specifications.m_alignment;
+auto FormatApplier::alignment() const -> FormatParser::Alignment {
+    return m_parser_result.m_alignment;
 }
 
-auto BaseFormatter::show_integer_sign() const -> FormatParser::ShowIntegerSign {
-    return m_specifications.m_show_integer_sign;
+auto FormatApplier::show_integer_sign() const -> FormatParser::ShowIntegerSign {
+    return m_parser_result.m_show_integer_sign;
 }
 
-auto BaseFormatter::show_base() const -> FormatParser::ShowBase {
-    return m_specifications.m_show_base;
+auto FormatApplier::show_base() const -> FormatParser::ShowBase {
+    return m_parser_result.m_show_base;
 }
 
-auto BaseFormatter::zero_pad() const -> FormatParser::ZeroPad {
-    return m_specifications.m_zero_pad;
+auto FormatApplier::zero_pad() const -> FormatParser::ZeroPad {
+    return m_parser_result.m_zero_pad;
 }
 
-auto BaseFormatter::width() const -> Option<usize> {
-    return m_specifications.m_width;
+auto FormatApplier::width() const -> Option<usize> {
+    return m_parser_result.m_width;
 }
 
-auto BaseFormatter::precision() const -> Option<usize> {
-    return m_specifications.m_precision;
+auto FormatApplier::precision() const -> Option<usize> {
+    return m_parser_result.m_precision;
 }
 
-auto BaseFormatter::display_as() const -> FormatParser::DisplayAs {
-    return m_specifications.m_display_as;
+auto FormatApplier::display_as() const -> FormatParser::DisplayAs {
+    return m_parser_result.m_display_as;
 }
 
-auto BaseFormatter::display_as_is_numeric() const -> bool {
-    return m_specifications.display_as_is_numeric();
+auto FormatApplier::display_as_is_numeric() const -> bool {
+    return m_parser_result.display_as_is_numeric();
 }
 
-auto BaseFormatter::set_alignment_fill(char alignment_fill) -> void {
-    m_specifications.m_alignment_fill = alignment_fill;
+auto FormatApplier::set_alignment_fill(char alignment_fill) -> void {
+    m_parser_result.m_alignment_fill = alignment_fill;
 }
 
-auto BaseFormatter::set_alignment(FormatParser::Alignment alignment) -> void {
-    m_specifications.m_alignment = alignment;
+auto FormatApplier::set_alignment(FormatParser::Alignment alignment) -> void {
+    m_parser_result.m_alignment = alignment;
 }
 
-auto BaseFormatter::set_show_integer_sign(FormatParser::ShowIntegerSign show_integer_sign) -> void {
-    m_specifications.m_show_integer_sign = show_integer_sign;
+auto FormatApplier::set_show_integer_sign(FormatParser::ShowIntegerSign show_integer_sign) -> void {
+    m_parser_result.m_show_integer_sign = show_integer_sign;
 }
 
-auto BaseFormatter::set_show_base(FormatParser::ShowBase show_base) -> void {
-    m_specifications.m_show_base = show_base;
+auto FormatApplier::set_show_base(FormatParser::ShowBase show_base) -> void {
+    m_parser_result.m_show_base = show_base;
 }
 
-auto BaseFormatter::set_zero_pad(FormatParser::ZeroPad zero_pad) -> void {
-    m_specifications.m_zero_pad = zero_pad;
+auto FormatApplier::set_zero_pad(FormatParser::ZeroPad zero_pad) -> void {
+    m_parser_result.m_zero_pad = zero_pad;
 }
 
-auto BaseFormatter::set_width(Option<usize> width) -> void {
-    m_specifications.m_width = width;
+auto FormatApplier::set_width(Option<usize> width) -> void {
+    m_parser_result.m_width = width;
 }
 
-auto BaseFormatter::set_precision(Option<usize> precision) -> void {
-    m_specifications.m_precision = precision;
+auto FormatApplier::set_precision(Option<usize> precision) -> void {
+    m_parser_result.m_precision = precision;
 }
 
-auto BaseFormatter::set_display_as(FormatParser::DisplayAs display_as) -> void {
-    m_specifications.m_display_as = display_as;
+auto FormatApplier::set_display_as(FormatParser::DisplayAs display_as) -> void {
+    m_parser_result.m_display_as = display_as;
 }
 
-auto BaseFormatter::convert_unsigned_to_chars(u64 value, char to_chars_buffer[128], u8 base, bool upper_case) -> usize {
+FormatApplier::FormatApplier(StringBuilder& string_builder, FormatParser::Result result)
+    : m_string_builder{ string_builder }
+    , m_parser_result{ Cxx::move(result) } {
+}
+
+auto FormatApplier::convert_unsigned_to_chars(u64 value, char to_chars_buffer[128], u8 base, bool upper_case) -> usize {
     VERIFY_GREATER_EQUAL(base, 2);
     VERIFY_LESS_EQUAL(base, 16);
 
@@ -490,22 +516,38 @@ auto BaseFormatter::convert_unsigned_to_chars(u64 value, char to_chars_buffer[12
 
     /* flip the buffer */
     for ( usize i : Range{ 0u, used_chars / 2 } )
-        swap(to_chars_buffer[i], to_chars_buffer[used_chars - i - 1]);
+        Cxx::swap(to_chars_buffer[i], to_chars_buffer[used_chars - i - 1]);
 
     return used_chars;
 }
 
-Formatter<nullptr_t>::Formatter(BaseFormatter base_formatter)
-    : BaseFormatter{ Cxx::move(base_formatter) } {
+auto Formatter<nullptr_t>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<nullptr_t> {
+    return Formatter<nullptr_t>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<nullptr_t>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<nullptr_t> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<nullptr_t>::format(nullptr_t) -> ErrorOr<void> {
-    TRY(try_put_string("nullptr"sv, width().value_or(0), precision().value_or(0xffffff), alignment(), alignment_fill()));
+    TRY(try_put_string("nullptr"sv,
+                       width().value_or(NumericLimits<usize>::min()),
+                       precision().value_or(NumericLimits<usize>::max()),
+                       alignment(),
+                       alignment_fill()));
     return {};
 }
 
-Formatter<StringView>::Formatter(BaseFormatter base_formatter)
-    : BaseFormatter{ Cxx::move(base_formatter) } {
+Formatter<nullptr_t>::Formatter(FormatApplier format_applier)
+    : FormatApplier{ Cxx::move(format_applier) } {
+}
+
+auto Formatter<StringView>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<StringView> {
+    return Formatter<StringView>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<StringView>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<StringView> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<StringView>::format(StringView value) -> ErrorOr<void> {
@@ -518,13 +560,22 @@ auto Formatter<StringView>::format(StringView value) -> ErrorOr<void> {
     if ( display_as() != FormatParser::DisplayAs::Default && display_as() != FormatParser::DisplayAs::String && display_as() != FormatParser::DisplayAs::Char )
         VERIFY_NOT_REACHED();
 
-    TRY(try_put_string(value, width().value_or(0), precision().value_or(0xfffff), alignment(), alignment_fill()));
+    TRY(try_put_string(value, width().value_or(NumericLimits<usize>::min()), precision().value_or(NumericLimits<usize>::max()), alignment(), alignment_fill()));
     return {};
 }
 
+Formatter<StringView>::Formatter(FormatApplier format_applier)
+    : FormatApplier{ Cxx::move(format_applier) } {
+}
+
 template<Integral T>
-Formatter<T>::Formatter(BaseFormatter base_formatter)
-    : BaseFormatter{ Cxx::move(base_formatter) } {
+auto Formatter<T>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<T> {
+    return Formatter<T>{ Cxx::move(format_applier) };
+}
+
+template<Integral T>
+auto Formatter<T>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<T> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
 }
 
 template<Integral T>
@@ -537,8 +588,8 @@ auto Formatter<T>::format(T value) -> ErrorOr<void> {
         set_display_as(FormatParser::DisplayAs::String);
 
         /* forward to the string-view formatter */
-        Formatter<StringView> formatter{ *this };
-        TRY(formatter.format(StringView{ bit_cast<char const*>(&value), 1 }));
+        auto sv_formatter = Formatter<StringView>::construct_from_format_applier(clone_format_applier());
+        TRY(sv_formatter.format(StringView{ bit_cast<char const*>(&value), 1 }));
 
         return {};
     }
@@ -593,12 +644,34 @@ auto Formatter<T>::format(T value) -> ErrorOr<void> {
 
     /* put the number into the string-builder */
     if constexpr ( IsSame<MakeUnsigned<T>, T> ) {
-        TRY(try_put_u64(value, base, show_base(), upper_case, zero_pad(), width().value_or(0), alignment(), alignment_fill(), show_integer_sign(), false));
+        TRY(try_put_u64(value,
+                        base,
+                        show_base(),
+                        upper_case,
+                        zero_pad(),
+                        width().value_or(NumericLimits<usize>::min()),
+                        alignment(),
+                        alignment_fill(),
+                        show_integer_sign(),
+                        false));
     } else {
-        TRY(try_put_i64(value, base, show_base(), upper_case, zero_pad(), width().value_or(0), alignment(), alignment_fill(), show_integer_sign()));
+        TRY(try_put_i64(value,
+                        base,
+                        show_base(),
+                        upper_case,
+                        zero_pad(),
+                        width().value_or(NumericLimits<usize>::min()),
+                        alignment(),
+                        alignment_fill(),
+                        show_integer_sign()));
     }
 
     return {};
+}
+
+template<Integral T>
+Formatter<T>::Formatter(FormatApplier format_applier)
+    : FormatApplier{ Cxx::move(format_applier) } {
 }
 
 template class Formatter<u8>;
@@ -611,52 +684,80 @@ template class Formatter<i16>;
 template class Formatter<i32>;
 template class Formatter<i64>;
 
-Formatter<bool>::Formatter(BaseFormatter base_formatter)
-    : BaseFormatter{ Cxx::move(base_formatter) } {
+auto Formatter<bool>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<bool> {
+    return Formatter<bool>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<bool>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<bool> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<bool>::format(bool value) const -> ErrorOr<void> {
     if ( display_as_is_numeric() ) {
-        Formatter<u8> formatter{ *this };
-        TRY(formatter.format(static_cast<u8>(value)));
+        auto u8_formatter = Formatter<u8>::construct_from_format_applier(clone_format_applier());
+        TRY(u8_formatter.format(static_cast<u8>(value)));
     } else {
-        Formatter<StringView> formatter{ *this };
-        TRY(formatter.format(value ? "true"sv : "false"sv));
+        auto sv_formatter = Formatter<StringView>::construct_from_format_applier(clone_format_applier());
+        TRY(sv_formatter.format(value ? "true"sv : "false"sv));
     }
 
     return {};
 }
 
-Formatter<char>::Formatter(BaseFormatter base_formatter)
-    : BaseFormatter{ Cxx::move(base_formatter) } {
+Formatter<bool>::Formatter(FormatApplier format_applier)
+    : FormatApplier{ Cxx::move(format_applier) } {
+}
+
+auto Formatter<char>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<char> {
+    return Formatter<char>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<char>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<char>::format(char value) const -> ErrorOr<void> {
     if ( display_as_is_numeric() ) {
-        Formatter<i8> formatter{ *this };
-        TRY(formatter.format(value));
+        auto i8_formatter = Formatter<i8>::construct_from_format_applier(clone_format_applier());
+        TRY(i8_formatter.format(value));
     } else {
-        Formatter<StringView> formatter{ *this };
-        TRY(formatter.format(StringView{ &value, 1 }));
+        auto sv_formatter = Formatter<StringView>::construct_from_format_applier(clone_format_applier());
+        TRY(sv_formatter.format(StringView{ &value, 1 }));
     }
 
     return {};
 }
 
+Formatter<char>::Formatter(FormatApplier format_applier)
+    : FormatApplier{ Cxx::move(format_applier) } {
+}
+
 #ifndef IN_KERNEL
-Formatter<float>::Formatter(BaseFormatter base_formatter)
-    : BaseFormatter{ Cxx::move(base_formatter) } {
+auto Formatter<float>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<float> {
+    return Formatter<float>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<float>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<float> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<float>::format(float value) const -> ErrorOr<void> {
-    Formatter<double> formatter{ *this };
-    TRY(formatter.format(static_cast<double>(value)));
+    auto double_formatter = Formatter<double>::construct_from_format_applier(clone_format_applier());
+    TRY(double_formatter.format(static_cast<double>(value)));
 
     return {};
 }
 
-Formatter<double>::Formatter(BaseFormatter base_formatter)
-    : BaseFormatter{ Cxx::move(base_formatter) } {
+Formatter<float>::Formatter(FormatApplier base_formatter)
+    : FormatApplier{ Cxx::move(base_formatter) } {
+}
+
+auto Formatter<double>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<double> {
+    return Formatter<double>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<double>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<double> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<double>::format(double value) -> ErrorOr<void> {
@@ -680,12 +781,28 @@ auto Formatter<double>::format(double value) -> ErrorOr<void> {
     }
 
     /* put the double value into the string-builder */
-    TRY(try_put_f64(value, base, upper_case, zero_pad(), alignment(), width().value_or(0), precision().value_or(6), alignment_fill(), show_integer_sign()));
+    TRY(try_put_f64(value,
+                    base,
+                    upper_case,
+                    zero_pad(),
+                    alignment(),
+                    width().value_or(NumericLimits<usize>::min()),
+                    precision().value_or(6),
+                    alignment_fill(),
+                    show_integer_sign()));
     return {};
 }
 
-Formatter<long double>::Formatter(BaseFormatter base_formatter)
-    : BaseFormatter{ Cxx::move(base_formatter) } {
+Formatter<double>::Formatter(FormatApplier base_formatter)
+    : FormatApplier{ Cxx::move(base_formatter) } {
+}
+
+auto Formatter<long double>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<long double> {
+    return Formatter<long double>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<long double>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<long double> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<long double>::format(long double value) -> ErrorOr<void> {
@@ -709,36 +826,127 @@ auto Formatter<long double>::format(long double value) -> ErrorOr<void> {
     }
 
     /* put the double value into the string-builder */
-    TRY(try_put_f80(value, base, upper_case, alignment(), width().value_or(0), precision().value_or(6), alignment_fill(), show_integer_sign()));
+    TRY(try_put_f80(value,
+                    base,
+                    upper_case,
+                    alignment(),
+                    width().value_or(NumericLimits<usize>::min()),
+                    precision().value_or(6),
+                    alignment_fill(),
+                    show_integer_sign()));
     return {};
+}
+
+Formatter<long double>::Formatter(FormatApplier base_formatter)
+    : FormatApplier{ Cxx::move(base_formatter) } {
 }
 #endif
 
-auto Formatter<char const*>::format(char const* value) -> ErrorOr<void> {
+auto Formatter<char const*>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<char const*> {
+    return Formatter<char const*>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<char const*>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char const*> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
+}
+
+auto Formatter<char const*>::format(char const* value) const -> ErrorOr<void> {
     if ( display_as() == FormatParser::DisplayAs::Pointer ) {
-        Formatter<usize> formatter{ *this };
-        TRY(formatter.format(bit_cast<usize>(value)));
-    } else
-        TRY(Formatter<StringView>::format({ value, __builtin_strlen(value) }));
+        auto usize_formatter = Formatter<usize>::construct_from_format_applier(clone_format_applier());
+        TRY(usize_formatter.format(bit_cast<usize>(value)));
+    } else {
+        auto sv_formatter = Formatter<StringView>::construct_from_format_applier(clone_format_applier());
+        TRY(sv_formatter.format(StringView{ value, __builtin_strlen(value) }));
+    }
 
     return {};
 }
 
-auto Formatter<StringBuilder>::format(StringBuilder const& value) -> ErrorOr<void> {
-    return Formatter<StringView>::format(value.as_string_view());
+Formatter<char const*>::Formatter(FormatApplier base_formatter)
+    : FormatApplier{ Cxx::move(base_formatter) } {
 }
 
-Formatter<Error>::Formatter(BaseFormatter base_formatter)
-    : BaseFormatter{ Cxx::move(base_formatter) } {
+auto Formatter<char*>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<char*> {
+    return Formatter<char*>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<char*>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char*> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
+}
+
+auto Formatter<char*>::format(char* value) const -> ErrorOr<void> {
+    if ( display_as() == FormatParser::DisplayAs::Pointer ) {
+        auto usize_formatter = Formatter<usize>::construct_from_format_applier(clone_format_applier());
+        TRY(usize_formatter.format(bit_cast<usize>(value)));
+    } else {
+        auto sv_formatter = Formatter<StringView>::construct_from_format_applier(clone_format_applier());
+        TRY(sv_formatter.format(StringView{ const_cast<char const*>(value), __builtin_strlen(value) }));
+    }
+
+    return {};
+}
+
+Formatter<char*>::Formatter(FormatApplier base_formatter)
+    : FormatApplier{ Cxx::move(base_formatter) } {
+}
+
+auto Formatter<Error>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<Error> {
+    return Formatter<Error>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<Error>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Error> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<Error>::format(Error const& value) const -> ErrorOr<void> {
     auto string_builder = StringBuilder::construct_empty();
     TRY(Text::format(string_builder, "{}: {}"sv, value.string_literal(), static_cast<i32>(value.os_error())));
 
-    Formatter<StringView> formatter{ *this };
+    auto formatter = Formatter<StringView>::construct_from_format_applier(clone_format_applier());
     TRY(formatter.format(string_builder.as_string_view()));
     return {};
+}
+
+Formatter<Error>::Formatter(FormatApplier base_formatter)
+    : FormatApplier{ Cxx::move(base_formatter) } {
+}
+
+auto Formatter<String>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<String> {
+    return Formatter<String>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<String>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<String> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
+}
+
+auto Formatter<String>::format(String const& string) const -> ErrorOr<void> {
+    auto sv_formatter = Formatter<StringView>::construct_from_format_applier(clone_format_applier());
+    TRY(sv_formatter.format(string.as_string_view()));
+
+    return {};
+}
+
+Formatter<String>::Formatter(FormatApplier base_formatter)
+    : FormatApplier{ Cxx::move(base_formatter) } {
+}
+
+auto Formatter<StringBuilder>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<StringBuilder> {
+    return Formatter<StringBuilder>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<StringBuilder>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<StringBuilder> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
+}
+
+auto Formatter<StringBuilder>::format(StringBuilder const& string_builder) const -> ErrorOr<void> {
+    auto sv_formatter = Formatter<StringView>::construct_from_format_applier(clone_format_applier());
+    TRY(sv_formatter.format(string_builder.as_string_view()));
+
+    return {};
+}
+
+Formatter<StringBuilder>::Formatter(FormatApplier base_formatter)
+    : FormatApplier{ Cxx::move(base_formatter) } {
 }
 
 } /* namespace TC::Text */

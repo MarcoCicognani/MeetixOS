@@ -29,27 +29,29 @@ public:
     enum class ZeroPad;
     enum class DisplayAs;
 
-    struct Specifications;
+    struct Result;
 
 public:
     /**
-     * @brief Constructors
+     * @brief Error safe Factory functions
      */
-    explicit FormatParser(FormatLexer& format_lexer);
+    [[nodiscard]] static auto construct_from_lexer(FormatLexer& format_lexer) -> FormatParser;
 
     /**
      * @brief Parses the current format string from the given lexer
      */
-    auto try_parse() -> ErrorOr<Specifications>;
+    auto try_parse() -> ErrorOr<Result>;
 
 private:
-    auto parse_alignment_fill(Specifications& specifications) -> void;
-    auto parse_alignment(Specifications& specifications) -> void;
-    auto parse_integer_sign(Specifications& specifications) -> void;
-    auto parse_show_base(Specifications& specifications) -> void;
-    auto parse_zero_pad(Specifications& specifications) -> void;
-    auto parse_width(Specifications& specifications) -> void;
-    auto parse_display_as(Specifications& specifications) -> void;
+    explicit FormatParser(FormatLexer& format_lexer);
+
+    auto parse_alignment_fill(Result& result) -> void;
+    auto parse_alignment(Result& result) -> void;
+    auto parse_integer_sign(Result& result) -> void;
+    auto parse_show_base(Result& result) -> void;
+    auto parse_zero_pad(Result& result) -> void;
+    auto parse_width(Result& result) -> void;
+    auto parse_display_as(Result& result) -> void;
 
 private:
     FormatLexer& m_format_lexer;
@@ -94,7 +96,7 @@ enum class FormatParser::DisplayAs {
     HexFloatUpperCase
 };
 
-struct FormatParser::Specifications {
+struct FormatParser::Result {
     char            m_alignment_fill{ ' ' };
     Alignment       m_alignment{ Alignment::Default };
     ShowIntegerSign m_show_integer_sign{ ShowIntegerSign::IfNegative };

@@ -14,115 +14,119 @@
 
 namespace TC::Text {
 
-FormatParser::FormatParser(FormatLexer& format_lexer)
-    : m_format_lexer{ format_lexer } {
+auto FormatParser::construct_from_lexer(FormatLexer& format_lexer) -> FormatParser {
+    return FormatParser{ format_lexer };
 }
 
-auto FormatParser::try_parse() -> ErrorOr<FormatParser::Specifications> {
+auto FormatParser::try_parse() -> ErrorOr<FormatParser::Result> {
     if ( !m_format_lexer.consume_specific('{') )
         return Error{ EINVAL };
 
     /* parse the format specifiers */
-    Specifications specifications{};
+    Result result;
     if ( m_format_lexer.consume_specific(':') ) {
-        parse_alignment_fill(specifications);
-        parse_alignment(specifications);
-        parse_integer_sign(specifications);
-        parse_show_base(specifications);
-        parse_zero_pad(specifications);
-        parse_width(specifications);
+        parse_alignment_fill(result);
+        parse_alignment(result);
+        parse_integer_sign(result);
+        parse_show_base(result);
+        parse_zero_pad(result);
+        parse_width(result);
 
         /* parse the precision specification */
         if ( m_format_lexer.consume_specific('.') ) {
             if ( usize precision; m_format_lexer.consume_number(precision) )
-                specifications.m_precision = precision;
+                result.m_precision = precision;
             else
                 return Error{ EINVAL };
         }
 
-        parse_display_as(specifications);
+        parse_display_as(result);
     }
 
     /* parse the termination tag */
     if ( !m_format_lexer.consume_specific('}') )
         return Error{ EINVAL };
     else
-        return specifications;
+        return result;
 }
 
-auto FormatParser::parse_alignment_fill(FormatParser::Specifications& specifications) -> void {
+FormatParser::FormatParser(FormatLexer& format_lexer)
+    : m_format_lexer{ format_lexer } {
+}
+
+auto FormatParser::parse_alignment_fill(FormatParser::Result& result) -> void {
     /* eat the fill character for alignment if the after next character is an alignment specifier */
     if ( "<^>"sv.contains(m_format_lexer.peek(1)) )
-        specifications.m_alignment_fill = m_format_lexer.consume();
+        result.m_alignment_fill = m_format_lexer.consume();
 }
 
-auto FormatParser::parse_alignment(FormatParser::Specifications& specifications) -> void {
+auto FormatParser::parse_alignment(FormatParser::Result& result) -> void {
     /* parse the alignment specification */
     if ( m_format_lexer.consume_specific('<') )
-        specifications.m_alignment = Alignment::Left;
+        result.m_alignment = Alignment::Left;
     else if ( m_format_lexer.consume_specific('^') )
-        specifications.m_alignment = Alignment::Center;
+        result.m_alignment = Alignment::Center;
     else if ( m_format_lexer.consume_specific('>') )
-        specifications.m_alignment = Alignment::Right;
+        result.m_alignment = Alignment::Right;
 }
 
-auto FormatParser::parse_integer_sign(FormatParser::Specifications& specifications) -> void {
+auto FormatParser::parse_integer_sign(FormatParser::Result& result) -> void {
     /* parse the sign specification */
     if ( m_format_lexer.consume_specific('-') )
-        specifications.m_show_integer_sign = ShowIntegerSign::IfNegative;
+        result.m_show_integer_sign = ShowIntegerSign::IfNegative;
     else if ( m_format_lexer.consume_specific('+') )
-        specifications.m_show_integer_sign = ShowIntegerSign::Yes;
+        result.m_show_integer_sign = ShowIntegerSign::Yes;
     else if ( m_format_lexer.consume_specific(' ') )
-        specifications.m_show_integer_sign = ShowIntegerSign::KeepSpace;
+        result.m_show_integer_sign = ShowIntegerSign::KeepSpace;
 }
 
-auto FormatParser::parse_show_base(FormatParser::Specifications& specifications) -> void {
+auto FormatParser::parse_show_base(FormatParser::Result& result) -> void {
     /* parse the show base specification */
     if ( m_format_lexer.consume_specific('#') )
-        specifications.m_show_base = ShowBase::Yes;
+        result.m_show_base = ShowBase::Yes;
 }
 
-auto FormatParser::parse_zero_pad(Specifications& specifications) -> void {
+auto FormatParser::parse_zero_pad(Result& result) -> void {
     /* parse the zero pad specification */
     if ( m_format_lexer.consume_specific('0') )
-        specifications.m_zero_pad = ZeroPad::Yes;
+        result.m_zero_pad = ZeroPad::Yes;
 }
 
-auto FormatParser::parse_width(FormatParser::Specifications& specifications) -> void {
+auto FormatParser::parse_width(FormatParser::Result& result) -> void {
     /* parse the max width specification */
     if ( usize width; m_format_lexer.consume_number(width) )
-        specifications.m_width = width;
+        result.m_width = width;
 }
 
-auto FormatParser::parse_display_as(FormatParser::Specifications& specifications) -> void {
+auto FormatParser::parse_display_as(FormatParser::Result& result) -> void {
     /* parse the display as specification */
     if ( m_format_lexer.consume_specific('b') )
-        specifications.m_display_as = DisplayAs::Binary;
+        result.m_display_as = DisplayAs::Binary;
     else if ( m_format_lexer.consume_specific('B') )
-        specifications.m_display_as = DisplayAs::BinaryUpperCase;
+        result.m_display_as = DisplayAs::BinaryUpperCase;
     else if ( m_format_lexer.consume_specific('o') )
-        specifications.m_display_as = DisplayAs::Octal;
+        result.m_display_as = DisplayAs::Octal;
     else if ( m_format_lexer.consume_specific('d') )
-        specifications.m_display_as = DisplayAs::Decimal;
+        result.m_display_as = DisplayAs::Decimal;
     else if ( m_format_lexer.consume_specific('x') )
-        specifications.m_display_as = DisplayAs::Hex;
+        result.m_display_as = DisplayAs::Hex;
     else if ( m_format_lexer.consume_specific('X') )
-        specifications.m_display_as = DisplayAs::HexUpperCase;
+        result.m_display_as = DisplayAs::HexUpperCase;
     else if ( m_format_lexer.consume_specific('p') )
-        specifications.m_display_as = DisplayAs::Pointer;
+        result.m_display_as = DisplayAs::Pointer;
     else if ( m_format_lexer.consume_specific('c') )
-        specifications.m_display_as = DisplayAs::Char;
+        result.m_display_as = DisplayAs::Char;
     else if ( m_format_lexer.consume_specific('s') )
-        specifications.m_display_as = DisplayAs::String;
+        result.m_display_as = DisplayAs::String;
     else if ( m_format_lexer.consume_specific('f') )
-        specifications.m_display_as = DisplayAs::Float;
+        result.m_display_as = DisplayAs::Float;
     else if ( m_format_lexer.consume_specific('a') )
-        specifications.m_display_as = DisplayAs::HexFloat;
+        result.m_display_as = DisplayAs::HexFloat;
     else if ( m_format_lexer.consume_specific('A') )
-        specifications.m_display_as = DisplayAs::HexFloatUpperCase;
+        result.m_display_as = DisplayAs::HexFloatUpperCase;
 }
 
-auto FormatParser::Specifications::display_as_is_numeric() const -> bool {
+auto FormatParser::Result::display_as_is_numeric() const -> bool {
     return m_display_as == DisplayAs::Binary
         || m_display_as == DisplayAs::BinaryUpperCase
         || m_display_as == DisplayAs::Octal
