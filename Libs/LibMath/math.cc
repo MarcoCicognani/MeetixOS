@@ -87,10 +87,10 @@ union FloatExtractor;
 /* Assumes long double is 80 bits, which is true with GCC on Intel platforms */
 template<>
 union FloatExtractor<long double> {
-    static int const                m_mantissa_bits = 64;
+    static i32 const                m_mantissa_bits = 64;
     static unsigned long long const m_mantissa_max  = ~0u;
-    static int const                m_exponent_bias = 16383;
-    static int const                m_exponent_bits = 15;
+    static i32 const                m_exponent_bias = 16383;
+    static i32 const                m_exponent_bits = 15;
     static unsigned const           m_exponent_max  = 32767;
     struct {
         unsigned long long m_mantissa;
@@ -102,10 +102,10 @@ union FloatExtractor<long double> {
 
 template<>
 union FloatExtractor<double> {
-    static int const                m_mantissa_bits = 52;
+    static i32 const                m_mantissa_bits = 52;
     static unsigned long long const m_mantissa_max  = (1uLL << 52) - 1;
-    static int const                m_exponent_bias = 1023;
-    static int const                m_exponent_bits = 11;
+    static i32 const                m_exponent_bias = 1023;
+    static i32 const                m_exponent_bits = 11;
     static unsigned const           m_exponent_max  = 2047;
     struct {
         unsigned long long m_mantissa : 52;
@@ -117,10 +117,10 @@ union FloatExtractor<double> {
 
 template<>
 union FloatExtractor<float> {
-    static int const      m_mantissa_bits = 23;
+    static i32 const      m_mantissa_bits = 23;
     static unsigned const m_mantissa_max  = (1 << 23) - 1;
-    static int const      m_exponent_bias = 127;
-    static int const      m_exponent_bits = 8;
+    static i32 const      m_exponent_bias = 127;
+    static i32 const      m_exponent_bits = 8;
     static unsigned const m_exponent_max  = 255;
     struct {
         unsigned long long m_mantissa : 23;
@@ -258,7 +258,7 @@ static T next_after(T x, bool up) {
 }
 
 template<typename T>
-static int ilogb(T x) noexcept {
+static i32 ilogb(T x) {
     if ( x == 0 )
         return FP_ILOGB0;
     if ( isnan(x) )
@@ -271,11 +271,11 @@ static int ilogb(T x) noexcept {
     Extractor extractor;
     extractor.m_value = x;
 
-    return static_cast<int>(extractor.m_exponent) - Extractor::m_exponent_bias;
+    return static_cast<i32>(extractor.m_exponent) - Extractor::m_exponent_bias;
 }
 
 template<typename T>
-static T modf(T x, T* intpart) noexcept {
+static T modf(T x, T* intpart) {
     auto integer_part = Details::to_integer(x, Details::RoundingMode::ToZero);
     *intpart          = integer_part;
     auto fraction     = x - integer_part;
@@ -285,7 +285,7 @@ static T modf(T x, T* intpart) noexcept {
 }
 
 template<typename T>
-static T scalbn(T x, int exponent) noexcept {
+static T scalbn(T x, i32 exponent) {
     if ( x == 0 || !isfinite(x) || isnan(x) || exponent == 0 )
         return x;
 
@@ -294,13 +294,13 @@ static T scalbn(T x, int exponent) noexcept {
     Extractor extractor;
     extractor.m_value = x;
     if ( extractor.m_exponent != 0 ) {
-        extractor.m_exponent = TC::clamp(static_cast<int>(extractor.m_exponent) + exponent, 0, static_cast<int>(Extractor::m_exponent_max));
+        extractor.m_exponent = TC::clamp(static_cast<i32>(extractor.m_exponent) + exponent, 0, static_cast<i32>(Extractor::m_exponent_max));
         return extractor.m_value;
     }
 
     auto leading_mantissa_zeroes = extractor.m_mantissa == 0 ? 32 : TC::count_leading_zeroes(extractor.m_mantissa);
 
-    auto shift = TC::min(static_cast<int>(leading_mantissa_zeroes), exponent);
+    auto shift = TC::min(static_cast<i32>(leading_mantissa_zeroes), exponent);
     exponent   = TC::max(exponent - shift, 0);
 
     extractor.m_exponent <<= shift;
@@ -310,7 +310,7 @@ static T scalbn(T x, int exponent) noexcept {
 }
 
 template<typename T>
-static T copy_sign(T x, T y) noexcept {
+static T copy_sign(T x, T y) {
     using Extractor = FloatExtractor<T>;
 
     Extractor ex{};
@@ -324,7 +324,7 @@ static T copy_sign(T x, T y) noexcept {
 }
 
 template<typename T>
-static T gamma(T x) noexcept {
+static T gamma(T x) {
     if ( isnan(x) )
         return static_cast<T>(NAN);
 
@@ -349,7 +349,7 @@ static T gamma(T x) noexcept {
     static_assert(max_integer_whose_factorial_fits != 0,
                   "Details::gamma needs to be aware of the integer factorial that fits in this floating point type.");
 
-    if ( static_cast<int>(x) == x && x <= max_integer_whose_factorial_fits + 1 ) {
+    if ( static_cast<i32>(x) == x && x <= max_integer_whose_factorial_fits + 1 ) {
         long long result = 1;
         for ( long long cursor = 2; cursor < static_cast<long long>(x); cursor++ )
             result *= cursor;
@@ -365,22 +365,22 @@ static T gamma(T x) noexcept {
 
 extern "C" {
 
-double fabs(double x) noexcept {
+double fabs(double x) {
     asm("fabs" : "+t"(x));
     return x;
 }
 
-float fabsf(float x) noexcept {
+float fabsf(float x) {
     asm("fabs" : "+t"(x));
     return x;
 }
 
-long double fabsl(long double x) noexcept {
+long double fabsl(long double x) {
     asm("fabs" : "+t"(x));
     return x;
 }
 
-double fmod(double x, double y) noexcept {
+double fmod(double x, double y) {
     u16 fpu_status;
     do {
         asm("fprem\n"
@@ -391,7 +391,7 @@ double fmod(double x, double y) noexcept {
     return x;
 }
 
-float fmodf(float x, float y) noexcept {
+float fmodf(float x, float y) {
     u16 fpu_status;
     do {
         asm("fprem\n"
@@ -402,7 +402,7 @@ float fmodf(float x, float y) noexcept {
     return x;
 }
 
-long double fmodl(long double x, long double y) noexcept {
+long double fmodl(long double x, long double y) {
     u16 fpu_status;
     do {
         asm("fprem\n"
@@ -413,7 +413,7 @@ long double fmodl(long double x, long double y) noexcept {
     return x;
 }
 
-double fmax(double x, double y) noexcept {
+double fmax(double x, double y) {
     if ( isnan(x) )
         return y;
     if ( isnan(y) )
@@ -422,7 +422,7 @@ double fmax(double x, double y) noexcept {
         return x > y ? x : y;
 }
 
-float fmaxf(float x, float y) noexcept {
+float fmaxf(float x, float y) {
     if ( isnan(x) )
         return y;
     if ( isnan(y) )
@@ -431,7 +431,7 @@ float fmaxf(float x, float y) noexcept {
         return x > y ? x : y;
 }
 
-long double fmaxl(long double x, long double y) noexcept {
+long double fmaxl(long double x, long double y) {
     if ( isnan(x) )
         return y;
     if ( isnan(y) )
@@ -440,7 +440,7 @@ long double fmaxl(long double x, long double y) noexcept {
         return x > y ? x : y;
 }
 
-double fmin(double x, double y) noexcept {
+double fmin(double x, double y) {
     if ( isnan(x) )
         return y;
     if ( isnan(y) )
@@ -449,7 +449,7 @@ double fmin(double x, double y) noexcept {
         return x < y ? x : y;
 }
 
-float fminf(float x, float y) noexcept {
+float fminf(float x, float y) {
     if ( isnan(x) )
         return y;
     if ( isnan(y) )
@@ -458,7 +458,7 @@ float fminf(float x, float y) noexcept {
         return x < y ? x : y;
 }
 
-long double fminl(long double x, long double y) noexcept {
+long double fminl(long double x, long double y) {
     if ( isnan(x) )
         return y;
     if ( isnan(y) )
@@ -467,7 +467,7 @@ long double fminl(long double x, long double y) noexcept {
         return x < y ? x : y;
 }
 
-double remainder(double x, double y) noexcept {
+double remainder(double x, double y) {
     u16 fpu_status;
     do {
         asm("fprem1\n"
@@ -478,7 +478,7 @@ double remainder(double x, double y) noexcept {
     return x;
 }
 
-float remainderf(float x, float y) noexcept {
+float remainderf(float x, float y) {
     u16 fpu_status;
     do {
         asm("fprem1\n"
@@ -489,7 +489,7 @@ float remainderf(float x, float y) noexcept {
     return x;
 }
 
-long double remainderl(long double x, long double y) noexcept {
+long double remainderl(long double x, long double y) {
     u16 fpu_status;
     do {
         asm("fprem1\n"
@@ -500,19 +500,19 @@ long double remainderl(long double x, long double y) noexcept {
     return x;
 }
 
-double nan(const char* s) noexcept {
+double nan(const char* s) {
     return __builtin_nan(s);
 }
 
-float nanf(const char* s) noexcept {
+float nanf(const char* s) {
     return __builtin_nanf(s);
 }
 
-long double nanl(const char* s) noexcept {
+long double nanl(const char* s) {
     return __builtin_nanl(s);
 }
 
-double exp(double exponent) noexcept {
+double exp(double exponent) {
     double res;
     asm("fldl2e\n"
         "fmulp\n"
@@ -528,7 +528,7 @@ double exp(double exponent) noexcept {
     return res;
 }
 
-float expf(float exponent) noexcept {
+float expf(float exponent) {
     float res;
     asm("fldl2e\n"
         "fmulp\n"
@@ -544,7 +544,7 @@ float expf(float exponent) noexcept {
     return res;
 }
 
-long double expl(long double exponent) noexcept {
+long double expl(long double exponent) {
     long double res;
     asm("fldl2e\n"
         "fmulp\n"
@@ -560,7 +560,7 @@ long double expl(long double exponent) noexcept {
     return res;
 }
 
-double exp2(double exponent) noexcept {
+double exp2(double exponent) {
     double res;
     asm("fld1\n"
         "fld %%st(1)\n"
@@ -574,7 +574,7 @@ double exp2(double exponent) noexcept {
     return res;
 }
 
-float exp2f(float exponent) noexcept {
+float exp2f(float exponent) {
     float res;
     asm("fld1\n"
         "fld %%st(1)\n"
@@ -588,7 +588,7 @@ float exp2f(float exponent) noexcept {
     return res;
 }
 
-long double exp2l(long double exponent) noexcept {
+long double exp2l(long double exponent) {
     long double res;
     asm("fld1\n"
         "fld %%st(1)\n"
@@ -602,19 +602,19 @@ long double exp2l(long double exponent) noexcept {
     return res;
 }
 
-double expm1(double x) noexcept {
+double expm1(double x) {
     return exp(x) - 1;
 }
 
-float expm1f(float x) noexcept {
+float expm1f(float x) {
     return expf(x) - 1;
 }
 
-long double expm1l(long double x) noexcept {
+long double expm1l(long double x) {
     return expl(x) - 1;
 }
 
-double log(double x) noexcept {
+double log(double x) {
     double ret;
     asm("fldln2\n"
         "fxch %%st(1)\n"
@@ -624,7 +624,7 @@ double log(double x) noexcept {
     return ret;
 }
 
-float logf(float x) noexcept {
+float logf(float x) {
     float ret;
     asm("fldln2\n"
         "fxch %%st(1)\n"
@@ -634,7 +634,7 @@ float logf(float x) noexcept {
     return ret;
 }
 
-long double logl(long double x) noexcept {
+long double logl(long double x) {
     long double ret;
     asm("fldln2\n"
         "fxch %%st(1)\n"
@@ -644,7 +644,7 @@ long double logl(long double x) noexcept {
     return ret;
 }
 
-double log2(double x) noexcept {
+double log2(double x) {
     double ret;
     asm("fld1\n"
         "fxch %%st(1)\n"
@@ -654,7 +654,7 @@ double log2(double x) noexcept {
     return ret;
 }
 
-float log2f(float x) noexcept {
+float log2f(float x) {
     float ret;
     asm("fld1\n"
         "fxch %%st(1)\n"
@@ -664,7 +664,7 @@ float log2f(float x) noexcept {
     return ret;
 }
 
-long double log2l(long double x) noexcept {
+long double log2l(long double x) {
     long double ret;
     asm("fld1\n"
         "fxch %%st(1)\n"
@@ -674,7 +674,7 @@ long double log2l(long double x) noexcept {
     return ret;
 }
 
-double log10(double x) noexcept {
+double log10(double x) {
     double ret;
     asm("fldlg2\n"
         "fxch %%st(1)\n"
@@ -684,7 +684,7 @@ double log10(double x) noexcept {
     return ret;
 }
 
-float log10f(float x) noexcept {
+float log10f(float x) {
     float ret;
     asm("fldlg2\n"
         "fxch %%st(1)\n"
@@ -694,7 +694,7 @@ float log10f(float x) noexcept {
     return ret;
 }
 
-long double log10l(long double x) noexcept {
+long double log10l(long double x) {
     long double ret;
     asm("fldlg2\n"
         "fxch %%st(1)\n"
@@ -704,19 +704,19 @@ long double log10l(long double x) noexcept {
     return ret;
 }
 
-double log1p(double x) noexcept {
+double log1p(double x) {
     return log(1 + x);
 }
 
-float log1pf(float x) noexcept {
+float log1pf(float x) {
     return logf(1 + x);
 }
 
-long double log1pl(long double x) noexcept {
+long double log1pl(long double x) {
     return logl(1 + x);
 }
 
-double pow(double x, double y) noexcept {
+double pow(double x, double y) {
     if ( isnan(y) )
         return y;
     if ( y == 0 )
@@ -726,10 +726,10 @@ double pow(double x, double y) noexcept {
     if ( y == 1 )
         return x;
 
-    auto y_as_int = static_cast<int>(y);
+    auto y_as_int = static_cast<i32>(y);
     if ( y == static_cast<double>(y_as_int) ) {
         auto result = x;
-        for ( int i = 0; i < fabs(y) - 1; ++i )
+        for ( i32 i = 0; i < fabs(y) - 1; ++i )
             result *= x;
 
         if ( y < 0 )
@@ -740,7 +740,7 @@ double pow(double x, double y) noexcept {
     return exp2(y * log2(x));
 }
 
-float powf(float x, float y) noexcept {
+float powf(float x, float y) {
     if ( isnan(y) )
         return y;
     if ( y == 0 )
@@ -750,10 +750,10 @@ float powf(float x, float y) noexcept {
     if ( y == 1 )
         return x;
 
-    auto y_as_int = static_cast<int>(y);
+    auto y_as_int = static_cast<i32>(y);
     if ( y == static_cast<float>(y_as_int) ) {
         auto result = x;
-        for ( int i = 0; i < static_cast<int>(fabsf(y) - 1); ++i )
+        for ( i32 i = 0; i < static_cast<i32>(fabsf(y) - 1); ++i )
             result *= x;
 
         if ( y < 0 )
@@ -764,7 +764,7 @@ float powf(float x, float y) noexcept {
     return exp2f(y * log2f(x));
 }
 
-long double powl(long double x, long double y) noexcept {
+long double powl(long double x, long double y) {
     if ( isnan(y) )
         return y;
     if ( y == 0 )
@@ -774,10 +774,10 @@ long double powl(long double x, long double y) noexcept {
     if ( y == 1 )
         return x;
 
-    auto y_as_int = static_cast<int>(y);
+    auto y_as_int = static_cast<i32>(y);
     if ( y == static_cast<long double>(y_as_int) ) {
         auto result = x;
-        for ( int i = 0; i < static_cast<int>(fabsl(y) - 1); ++i )
+        for ( i32 i = 0; i < static_cast<i32>(fabsl(y) - 1); ++i )
             result *= x;
 
         if ( y < 0 )
@@ -788,25 +788,25 @@ long double powl(long double x, long double y) noexcept {
     return exp2l(y * log2l(x));
 }
 
-double sqrt(double x) noexcept {
+double sqrt(double x) {
     double res;
     asm("fsqrt" : "=t"(res) : "0"(x));
     return res;
 }
 
-float sqrtf(float x) noexcept {
+float sqrtf(float x) {
     float res;
     asm("fsqrt" : "=t"(res) : "0"(x));
     return res;
 }
 
-long double sqrtl(long double x) noexcept {
+long double sqrtl(long double x) {
     long double res;
     asm("fsqrt" : "=t"(res) : "0"(x));
     return res;
 }
 
-double cbrt(double x) noexcept {
+double cbrt(double x) {
     if ( isinf(x) || x == 0 )
         return x;
     if ( x < 0 )
@@ -842,7 +842,7 @@ double cbrt(double x) noexcept {
     return r;
 }
 
-float cbrtf(float x) noexcept {
+float cbrtf(float x) {
     if ( isinf(x) || x == 0 )
         return x;
     if ( x < 0 )
@@ -878,7 +878,7 @@ float cbrtf(float x) noexcept {
     return r;
 }
 
-long double cbrtl(long double x) noexcept {
+long double cbrtl(long double x) {
     if ( isinf(x) || x == 0 )
         return x;
     if ( x < 0 )
@@ -914,76 +914,76 @@ long double cbrtl(long double x) noexcept {
     return r;
 }
 
-double hypot(double x, double y) noexcept {
+double hypot(double x, double y) {
     return sqrt(x * x + y * y);
 }
 
-float hypotf(float x, float y) noexcept {
+float hypotf(float x, float y) {
     return sqrtf(x * x + y * y);
 }
 
-long double hypotl(long double x, long double y) noexcept {
+long double hypotl(long double x, long double y) {
     return sqrtl(x * x + y * y);
 }
 
-double sin(double angle) noexcept {
+double sin(double angle) {
     double ret;
     asm("fsin" : "=t"(ret) : "0"(angle));
     return ret;
 }
 
-float sinf(float angle) noexcept {
+float sinf(float angle) {
     float ret;
     asm("fsin" : "=t"(ret) : "0"(angle));
     return ret;
 }
 
-long double sinl(long double angle) noexcept {
+long double sinl(long double angle) {
     long double ret;
     asm("fsin" : "=t"(ret) : "0"(angle));
     return ret;
 }
 
-double cos(double angle) noexcept {
+double cos(double angle) {
     double ret;
     asm("fcos" : "=t"(ret) : "0"(angle));
     return ret;
 }
 
-float cosf(float angle) noexcept {
+float cosf(float angle) {
     float ret;
     asm("fcos" : "=t"(ret) : "0"(angle));
     return ret;
 }
 
-long double cosl(long double angle) noexcept {
+long double cosl(long double angle) {
     long double ret;
     asm("fcos" : "=t"(ret) : "0"(angle));
     return ret;
 }
 
-double tan(double angle) noexcept {
+double tan(double angle) {
     double ret;
     double one;
     asm("fptan" : "=t"(one), "=u"(ret) : "0"(angle));
     return ret;
 }
 
-float tanf(float angle) noexcept {
+float tanf(float angle) {
     float ret;
     float one;
     asm("fptan" : "=t"(one), "=u"(ret) : "0"(angle));
     return ret;
 }
 
-long double tanl(long double angle) noexcept {
+long double tanl(long double angle) {
     long double ret;
     long double one;
     asm("fptan" : "=t"(one), "=u"(ret) : "0"(angle));
     return ret;
 }
 
-double asin(double x) noexcept {
+double asin(double x) {
     if ( x > 1 || x < -1 )
         return nan("");
     if ( x > 0.5 || x < -0.5 )
@@ -1010,7 +1010,7 @@ double asin(double x) noexcept {
     return value;
 }
 
-float asinf(float x) noexcept {
+float asinf(float x) {
     if ( x > 1 || x < -1 )
         return nanf("");
     if ( x > 0.5f || x < -0.5f )
@@ -1037,7 +1037,7 @@ float asinf(float x) noexcept {
     return value;
 }
 
-long double asinl(long double x) noexcept {
+long double asinl(long double x) {
     if ( x > 1 || x < -1 )
         return nanl("");
     if ( x > 0.5L || x < -0.5L )
@@ -1064,19 +1064,19 @@ long double asinl(long double x) noexcept {
     return value;
 }
 
-double acos(double value) noexcept {
+double acos(double value) {
     return 0.5 * M_PI - asin(value);
 }
 
-float acosf(float value) noexcept {
+float acosf(float value) {
     return 0.5f * M_PIf32 - asinf(value);
 }
 
-long double acosl(long double value) noexcept {
+long double acosl(long double value) {
     return 0.5L * M_PIl - asinl(value);
 }
 
-double atan(double value) noexcept {
+double atan(double value) {
     double ret;
     asm("fld1\n"
         "fpatan\n"
@@ -1085,7 +1085,7 @@ double atan(double value) noexcept {
     return ret;
 }
 
-float atanf(float value) noexcept {
+float atanf(float value) {
     float ret;
     asm("fld1\n"
         "fpatan\n"
@@ -1094,7 +1094,7 @@ float atanf(float value) noexcept {
     return ret;
 }
 
-long double atanl(long double value) noexcept {
+long double atanl(long double value) {
     long double ret;
     asm("fld1\n"
         "fpatan\n"
@@ -1103,25 +1103,25 @@ long double atanl(long double value) noexcept {
     return ret;
 }
 
-double atan2(double y, double x) noexcept {
+double atan2(double y, double x) {
     double ret;
     asm("fpatan" : "=t"(ret) : "0"(x), "u"(y) : "st(1)");
     return ret;
 }
 
-float atan2f(float y, float x) noexcept {
+float atan2f(float y, float x) {
     float ret;
     asm("fpatan" : "=t"(ret) : "0"(x), "u"(y) : "st(1)");
     return ret;
 }
 
-long double atan2l(long double y, long double x) noexcept {
+long double atan2l(long double y, long double x) {
     long double ret;
     asm("fpatan" : "=t"(ret) : "0"(x), "u"(y) : "st(1)");
     return ret;
 }
 
-double sinh(double x) noexcept {
+double sinh(double x) {
     auto exp_value = exp(x);
     if ( x > 0 )
         return (exp_value * exp_value - 1) / 2 / exp_value;
@@ -1129,7 +1129,7 @@ double sinh(double x) noexcept {
         return (exp_value - 1 / exp_value) / 2;
 }
 
-float sinhf(float x) noexcept {
+float sinhf(float x) {
     auto exp_value = expf(x);
     if ( x > 0 )
         return (exp_value * exp_value - 1) / 2 / exp_value;
@@ -1137,7 +1137,7 @@ float sinhf(float x) noexcept {
         return (exp_value - 1 / exp_value) / 2;
 }
 
-long double sinhl(long double x) noexcept {
+long double sinhl(long double x) {
     auto exp_value = expl(x);
     if ( x > 0 )
         return (exp_value * exp_value - 1) / 2 / exp_value;
@@ -1145,7 +1145,7 @@ long double sinhl(long double x) noexcept {
         return (exp_value - 1 / exp_value) / 2;
 }
 
-double cosh(double x) noexcept {
+double cosh(double x) {
     auto exp_value = exp(-x);
     if ( x < 0 )
         return (1 + exp_value * exp_value) / 2 / exp_value;
@@ -1153,7 +1153,7 @@ double cosh(double x) noexcept {
         return (1 / exp_value + exp_value) / 2;
 }
 
-float coshf(float x) noexcept {
+float coshf(float x) {
     auto exp_value = expf(-x);
     if ( x < 0 )
         return (1 + exp_value * exp_value) / 2 / exp_value;
@@ -1161,7 +1161,7 @@ float coshf(float x) noexcept {
         return (1 / exp_value + exp_value) / 2;
 }
 
-long double coshl(long double x) noexcept {
+long double coshl(long double x) {
     auto exponentiated = expl(-x);
     if ( x < 0 )
         return (1 + exponentiated * exponentiated) / 2 / exponentiated;
@@ -1169,7 +1169,7 @@ long double coshl(long double x) noexcept {
         return (1 / exponentiated + exponentiated) / 2;
 }
 
-double tanh(double x) noexcept {
+double tanh(double x) {
     if ( x > 0 ) {
         auto exp_value = exp(2 * x);
         return (exp_value - 1) / (exp_value + 1);
@@ -1180,7 +1180,7 @@ double tanh(double x) noexcept {
     }
 }
 
-float tanhf(float x) noexcept {
+float tanhf(float x) {
     if ( x > 0 ) {
         auto exp_value = expf(2 * x);
         return (exp_value - 1) / (exp_value + 1);
@@ -1191,7 +1191,7 @@ float tanhf(float x) noexcept {
     }
 }
 
-long double tanhl(long double x) noexcept {
+long double tanhl(long double x) {
     if ( x > 0 ) {
         auto exp_value = expl(2 * x);
         return (exp_value - 1) / (exp_value + 1);
@@ -1202,43 +1202,43 @@ long double tanhl(long double x) noexcept {
     }
 }
 
-double asinh(double x) noexcept {
+double asinh(double x) {
     return log(x + sqrt(x * x + 1));
 }
 
-float asinhf(float x) noexcept {
+float asinhf(float x) {
     return logf(x + sqrtf(x * x + 1));
 }
 
-long double asinhl(long double x) noexcept {
+long double asinhl(long double x) {
     return logl(x + sqrtl(x * x + 1));
 }
 
-double acosh(double x) noexcept {
+double acosh(double x) {
     return log(x + sqrt(x * x - 1));
 }
 
-float acoshf(float x) noexcept {
+float acoshf(float x) {
     return logf(x + sqrtf(x * x - 1));
 }
 
-long double acoshl(long double x) noexcept {
+long double acoshl(long double x) {
     return logl(x + sqrtl(x * x - 1));
 }
 
-double atanh(double x) noexcept {
+double atanh(double x) {
     return log((1 + x) / (1 - x)) / 2.0;
 }
 
-float atanhf(float x) noexcept {
+float atanhf(float x) {
     return logf((1 + x) / (1 - x)) / 2.0f;
 }
 
-long double atanhl(long double x) noexcept {
+long double atanhl(long double x) {
     return logl((1 + x) / (1 - x)) / 2.0L;
 }
 
-double erf(double x) noexcept {
+double erf(double x) {
     auto t      = 1 / (1 + 0.47047 * fabs(x));
     auto poly   = t * (0.3480242 + t * (-0.958798 + t * 0.7478556));
     auto answer = 1 - poly * exp(-x * x);
@@ -1248,7 +1248,7 @@ double erf(double x) noexcept {
         return answer;
 }
 
-float erff(float x) noexcept {
+float erff(float x) {
     auto t      = 1 / (1 + 0.47047f * fabsf(x));
     auto poly   = t * (0.3480242f + t * (-0.958798f + t * 0.7478556f));
     auto answer = 1 - poly * expf(-x * x);
@@ -1258,7 +1258,7 @@ float erff(float x) noexcept {
         return answer;
 }
 
-long double erfl(long double x) noexcept {
+long double erfl(long double x) {
     auto t      = 1 / (1 + 0.47047L * fabsl(x));
     auto poly   = t * (0.3480242L + t * (-0.958798L + t * 0.7478556L));
     auto answer = 1 - poly * expl(-x * x);
@@ -1268,49 +1268,49 @@ long double erfl(long double x) noexcept {
         return answer;
 }
 
-double erfc(double x) noexcept {
+double erfc(double x) {
     return 1 - erf(x);
 }
 
-float erfcf(float x) noexcept {
+float erfcf(float x) {
     return 1 - erff(x);
 }
 
-long double erfcl(long double x) noexcept {
+long double erfcl(long double x) {
     return 1 - erfl(x);
 }
 
-double gamma(double x) noexcept {
+double gamma(double x) {
     return sqrt(2.0 * M_PI / x) * pow(x / M_E, x);
 }
 
-double tgamma(double value) noexcept {
+double tgamma(double value) {
     return Details::gamma(value);
 }
 
-float tgammaf(float value) noexcept {
+float tgammaf(float value) {
     return Details::gamma(value);
 }
 
-long double tgammal(long double value) noexcept {
+long double tgammal(long double value) {
     return Details::gamma(value);
 }
 
-int signgam = 0;
+i32 signgam = 0;
 
-double lgamma(double value) noexcept {
+double lgamma(double value) {
     return lgamma_r(value, &signgam);
 }
 
-float lgammaf(float value) noexcept {
+float lgammaf(float value) {
     return lgammaf_r(value, &signgam);
 }
 
-long double lgammal(long double value) noexcept {
+long double lgammal(long double value) {
     return lgammal_r(value, &signgam);
 }
 
-double lgamma_r(double value, int* sign) noexcept {
+double lgamma_r(double value, i32* sign) {
     if ( value == 1.0 || value == 2.0 )
         return 0.0;
     if ( isinf(value) || value == 0.0 )
@@ -1321,7 +1321,7 @@ double lgamma_r(double value, int* sign) noexcept {
     return result;
 }
 
-float lgammaf_r(float value, int* sign) noexcept {
+float lgammaf_r(float value, i32* sign) {
     if ( value == 1.0f || value == 2.0f )
         return 0.0f;
     if ( isinf(value) || value == 0.0f )
@@ -1332,7 +1332,7 @@ float lgammaf_r(float value, int* sign) noexcept {
     return result;
 }
 
-long double lgammal_r(long double value, int* sign) noexcept {
+long double lgammal_r(long double value, i32* sign) {
     if ( value == 1.0L || value == 2.0L )
         return 0.0L;
     if ( isinf(value) || value == 0.0L )
@@ -1343,31 +1343,31 @@ long double lgammal_r(long double value, int* sign) noexcept {
     return result;
 }
 
-double ceil(double value) noexcept {
+double ceil(double value) {
     return Details::to_integer(value, Details::RoundingMode::Up);
 }
 
-float ceilf(float value) noexcept {
+float ceilf(float value) {
     return Details::to_integer(value, Details::RoundingMode::Up);
 }
 
-long double ceill(long double value) noexcept {
+long double ceill(long double value) {
     return Details::to_integer(value, Details::RoundingMode::Up);
 }
 
-double floor(double value) noexcept {
+double floor(double value) {
     return Details::to_integer(value, Details::RoundingMode::Down);
 }
 
-float floorf(float value) noexcept {
+float floorf(float value) {
     return Details::to_integer(value, Details::RoundingMode::Down);
 }
 
-long double floorl(long double value) noexcept {
+long double floorl(long double value) {
     return Details::to_integer(value, Details::RoundingMode::Down);
 }
 
-double trunc(double x) noexcept {
+double trunc(double x) {
     if ( fabs(x) < DOUBLE_MAX ) {
         u64 temp;
         asm("fisttpq %[temp]\n"
@@ -1379,7 +1379,7 @@ double trunc(double x) noexcept {
         return Details::to_integer(x, Details::RoundingMode::ToZero);
 }
 
-float truncf(float x) noexcept {
+float truncf(float x) {
     if ( fabsf(x) < static_cast<float>(MAXFLOAT) ) {
         u64 temp;
         asm("fisttpq %[temp]\n"
@@ -1391,7 +1391,7 @@ float truncf(float x) noexcept {
         return Details::to_integer(x, Details::RoundingMode::ToZero);
 }
 
-long double truncl(long double x) noexcept {
+long double truncl(long double x) {
     if ( fabsl(x) < LONG_LONG_MAX ) {
         u64 temp;
         asm("fisttpq %[temp]\n"
@@ -1403,298 +1403,298 @@ long double truncl(long double x) noexcept {
         return Details::to_integer(x, Details::RoundingMode::ToZero);
 }
 
-double round(double value) noexcept {
+double round(double value) {
     return Details::to_integer(value, Details::RoundingMode::ToEven);
 }
 
-float roundf(float value) noexcept {
+float roundf(float value) {
     return Details::to_integer(value, Details::RoundingMode::ToEven);
 }
 
-long double roundl(long double value) noexcept {
+long double roundl(long double value) {
     return Details::to_integer(value, Details::RoundingMode::ToEven);
 }
 
-long lround(double value) noexcept {
+long lround(double value) {
     return static_cast<long>(round(value));
 }
 
-long lroundf(float value) noexcept {
+long lroundf(float value) {
     return static_cast<long>(roundf(value));
 }
 
-long lroundl(long double value) noexcept {
+long lroundl(long double value) {
     return static_cast<long>(roundl(value));
 }
 
-long long llround(double value) noexcept {
+long long llround(double value) {
     return static_cast<long long>(round(value));
 }
 
-long long llroundf(float value) noexcept {
+long long llroundf(float value) {
     return static_cast<long long>(roundf(value));
 }
 
-long long llroundl(long double value) noexcept {
+long long llroundl(long double value) {
     return static_cast<long long>(roundl(value));
 }
 
-long long llroundd(long double value) noexcept {
+long long llroundd(long double value) {
     return static_cast<long long>(roundl(value));
 }
 
-double nearbyint(double value) noexcept {
+double nearbyint(double value) {
     return Details::to_integer(value, Details::RoundingMode{ fegetround() });
 }
 
-float nearbyintf(float value) noexcept {
+float nearbyintf(float value) {
     return Details::to_integer(value, Details::RoundingMode{ fegetround() });
 }
 
-long double nearbyintl(long double value) noexcept {
+long double nearbyintl(long double value) {
     return Details::to_integer(value, Details::RoundingMode{ fegetround() });
 }
 
-double rint(double value) noexcept {
+double rint(double value) {
     double res;
     asm("frndint" : "=t"(res) : "0"(value));
     return res;
 }
 
-float rintf(float value) noexcept {
+float rintf(float value) {
     float res;
     asm("frndint" : "=t"(res) : "0"(value));
     return res;
 }
 
-long double rintl(long double value) noexcept {
+long double rintl(long double value) {
     long double res;
     asm("frndint" : "=t"(res) : "0"(value));
     return res;
 }
 
-long lrint(double value) noexcept {
+long lrint(double value) {
     long res;
     asm("fistpl %0" : "+m"(res) : "t"(value) : "st");
     return res;
 }
 
-long lrintf(float value) noexcept {
+long lrintf(float value) {
     long res;
     asm("fistpl %0" : "+m"(res) : "t"(value) : "st");
     return res;
 }
 
-long lrintl(long double value) noexcept {
+long lrintl(long double value) {
     long res;
     asm("fistpl %0" : "+m"(res) : "t"(value) : "st");
     return res;
 }
 
-long long llrint(double value) noexcept {
+long long llrint(double value) {
     long long res;
     asm("fistpq %0" : "+m"(res) : "t"(value) : "st");
     return res;
 }
 
-long long llrintf(float value) noexcept {
+long long llrintf(float value) {
     long long res;
     asm("fistpq %0" : "+m"(res) : "t"(value) : "st");
     return res;
 }
 
-long long llrintl(long double value) noexcept {
+long long llrintl(long double value) {
     long long res;
     asm("fistpq %0" : "+m"(res) : "t"(value) : "st");
     return res;
 }
 
-double frexp(double x, int* exp) noexcept {
+double frexp(double x, i32* exp) {
     *exp = (x == 0) ? 0 : (1 + ilogb(x));
     return scalbn(x, -(*exp));
 }
 
-float frexpf(float x, int* exp) noexcept {
+float frexpf(float x, i32* exp) {
     *exp = (x == 0) ? 0 : (1 + ilogbf(x));
     return scalbnf(x, -(*exp));
 }
 
-long double frexpl(long double x, int* exp) noexcept {
+long double frexpl(long double x, i32* exp) {
     *exp = (x == 0) ? 0 : (1 + ilogbl(x));
     return scalbnl(x, -(*exp));
 }
 
-double ldexp(double x, int exp) noexcept {
+double ldexp(double x, i32 exp) {
     return Details::scalbn(x, exp);
 }
 
-float ldexpf(float x, int exp) noexcept {
+float ldexpf(float x, i32 exp) {
     return Details::scalbn(x, exp);
 }
 
-long double ldexpl(long double x, int exp) noexcept {
+long double ldexpl(long double x, i32 exp) {
     return Details::scalbn(x, exp);
 }
 
-double modf(double x, double* intpart) noexcept {
+double modf(double x, double* intpart) {
     return Details::modf(x, intpart);
 }
 
-float modff(float x, float* intpart) noexcept {
+float modff(float x, float* intpart) {
     return Details::modf(x, intpart);
 }
 
-long double modfl(long double x, long double* intpart) noexcept {
+long double modfl(long double x, long double* intpart) {
     return Details::modf(x, intpart);
 }
 
-double scalbn(double x, int exp) noexcept {
+double scalbn(double x, i32 exp) {
     return Details::scalbn(x, exp);
 }
 
-float scalbnf(float x, int exp) noexcept {
+float scalbnf(float x, i32 exp) {
     return Details::scalbn(x, exp);
 }
 
-long double scalbnl(long double x, int exp) noexcept {
+long double scalbnl(long double x, i32 exp) {
     return Details::scalbn(x, exp);
 }
 
-double scalbln(double x, long exp) noexcept {
+double scalbln(double x, long exp) {
     return Details::scalbn(x, exp);
 }
 
-float scalbnlf(float x, long exp) noexcept {
+float scalbnlf(float x, long exp) {
     return Details::scalbn(x, exp);
 }
 
-float scalblnf(float x, long exp) noexcept {
+float scalblnf(float x, long exp) {
     return Details::scalbn(x, exp);
 }
 
-long double scalblnl(long double x, long exp) noexcept {
+long double scalblnl(long double x, long exp) {
     return Details::scalbn(x, exp);
 }
 
-int ilogb(double x) noexcept {
+i32 ilogb(double x) {
     return Details::ilogb(x);
 }
 
-int ilogbf(float x) noexcept {
+i32 ilogbf(float x) {
     return Details::ilogb(x);
 }
 
-int ilogbl(long double x) noexcept {
+i32 ilogbl(long double x) {
     return Details::ilogb(x);
 }
 
-double logb(double x) noexcept {
+double logb(double x) {
     return ilogb(x);
 }
 
-float logbf(float x) noexcept {
+float logbf(float x) {
     return static_cast<float>(ilogbf(x));
 }
 
-long double logbl(long double x) noexcept {
+long double logbl(long double x) {
     return ilogbl(x);
 }
 
-double nextafter(double x, double target) noexcept {
+double nextafter(double x, double target) {
     if ( x == target )
         return target;
     else
         return Details::next_after(x, target >= x);
 }
 
-float nextafterf(float x, float target) noexcept {
+float nextafterf(float x, float target) {
     if ( x == target )
         return target;
     else
         return Details::next_after(x, target >= x);
 }
 
-long double nextafterl(long double x, long double target) noexcept {
+long double nextafterl(long double x, long double target) {
     if ( x == target )
         return target;
     else
         return Details::next_after(x, target >= x);
 }
 
-double nexttoward(double x, long double target) noexcept {
+double nexttoward(double x, long double target) {
     if ( x == static_cast<double>(target) )
         return static_cast<double>(target);
     else
         return Details::next_after(x, static_cast<double>(target) >= x);
 }
 
-float nexttowardf(float x, long double target) noexcept {
+float nexttowardf(float x, long double target) {
     if ( x == static_cast<float>(target) )
         return static_cast<float>(target);
     else
         return Details::next_after(x, static_cast<float>(target) >= x);
 }
 
-long double nexttowardl(long double x, long double target) noexcept {
+long double nexttowardl(long double x, long double target) {
     if ( x == target )
         return target;
     else
         return Details::next_after(x, target >= x);
 }
 
-double copysign(double x, double y) noexcept {
+double copysign(double x, double y) {
     return Details::copy_sign(x, y);
 }
 
-float copysignf(float x, float y) noexcept {
+float copysignf(float x, float y) {
     return Details::copy_sign(x, y);
 }
 
-long double copysignl(long double x, long double y) noexcept {
+long double copysignl(long double x, long double y) {
     return Details::copy_sign(x, y);
 }
 
-double fdim(double, double) noexcept {
+double fdim(double, double) {
     __NOT_IMPLEMENTED(fdim);
     return 0.0;
 }
 
-float fdimf(float, float) noexcept {
+float fdimf(float, float) {
     __NOT_IMPLEMENTED(fdimf);
     return 0.0f;
 }
 
-long double fdiml(long double, long double) noexcept {
+long double fdiml(long double, long double) {
     __NOT_IMPLEMENTED(fdiml);
     return 0.0L;
 }
 
-double fma(double, double, double) noexcept {
+double fma(double, double, double) {
     __NOT_IMPLEMENTED(fma);
     return 0.0;
 }
 
-float fmaf(float, float, float) noexcept {
+float fmaf(float, float, float) {
     __NOT_IMPLEMENTED(fmaf);
     return 0.0f;
 }
 
-long double fmal(long double, long double, long double) noexcept {
+long double fmal(long double, long double, long double) {
     __NOT_IMPLEMENTED(fmal);
     return 0.0L;
 }
 
-double remquo(double, double, int*) noexcept {
+double remquo(double, double, i32*) {
     __NOT_IMPLEMENTED(remquo);
     return 0.0;
 }
 
-float remquof(float, float, int*) noexcept {
+float remquof(float, float, i32*) {
     __NOT_IMPLEMENTED(remquof);
     return 0.0f;
 }
 
-long double remquol(long double, long double, int*) noexcept {
+long double remquol(long double, long double, i32*) {
     __NOT_IMPLEMENTED(remquol);
     return 0.0L;
 }

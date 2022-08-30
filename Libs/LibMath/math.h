@@ -14,6 +14,7 @@
 
 #include <float.h>
 #include <limits.h>
+#include <stdint.h>
 
 #if __cplusplus >= 201103L
 #    define NOEXCEPT noexcept
@@ -119,7 +120,7 @@ typedef float  float_t;
 typedef double double_t;
 #endif
 
-extern int signgam;
+extern i32 signgam;
 
 /* Basic floating point operations */
 double      fabs(double) NOEXCEPT;
@@ -265,9 +266,9 @@ double      lgamma(double) NOEXCEPT;
 float       lgammaf(float) NOEXCEPT;
 long double lgammal(long double) NOEXCEPT;
 
-double      lgamma_r(double, int*) NOEXCEPT;
-float       lgammaf_r(float, int*) NOEXCEPT;
-long double lgammal_r(long double, int*) NOEXCEPT;
+double      lgamma_r(double, i32*) NOEXCEPT;
+float       lgammaf_r(float, i32*) NOEXCEPT;
+long double lgammal_r(long double, i32*) NOEXCEPT;
 
 /* Nearest integer floating point operations */
 double      ceil(double) NOEXCEPT;
@@ -312,30 +313,30 @@ long long llrintf(float) NOEXCEPT;
 long long llrintl(long double) NOEXCEPT;
 
 /* Floating point manipulation functions */
-double      frexp(double, int*) NOEXCEPT;
-float       frexpf(float, int*) NOEXCEPT;
-long double frexpl(long double, int*) NOEXCEPT;
+double      frexp(double, i32*) NOEXCEPT;
+float       frexpf(float, i32*) NOEXCEPT;
+long double frexpl(long double, i32*) NOEXCEPT;
 
-double      ldexp(double, int) NOEXCEPT;
-float       ldexpf(float, int) NOEXCEPT;
-long double ldexpl(long double, int) NOEXCEPT;
+double      ldexp(double, i32) NOEXCEPT;
+float       ldexpf(float, i32) NOEXCEPT;
+long double ldexpl(long double, i32) NOEXCEPT;
 
 double      modf(double, double*) NOEXCEPT;
 float       modff(float, float*) NOEXCEPT;
 long double modfl(long double, long double*) NOEXCEPT;
 
-double      scalbn(double, int) NOEXCEPT;
-float       scalbnf(float, int) NOEXCEPT;
-long double scalbnl(long double, int) NOEXCEPT;
+double      scalbn(double, i32) NOEXCEPT;
+float       scalbnf(float, i32) NOEXCEPT;
+long double scalbnl(long double, i32) NOEXCEPT;
 
 double      scalbln(double, long) NOEXCEPT;
 float       scalbnlf(float, long) NOEXCEPT;
 float       scalblnf(float, long) NOEXCEPT;
 long double scalblnl(long double, long) NOEXCEPT;
 
-int ilogb(double) NOEXCEPT;
-int ilogbf(float) NOEXCEPT;
-int ilogbl(long double) NOEXCEPT;
+i32 ilogb(double) NOEXCEPT;
+i32 ilogbf(float) NOEXCEPT;
+i32 ilogbl(long double) NOEXCEPT;
 
 double      logb(double) NOEXCEPT;
 float       logbf(float) NOEXCEPT;
@@ -364,9 +365,9 @@ float       fmaf(float, float, float) NOEXCEPT;
 long double fmal(long double x, long double y, long double z) NOEXCEPT;
 
 /* remainder and part of quotient */
-double      remquo(double, double, int*) NOEXCEPT;
-float       remquof(float, float, int*) NOEXCEPT;
-long double remquol(long double, long double, int*) NOEXCEPT;
+double      remquo(double, double, i32*) NOEXCEPT;
+float       remquof(float, float, i32*) NOEXCEPT;
+long double remquol(long double, long double, i32*) NOEXCEPT;
 
 #ifdef __cplusplus
 }
