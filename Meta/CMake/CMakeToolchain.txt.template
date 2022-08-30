@@ -84,8 +84,8 @@ include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}/Libs/LibC")
 # C/C++ Release Flags
 # TODO Since there is a bug into the kernel which cause a QEMU crash when compiled with something that is not -O0
 #
-set(CMAKE_CXX_FLAGS_RELEASE "-g0")
-set(CMAKE_C_FLAGS_RELEASE "-g0")
+set(CMAKE_CXX_FLAGS_RELEASE "-g0 -s")
+set(CMAKE_C_FLAGS_RELEASE "-g0 -s")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
     add_compile_definitions(NDEBUG)
