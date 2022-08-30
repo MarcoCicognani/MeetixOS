@@ -155,7 +155,7 @@ long strtol(const char* str, char** endptr, int base) {
     /* convert the string to integer */
     auto error_or_int_value = string_view.as_int<long>(int_base, ParseMode::TrimWhitesAndBegin);
     if ( error_or_int_value.is_error() ) {
-        errno = error_or_int_value.error().os_error();
+        errno = error_or_int_value.error().errno_code();
         return 0;
     }
 
@@ -176,7 +176,7 @@ unsigned long strtoul(const char* str, char** endptr, int base) {
     /* convert the string to integer */
     auto error_or_int_value = string_view.as_uint<unsigned long>(int_base, ParseMode::TrimWhitesAndBegin);
     if ( error_or_int_value.is_error() ) {
-        errno = error_or_int_value.error().os_error();
+        errno = error_or_int_value.error().errno_code();
         return 0;
     }
 
@@ -197,7 +197,7 @@ long long strtoll(const char* str, char** endptr, int base) {
     /* convert the string to integer */
     auto error_or_int_value = string_view.as_int<long long>(int_base, ParseMode::TrimWhitesAndBegin);
     if ( error_or_int_value.is_error() ) {
-        errno = error_or_int_value.error().os_error();
+        errno = error_or_int_value.error().errno_code();
         return 0;
     }
 
@@ -218,7 +218,7 @@ unsigned long long strtoull(const char* str, char** endptr, int base) {
     /* convert the string to integer */
     auto error_or_int_value = string_view.as_uint<unsigned long long>(int_base, ParseMode::TrimWhitesAndBegin);
     if ( error_or_int_value.is_error() ) {
-        errno = error_or_int_value.error().os_error();
+        errno = error_or_int_value.error().errno_code();
         return 0;
     }
 
