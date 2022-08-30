@@ -22,6 +22,22 @@
 
 namespace FmtIO {
 
+enum class Color : i32 {
+    Black,
+    Red,
+    Green,
+    Yellow,
+    Blue,
+    Magenta,
+    Cyan,
+    White,
+    LGreen
+};
+
+auto foreground(Color foreground) -> StringView;
+auto background(Color background) -> StringView;
+auto reset() -> StringView;
+
 template<typename... TArgs>
 auto vout(FILE* file, StringView format_view, TArgs&&... args) -> ErrorOr<void> {
     /* format the arguments according to the given <format_view> */
@@ -31,7 +47,7 @@ auto vout(FILE* file, StringView format_view, TArgs&&... args) -> ErrorOr<void> 
     /* write the result into the stdout */
     auto const res = fwrite(string_builder.as_string_view().as_cstr(), 1, string_builder.len(), file);
     if ( res < string_builder.len() )
-        return Error{ static_cast<OSError>(ferror(stdout)) };
+        return Error::construct_from_errno(static_cast<OSError>(ferror(stdout)));
     else
         return {};
 }

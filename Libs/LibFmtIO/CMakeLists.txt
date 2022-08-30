@@ -10,5 +10,5 @@
 # GNU General Public License version 3
 #
 
-add_library(LibFmtIO STATIC VOut.cc Out.cc Err.cc)
+add_library(LibFmtIO STATIC VOut.cc)
 target_link_libraries(LibFmtIO LibTC)
