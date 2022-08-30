@@ -17,8 +17,6 @@ add_compile_options(-Wno-address-of-packed-member)
 add_compile_options(-Wunused-variable)
 add_compile_options(-Wno-unused-but-set-variable)
 add_compile_options(-ffreestanding)
-add_compile_options(-fno-exceptions)
-add_compile_options(-fno-rtti)
 
 add_subdirectory(SMPStart)
 add_subdirectory(Shared)

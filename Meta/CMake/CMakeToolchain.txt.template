@@ -51,6 +51,8 @@ add_compile_options(-Wdouble-promotion)
 add_compile_options(-fdiagnostics-color=always)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-literal-suffix>)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fconcepts-diagnostics-depth=10>)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
 
 #
 # NOTE to avoid to copy library headers into ${TOOLCHAIN_INCLUDE} -nostdinc is passed to the compiler and the default
