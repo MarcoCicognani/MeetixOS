@@ -31,7 +31,8 @@ public:
     /**
      * @brief Error safe Factory functions
      */
-    [[nodiscard]] static auto try_construct_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>>;
+    [[nodiscard]]
+    static auto try_construct_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>>;
 
     explicit StringStorage(StringView string_view);
     ~StringStorage() = default;
@@ -44,10 +45,13 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] auto data_storage() const -> char const*;
-    [[nodiscard]] auto char_count() const -> usize;
+    [[nodiscard]]
+    auto data_storage() const -> char const*;
+    [[nodiscard]]
+    auto char_count() const -> usize;
 
-    [[nodiscard]] auto is_empty() const -> bool;
+    [[nodiscard]]
+    auto is_empty() const -> bool;
 
     /**
      * @brief Since the StringStorage uses inline storage the requested size to the heap allocator is the size of the

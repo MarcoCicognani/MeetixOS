@@ -89,10 +89,10 @@ class NonNullRef;
 namespace Functional {
 
 template<typename T>
-class Option;
+class [[nodiscard("Option<T> cannot be obtained and ignored")]] Option;
 
 template<typename T, typename E>
-class Result;
+class [[nodiscard("Result<T, E> cannot be obtained and ignored")]] Result;
 
 } /* namespace Functional */
 

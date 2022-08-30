@@ -23,32 +23,32 @@ namespace TC {
 namespace Functional {
 
 template<typename, typename>
-class Result;
+class [[nodiscard("Result<T, E> cannot be obtained and ignored")]] Result;
 
 template<Concrete T, Concrete E>
-class Result<T, E> {
+class [[nodiscard("Result<T, E> cannot be obtained and ignored")]] Result<T, E> {
 public:
     /**
      * @brief Constructors
      */
     Result() = delete;
-    constexpr explicit(false) Result(T const& value) noexcept
+    constexpr explicit(false) Result(T const& value)
         : m_value_option{ value } {
     }
-    constexpr explicit(false) Result(T&& value) noexcept
+    constexpr explicit(false) Result(T&& value)
         : m_value_option{ Cxx::move(value) } {
     }
-    constexpr explicit(false) Result(E const& error) noexcept
+    constexpr explicit(false) Result(E const& error)
         : m_error_option{ error } {
     }
-    constexpr explicit(false) Result(E&& error) noexcept
+    constexpr explicit(false) Result(E&& error)
         : m_error_option{ Cxx::move(error) } {
     }
-    constexpr explicit(false) Result(Result<T, E> const& rhs) noexcept
+    constexpr explicit(false) Result(Result<T, E> const& rhs)
         : m_value_option{ rhs.m_value_option }
         , m_error_option{ rhs.m_error_option } {
     }
-    constexpr explicit(false) Result(Result<T, E>&& rhs) noexcept
+    constexpr explicit(false) Result(Result<T, E>&& rhs)
         : m_value_option{ Cxx::move(rhs.m_value_option) }
         , m_error_option{ Cxx::move(rhs.m_error_option) } {
     }
@@ -81,7 +81,7 @@ public:
         swap(result);
         return *this;
     }
-    constexpr auto operator=(Result<T, E>&& rhs) noexcept -> Result<T, E>& {
+    constexpr auto operator=(Result<T, E>&& rhs) -> Result<T, E>& {
         Result result{ Cxx::move(rhs) };
         swap(result);
         return *this;
@@ -90,7 +90,7 @@ public:
     /**
      * @brief Swaps this result with another
      */
-    constexpr auto swap(Result<T, E>& rhs) noexcept {
+    constexpr auto swap(Result<T, E>& rhs) {
         m_value_option.swap(rhs.m_value_option);
         m_error_option.swap(rhs.m_error_option);
     }
@@ -108,7 +108,7 @@ public:
     }
 
     /**
-     * @brief Maps the error of this Option into another type
+     * @brief Maps the errno_code of this Option into another type
      */
     template<typename U>
     auto map_error(Mapper<E, U> auto predicate) -> Result<T, U> {
@@ -121,53 +121,64 @@ public:
     /**
      * @brief Returns the reference to the result value
      */
-    [[nodiscard]] auto value() -> T& {
+    [[nodiscard]]
+    auto value() -> T& {
         return m_value_option.value();
     }
-    [[nodiscard]] auto value() const -> T const& {
+    [[nodiscard]]
+    auto value() const -> T const& {
         return m_value_option.value();
     }
 
     /**
-     * @brief Returns the reference to the result error
+     * @brief Returns the reference to the result errno_code
      */
-    [[nodiscard]] auto error() -> E& {
+    [[nodiscard]]
+    auto error() -> E& {
         return m_error_option.value();
     }
-    [[nodiscard]] auto error() const -> E const& {
+    [[nodiscard]]
+    auto error() const -> E const& {
         return m_error_option.value();
     }
 
     /**
-     * @brief Unwraps the value or the error if exists
+     * @brief Unwraps the value or the errno_code if exists
      */
-    [[nodiscard]] auto unwrap_value() -> T {
+    [[nodiscard]]
+    auto unwrap_value() -> T {
         return m_value_option.unwrap();
     }
-    [[nodiscard]] auto unwrap_error() -> E {
+    [[nodiscard]]
+    auto unwrap_error() -> E {
         return m_error_option.unwrap();
     }
 
     /**
-     * @brief Returns whether this result contains a value or an error
+     * @brief Returns whether this result contains a value or an errno_code
      */
-    [[nodiscard]] auto is_value() const -> bool {
+    [[nodiscard]]
+    auto is_value() const -> bool {
         return m_value_option.is_present();
     }
-    [[nodiscard]] auto is_error() const -> bool {
+    [[nodiscard]]
+    auto is_error() const -> bool {
         return m_error_option.is_present();
     }
 
     /**
      * @brief Tryable support
      */
-    [[nodiscard]] auto unwrap() -> T {
+    [[nodiscard]]
+    auto unwrap() -> T {
         return unwrap_value();
     }
-    [[nodiscard]] auto backward() -> E {
+    [[nodiscard]]
+    auto backward() -> E {
         return unwrap_error();
     }
-    [[nodiscard]] auto operator!() const -> bool {
+    [[nodiscard]]
+    auto operator!() const -> bool {
         return is_error();
     }
 
@@ -177,22 +188,22 @@ private:
 };
 
 template<Concrete E>
-class Result<void, E> {
+class [[nodiscard("Result<T, E> cannot be obtained and ignored")]] Result<void, E> {
 public:
     /**
      * @brief Constructors
      */
-    constexpr explicit(false) Result() noexcept = default;
-    constexpr explicit(false) Result(E const& error) noexcept
+    constexpr explicit(false) Result() = default;
+    constexpr explicit(false) Result(E const& error)
         : m_error_option{ error } {
     }
-    constexpr explicit(false) Result(E&& error) noexcept
+    constexpr explicit(false) Result(E&& error)
         : m_error_option{ Cxx::move(error) } {
     }
-    constexpr explicit(false) Result(Result<void, E> const& rhs) noexcept
+    constexpr explicit(false) Result(Result<void, E> const& rhs)
         : m_error_option{ rhs.m_error_option } {
     }
-    constexpr explicit(false) Result(Result<void, E>&& rhs) noexcept
+    constexpr explicit(false) Result(Result<void, E>&& rhs)
         : m_error_option{ Cxx::move(rhs.m_error_option) } {
     }
 
@@ -214,7 +225,7 @@ public:
         swap(result);
         return *this;
     }
-    constexpr auto operator=(Result<void, E>&& rhs) noexcept -> Result<void, E>& {
+    constexpr auto operator=(Result<void, E>&& rhs) -> Result<void, E>& {
         Result result{ Cxx::move(rhs) };
         swap(result);
         return *this;
@@ -223,7 +234,7 @@ public:
     /**
      * @brief Swaps this result with another
      */
-    constexpr auto swap(Result<void, E>& rhs) noexcept {
+    constexpr auto swap(Result<void, E>& rhs) {
         m_error_option.swap(rhs.m_error_option);
     }
 
@@ -240,7 +251,7 @@ public:
     }
 
     /**
-     * @brief Maps the error of this Option into another type
+     * @brief Maps the errno_code of this Option into another type
      */
     template<typename U>
     auto map_error(Mapper<E, U> auto predicate) -> Result<void, U> {
@@ -261,32 +272,37 @@ public:
     }
 
     /**
-     * @brief Returns the reference to the result error
+     * @brief Returns the reference to the result errno_code
      */
-    [[nodiscard]] auto error() -> E& {
+    [[nodiscard]]
+    auto error() -> E& {
         return m_error_option.value();
     }
-    [[nodiscard]] auto error() const -> E const& {
+    [[nodiscard]]
+    auto error() const -> E const& {
         return m_error_option.value();
     }
 
     /**
-     * @brief Unwraps the value or the error if exists
+     * @brief Unwraps the value or the errno_code if exists
      */
     void unwrap_value() const {
         /* Nothing to return */
     }
-    [[nodiscard]] auto unwrap_error() -> E {
+    [[nodiscard]]
+    auto unwrap_error() -> E {
         return m_error_option.unwrap();
     }
 
     /**
-     * @brief Returns whether this result contains a value or an error
+     * @brief Returns whether this result contains a value or an errno_code
      */
-    [[nodiscard]] auto is_value() const -> bool {
+    [[nodiscard]]
+    auto is_value() const -> bool {
         return !is_error();
     }
-    [[nodiscard]] auto is_error() const -> bool {
+    [[nodiscard]]
+    auto is_error() const -> bool {
         return m_error_option.is_present();
     }
 
@@ -296,10 +312,12 @@ public:
     void unwrap() const {
         /* Nothing to return */
     }
-    [[nodiscard]] auto backward() -> E {
+    [[nodiscard]]
+    auto backward() -> E {
         return unwrap_error();
     }
-    [[nodiscard]] auto operator!() const -> bool {
+    [[nodiscard]]
+    auto operator!() const -> bool {
         return is_error();
     }
 
@@ -308,7 +326,7 @@ private:
 };
 
 template<LValue T, Concrete E>
-class Result<T, E> {
+class [[nodiscard("Result<T, E> cannot be obtained and ignored")]] Result<T, E> {
 public:
 
 public:
@@ -316,20 +334,20 @@ public:
      * @brief Constructors
      */
     Result() = delete;
-    constexpr explicit(false) Result(RemoveReference<T>& value) noexcept
+    constexpr explicit(false) Result(RemoveReference<T>& value)
         : m_value_option{ value } {
     }
-    constexpr explicit(false) Result(E const& error) noexcept
+    constexpr explicit(false) Result(E const& error)
         : m_error_option{ error } {
     }
-    constexpr explicit(false) Result(E&& error) noexcept
+    constexpr explicit(false) Result(E&& error)
         : m_error_option{ Cxx::move(error) } {
     }
     constexpr explicit(false) Result(Result<T, E> const& rhs)
         : m_value_option{ rhs.m_value_option }
         , m_error_option{ rhs.m_error_option } {
     }
-    constexpr explicit(false) Result(Result<T, E>&& rhs) noexcept
+    constexpr explicit(false) Result(Result<T, E>&& rhs)
         : m_value_option{ Cxx::move(rhs.m_value_option) }
         , m_error_option{ Cxx::move(rhs.m_error_option) } {
     }
@@ -357,7 +375,7 @@ public:
         swap(result);
         return *this;
     }
-    constexpr auto operator=(Result<T, E>&& rhs) noexcept -> Result<T, E>& {
+    constexpr auto operator=(Result<T, E>&& rhs) -> Result<T, E>& {
         Result result{ Cxx::move(rhs) };
         swap(result);
         return *this;
@@ -366,7 +384,7 @@ public:
     /**
      * @brief Swaps this result with another
      */
-    constexpr auto swap(Result<T, E>& rhs) noexcept {
+    constexpr auto swap(Result<T, E>& rhs) {
         m_value_option.swap(rhs.m_value_option);
         m_error_option.swap(rhs.m_error_option);
     }
@@ -384,7 +402,7 @@ public:
     }
 
     /**
-     * @brief Maps the error of this Option into another type
+     * @brief Maps the errno_code of this Option into another type
      */
     template<typename U>
     auto map_error(Mapper<E, U> auto predicate) -> Result<T, U> {
@@ -397,53 +415,64 @@ public:
     /**
      * @brief Returns the reference to the result value
      */
-    [[nodiscard]] auto value() -> T {
+    [[nodiscard]]
+    auto value() -> T {
         return m_value_option.value();
     }
-    [[nodiscard]] auto value() const -> AddConstToReference<T> {
+    [[nodiscard]]
+    auto value() const -> AddConstToReference<T> {
         return m_value_option.value();
     }
 
     /**
-     * @brief Returns the reference to the result error
+     * @brief Returns the reference to the result errno_code
      */
-    [[nodiscard]] auto error() -> E& {
+    [[nodiscard]]
+    auto error() -> E& {
         return m_error_option.value();
     }
-    [[nodiscard]] auto error() const -> E const& {
+    [[nodiscard]]
+    auto error() const -> E const& {
         return m_error_option.value();
     }
 
     /**
-     * @brief Unwraps the value or the error if exists
+     * @brief Unwraps the value or the errno_code if exists
      */
-    [[nodiscard]] auto unwrap_value() -> T {
+    [[nodiscard]]
+    auto unwrap_value() -> T {
         return m_value_option.unwrap();
     }
-    [[nodiscard]] auto unwrap_error() -> E {
+    [[nodiscard]]
+    auto unwrap_error() -> E {
         return m_error_option.unwrap();
     }
 
     /**
-     * @brief Returns whether this result contains a value or an error
+     * @brief Returns whether this result contains a value or an errno_code
      */
-    [[nodiscard]] auto is_value() const -> bool {
+    [[nodiscard]]
+    auto is_value() const -> bool {
         return m_value_option.is_present();
     }
-    [[nodiscard]] auto is_error() const -> bool {
+    [[nodiscard]]
+    auto is_error() const -> bool {
         return m_error_option.is_present();
     }
 
     /**
      * @brief Tryable support
      */
-    [[nodiscard]] auto unwrap() -> T {
+    [[nodiscard]]
+    auto unwrap() -> T {
         return unwrap_value();
     }
-    [[nodiscard]] auto backward() -> E {
+    [[nodiscard]]
+    auto backward() -> E {
         return unwrap_error();
     }
-    [[nodiscard]] auto operator!() const -> bool {
+    [[nodiscard]]
+    auto operator!() const -> bool {
         return is_error();
     }
 

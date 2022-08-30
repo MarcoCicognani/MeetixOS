@@ -23,30 +23,29 @@ namespace TC {
 class SourceLocation {
 public:
     /**
-     * @brief Returns a SourceLocation from the current location
+     * @brief Error safe factory function
      */
-    [[nodiscard]] static auto here(char const* file_path = __builtin_FILE(),
-                                   char const* function = __builtin_FUNCTION(),
-                                   u32 line = __builtin_LINE()) -> SourceLocation;
-
-    /**
-     * @brief Constructors
-     */
-    SourceLocation(SourceLocation const&) = default;
-    SourceLocation(SourceLocation&&)      = default;
-
-    auto operator=(SourceLocation const&) -> SourceLocation& = default;
-    auto operator=(SourceLocation&&) -> SourceLocation&      = default;
+    [[nodiscard]]
+    static auto construct_from_here(char const* file_path = __builtin_FILE(),
+                                    char const* function  = __builtin_FUNCTION(),
+                                    u32         line      = __builtin_LINE()) -> SourceLocation;
 
     /**
      * @brief Getters
      */
-    [[nodiscard]] auto file_path() const -> char const*;
-    [[nodiscard]] auto function() const -> char const*;
-    [[nodiscard]] auto line() const -> u32;
+    [[nodiscard]]
+    auto file_path() const -> char const*;
+    [[nodiscard]]
+    auto function() const -> char const*;
+    [[nodiscard]]
+    auto line() const -> u32;
 
 private:
-    explicit constexpr SourceLocation(char const* file_path, char const* function, u32 line) noexcept;
+    explicit constexpr SourceLocation(char const* file_path, char const* function, u32 line)
+        : m_file_path{ file_path }
+        , m_function{ function }
+        , m_line{ line } {
+    }
 
 private:
     char const* m_file_path;

@@ -21,6 +21,7 @@ namespace TC {
 namespace Math {
 
 template<typename T>
+[[nodiscard]]
 constexpr auto clamp(T const& value, T const& min, T const& max) -> T {
     VERIFY_GREATER_EQUAL(max, min);
     if ( value > max )
@@ -31,6 +32,7 @@ constexpr auto clamp(T const& value, T const& min, T const& max) -> T {
 }
 
 template<typename T>
+[[nodiscard]]
 constexpr auto count_leading_zeroes(T value) -> i32 {
     static_assert(sizeof(T) <= sizeof(unsigned long long));
 
@@ -44,16 +46,19 @@ constexpr auto count_leading_zeroes(T value) -> i32 {
 }
 
 template<typename T>
+[[nodiscard]]
 constexpr auto max(T const& a, T const& b) -> T {
     return a < b ? b : a;
 }
 
 template<typename T>
+[[nodiscard]]
 constexpr auto min(T const& a, T const& b) -> T {
     return b < a ? b : a;
 }
 
 template<typename T, typename U>
+[[nodiscard]]
 constexpr auto ceil_div(T a, U b) -> T {
     static_assert(sizeof(T) == sizeof(U));
 

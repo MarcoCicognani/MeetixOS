@@ -30,31 +30,31 @@ enum class OptionNoneTag {
 };
 
 template<typename>
-class Option;
+class [[nodiscard("Option<T> cannot be obtained and ignored")]] Option;
 
 template<Concrete T>
-class Option<T> {
+class [[nodiscard("Option<T> cannot be obtained and ignored")]] Option<T> {
 public:
     /**
      * @brief Constructors
      */
-    constexpr explicit(false) Option() noexcept = default;
-    constexpr explicit(false) Option(OptionNoneTag) noexcept {
+    constexpr explicit(false) Option() = default;
+    constexpr explicit(false) Option(OptionNoneTag) {
     }
-    constexpr explicit(false) Option(T const& value) noexcept
+    constexpr explicit(false) Option(T const& value)
         : m_is_present{ true } {
         new (&m_data_storage) T{ value };
     }
-    constexpr explicit(false) Option(T&& value) noexcept
+    constexpr explicit(false) Option(T&& value)
         : m_is_present{ true } {
         new (&m_data_storage) T{ Cxx::move(value) };
     }
-    constexpr explicit(false) Option(Option<T> const& rhs) noexcept
+    constexpr explicit(false) Option(Option<T> const& rhs)
         : m_is_present{ rhs.m_is_present } {
         if ( m_is_present )
             new (&m_data_storage) T{ rhs.value() };
     }
-    constexpr explicit(false) Option(Option<T>&& rhs) noexcept
+    constexpr explicit(false) Option(Option<T>&& rhs)
         : m_is_present{ rhs.m_is_present } {
         if ( m_is_present )
             new (&m_data_storage) T{ Cxx::move(rhs.unwrap()) };
@@ -86,7 +86,7 @@ public:
         swap(option);
         return *this;
     }
-    constexpr auto operator=(Option<T>&& rhs) noexcept -> Option<T>& {
+    constexpr auto operator=(Option<T>&& rhs) -> Option<T>& {
         Option option{ Cxx::move(rhs) };
         swap(option);
         return *this;
@@ -95,7 +95,7 @@ public:
     /**
      * @brief Swaps this Option with another
      */
-    constexpr void swap(Option<T>& rhs) noexcept {
+    constexpr void swap(Option<T>& rhs) {
         Cxx::swap(m_is_present, rhs.m_is_present);
         Cxx::swap(storage_as_ref(), rhs.storage_as_ref());
     }
@@ -114,22 +114,26 @@ public:
     /**
      * @brief Returns a reference to the value from this option
      */
-    [[nodiscard]] auto value() -> T& {
+    [[nodiscard]]
+    auto value() -> T& {
         VERIFY(is_present());
         return storage_as_ref();
     }
-    [[nodiscard]] auto value() const -> T const& {
+    [[nodiscard]]
+    auto value() const -> T const& {
         VERIFY(is_present());
         return storage_as_ref();
     }
 
-    [[nodiscard]] auto value_or(T& default_value) -> T& {
+    [[nodiscard]]
+    auto value_or(T& default_value) -> T& {
         if ( is_present() )
             return value();
         else
             return default_value;
     }
-    [[nodiscard]] auto value_or(T const& default_value) const -> T const& {
+    [[nodiscard]]
+    auto value_or(T const& default_value) const -> T const& {
         if ( is_present() )
             return value();
         else
@@ -139,7 +143,8 @@ public:
     /**
      * @brief Returns the value of this option
      */
-    [[nodiscard]] auto unwrap_or(T const& default_value) -> T {
+    [[nodiscard]]
+    auto unwrap_or(T const& default_value) -> T {
         if ( is_present() )
             return unwrap();
         else
@@ -161,31 +166,37 @@ public:
     /**
      * @brief Returns whether the value is present
      */
-    [[nodiscard]] auto is_present() const -> bool {
+    [[nodiscard]]
+    auto is_present() const -> bool {
         return m_is_present;
     }
 
     /**
      * @brief Tryable support
      */
-    [[nodiscard]] auto unwrap() -> T {
+    [[nodiscard]]
+    auto unwrap() -> T {
         T to_return{ Cxx::move(value()) };
         reset();
         return to_return;
     }
-    [[nodiscard]] auto backward() const -> OptionNoneTag {
+    [[nodiscard]]
+    auto backward() const -> OptionNoneTag {
         VERIFY_FALSE(is_present());
         return OptionNoneTag::None;
     }
-    [[nodiscard]] auto operator!() const -> bool {
+    [[nodiscard]]
+    auto operator!() const -> bool {
         return !m_is_present;
     }
 
 private:
-    [[nodiscard]] auto storage_as_ref() -> T& {
+    [[nodiscard]]
+    auto storage_as_ref() -> T& {
         return *__builtin_launder(bit_cast<T*>(&m_data_storage));
     }
-    [[nodiscard]] auto storage_as_ref() const -> T const& {
+    [[nodiscard]]
+    auto storage_as_ref() const -> T const& {
         return *__builtin_launder(bit_cast<T const*>(&m_data_storage));
     }
 
@@ -195,21 +206,21 @@ private:
 };
 
 template<LValue T>
-class Option<T> {
+class [[nodiscard("Option<T> cannot be obtained and ignored")]] Option<T> {
 public:
     /**
      * @brief Constructors
      */
-    constexpr explicit(false) Option() noexcept = default;
-    constexpr explicit(false) Option(OptionNoneTag) noexcept {
+    constexpr explicit(false) Option() = default;
+    constexpr explicit(false) Option(OptionNoneTag) {
     }
-    constexpr explicit(false) Option(RemoveReference<T>& value) noexcept
+    constexpr explicit(false) Option(RemoveReference<T>& value)
         : m_optional_ptr{ &value } {
     }
-    constexpr explicit(false) Option(Option<T> const& rhs) noexcept
+    constexpr explicit(false) Option(Option<T> const& rhs)
         : m_optional_ptr{ rhs.m_optional_ptr } {
     }
-    constexpr explicit(false) Option(Option<T>&& rhs) noexcept
+    constexpr explicit(false) Option(Option<T>&& rhs)
         : m_optional_ptr{ Cxx::exchange(rhs.m_optional_ptr, nullptr) } {
     }
 
@@ -234,7 +245,7 @@ public:
         swap(option);
         return *this;
     }
-    constexpr auto operator=(Option<T>&& rhs) noexcept -> Option<T>& {
+    constexpr auto operator=(Option<T>&& rhs) -> Option<T>& {
         Option option{ Cxx::move(rhs) };
         swap(option);
         return *this;
@@ -243,7 +254,7 @@ public:
     /**
      * @brief Swaps this Option with another
      */
-    constexpr void swap(Option<T>& rhs) noexcept {
+    constexpr void swap(Option<T>& rhs) {
         Cxx::swap(m_optional_ptr, rhs.m_optional_ptr);
     }
 
@@ -261,22 +272,26 @@ public:
     /**
      * @brief Returns a reference to the value from this option
      */
-    [[nodiscard]] auto value() -> T {
+    [[nodiscard]]
+    auto value() -> T {
         VERIFY_NOT_NULL(m_optional_ptr);
         return *m_optional_ptr;
     }
-    [[nodiscard]] auto value() const -> AddConstToReference<T> {
+    [[nodiscard]]
+    auto value() const -> AddConstToReference<T> {
         VERIFY_NOT_NULL(m_optional_ptr);
         return *m_optional_ptr;
     }
 
-    [[nodiscard]] auto value_or(T default_value) -> T {
+    [[nodiscard]]
+    auto value_or(T default_value) -> T {
         if ( is_present() )
             return value();
         else
             return default_value;
     }
-    [[nodiscard]] auto value_or(AddConstToReference<T> default_value) const -> AddConstToReference<T> {
+    [[nodiscard]]
+    auto value_or(AddConstToReference<T> default_value) const -> AddConstToReference<T> {
         if ( is_present() )
             return value();
         else
@@ -286,7 +301,8 @@ public:
     /**
      * @brief Returns the value of this option
      */
-    [[nodiscard]] auto unwrap_or(T default_value) -> T {
+    [[nodiscard]]
+    auto unwrap_or(T default_value) -> T {
         if ( is_present() )
             return unwrap();
         else
@@ -303,21 +319,25 @@ public:
     /**
      * @brief Returns whether the value is present
      */
-    [[nodiscard]] auto is_present() const -> bool {
+    [[nodiscard]]
+    auto is_present() const -> bool {
         return m_optional_ptr != nullptr;
     }
 
     /**
      * @brief Tryable support
      */
-    [[nodiscard]] auto unwrap() -> T {
+    [[nodiscard]]
+    auto unwrap() -> T {
         return *Cxx::exchange(m_optional_ptr, nullptr);
     }
-    [[nodiscard]] auto backward() const -> OptionNoneTag {
+    [[nodiscard]]
+    auto backward() const -> OptionNoneTag {
         VERIFY_FALSE(is_present());
         return OptionNoneTag::None;
     }
-    [[nodiscard]] auto operator!() const -> bool {
+    [[nodiscard]]
+    auto operator!() const -> bool {
         return !is_present();
     }
 

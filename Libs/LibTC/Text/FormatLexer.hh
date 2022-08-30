@@ -30,22 +30,25 @@ public:
     /**
      * @brief Error safe Factory functions
      */
-    [[nodiscard]] static constexpr auto construct_from_view(StringView source_view) -> FormatLexer {
+    [[nodiscard]]
+    static constexpr auto construct_from_view(StringView source_view) -> FormatLexer {
         return FormatLexer{ source_view };
     }
 
     /**
      * @brief Consumes all the non format and escaped characters
      */
+    [[nodiscard]]
     auto consume_literal() -> StringView;
 
     /**
      * @brief Consumes all the contiguous ASCII numbers
      */
+    [[nodiscard]]
     auto consume_number(usize& value) -> bool;
 
 private:
-    explicit constexpr FormatLexer(StringView source_view) noexcept
+    explicit constexpr FormatLexer(StringView source_view)
         : Lexer{ source_view } {
     }
 };

@@ -33,13 +33,15 @@ class Box {
 
 public:
     /**
-     * @brief Non-error safe Factory functions
+     * @brief Non-errno_code safe Factory functions
      */
     template<typename... TArgs>
-    [[nodiscard]] static auto construct_from_args(TArgs... args) -> Box<T> {
+    [[nodiscard]]
+    static auto construct_from_args(TArgs&&... args) -> Box<T> {
         return MUST(try_construct_from_args(Cxx::forward<TArgs>(args)...));
     }
-    [[nodiscard]] static auto construct_from_adopt(T& unboxed_ref) -> Box<T> {
+    [[nodiscard]]
+    static auto construct_from_adopt(T& unboxed_ref) -> Box<T> {
         return Box<T>{ &unboxed_ref };
     }
 
@@ -47,21 +49,22 @@ public:
      * @brief Error safe Factory functions
      */
     template<typename... TArgs>
-    [[nodiscard]] static auto try_construct_from_args(TArgs... args) -> ErrorOr<Box<T>> {
-        auto unboxed_ptr = new (nothrow) T{ Cxx::forward<TArgs>(args)... };
+    [[nodiscard]]
+    static auto try_construct_from_args(TArgs&&... args) -> ErrorOr<Box<T>> {
+        auto unboxed_ptr = new T{ Cxx::forward<TArgs>(args)... };
         if ( unboxed_ptr != nullptr ) [[likely]]
             return Box<T>{ unboxed_ptr };
         else
-            return Error{ ENOMEM };
+            return Error::construct_from_errno(ENOMEM);
     }
 
     /**
      * @brief Move constructor and move assignment
      */
-    Box(Box<T>&& rhs) noexcept
+    Box(Box<T>&& rhs)
         : m_boxed_object_ptr{ Cxx::exchange(rhs.m_boxed_object_ptr, nullptr) } {
     }
-    auto operator=(Box<T>&& rhs) noexcept -> Box<T>& {
+    auto operator=(Box<T>&& rhs) -> Box<T>& {
         Box non_null_box{ Cxx::move(rhs) };
         swap(non_null_box);
         return *this;
@@ -75,17 +78,19 @@ public:
     /**
      * @brief Swaps this box with another
      */
-    void swap(Box<T>& rhs) noexcept {
+    void swap(Box<T>& rhs) {
         Cxx::swap(m_boxed_object_ptr, rhs.m_boxed_object_ptr);
     }
 
     /**
      * @brief Access operators
      */
-    A_RETURN_NONNULL auto operator->() -> T* {
+    [[gnu::returns_nonnull]]
+    auto operator->() -> T* {
         return as_ptr();
     }
-    A_RETURN_NONNULL auto operator->() const -> T const* {
+    [[gnu::returns_nonnull]]
+    auto operator->() const -> T const* {
         return as_ptr();
     }
 
@@ -99,10 +104,12 @@ public:
     /**
      * @brief Conversion operators
      */
-    A_RETURN_NONNULL explicit operator T*() {
+    [[gnu::returns_nonnull]]
+    explicit operator T*() {
         return as_ptr();
     }
-    A_RETURN_NONNULL explicit operator T const*() const {
+    [[gnu::returns_nonnull]]
+    explicit operator T const*() const {
         return as_ptr();
     }
 
@@ -116,38 +123,45 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] A_RETURN_NONNULL auto as_ptr() -> T* {
+    [[nodiscard, gnu::returns_nonnull]]
+    auto as_ptr() -> T* {
         VERIFY_NOT_NULL(m_boxed_object_ptr);
         return m_boxed_object_ptr;
     }
-    [[nodiscard]] A_RETURN_NONNULL auto as_ptr() const -> T const* {
+    [[nodiscard, gnu::returns_nonnull]]
+    auto as_ptr() const -> T const* {
         VERIFY_NOT_NULL(m_boxed_object_ptr);
         return m_boxed_object_ptr;
     }
 
-    [[nodiscard]] auto as_ref() -> T& {
+    [[nodiscard]]
+    auto as_ref() -> T& {
         return *as_ptr();
     }
-    [[nodiscard]] auto as_ref() const -> T const& {
+    [[nodiscard]]
+    auto as_ref() const -> T const& {
         return *as_ptr();
     }
 
-    [[nodiscard]] auto leak_ptr() -> T* {
+    [[nodiscard]]
+    auto leak_ptr() -> T* {
         auto boxed_object_ptr = m_boxed_object_ptr;
         m_boxed_object_ptr    = nullptr;
         return boxed_object_ptr;
     }
-    [[nodiscard]] auto leak_ref() -> T& {
+    [[nodiscard]]
+    auto leak_ref() -> T& {
         VERIFY_NOT_NULL(m_boxed_object_ptr);
         return *leak_ptr();
     }
 
-    [[nodiscard]] auto is_null() -> bool {
+    [[nodiscard]]
+    auto is_null() -> bool {
         return m_boxed_object_ptr == nullptr;
     }
 
 private:
-    explicit constexpr Box(T* unboxed_ptr) noexcept
+    explicit constexpr Box(T* unboxed_ptr)
         : m_boxed_object_ptr{ unboxed_ptr } {
     }
 

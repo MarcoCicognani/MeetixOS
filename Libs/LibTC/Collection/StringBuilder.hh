@@ -31,31 +31,35 @@ class StringBuilder {
 
 public:
     /**
-     * @brief Non-error safe Factory functions
+     * @brief Non-errno_code safe Factory functions
      */
-    [[nodiscard]] static auto construct_empty() -> StringBuilder;
-    [[nodiscard]] static auto construct_with_capacity(usize capacity) -> StringBuilder;
-    [[nodiscard]] static auto construct_from_other(StringBuilder const& rhs) -> StringBuilder;
+    [[nodiscard]]
+    static auto construct_empty() -> StringBuilder;
+    [[nodiscard]]
+    static auto construct_with_capacity(usize capacity) -> StringBuilder;
+    [[nodiscard]]
+    static auto construct_from_other(StringBuilder const& rhs) -> StringBuilder;
 
     /**
      * @brief Error safe Factory functions
      */
-    [[nodiscard]] static auto try_construct_with_capacity(usize capacity) -> ErrorOr<StringBuilder>;
-    [[nodiscard]] static auto try_construct_from_other(StringBuilder const& rhs) -> ErrorOr<StringBuilder>;
+    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<StringBuilder>;
+    static auto try_construct_from_other(StringBuilder const& rhs) -> ErrorOr<StringBuilder>;
 
     /**
      * @brief Move constructor and move assignment
      */
-    StringBuilder(StringBuilder&& rhs) noexcept                    = default;
-    auto operator=(StringBuilder&& rhs) noexcept -> StringBuilder& = default;
+    StringBuilder(StringBuilder&& rhs)                    = default;
+    auto operator=(StringBuilder&& rhs) -> StringBuilder& = default;
 
     ~StringBuilder() = default;
 
     /**
      * @brief Deep cloning
      */
-    [[nodiscard]] auto clone() const -> StringBuilder;
-    [[nodiscard]] auto try_clone() const -> ErrorOr<StringBuilder>;
+    [[nodiscard]]
+    auto clone() const -> StringBuilder;
+    auto try_clone() const -> ErrorOr<StringBuilder>;
 
     /**
      * @brief Clear this StringBuilder
@@ -77,28 +81,32 @@ public:
     /**
      * @brief Ensures that this StringBuilder could store at least <capacity>
      */
-    [[maybe_unused]] auto ensure_capacity(usize capacity);
-    auto                  try_ensure_capacity(usize capacity) -> ErrorOr<void>;
+    auto ensure_capacity(usize capacity);
+    auto try_ensure_capacity(usize capacity) -> ErrorOr<void>;
 
     /**
      * @brief Converts this StringBuilder to a String WITHOUT calling clear
      */
-    [[nodiscard]] auto to_string() const -> String;
-    [[nodiscard]] auto try_to_string() const -> ErrorOr<String>;
+    [[nodiscard]]
+    auto to_string() const -> String;
+    auto try_to_string() const -> ErrorOr<String>;
 
     /**
      * @brief Getters
      */
-    [[nodiscard]] auto len() const -> usize;
-    [[nodiscard]] auto is_empty() const -> bool;
+    [[nodiscard]]
+    auto len() const -> usize;
+    [[nodiscard]]
+    auto is_empty() const -> bool;
 
-    [[nodiscard]] auto as_string_view() const -> StringView;
+    [[nodiscard]]
+    auto as_string_view() const -> StringView;
 
 private:
-    explicit constexpr StringBuilder() noexcept;
+    explicit constexpr StringBuilder() = default;
 
 private:
-    Vector<char> m_char_vector;
+    Vector<char> m_char_vector{ Vector<char>::construct_empty() };
 };
 
 } /* namespace Collection */

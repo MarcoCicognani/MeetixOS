@@ -82,37 +82,41 @@ public:
 
 public:
     /**
-     * @brief Non-error safe Factory functions
+     * @brief Non-errno_code safe Factory functions
      */
-    [[nodiscard]] static constexpr auto construct_empty() -> Map<K, T, KTraits, IsOrdered> {
+    [[nodiscard]]
+    static constexpr auto construct_empty() -> Map<K, T, KTraits, IsOrdered> {
         return Map<K, T, KTraits, IsOrdered>{};
     }
-    [[nodiscard]] static auto construct_with_capacity(usize capacity) -> Map<K, T, KTraits, IsOrdered> {
+    [[nodiscard]]
+    static auto construct_with_capacity(usize capacity) -> Map<K, T, KTraits, IsOrdered> {
         return MUST(try_construct_with_capacity(capacity));
     }
-    [[nodiscard]] static auto construct_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> Map<K, T, KTraits, IsOrdered> {
+    [[nodiscard]]
+    static auto construct_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> Map<K, T, KTraits, IsOrdered> {
         return MUST(try_construct_from_other(rhs));
     }
-    [[nodiscard]] static auto construct_from_list(std::initializer_list<KeyValue> initializer_list) -> Map<K, T, KTraits, IsOrdered> {
+    [[nodiscard]]
+    static auto construct_from_list(std::initializer_list<KeyValue> initializer_list) -> Map<K, T, KTraits, IsOrdered> {
         return MUST(try_construct_from_list(initializer_list));
     }
 
     /**
      * @brief Error safe Factory functions
      */
-    [[nodiscard]] static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
         auto map = construct_empty();
         TRY(map.try_ensure_capacity(capacity));
         return map;
     }
-    [[nodiscard]] static auto try_construct_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+    static auto try_construct_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
         auto map = TRY(try_construct_with_capacity(rhs.count()));
         for ( auto const& key_value : rhs )
             TRY(map.try_insert(TRY(key_value.try_clone())));
 
         return map;
     }
-    [[nodiscard]] static auto try_construct_from_list(std::initializer_list<KeyValue> initializer_list) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+    static auto try_construct_from_list(std::initializer_list<KeyValue> initializer_list) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
         auto map = construct_empty();
         for ( auto const& key_value : initializer_list ) /* even with auto initializer_list exposes only T const& */
             TRY(map.try_insert(Cxx::move(const_cast<KeyValue&>(key_value))));
@@ -123,17 +127,18 @@ public:
     /**
      * @brief Move constructor and move assignment
      */
-    Map(Map<K, T, KTraits, IsOrdered>&&) noexcept = default;
+    Map(Map<K, T, KTraits, IsOrdered>&&) = default;
 
-    auto operator=(Map<K, T, KTraits, IsOrdered>&&) noexcept -> Map<K, T, KTraits, IsOrdered>& = default;
+    auto operator=(Map<K, T, KTraits, IsOrdered>&&) -> Map<K, T, KTraits, IsOrdered>& = default;
 
     /**
      * @brief Deep cloning
      */
-    [[nodiscard]] auto clone() const -> Map<K, T, KTraits, IsOrdered> {
+    [[nodiscard]]
+    auto clone() const -> Map<K, T, KTraits, IsOrdered> {
         return MUST(try_clone());
     }
-    [[nodiscard]] auto try_clone() const -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+    auto try_clone() const -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
         return Map<K, T, KTraits, IsOrdered>::try_construct_from_other(*this);
     }
 
@@ -147,7 +152,7 @@ public:
     /**
      * @brief Swaps in O(1) the content of this BaseMap with another
      */
-    auto swap(Map<K, T, KTraits, IsOrdered>& rhs) noexcept {
+    auto swap(Map<K, T, KTraits, IsOrdered>& rhs) {
         m_hash_set.swap(rhs.m_hash_set);
     }
 
@@ -198,10 +203,12 @@ public:
     /**
      * @brief Returns whether this map has the given key or the given value
      */
-    [[nodiscard]] auto has_key(K const& key) const -> bool {
+    [[nodiscard]]
+    auto has_key(K const& key) const -> bool {
         return find(key).is_present();
     }
-    [[nodiscard]] auto has_value(T const& value) const -> bool {
+    [[nodiscard]]
+    auto has_value(T const& value) const -> bool {
         for ( auto const& pair : *this ) {
             if ( TypeTraits<T>::equals(pair.m_value, value) )
                 return true;
@@ -212,6 +219,7 @@ public:
     /**
      * @brief Erases from this map the given key or alle the keys related to the given value
      */
+    [[nodiscard]]
     auto remove(K const& key) -> bool {
         return find(key)
             .template map<bool>([this](KeyValue const& pair) {
@@ -220,6 +228,7 @@ public:
             })
             .unwrap_or(false);
     }
+    [[nodiscard]]
     auto remove_all_matching(Predicate<KeyValue const&> auto predicate) -> usize {
         return m_hash_set.remove_all_matching([&predicate](auto const& pair) -> bool { return predicate(pair); });
     }
@@ -227,7 +236,7 @@ public:
     /**
      * @brief Allocates new capacity for this set for at least the given capacity
      */
-    auto ensure_capacity(usize capacity) {
+    auto ensure_capacity(usize capacity) -> void {
         m_hash_set.ensure_capacity(capacity);
     }
     auto try_ensure_capacity(usize capacity) -> ErrorOr<void> {
@@ -278,23 +287,24 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] auto count() const -> usize {
+    [[nodiscard]]
+    auto count() const -> usize {
         return m_hash_set.count();
     }
-    [[nodiscard]] auto capacity() const -> usize {
+    [[nodiscard]]
+    auto capacity() const -> usize {
         return m_hash_set.capacity();
     }
-    [[nodiscard]] auto is_empty() const -> bool {
+    [[nodiscard]]
+    auto is_empty() const -> bool {
         return m_hash_set.is_empty();
     }
 
 private:
-    explicit constexpr Map() noexcept
-        : m_hash_set{ Set<KeyValue, KeyValueTraits, IsOrdered>::construct_empty() } {
-    }
+    explicit constexpr Map() = default;
 
 private:
-    Set<KeyValue, KeyValueTraits, IsOrdered> m_hash_set;
+    Set<KeyValue, KeyValueTraits, IsOrdered> m_hash_set{ Set<KeyValue, KeyValueTraits, IsOrdered>::construct_empty() };
 };
 
 } /* namespace Collection */

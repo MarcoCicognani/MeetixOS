@@ -34,12 +34,12 @@ auto FormatApplier::construct_from_parser_result(StringBuilder& string_builder, 
     return FormatApplier{ string_builder, Cxx::move(result) };
 }
 
-FormatApplier::FormatApplier(FormatApplier&& rhs) noexcept
+FormatApplier::FormatApplier(FormatApplier&& rhs)
     : m_string_builder{ rhs.m_string_builder }
     , m_parser_result{ Cxx::move(rhs.m_parser_result) } {
 }
 
-auto FormatApplier::operator=(FormatApplier&& rhs) noexcept -> FormatApplier& {
+auto FormatApplier::operator=(FormatApplier&& rhs) -> FormatApplier& {
     FormatApplier format_applier{ Cxx::move(rhs) };
     swap(format_applier);
     return *this;
@@ -49,7 +49,7 @@ auto FormatApplier::clone_format_applier() const -> FormatApplier {
     return FormatApplier{ m_string_builder, m_parser_result };
 }
 
-auto FormatApplier::swap(FormatApplier& rhs) noexcept -> void {
+auto FormatApplier::swap(FormatApplier& rhs) -> void {
     Cxx::swap(m_string_builder, rhs.m_string_builder);
     Cxx::swap(m_parser_result, rhs.m_parser_result);
 }
@@ -60,13 +60,16 @@ auto FormatApplier::try_put_padding(char fill, usize amount) -> ErrorOr<void> {
     return {};
 }
 
-auto FormatApplier::try_put_literal(StringView value) -> ErrorOr<void> {
-    for ( usize i = 0; i < value.len(); ++i ) {
-        TRY(m_string_builder.try_append(value[i]));
+auto FormatApplier::try_put_literal(StringView literals_view) -> ErrorOr<void> {
+    usize i = 0;
+    while ( i < literals_view.len() ) {
+        TRY(m_string_builder.try_append(literals_view[i]));
 
         /* skip escaped placeholders */
-        auto const sub_string_view = value.sub_string_view(i);
+        auto const sub_string_view = literals_view.sub_string_view(i);
         if ( sub_string_view.starts_with("{{"sv) || sub_string_view.starts_with("}}"sv) )
+            i += 2;
+        else
             ++i;
     }
     return {};
@@ -890,6 +893,71 @@ Formatter<char*>::Formatter(FormatApplier base_formatter)
     : FormatApplier{ Cxx::move(base_formatter) } {
 }
 
+auto Formatter<SourceLocation>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<SourceLocation> {
+    return Formatter<SourceLocation>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<SourceLocation>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<SourceLocation> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
+}
+
+auto Formatter<SourceLocation>::format(SourceLocation const& source_location) const -> ErrorOr<void> {
+    auto file_path_sv = StringView{ source_location.file_path(), __builtin_strlen(source_location.file_path()) };
+    if ( auto index_or_none = file_path_sv.find("MeetixOS"sv); index_or_none.is_present() ) {
+        auto const index = index_or_none.unwrap();
+
+        file_path_sv = file_path_sv.sub_string_view(index + "MeetixOS"sv.len() + 1);
+    }
+
+    auto const function_sv = StringView{ source_location.function(), __builtin_strlen(source_location.function()) };
+
+    auto string_builder = StringBuilder::construct_empty();
+    TRY(Text::format(string_builder, "{} {}() {}"sv, file_path_sv, function_sv, source_location.line()));
+
+    auto formatter = Formatter<StringView>::construct_from_format_applier(clone_format_applier());
+    TRY(formatter.format(string_builder.as_string_view()));
+    return {};
+}
+
+Formatter<SourceLocation>::Formatter(FormatApplier base_formatter)
+    : FormatApplier{ Cxx::move(base_formatter) } {
+}
+
+auto Formatter<ErrnoCode>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<ErrnoCode> {
+    return Formatter<ErrnoCode>{ Cxx::move(format_applier) };
+}
+
+auto Formatter<ErrnoCode>::construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<ErrnoCode> {
+    return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
+}
+
+auto Formatter<ErrnoCode>::format(ErrnoCode const& errno_code) const -> ErrorOr<void> {
+    static StringView const S_ERRNO_AS_STRING_VIEW[] = {
+        "ENOERR"sv,          "E2BIG"sv,        "EACCES"sv,      "EADDRINUSE"sv,      "EADDRNOTAVAIL"sv, "EAFNOSUPPORT"sv, "EAGAIN"sv,       "EALREADY"sv,
+        "EBADF"sv,           "EBADMSG"sv,      "EBUSY"sv,       "ECANCELED"sv,       "ECHILD"sv,        "ECONNABORTED"sv, "ECONNREFUSED"sv, "ECONNRESET"sv,
+        "EDEADLK"sv,         "EDESTADDRREQ"sv, "EDOM"sv,        "EDQUOT"sv,          "EEXIST"sv,        "EFAULT"sv,       "EFBIG"sv,        "EHOSTUNREACH"sv,
+        "EIDRM"sv,           "EILSEQ"sv,       "EINPROGRESS"sv, "EINTR"sv,           "EINVAL"sv,        "EIO"sv,          "EISCONN"sv,      "EISDIR"sv,
+        "ELOOP"sv,           "EMFILE"sv,       "EMLINK"sv,      "EMSGSIZE"sv,        "EMULTIHOP"sv,     "ENAMETOOLONG"sv, "ENETDOWN"sv,     "ENETRESET"sv,
+        "ENETUNREACH"sv,     "ENFILE"sv,       "ENOBUFS"sv,     "ENODEV"sv,          "ENOENT"sv,        "ENOEXEC"sv,      "ENOLCK"sv,       "ENOLINK"sv,
+        "ENOMEM"sv,          "ENOMSG"sv,       "ENOPROTOOPT"sv, "ENOSPC"sv,          "ENOSYS"sv,        "ENOTCONN"sv,     "ENOTDIR"sv,      "ENOTEMPTY"sv,
+        "ENOTRECOVERABLE"sv, "ENOTSOCK"sv,     "ENOTSUP"sv,     "ENOTTY"sv,          "ENXIO"sv,         "EOPNOTSUPP"sv,   "EOVERFLOW"sv,    "EOWNERDEAD"sv,
+        "EPERM"sv,           "EPIPE"sv,        "EPROTO"sv,      "EPROTONOSUPPORT"sv, "EPROTOTYPE"sv,    "ERANGE"sv,       "EROFS"sv,        "ESPIPE"sv,
+        "ESRCH"sv,           "ESTALE"sv,       "ETIMEDOUT"sv,   "ETXTBSY"sv,         "EWOULDBLOCK"sv,   "EXDEV"sv,        "ECUSTOM"sv
+    };
+
+    auto const errno_as_i32 = static_cast<i32>(errno_code);
+    auto const errno_as_sv  = S_ERRNO_AS_STRING_VIEW[errno_as_i32];
+
+    auto sv_formatter = Formatter<StringView>::construct_from_format_applier(clone_format_applier());
+    TRY(sv_formatter.format(errno_as_sv));
+
+    return {};
+}
+
+Formatter<ErrnoCode>::Formatter(FormatApplier base_formatter)
+    : FormatApplier{ Cxx::move(base_formatter) } {
+}
+
 auto Formatter<Error>::construct_from_format_applier(FormatApplier format_applier) -> Formatter<Error> {
     return Formatter<Error>{ Cxx::move(format_applier) };
 }
@@ -898,9 +966,19 @@ auto Formatter<Error>::construct_from_parser_result(StringBuilder& string_builde
     return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
 }
 
-auto Formatter<Error>::format(Error const& value) const -> ErrorOr<void> {
+auto Formatter<Error>::format(Error const& error) const -> ErrorOr<void> {
     auto string_builder = StringBuilder::construct_empty();
-    TRY(Text::format(string_builder, "{}: {}"sv, value.string_literal(), static_cast<i32>(value.os_error())));
+
+    TRY(Text::format(string_builder, "{}\n"sv, error.source_location()));
+    if ( error.is_from_syscall() == Error::FromSyscall::Yes )
+        TRY(Text::format(string_builder, "> System "sv));
+    else
+        TRY(Text::format(string_builder, "> User "sv));
+
+    if ( error.string_literal() != nullptr )
+        TRY(Text::format(string_builder, "{} - {}"sv, error.errno_code(), error.string_literal()));
+    else
+        TRY(Text::format(string_builder, "{}"sv, error.errno_code()));
 
     auto formatter = Formatter<StringView>::construct_from_format_applier(clone_format_applier());
     TRY(formatter.format(string_builder.as_string_view()));

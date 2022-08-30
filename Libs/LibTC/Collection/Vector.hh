@@ -40,22 +40,25 @@ public:
     /**
      * @brief Construction functions
      */
-    static auto begin(TCollection& collection) -> VectorIterator {
+    [[nodiscard]]
+    static auto construct_from_begin(TCollection& collection) -> VectorIterator {
         return VectorIterator{ collection, 0 };
     }
-    static auto end(TCollection& collection) -> VectorIterator {
+    [[nodiscard]]
+    static auto construct_from_end(TCollection& collection) -> VectorIterator {
         return VectorIterator{ collection, collection.count() };
     }
 
-    static auto rbegin(TCollection& collection) -> VectorIterator {
+    [[nodiscard]]
+    static auto construct_from_rbegin(TCollection& collection) -> VectorIterator {
         return VectorIterator{ collection, collection.count() - 1 };
     }
-    static auto rend(TCollection& collection) -> VectorIterator {
+    [[nodiscard]]
+    static auto construct_from_rend(TCollection& collection) -> VectorIterator {
         return VectorIterator{ collection, -1 };
     }
 
     VectorIterator(VectorIterator const&) = default;
-
     auto operator=(VectorIterator const&) -> VectorIterator& = default;
 
     /**
@@ -109,41 +112,49 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] auto is_end() const -> bool {
+    [[nodiscard]]
+    auto is_end() const -> bool {
         if constexpr ( IsReverse ) {
-            return m_index == rend(*m_collection).index();
+            return m_index == construct_from_rend(*m_collection).index();
         } else {
-            return m_index == end(*m_collection).index();
+            return m_index == construct_from_end(*m_collection).index();
         }
     }
-    [[nodiscard]] auto index() const -> usize {
+    [[nodiscard]]
+    auto index() const -> usize {
         return m_index;
     }
 
     /**
      * @brief Comparison operators
      */
-    [[nodiscard]] auto operator==(VectorIterator const& rhs) const -> bool {
+    [[nodiscard]]
+    auto operator==(VectorIterator const& rhs) const -> bool {
         return m_collection == rhs.m_collection && m_index == rhs.m_index;
     }
-    [[nodiscard]] auto operator!=(VectorIterator const& rhs) const -> bool {
+    [[nodiscard]]
+    auto operator!=(VectorIterator const& rhs) const -> bool {
         return m_collection != rhs.m_collection || m_index != rhs.m_index;
     }
-    [[nodiscard]] auto operator<(VectorIterator const& rhs) const -> bool {
+    [[nodiscard]]
+    auto operator<(VectorIterator const& rhs) const -> bool {
         return m_index < rhs.m_index;
     }
-    [[nodiscard]] auto operator>(VectorIterator const& rhs) const -> bool {
+    [[nodiscard]]
+    auto operator>(VectorIterator const& rhs) const -> bool {
         return m_index > rhs.m_index;
     }
-    [[nodiscard]] auto operator<=(VectorIterator const& rhs) const -> bool {
+    [[nodiscard]]
+    auto operator<=(VectorIterator const& rhs) const -> bool {
         return m_index <= rhs.m_index;
     }
-    [[nodiscard]] auto operator>=(VectorIterator const& rhs) const -> bool {
+    [[nodiscard]]
+    auto operator>=(VectorIterator const& rhs) const -> bool {
         return m_index >= rhs.m_index;
     }
 
 private:
-    VectorIterator(TCollection& collection, TIndex index)
+    explicit constexpr VectorIterator(TCollection& collection, TIndex index)
         : m_collection{ &collection }
         , m_index{ index } {
     }
@@ -169,47 +180,51 @@ public:
 
 public:
     /**
-     * @brief Non-error safe Factory functions
+     * @brief Non-errno_code safe Factory functions
      */
-    [[nodiscard]] static constexpr auto construct_empty() noexcept -> Vector<T> {
+    [[nodiscard]]
+    static constexpr auto construct_empty() -> Vector<T> {
         return Vector<T>{};
     }
-    [[nodiscard]] static auto construct_with_capacity(usize capacity) -> Vector<T> {
+    [[nodiscard]]
+    static auto construct_with_capacity(usize capacity) -> Vector<T> {
         return MUST(try_construct_with_capacity(capacity));
     }
-    [[nodiscard]] static auto construct_from_other(Vector<T> const& rhs) -> Vector<T> {
+    [[nodiscard]]
+    static auto construct_from_other(Vector<T> const& rhs) -> Vector<T> {
         return MUST(try_construct_from_other(rhs));
     }
-    [[nodiscard]] static auto construct_from_list(Cxx::initializer_list<T> initializer_list) -> Vector<T> {
+    [[nodiscard]]
+    static auto construct_from_list(Cxx::initializer_list<T> initializer_list) -> Vector<T> {
         return MUST(try_construct_from_list(initializer_list));
     }
 
     /**
      * @brief Error safe Factory functions
      */
-    [[nodiscard]] static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Vector<T>> {
+    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Vector<T>> {
         auto vector = construct_empty();
         TRY(vector.try_ensure_capacity(capacity));
         return vector;
     }
-    [[nodiscard]] static auto try_construct_from_other(Vector<T> const& rhs) -> ErrorOr<Vector<T>> {
+    static auto try_construct_from_other(Vector<T> const& rhs) -> ErrorOr<Vector<T>> {
         auto vector = TRY(try_construct_with_capacity(rhs.count()));
-        for ( auto const& element : rhs ) {
+        for ( auto const& e : rhs ) {
             if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
-                TRY(vector.try_append(TRY(element.try_clone())));
+                TRY(vector.try_append(TRY(e.try_clone())));
             } else if constexpr ( Cloneable<T> ) {
-                TRY(vector.try_append(element.clone()));
+                TRY(vector.try_append(e.clone()));
             } else if constexpr ( CopyConstructible<T> ) {
-                TRY(vector.try_append(element));
+                TRY(vector.try_append(e));
             }
         }
 
         return vector;
     }
-    [[nodiscard]] static auto try_construct_from_list(Cxx::initializer_list<T> initializer_list) -> ErrorOr<Vector<T>> {
+    static auto try_construct_from_list(Cxx::initializer_list<T> initializer_list) -> ErrorOr<Vector<T>> {
         auto vector = construct_empty();
-        for ( auto const& element : initializer_list ) /* even with auto initializer_list exposes only T const& */
-            TRY(vector.try_append(Cxx::move(const_cast<T&>(element))));
+        for ( auto const& e : initializer_list ) /* even with auto initializer_list exposes only T const& */
+            TRY(vector.try_append(Cxx::move(const_cast<T&>(e))));
 
         return vector;
     }
@@ -217,12 +232,12 @@ public:
     /**
      * @brief Move constructor and move assignment
      */
-    Vector(Vector<T>&& rhs) noexcept
+    Vector(Vector<T>&& rhs)
         : m_data_storage{ Cxx::exchange(rhs.m_data_storage, nullptr) }
         , m_data_capacity{ Cxx::exchange(rhs.m_data_capacity, 0) }
         , m_values_count{ Cxx::exchange(rhs.m_values_count, 0) } {
     }
-    auto operator=(Vector<T>&& rhs) noexcept -> Vector<T>& {
+    auto operator=(Vector<T>&& rhs) -> Vector<T>& {
         Vector vector{ Cxx::move(rhs) };
         swap(vector);
         return *this;
@@ -235,10 +250,11 @@ public:
     /**
      * @brief Deep cloning
      */
-    [[nodiscard]] auto clone() const -> Vector<T> {
+    [[nodiscard]]
+    auto clone() const -> Vector<T> {
         return MUST(try_clone());
     }
-    [[nodiscard]] auto try_clone() const -> ErrorOr<Vector<T>> {
+    auto try_clone() const -> ErrorOr<Vector<T>> {
         return Vector<T>::try_construct_from_other(*this);
     }
 
@@ -267,7 +283,7 @@ public:
     /**
      * @brief Swaps in O(1) the content of this Vector with another
      */
-    auto swap(Vector& rhs) noexcept {
+    auto swap(Vector& rhs) {
         Cxx::swap(m_data_storage, rhs.m_data_storage);
         Cxx::swap(m_data_capacity, rhs.m_data_capacity);
         Cxx::swap(m_values_count, rhs.m_values_count);
@@ -281,7 +297,7 @@ public:
     }
     auto try_insert_at(usize index, T value) -> ErrorOr<void> {
         if ( index > m_values_count )
-            return Error{ EINVAL };
+            return Error::construct_from_errno(EINVAL);
 
         TRY(try_ensure_capacity(m_values_count + 1));
 
@@ -398,7 +414,7 @@ public:
      */
     auto erase_at(usize index) -> ErrorOr<void> {
         if ( index >= m_values_count )
-            return Error{ EINVAL };
+            return Error::construct_from_errno(EINVAL);
 
         /* shift all the values one position back */
         if constexpr ( TypeTraits<T>::is_trivial() )
@@ -420,7 +436,7 @@ public:
                 return {};
             }
         }
-        return Error{ ENOENT };
+        return Error::construct_from_errno(ENOENT);
     }
     auto erase_all_of(T const& value) -> ErrorOr<usize> {
         return erase_all_matches([&value](T const& current) { return TypeTraits<T>::equals(current, value); });
@@ -438,7 +454,7 @@ public:
         if ( erased_count > 0 )
             return erased_count;
         else
-            return Error{ ENOENT };
+            return Error::construct_from_errno(ENOENT);
     }
 
     /**
@@ -496,34 +512,34 @@ public:
      * @brief for-each support
      */
     auto begin() -> Iterator {
-        return Iterator::begin(*this);
+        return Iterator::construct_from_begin(*this);
     }
     auto end() -> Iterator {
-        return Iterator::end(*this);
+        return Iterator::construct_from_end(*this);
     }
 
     auto begin() const -> ConstIterator {
-        return ConstIterator::begin(*this);
+        return ConstIterator::construct_from_begin(*this);
     }
     auto end() const -> ConstIterator {
-        return ConstIterator::end(*this);
+        return ConstIterator::construct_from_end(*this);
     }
 
     /**
      * @brief reverse for-each support
      */
     auto rbegin() -> ReverseIterator {
-        return ReverseIterator::rbegin(*this);
+        return ReverseIterator::construct_from_rbegin(*this);
     }
     auto rend() -> ReverseIterator {
-        return ReverseIterator::rend(*this);
+        return ReverseIterator::construct_from_rend(*this);
     }
 
     auto rbegin() const -> ConstReverseIterator {
-        return ReverseIterator::rbegin(*this);
+        return ReverseIterator::construct_from_rbegin(*this);
     }
     auto rend() const -> ConstReverseIterator {
-        return ReverseIterator::rend(*this);
+        return ReverseIterator::construct_from_rend(*this);
     }
 
     auto reverse_iter() -> ReverseIteratorWrapper {
@@ -536,7 +552,8 @@ public:
     /**
      * @brief Returns whether this vector contains the given value
      */
-    [[nodiscard]] auto contains(T const& value) const -> bool {
+    [[nodiscard]]
+    auto contains(T const& value) const -> bool {
         return index_of(value).is_present();
     }
 
@@ -577,46 +594,57 @@ public:
     /**
      * @brief Vector data access
      */
+    [[nodiscard]]
     auto at(usize index) -> T& {
         VERIFY_LESS(index, m_values_count);
         return m_data_storage[index];
     }
+    [[nodiscard]]
     auto at(usize index) const -> T const& {
         VERIFY_LESS(index, m_values_count);
         return m_data_storage[index];
     }
 
+    [[nodiscard]]
     auto operator[](usize index) -> T& {
         return at(index);
     }
+    [[nodiscard]]
     auto operator[](usize index) const -> T const& {
         return at(index);
     }
 
-    [[nodiscard]] auto count() const -> usize {
+    [[nodiscard]]
+    auto count() const -> usize {
         return m_values_count;
     }
-    [[nodiscard]] auto capacity() const -> usize {
+    [[nodiscard]]
+    auto capacity() const -> usize {
         return m_data_capacity;
     }
-    [[nodiscard]] auto raw_data() -> T* {
+    [[nodiscard]]
+    auto raw_data() -> T* {
         return m_data_storage;
     }
-    [[nodiscard]] auto raw_data() const -> T const* {
+    [[nodiscard]]
+    auto raw_data() const -> T const* {
         return m_data_storage;
     }
 
-    [[nodiscard]] auto is_empty() const -> bool {
+    [[nodiscard]]
+    auto is_empty() const -> bool {
         return m_values_count == 0;
     }
-    [[nodiscard]] auto any() const -> bool {
+    [[nodiscard]]
+    auto any() const -> bool {
         return !is_empty();
     }
 
 private:
-    explicit constexpr Vector() noexcept = default;
+    explicit constexpr Vector() = default;
 
-    [[gnu::always_inline]] auto data_slot(usize index) -> T* {
+    [[gnu::always_inline]]
+    auto data_slot(usize index) -> T* {
         return &m_data_storage[index];
     }
 

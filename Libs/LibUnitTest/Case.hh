@@ -20,14 +20,14 @@
 #define TEST_CASE(name)                                                                                                                    \
     class TestCaseImpl##name : public UnitTest::Case {                                                                                     \
     public:                                                                                                                                \
-        [[nodiscard]] static auto construct_and_register() noexcept -> TestCaseImpl##name { return TestCaseImpl##name{}; }                 \
+        [[nodiscard]] static auto construct_and_register() -> TestCaseImpl##name { return TestCaseImpl##name{}; }                 \
                                                                                                                                            \
         ~TestCaseImpl##name() override = default;                                                                                          \
                                                                                                                                            \
         void run_test() const override;                                                                                                    \
                                                                                                                                            \
     private:                                                                                                                               \
-        explicit TestCaseImpl##name() noexcept                                                                                             \
+        explicit TestCaseImpl##name()                                                                                             \
             : UnitTest::Case{ #name##sv, false } {                                                                                         \
         }                                                                                                                                  \
     };                                                                                                                                     \
@@ -42,14 +42,14 @@
 #define BENCHMARK_CASE(name)                                                                                                               \
     class BenchmarkCaseImpl##name : public UnitTest::Case {                                                                                \
     public:                                                                                                                                \
-        [[nodiscard]] static auto construct_and_register() noexcept -> BenchmarkCaseImpl##name { return BenchmarkCaseImpl##name{}; }       \
+        [[nodiscard]] static auto construct_and_register() -> BenchmarkCaseImpl##name { return BenchmarkCaseImpl##name{}; }       \
                                                                                                                                            \
         ~BenchmarkCaseImpl##name() override = default;                                                                                     \
                                                                                                                                            \
         void run_test() const override;                                                                                                    \
                                                                                                                                            \
     private:                                                                                                                               \
-        explicit BenchmarkCaseImpl##name() noexcept                                                                                        \
+        explicit BenchmarkCaseImpl##name()                                                                                        \
             : UnitTest::Case{ #name##sv, true } {                                                                                          \
         }                                                                                                                                  \
     };                                                                                                                                     \

@@ -14,7 +14,6 @@
 
 #include <LibTC/Forward.hh>
 
-#include <Api/Common.h>
 #include <LibTC/Assertions.hh>
 #include <LibTC/Cxx.hh>
 #include <LibTC/DenyCopy.hh>
@@ -48,18 +47,20 @@ public:
      */
     RefCounted() = delete;
     template<typename... Args>
-    explicit RefCounted(FromArgsTag, Args... args)
+    explicit RefCounted(FromArgsTag, Args&&... args)
         : m_shared_object{ T{ Cxx::forward<Args>(args)... } } {
     }
 
     ~RefCounted() = default;
 
+    [[gnu::always_inline]]
     auto add_strong_reference() const -> void {
-        auto old_strong_count = __atomic_fetch_add(&m_strong_ref_count, 1, __ATOMIC_SEQ_CST);
+        auto const old_strong_count = __atomic_fetch_add(&m_strong_ref_count, 1, __ATOMIC_SEQ_CST);
         VERIFY_GREATER_EQUAL(old_strong_count, 1);
     }
+    [[gnu::always_inline]]
     auto remove_strong_reference() const -> void {
-        auto old_strong_count = __atomic_fetch_sub(&m_strong_ref_count, 1, __ATOMIC_SEQ_CST);
+        auto const old_strong_count = __atomic_fetch_sub(&m_strong_ref_count, 1, __ATOMIC_SEQ_CST);
         VERIFY_GREATER_EQUAL(old_strong_count, 1);
 
         collect(this);
@@ -68,20 +69,23 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] auto shared_object() -> T& {
+    [[nodiscard]]
+    auto shared_object() -> T& {
         return m_shared_object;
     }
-    [[nodiscard]] auto shared_object() const -> T const& {
+    [[nodiscard]]
+    auto shared_object() const -> T const& {
         return m_shared_object;
     }
 
-    [[nodiscard]] auto strong_ref_count() const -> usize {
+    [[nodiscard]]
+    auto strong_ref_count() const -> usize {
         return __atomic_load_n(&m_strong_ref_count, __ATOMIC_SEQ_CST);
     }
 
 private:
-    static void collect(RefCounted<T> const* ref_counted) {
-        auto strong_ref_count = __atomic_load_n(&ref_counted->m_strong_ref_count, __ATOMIC_SEQ_CST);
+    static inline auto collect(RefCounted<T> const* ref_counted) -> void {
+        auto const strong_ref_count = ref_counted->strong_ref_count();
         if ( strong_ref_count == 0 )
             delete ref_counted;
     }
@@ -100,13 +104,15 @@ class NonNullRef {
 
 public:
     /**
-     * @brief Non-error safe Factory functions
+     * @brief Non-errno_code safe Factory functions
      */
     template<typename... TArgs>
-    [[nodiscard]] static auto construct_from_args(TArgs... args) -> NonNullRef<T> {
+    [[nodiscard]]
+    static auto construct_from_args(TArgs&&... args) -> NonNullRef<T> {
         return MUST(try_construct_from_args(Cxx::forward<TArgs>(args)...));
     }
-    [[nodiscard]] static auto construct_from_adopt(Details::RefCounted<T>& ref_counted_ref) -> NonNullRef<T> {
+    [[nodiscard]]
+    static auto construct_from_adopt(Details::RefCounted<T>& ref_counted_ref) -> NonNullRef<T> {
         return NonNullRef<T>{ &ref_counted_ref };
     }
 
@@ -114,21 +120,22 @@ public:
      * @brief Error safe Factory functions
      */
     template<typename... TArgs>
-    [[nodiscard]] static auto try_construct_from_args(TArgs... args) -> ErrorOr<NonNullRef<T>> {
-        auto ref_counted_ptr = new (nothrow) Details::RefCounted<T>{ Details::FromArgsTag::FromArgs, Cxx::forward<TArgs>(args)... };
+    [[nodiscard]]
+    static auto try_construct_from_args(TArgs&&... args) -> ErrorOr<NonNullRef<T>> {
+        auto ref_counted_ptr = new Details::RefCounted<T>{ Details::FromArgsTag::FromArgs, Cxx::forward<TArgs>(args)... };
         if ( ref_counted_ptr != nullptr ) [[likely]]
             return NonNullRef<T>{ ref_counted_ptr };
         else
-            return Error{ ENOMEM };
+            return Error::construct_from_errno(ENOMEM);
     }
 
     /**
      * @brief Move constructor and move assignment
      */
-    NonNullRef(NonNullRef<T>&& rhs) noexcept
+    NonNullRef(NonNullRef<T>&& rhs)
         : m_ref_counted_ptr{ Cxx::exchange(rhs.m_ref_counted_ptr, nullptr) } {
     }
-    auto operator=(NonNullRef<T>&& rhs) noexcept -> NonNullRef<T>& {
+    auto operator=(NonNullRef<T>&& rhs) -> NonNullRef<T>& {
         NonNullRef non_null_ref{ Cxx::move(rhs) };
         swap(non_null_ref);
         return *this;
@@ -151,17 +158,19 @@ public:
     /**
      * @brief Swaps this ref with another
      */
-    void swap(NonNullRef<T>& rhs) noexcept {
+    void swap(NonNullRef<T>& rhs) {
         Cxx::swap(m_ref_counted_ptr, rhs.m_ref_counted_ptr);
     }
 
     /**
      * @brief Access operators
      */
-    A_RETURN_NONNULL auto operator->() -> T* {
+    [[gnu::returns_nonnull]]
+    auto operator->() -> T* {
         return as_ptr();
     }
-    A_RETURN_NONNULL auto operator->() const -> T const* {
+    [[gnu::returns_nonnull]]
+    auto operator->() const -> T const* {
         return as_ptr();
     }
 
@@ -175,10 +184,12 @@ public:
     /**
      * @brief Conversion operators
      */
-    A_RETURN_NONNULL explicit operator T*() {
+    [[gnu::returns_nonnull]]
+    explicit operator T*() {
         return as_ptr();
     }
-    A_RETURN_NONNULL explicit operator T const*() const {
+    [[gnu::returns_nonnull]]
+    explicit operator T const*() const {
         return as_ptr();
     }
 
@@ -192,29 +203,34 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] A_RETURN_NONNULL auto as_ptr() -> T* {
+    [[nodiscard, gnu::returns_nonnull]]
+    auto as_ptr() -> T* {
         VERIFY_NOT_NULL(m_ref_counted_ptr);
         return &m_ref_counted_ptr->shared_object();
     }
-    [[nodiscard]] A_RETURN_NONNULL auto as_ptr() const -> T const* {
+    [[nodiscard, gnu::returns_nonnull]]
+    auto as_ptr() const -> T const* {
         VERIFY_NOT_NULL(m_ref_counted_ptr);
         return &m_ref_counted_ptr->shared_object();
     }
 
-    [[nodiscard]] auto as_ref() -> T& {
+    [[nodiscard]]
+    auto as_ref() -> T& {
         return *as_ptr();
     }
-    [[nodiscard]] auto as_ref() const -> T const& {
+    [[nodiscard]]
+    auto as_ref() const -> T const& {
         return *as_ptr();
     }
 
-    [[nodiscard]] auto strong_ref_count() const -> usize {
+    [[nodiscard]]
+    auto strong_ref_count() const -> usize {
         VERIFY_NOT_NULL(m_ref_counted_ptr);
         return m_ref_counted_ptr->strong_ref_count();
     }
 
 private:
-    explicit constexpr NonNullRef(Details::RefCounted<T>* ref_counted_ptr) noexcept
+    explicit constexpr NonNullRef(Details::RefCounted<T>* ref_counted_ptr)
         : m_ref_counted_ptr{ ref_counted_ptr } {
     }
 

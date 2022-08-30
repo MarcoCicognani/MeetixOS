@@ -23,7 +23,7 @@ using RCStringStorage = Memory::Details::RefCounted<StringStorage>;
 
 auto StringStorage::try_construct_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>> {
     if ( string_view.is_null() )
-        return Error{ EINVAL };
+        return Error::construct_from_errno(EINVAL);
 
     auto ref_counted_string_storage = TRY(Memory::Raw::clean_alloc_object<void>(alloc_size(string_view.len())));
     auto ref_counted_string_ptr     = new (ref_counted_string_storage) RCStringStorage{ Memory::Details::FromArgsTag::FromArgs, string_view };

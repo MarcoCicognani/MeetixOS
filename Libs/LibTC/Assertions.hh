@@ -29,16 +29,16 @@
 #else
 #    include <LibC/assert.h>
 
-#    define VERIFY(expression)                  assert(expression)
-#    define VERIFY_EQUAL(first, second)         assert(first == second)
-#    define VERIFY_FALSE(expression)            assert(!expression)
-#    define VERIFY_GREATER(first, second)       assert(first > second)
-#    define VERIFY_GREATER_EQUAL(first, second) assert(first >= second)
-#    define VERIFY_LESS(first, second)          assert(first < second)
-#    define VERIFY_LESS_EQUAL(first, second)    assert(first <= second)
-#    define VERIFY_NOT_EQUAL(first, second)     assert(first != second)
-#    define VERIFY_NOT_NULL(expression)         assert(expression != nullptr)
-#    define VERIFY_NULL(expression)             assert(expression == nullptr)
+#    define VERIFY(expression)                  assert((expression))
+#    define VERIFY_EQUAL(first, second)         assert((first) == (second))
+#    define VERIFY_FALSE(expression)            assert(!(expression))
+#    define VERIFY_GREATER(first, second)       assert((first) > (second))
+#    define VERIFY_GREATER_EQUAL(first, second) assert((first) >= (second))
+#    define VERIFY_LESS(first, second)          assert((first) < (second))
+#    define VERIFY_LESS_EQUAL(first, second)    assert((first) <= (second))
+#    define VERIFY_NOT_EQUAL(first, second)     assert((first) != (second))
+#    define VERIFY_NOT_NULL(expression)         assert((expression) != nullptr)
+#    define VERIFY_NULL(expression)             assert((expression) == nullptr)
 #    define VERIFY_NOT_REACHED()                                                                                                                               \
         {                                                                                                                                                      \
             assert(false);                                                                                                                                     \

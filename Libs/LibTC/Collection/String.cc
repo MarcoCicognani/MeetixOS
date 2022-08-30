@@ -48,17 +48,17 @@ auto String::clone() const -> String {
     return String{ m_string_storage_ref.clone() };
 }
 
-String::String(String&& rhs) noexcept
+String::String(String&& rhs)
     : m_string_storage_ref{ Cxx::move(rhs.m_string_storage_ref) } {
 }
 
-auto String::operator=(String&& rhs) noexcept -> String& {
+auto String::operator=(String&& rhs) -> String& {
     String string{ Cxx::move(rhs) };
     swap(string);
     return *this;
 }
 
-auto String::swap(String& rhs) noexcept -> void {
+auto String::swap(String& rhs) -> void {
     m_string_storage_ref.swap(rhs.m_string_storage_ref);
 }
 

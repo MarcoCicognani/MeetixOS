@@ -35,7 +35,8 @@ public:
     /**
      * @brief Error safe Factory functions
      */
-    [[nodiscard]] static auto construct_from_lexer(FormatLexer& format_lexer) -> FormatParser;
+    [[nodiscard]]
+    static auto construct_from_lexer(FormatLexer& format_lexer) -> FormatParser;
 
     /**
      * @brief Parses the current format string from the given lexer
@@ -43,7 +44,9 @@ public:
     auto try_parse() -> ErrorOr<Result>;
 
 private:
-    explicit FormatParser(FormatLexer& format_lexer);
+    explicit constexpr FormatParser(FormatLexer& format_lexer)
+        : m_format_lexer{ format_lexer } {
+    }
 
     auto parse_alignment_fill(Result& result) -> void;
     auto parse_alignment(Result& result) -> void;

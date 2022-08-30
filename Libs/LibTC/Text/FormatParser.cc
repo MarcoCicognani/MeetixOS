@@ -20,10 +20,10 @@ auto FormatParser::construct_from_lexer(FormatLexer& format_lexer) -> FormatPars
 
 auto FormatParser::try_parse() -> ErrorOr<FormatParser::Result> {
     if ( !m_format_lexer.consume_specific('{') )
-        return Error{ EINVAL };
+        return Error::construct_from_errno(EINVAL);
 
     /* parse the format specifiers */
-    Result result;
+    auto result = Result{};
     if ( m_format_lexer.consume_specific(':') ) {
         parse_alignment_fill(result);
         parse_alignment(result);
@@ -37,7 +37,7 @@ auto FormatParser::try_parse() -> ErrorOr<FormatParser::Result> {
             if ( usize precision; m_format_lexer.consume_number(precision) )
                 result.m_precision = precision;
             else
-                return Error{ EINVAL };
+                return Error::construct_from_errno(EINVAL);
         }
 
         parse_display_as(result);
@@ -45,13 +45,9 @@ auto FormatParser::try_parse() -> ErrorOr<FormatParser::Result> {
 
     /* parse the termination tag */
     if ( !m_format_lexer.consume_specific('}') )
-        return Error{ EINVAL };
+        return Error::construct_from_errno(EINVAL);
     else
         return result;
-}
-
-FormatParser::FormatParser(FormatLexer& format_lexer)
-    : m_format_lexer{ format_lexer } {
 }
 
 auto FormatParser::parse_alignment_fill(FormatParser::Result& result) -> void {

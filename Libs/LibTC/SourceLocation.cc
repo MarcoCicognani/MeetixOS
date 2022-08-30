@@ -14,7 +14,7 @@
 
 namespace TC {
 
-auto SourceLocation::here(char const* file_path, char const* function, u32 line) -> SourceLocation {
+auto SourceLocation::construct_from_here(const char* file_path, const char* function, u32 line) -> SourceLocation {
     return SourceLocation{ file_path, function, line };
 }
 
@@ -28,12 +28,6 @@ auto SourceLocation::function() const -> char const* {
 
 auto SourceLocation::line() const -> u32 {
     return m_line;
-}
-
-constexpr SourceLocation::SourceLocation(char const* file_path, char const* function, u32 line) noexcept
-    : m_file_path{ file_path }
-    , m_function{ function }
-    , m_line{ line } {
 }
 
 } /* namespace TC */

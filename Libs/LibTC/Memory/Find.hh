@@ -23,7 +23,7 @@ namespace TC {
 namespace Memory {
 
 template<typename T>
-constexpr Option<T const*> find_in_memory(T const* haystack, usize haystack_count, T const* needle, usize needle_count) {
+constexpr auto find_in_memory(T const* haystack, usize haystack_count, T const* needle, usize needle_count) -> Option<T const*> {
     auto result = bit_cast<T const*>(memmem(haystack, haystack_count / sizeof(T), needle, needle_count / sizeof(T)));
     if ( result != nullptr )
         return result;

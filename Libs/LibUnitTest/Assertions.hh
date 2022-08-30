@@ -35,10 +35,14 @@
 #define VERIFY(expression)                                                                                                                                     \
     do {                                                                                                                                                       \
         if ( !static_cast<bool>(expression) ) [[unlikely]] {                                                                                                   \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{}\033[0m }} Failed..."sv,                                                     \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((expression)));                                                                                                     \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} != false{} }}"sv,                                                                                        \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(expression),                                                                                                      \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -46,11 +50,15 @@
 #define VERIFY_EQUAL(lhs, rhs)                                                                                                                                 \
     do {                                                                                                                                                       \
         if ( !((lhs) == (rhs)) ) [[unlikely]] {                                                                                                                \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{} == {}\033[0m }} Failed..."sv,                                               \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((lhs)),                                                                                                             \
-                         __EXPRESSION_SV__((rhs)));                                                                                                            \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == {}{} }}"sv,                                                                                  \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(lhs),                                                                                                             \
+                         __EXPRESSION_SV__(rhs),                                                                                                             \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -58,10 +66,14 @@
 #define VERIFY_FALSE(expression)                                                                                                                               \
     do {                                                                                                                                                       \
         if ( static_cast<bool>(expression) ) [[unlikely]] {                                                                                                    \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m!{}\033[0m }} Failed..."sv,                                                    \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((expression)));                                                                                                     \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == false{} }}"sv,                                                                                       \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(expression),                                                                                                      \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -69,11 +81,15 @@
 #define VERIFY_GREATER(lhs, rhs)                                                                                                                               \
     do {                                                                                                                                                       \
         if ( !((lhs) > (rhs)) ) [[unlikely]] {                                                                                                                 \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{} > {}\033[0m }} Failed..."sv,                                                \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((lhs)),                                                                                                             \
-                         __EXPRESSION_SV__((rhs)));                                                                                                            \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} > {}{} }}"sv,                                                                                   \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(lhs),                                                                                                             \
+                         __EXPRESSION_SV__(rhs),                                                                                                             \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -81,11 +97,15 @@
 #define VERIFY_GREATER_EQUAL(lhs, rhs)                                                                                                                         \
     do {                                                                                                                                                       \
         if ( !((lhs) >= (rhs)) ) [[unlikely]] {                                                                                                                \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{} >= {}\033[0m }} Failed..."sv,                                               \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((lhs)),                                                                                                             \
-                         __EXPRESSION_SV__((rhs)));                                                                                                            \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} >= {}{} }}"sv,                                                                                  \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(lhs),                                                                                                             \
+                         __EXPRESSION_SV__(rhs),                                                                                                             \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -93,11 +113,15 @@
 #define VERIFY_LESS(lhs, rhs)                                                                                                                                  \
     do {                                                                                                                                                       \
         if ( !((lhs) < (rhs)) ) [[unlikely]] {                                                                                                                 \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{} < {}\033[0m }} Failed..."sv,                                                \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((lhs)),                                                                                                             \
-                         __EXPRESSION_SV__((rhs)));                                                                                                            \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} < {}{} }}"sv,                                                                                   \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(lhs),                                                                                                             \
+                         __EXPRESSION_SV__(rhs),                                                                                                             \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -105,11 +129,15 @@
 #define VERIFY_LESS_EQUAL(lhs, rhs)                                                                                                                            \
     do {                                                                                                                                                       \
         if ( !((lhs) <= (rhs)) ) [[unlikely]] {                                                                                                                \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{} <= {}\033[0m }} Failed..."sv,                                               \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((lhs)),                                                                                                             \
-                         __EXPRESSION_SV__((rhs)));                                                                                                            \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} <= {}{} }}"sv,                                                                                  \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(lhs),                                                                                                             \
+                         __EXPRESSION_SV__(rhs),                                                                                                             \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -117,11 +145,15 @@
 #define VERIFY_NOT_EQUAL(lhs, rhs)                                                                                                                             \
     do {                                                                                                                                                       \
         if ( !((lhs) != (rhs)) ) [[unlikely]] {                                                                                                                \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{} != {}\033[0m }} Failed..."sv,                                               \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((lhs)),                                                                                                             \
-                         __EXPRESSION_SV__((rhs)));                                                                                                            \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} != {}{} }}"sv,                                                                                  \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(lhs),                                                                                                             \
+                         __EXPRESSION_SV__(rhs),                                                                                                             \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -129,10 +161,14 @@
 #define VERIFY_NOT_NULL(expression)                                                                                                                            \
     do {                                                                                                                                                       \
         if ( !((expression) != nullptr) ) [[unlikely]] {                                                                                                       \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{} != nullptr\033[0m }} Failed..."sv,                                          \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((expression)));                                                                                                     \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} != nullptr{} }}"sv,                                                                             \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(expression),                                                                                                      \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -140,10 +176,14 @@
 #define VERIFY_NULL(expression)                                                                                                                                \
     do {                                                                                                                                                       \
         if ( !((expression) == nullptr) ) [[unlikely]] {                                                                                                       \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{} == nullptr\033[0m }} Failed..."sv,                                          \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((expression)));                                                                                                     \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == nullptr{} }}"sv,                                                                             \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(expression),                                                                                                      \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -152,10 +192,14 @@
     do {                                                                                                                                                       \
         auto value_or_none = (expression);                                                                                                                     \
         if ( !value_or_none.is_present() ) [[unlikely]] {                                                                                                      \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{}.is_present()\033[0m }} Failed..."sv,                                        \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((expression)));                                                                                                     \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{}.is_present(){} }}"sv,                                                                           \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(expression),                                                                                                      \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -164,11 +208,15 @@
     do {                                                                                                                                                       \
         auto value_or_none = (expression);                                                                                                                     \
         if ( !value_or_none.is_present() || !(value_or_none.value() == (expected_value)) ) [[unlikely]] {                                                      \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{} == Some({})\033[0m }} Failed..."sv,                                         \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((expression)),                                                                                                      \
-                         __EXPRESSION_SV__((expected_value)));                                                                                                 \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == Some({}){} }}"sv,                                                                            \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(expression),                                                                                                      \
+                         __EXPRESSION_SV__(expected_value),                                                                                                  \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -177,10 +225,14 @@
     do {                                                                                                                                                       \
         auto value_or_none = (expression);                                                                                                                     \
         if ( value_or_none.is_present() ) [[unlikely]] {                                                                                                       \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m!{}.is_present()\033[0m }} Failed..."sv,                                       \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((expression)));                                                                                                     \
+            FmtIO::errln(FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         "\t{}Verify Failed{} in {}\n\t> {{ {}!{}.is_present(){} }}"sv,                                                                          \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(expression),                                                                                                      \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -189,10 +241,14 @@
     do {                                                                                                                                                       \
         auto error_or_value = (expression);                                                                                                                    \
         if ( !error_or_value.is_value() ) [[unlikely]] {                                                                                                       \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{}.is_value()\033[0m }} Failed..."sv,                                          \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((expression)));                                                                                                     \
+            FmtIO::errln(FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         "\t{}Verify Failed{} in {}\n\t> {{ {}{}.is_value(){} }}"sv,                                                                             \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(expression),                                                                                                      \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -201,11 +257,15 @@
     do {                                                                                                                                                       \
         auto error_or_value = (expression);                                                                                                                    \
         if ( !error_or_value.is_value() || !(error_or_value.value() == (expected_value)) ) [[unlikely]] {                                                      \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{} == Value({})\033[0m }} Failed..."sv,                                        \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((expression)),                                                                                                      \
-                         __EXPRESSION_SV__((expected_value)));                                                                                                 \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == Value({}){} }}"sv,                                                                           \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(expression),                                                                                                      \
+                         __EXPRESSION_SV__(expected_value),                                                                                                  \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )
@@ -214,11 +274,15 @@
     do {                                                                                                                                                       \
         auto error_or_value = (expression);                                                                                                                    \
         if ( !error_or_value.is_error() || !(error_or_value.error() == (expected_error)) ) [[unlikely]] {                                                      \
-            FmtIO::errln("\t\033[31mFAIL\033[0m in {}:{}\n\t\tVerify {{ \033[31m{} == Error({})\033[0m }} Failed..."sv,                                        \
-                         __FILE_SV__,                                                                                                                          \
-                         __LINE__,                                                                                                                             \
-                         __EXPRESSION_SV__((expression)),                                                                                                      \
-                         __EXPRESSION_SV__((expected_error)));                                                                                                 \
+            FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == Error({}){} }}"sv,                                                                           \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         FmtIO::reset(),                                                                                                                       \
+                         SourceLocation::construct_from_here(),                                                                                                \
+                         FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
+                         __EXPRESSION_SV__(expression),                                                                                                      \
+                         __EXPRESSION_SV__(expected_error),                                                                                                  \
+                         FmtIO::reset())                                                                                                                       \
+                .unwrap();                                                                                                                                     \
             UnitTest::Suite::inst().as_ref().current_test_must_fail();                                                                                         \
         }                                                                                                                                                      \
     } while ( false )

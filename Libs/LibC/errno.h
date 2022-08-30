@@ -23,7 +23,7 @@ int* errno_location();
 #undef errno
 #define errno *errno_location()
 
-enum OSError {
+enum ErrnoCode {
     ENOERR,          /* no error */
     E2BIG,           /* argument list too long */
     EACCES,          /* permission denied */

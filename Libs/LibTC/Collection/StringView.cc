@@ -31,13 +31,13 @@ auto StringView::operator=(StringView const& rhs) -> StringView& {
     return *this;
 }
 
-auto StringView::operator=(StringView&& rhs) noexcept -> StringView& {
+auto StringView::operator=(StringView&& rhs) -> StringView& {
     StringView string_view{ Cxx::move(rhs) };
     swap(string_view);
     return *this;
 }
 
-auto StringView::swap(StringView& rhs) noexcept -> void {
+auto StringView::swap(StringView& rhs) -> void {
     Cxx::swap(m_chars_ptr, rhs.m_chars_ptr);
     Cxx::swap(m_chars_count, rhs.m_chars_count);
 }
@@ -235,13 +235,13 @@ auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr
 
     /* check for only whitespaces string */
     if ( string_view.is_empty() )
-        return Error{ EINVAL };
+        return Error::construct_from_errno(EINVAL);
 
     /* extract the sign from the beginning of the string */
     T sign = 1;
     if ( is_ascii_int_sign(string_view[0]) ) {
         if ( string_view.len() == 1 )
-            return Error{ EINVAL };
+            return Error::construct_from_errno(EINVAL);
 
         /* for minus set the sign to negative */
         if ( string_view[0] == '-' )
@@ -256,17 +256,17 @@ auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr
     for ( auto const c : without_base_prefix(int_base, string_view) ) {
         if ( !is_valid_digit(int_base, c) ) {
             /* according to the parse all flag we decide here if the parser must return
-             * with an error or simply break the cycle returning the value parsed until now */
+             * with an errno_code or simply break the cycle returning the value parsed until now */
             if ( parse_mode == ParseMode::BeginToEnd || parse_mode == ParseMode::TrimWhitesAndBeginToEnd )
-                return Error{ EINVAL };
+                return Error::construct_from_errno(EINVAL);
             else
                 break;
         }
 
         if ( __builtin_mul_overflow(int_value, static_cast<T>(int_base), &int_value) )
-            return Error{ EOVERFLOW };
+            return Error::construct_from_errno(EOVERFLOW);
         if ( __builtin_add_overflow(int_value, digit_value<T>(c), &int_value) )
-            return Error{ EOVERFLOW };
+            return Error::construct_from_errno(EOVERFLOW);
     }
 
     /* apply the sign to the final value */
@@ -291,24 +291,24 @@ auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorO
 
     /* check for only whitespaces string */
     if ( string_view.is_empty() )
-        return Error{ EINVAL };
+        return Error::construct_from_errno(EINVAL);
 
     /* convert the string into the integer */
     T int_value = 0;
     for ( auto const c : without_base_prefix(int_base, string_view) ) {
         if ( !is_valid_digit(int_base, c) ) {
             /* according to the parse all flag we decide here if the parser must return
-             * with an error or simply break the cycle returning the value parsed until now */
+             * with an errno_code or simply break the cycle returning the value parsed until now */
             if ( parse_mode == ParseMode::BeginToEnd || parse_mode == ParseMode::TrimWhitesAndBeginToEnd )
-                return Error{ EINVAL };
+                return Error::construct_from_errno(EINVAL);
             else
                 break;
         }
 
         if ( __builtin_mul_overflow(int_value, static_cast<T>(int_base), &int_value) )
-            return Error{ EOVERFLOW };
+            return Error::construct_from_errno(EOVERFLOW);
         if ( __builtin_add_overflow(int_value, digit_value<T>(c), &int_value) )
-            return Error{ EOVERFLOW };
+            return Error::construct_from_errno(EOVERFLOW);
     }
     return int_value;
 }
@@ -455,19 +455,19 @@ auto StringView::contains(char rhs, CaseSensitivity case_sensitivity) const -> b
 }
 
 auto StringView::begin() const -> StringView::ConstIterator {
-    return ConstIterator::begin(*this);
+    return ConstIterator::construct_from_begin(*this);
 }
 
 auto StringView::end() const -> StringView::ConstIterator {
-    return ConstIterator::end(*this);
+    return ConstIterator::construct_from_end(*this);
 }
 
 auto StringView::rbegin() const -> StringView::ConstReverseIterator {
-    return ConstReverseIterator::rbegin(*this);
+    return ConstReverseIterator::construct_from_rbegin(*this);
 }
 
 auto StringView::rend() const -> StringView::ConstReverseIterator {
-    return ConstReverseIterator::rend(*this);
+    return ConstReverseIterator::construct_from_rend(*this);
 }
 
 auto StringView::reverse_iter() const -> StringView::ConstReverseIteratorWrapper {

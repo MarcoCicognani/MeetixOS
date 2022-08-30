@@ -42,31 +42,34 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_string_builder(StringBuilder& string_builder) -> FormatApplier;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> FormatApplier;
+    [[nodiscard]]
+    static auto construct_from_string_builder(StringBuilder& string_builder) -> FormatApplier;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> FormatApplier;
 
     /**
      * @brief Move constructors
      */
-    FormatApplier(FormatApplier&& rhs) noexcept;
-    auto operator=(FormatApplier&& rhs) noexcept -> FormatApplier&;
+    FormatApplier(FormatApplier&& rhs);
+    auto operator=(FormatApplier&& rhs) -> FormatApplier&;
 
     /**
      * @brief Swap content of this FormatApplier
      */
-    auto swap(FormatApplier& rhs) noexcept -> void;
+    auto swap(FormatApplier& rhs) -> void;
 
 protected:
     /**
      * @brief Cloning
      */
-    [[nodiscard]] auto clone_format_applier() const -> FormatApplier;
+    [[nodiscard]]
+    auto clone_format_applier() const -> FormatApplier;
 
     /**
      * @brief put formatting functions
      */
     auto try_put_padding(char fill, usize amount) -> ErrorOr<void>;
-    auto try_put_literal(StringView value) -> ErrorOr<void>;
+    auto try_put_literal(StringView literals_view) -> ErrorOr<void>;
     auto try_put_string(StringView              value,
                         usize                   min_width      = 0,
                         usize                   max_width      = 0xffffff,
@@ -114,16 +117,26 @@ protected:
     /**
      * @brief Getters
      */
-    [[nodiscard]] auto string_builder() -> StringBuilder&;
-    [[nodiscard]] auto alignment_fill() const -> char;
-    [[nodiscard]] auto alignment() const -> FormatParser::Alignment;
-    [[nodiscard]] auto show_integer_sign() const -> FormatParser::ShowIntegerSign;
-    [[nodiscard]] auto show_base() const -> FormatParser::ShowBase;
-    [[nodiscard]] auto zero_pad() const -> FormatParser::ZeroPad;
-    [[nodiscard]] auto width() const -> Option<usize>;
-    [[nodiscard]] auto precision() const -> Option<usize>;
-    [[nodiscard]] auto display_as() const -> FormatParser::DisplayAs;
-    [[nodiscard]] auto display_as_is_numeric() const -> bool;
+    [[nodiscard]]
+    auto string_builder() -> StringBuilder&;
+    [[nodiscard]]
+    auto alignment_fill() const -> char;
+    [[nodiscard]]
+    auto alignment() const -> FormatParser::Alignment;
+    [[nodiscard]]
+    auto show_integer_sign() const -> FormatParser::ShowIntegerSign;
+    [[nodiscard]]
+    auto show_base() const -> FormatParser::ShowBase;
+    [[nodiscard]]
+    auto zero_pad() const -> FormatParser::ZeroPad;
+    [[nodiscard]]
+    auto width() const -> Option<usize>;
+    [[nodiscard]]
+    auto precision() const -> Option<usize>;
+    [[nodiscard]]
+    auto display_as() const -> FormatParser::DisplayAs;
+    [[nodiscard]]
+    auto display_as_is_numeric() const -> bool;
 
     /**
      * @brief Setters
@@ -160,13 +173,15 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<nullptr_t>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<nullptr_t>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<nullptr_t>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<nullptr_t>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(nullptr_t) -> ErrorOr<void>;
+    auto format(nullptr_t) -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -178,13 +193,15 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<StringView>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<StringView>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<StringView>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<StringView>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(StringView value) -> ErrorOr<void>;
+    auto format(StringView value) -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -196,13 +213,15 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<T>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<T>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<T>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<T>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(T value) -> ErrorOr<void>;
+    auto format(T value) -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -214,13 +233,15 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<bool>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<bool>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<bool>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<bool>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(bool value) const -> ErrorOr<void>;
+    auto format(bool value) const -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -232,13 +253,15 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<char>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<char>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(char value) const -> ErrorOr<void>;
+    auto format(char value) const -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -251,13 +274,15 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<float>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<float>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<float>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<float>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(float value) const -> ErrorOr<void>;
+    auto format(float value) const -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -269,13 +294,15 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<double>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<double>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<double>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<double>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(double value) -> ErrorOr<void>;
+    auto format(double value) -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -287,13 +314,15 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<long double>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<long double>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<long double>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<long double>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(long double value) -> ErrorOr<void>;
+    auto format(long double value) -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -306,17 +335,19 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<T*> {
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<T*> {
         return Formatter<T*>{ Cxx::move(format_applier) };
     }
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<T*> {
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<T*> {
         return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(T* value) -> ErrorOr<void> {
+    auto format(T* value) -> ErrorOr<void> {
         /* show as pointer a pointer */
         if ( display_as() == FormatParser::DisplayAs::Default )
             set_display_as(FormatParser::DisplayAs::Pointer);
@@ -339,13 +370,15 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<char const*>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char const*>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<char const*>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char const*>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(char const* value) const -> ErrorOr<void>;
+    auto format(char const* value) const -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -357,13 +390,55 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<char*>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char*>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<char*>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char*>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(char* value) const -> ErrorOr<void>;
+    auto format(char* value) const -> ErrorOr<void>;
+
+private:
+    explicit Formatter(FormatApplier format_applier);
+};
+
+template<>
+class Formatter<SourceLocation> : public FormatApplier {
+public:
+    /**
+     * @brief Error safe factory functions
+     */
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<SourceLocation>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<SourceLocation>;
+
+    /**
+     * @brief Performs the format on the given string-builder
+     */
+    auto format(SourceLocation const& source_location) const -> ErrorOr<void>;
+
+private:
+    explicit Formatter(FormatApplier format_applier);
+};
+
+template<>
+class Formatter<ErrnoCode> : public FormatApplier {
+public:
+    /**
+     * @brief Error safe factory functions
+     */
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<ErrnoCode>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<ErrnoCode>;
+
+    /**
+     * @brief Performs the format on the given string-builder
+     */
+    auto format(ErrnoCode const& errno_code) const -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -375,13 +450,15 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Error>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Error>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Error>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Error>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(Error const& value) const -> ErrorOr<void>;
+    auto format(Error const& error) const -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -393,17 +470,19 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<List<T>> {
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<List<T>> {
         return Formatter<List<T>>{ Cxx::move(format_applier) };
     }
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<List<T>> {
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<List<T>> {
         return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(List<T> const& list) -> ErrorOr<void> {
+    auto format(List<T> const& list) -> ErrorOr<void> {
         TRY(try_put_literal("[ "sv));
 
         bool is_first = true;
@@ -432,17 +511,19 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Set<T>> {
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Set<T>> {
         return Formatter<Set<T>>{ Cxx::move(format_applier) };
     }
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Set<T>> {
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Set<T>> {
         return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(Set<T> const& set) -> ErrorOr<void> {
+    auto format(Set<T> const& set) -> ErrorOr<void> {
         TRY(try_put_literal("[ "sv));
 
         bool is_first = true;
@@ -471,17 +552,19 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<OrderedSet<T>> {
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<OrderedSet<T>> {
         return Formatter<OrderedSet<T>>{ Cxx::move(format_applier) };
     }
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<OrderedSet<T>> {
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<OrderedSet<T>> {
         return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(OrderedSet<T> const& ordered_set) -> ErrorOr<void> {
+    auto format(OrderedSet<T> const& ordered_set) -> ErrorOr<void> {
         TRY(try_put_literal("[ "sv));
 
         bool is_first = true;
@@ -510,17 +593,19 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Map<K, T>> {
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Map<K, T>> {
         return Formatter<Map<K, T>>{ Cxx::move(format_applier) };
     }
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Map<K, T>> {
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Map<K, T>> {
         return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(Map<K, T> const& ordered_map) -> ErrorOr<void> {
+    auto format(Map<K, T> const& ordered_map) -> ErrorOr<void> {
         TRY(try_put_literal("{ "sv));
 
         bool is_first = true;
@@ -553,17 +638,19 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<OrderedMap<K, T>> {
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<OrderedMap<K, T>> {
         return Formatter<OrderedMap<K, T>>{ Cxx::move(format_applier) };
     }
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<OrderedMap<K, T>> {
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<OrderedMap<K, T>> {
         return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(OrderedMap<K, T> const& ordered_map) -> ErrorOr<void> {
+    auto format(OrderedMap<K, T> const& ordered_map) -> ErrorOr<void> {
         TRY(try_put_literal("{ "sv));
 
         bool is_first = true;
@@ -596,17 +683,19 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Range<T>> {
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Range<T>> {
         return Formatter<Range<T>>{ Cxx::move(format_applier) };
     }
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Range<T>> {
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Range<T>> {
         return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(Range<T> const& range) -> ErrorOr<void> {
+    auto format(Range<T> const& range) -> ErrorOr<void> {
         auto formatter = Formatter<T>::construct_from_format_applier(clone_format_applier());
 
         TRY(formatter.format(range.begin().value()));
@@ -628,17 +717,19 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<RangeInclusive<T>> {
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<RangeInclusive<T>> {
         return Formatter<RangeInclusive<T>>{ Cxx::move(format_applier) };
     }
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<RangeInclusive<T>> {
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<RangeInclusive<T>> {
         return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(RangeInclusive<T> const& range_inclusive) -> ErrorOr<void> {
+    auto format(RangeInclusive<T> const& range_inclusive) -> ErrorOr<void> {
         auto formatter = Formatter<T>::construct_from_format_applier(clone_format_applier());
 
         TRY(formatter.format(range_inclusive.begin().value()));
@@ -660,13 +751,15 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<String>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<String>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<String>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<String>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(String const& string) const -> ErrorOr<void>;
+    auto format(String const& string) const -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -678,13 +771,15 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<StringBuilder>;
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<StringBuilder>;
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<StringBuilder>;
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<StringBuilder>;
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(StringBuilder const& string_builder) const -> ErrorOr<void>;
+    auto format(StringBuilder const& string_builder) const -> ErrorOr<void>;
 
 private:
     explicit Formatter(FormatApplier format_applier);
@@ -696,17 +791,19 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Vector<T>> {
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Vector<T>> {
         return Formatter<Vector<T>>{ Cxx::move(format_applier) };
     }
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Vector<T>> {
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Vector<T>> {
         return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(Vector<T> const& vector) -> ErrorOr<void> {
+    auto format(Vector<T> const& vector) -> ErrorOr<void> {
         if ( display_as() == FormatParser::DisplayAs::Pointer ) {
             Formatter<T const*> formatter{ *this };
             TRY(formatter.format(vector.raw_data()));
@@ -742,17 +839,19 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Result<T, E>> {
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Result<T, E>> {
         return Formatter<Result<T, E>>{ Cxx::move(format_applier) };
     }
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Result<T, E>> {
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Result<T, E>> {
         return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(Result<T, E> const& result) -> ErrorOr<void> {
+    auto format(Result<T, E> const& result) -> ErrorOr<void> {
         if ( result.is_value() ) {
             auto v_formatter = Formatter<T>::construct_from_format_applier(clone_format_applier());
 
@@ -782,17 +881,19 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]] static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Option<T>> {
+    [[nodiscard]]
+    static auto construct_from_format_applier(FormatApplier format_applier) -> Formatter<Option<T>> {
         return Formatter<Option<T>>{ Cxx::move(format_applier) };
     }
-    [[nodiscard]] static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Option<T>> {
+    [[nodiscard]]
+    static auto construct_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Option<T>> {
         return construct_from_format_applier(FormatApplier::construct_from_parser_result(string_builder, Cxx::move(result)));
     }
 
     /**
      * @brief Performs the format on the given string-builder
      */
-    [[nodiscard]] auto format(Option<T> const& option) -> ErrorOr<void> {
+    auto format(Option<T> const& option) -> ErrorOr<void> {
         if ( option.is_present() ) {
             auto v_formatter = Formatter<T>::construct_from_format_applier(clone_format_applier());
 

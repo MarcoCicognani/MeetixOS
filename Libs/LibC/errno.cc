@@ -14,7 +14,7 @@
 #include <LibTC/BitCast.hh>
 
 extern "C" {
-__thread OSError g_errno_value = ENOERR;
+__thread ErrnoCode g_errno_value = ENOERR;
 
 int* errno_location() {
     return bit_cast<int*>(&g_errno_value);

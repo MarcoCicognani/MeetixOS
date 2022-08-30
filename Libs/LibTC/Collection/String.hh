@@ -40,147 +40,185 @@ public:
 
 public:
     /**
-     * @brief Non-error safe Factory functions
+     * @brief Non-errno_code safe Factory functions
      */
-    [[nodiscard]] static auto construct_empty() -> String;
-    [[nodiscard]] static auto construct_from_other(String const& rhs) -> String;
-    [[nodiscard]] static auto construct_from_view(StringView string_view) -> String;
+    [[nodiscard]]
+    static auto construct_empty() -> String;
+    [[nodiscard]]
+    static auto construct_from_other(String const& rhs) -> String;
+    [[nodiscard]]
+    static auto construct_from_view(StringView string_view) -> String;
 
     /**
      * @brief Error safe Factory functions
      */
-    [[nodiscard]] static auto try_construct_empty() -> ErrorOr<String>;
-    [[nodiscard]] static auto try_construct_from_other(String const& rhs) -> ErrorOr<String>;
-    [[nodiscard]] static auto try_construct_from_view(StringView string_view) -> ErrorOr<String>;
+    static auto try_construct_empty() -> ErrorOr<String>;
+    static auto try_construct_from_other(String const& rhs) -> ErrorOr<String>;
+    static auto try_construct_from_view(StringView string_view) -> ErrorOr<String>;
 
     /**
      * @brief Move constructor and move assignment
      */
-    String(String&& rhs) noexcept;
-    auto operator=(String&& rhs) noexcept -> String&;
+    String(String&& rhs);
+    auto operator=(String&& rhs) -> String&;
 
     ~String() = default;
 
     /**
      * @brief Cloning only increments strong references to the memory
      */
-    [[nodiscard]] auto clone() const -> String;
+    [[nodiscard]]
+    auto clone() const -> String;
 
     /**
      * @brief Swaps this string with another
      */
-    auto swap(String& rhs) noexcept -> void;
+    auto swap(String& rhs) -> void;
 
     /**
      * @brief Access operators
      */
-    [[nodiscard]] auto at(usize index) const -> char const&;
-    [[nodiscard]] auto operator[](usize index) const -> char const&;
+    [[nodiscard]]
+    auto at(usize index) const -> char const&;
+    [[nodiscard]]
+    auto operator[](usize index) const -> char const&;
 
     /**
      * @brief Compares this string with another
      */
-    [[nodiscard]] auto compare(StringView rhs) const -> int;
-    [[nodiscard]] auto equals_ignore_case(StringView rhs) const -> bool;
+    [[nodiscard]]
+    auto compare(StringView rhs) const -> int;
+    [[nodiscard]]
+    auto equals_ignore_case(StringView rhs) const -> bool;
 
     /**
      * @brief Returns a sub_string_view of this string
      */
-    [[nodiscard]] auto sub_string(usize start) const -> String;
-    [[nodiscard]] auto sub_string(usize start, usize count) const -> String;
+    [[nodiscard]]
+    auto sub_string(usize start) const -> String;
+    [[nodiscard]]
+    auto sub_string(usize start, usize count) const -> String;
 
-    [[nodiscard]] auto try_sub_string(usize start) const -> ErrorOr<String>;
-    [[nodiscard]] auto try_sub_string(usize start, usize count) const -> ErrorOr<String>;
+    auto try_sub_string(usize start) const -> ErrorOr<String>;
+    auto try_sub_string(usize start, usize count) const -> ErrorOr<String>;
 
-    [[nodiscard]] auto sub_string_view(usize start) const -> StringView;
-    [[nodiscard]] auto sub_string_view(usize start, usize count) const -> StringView;
+    [[nodiscard]]
+    auto sub_string_view(usize start) const -> StringView;
+    [[nodiscard]]
+    auto sub_string_view(usize start, usize count) const -> StringView;
 
     /**
      * @brief Returns a sub-StringView of this trimmed out of chars
      */
-    [[nodiscard]] auto trim(StringView chars, TrimMode trim_mode = TrimMode::Both) const -> String;
-    [[nodiscard]] auto try_trim(StringView chars, TrimMode trim_mode = TrimMode::Both) const -> ErrorOr<String>;
+    [[nodiscard]]
+    auto trim(StringView chars, TrimMode trim_mode = TrimMode::Both) const -> String;
+    auto try_trim(StringView chars, TrimMode trim_mode = TrimMode::Both) const -> ErrorOr<String>;
 
-    [[nodiscard]] auto trim_whitespaces(TrimMode trim_mode = TrimMode::Both) const -> String;
-    [[nodiscard]] auto try_trim_whitespaces(TrimMode trim_mode = TrimMode::Both) const -> ErrorOr<String>;
+    [[nodiscard]]
+    auto trim_whitespaces(TrimMode trim_mode = TrimMode::Both) const -> String;
+    auto try_trim_whitespaces(TrimMode trim_mode = TrimMode::Both) const -> ErrorOr<String>;
 
-    [[nodiscard]] auto trim_view(StringView chars, TrimMode trim_mode = TrimMode::Both) const -> StringView;
-    [[nodiscard]] auto trim_whitespaces_view(TrimMode trim_mode = TrimMode::Both) const -> StringView;
+    [[nodiscard]]
+    auto trim_view(StringView chars, TrimMode trim_mode = TrimMode::Both) const -> StringView;
+    [[nodiscard]]
+    auto trim_whitespaces_view(TrimMode trim_mode = TrimMode::Both) const -> StringView;
 
     /**
      * @brief Returns whether the given rhs is at the start of this string
      */
-    [[nodiscard]] auto starts_with(StringView rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
-    [[nodiscard]] auto starts_with(char rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
+    [[nodiscard]]
+    auto starts_with(StringView rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
+    [[nodiscard]]
+    auto starts_with(char rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
 
-    [[nodiscard]] auto ends_with(StringView rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
-    [[nodiscard]] auto ends_with(char rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
+    [[nodiscard]]
+    auto ends_with(StringView rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
+    [[nodiscard]]
+    auto ends_with(char rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
 
     /**
      * @brief Converts this String into an integer
      */
     template<typename T = i32>
-    [[nodiscard]] auto as_int(IntBase int_base = IntBase::Decimal, ParseMode parse_mode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
+    auto as_int(IntBase int_base = IntBase::Decimal, ParseMode parse_mode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
 
     template<typename T = u32>
-    [[nodiscard]] auto as_uint(IntBase int_base = IntBase::Decimal, ParseMode parse_mode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
+    auto as_uint(IntBase int_base = IntBase::Decimal, ParseMode parse_mode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
 
     /**
      * @brief Returns the index of the given needle into the src StringView
      */
-    [[nodiscard]] auto find(char needle, size_t start = 0) const -> Option<usize>;
-    [[nodiscard]] auto find(StringView needle, size_t start = 0) const -> Option<usize>;
+    auto find(char needle, size_t start = 0) const -> Option<usize>;
+    auto find(StringView needle, size_t start = 0) const -> Option<usize>;
 
     /**
      * @brief Returns the last index of the given needle into the src StringView
      */
-    [[nodiscard]] auto find_last(char needle) const -> Option<usize>;
+    auto find_last(char needle) const -> Option<usize>;
 
     /**
      * @brief Returns all the indexes of needle inside the src StringView
      */
-    [[nodiscard]] auto find_all(StringView needle) const -> Vector<usize>;
-    [[nodiscard]] auto try_find_all(StringView needle) const -> ErrorOr<Vector<usize>>;
+    [[nodiscard]]
+    auto find_all(StringView needle) const -> Vector<usize>;
+    auto try_find_all(StringView needle) const -> ErrorOr<Vector<usize>>;
 
     /**
      * @brief Returns a new string with the lowercase of this one
      */
-    [[nodiscard]] auto to_lowercase() const -> String;
-    [[nodiscard]] auto try_to_lowercase() const -> ErrorOr<String>;
+    [[nodiscard]]
+    auto to_lowercase() const -> String;
+    auto try_to_lowercase() const -> ErrorOr<String>;
 
     /**
      * @brief Returns a new string with the lowercase of this one
      */
-    [[nodiscard]] auto to_uppercase() const -> String;
-    [[nodiscard]] auto try_to_uppercase() const -> ErrorOr<String>;
+    [[nodiscard]]
+    auto to_uppercase() const -> String;
+    auto try_to_uppercase() const -> ErrorOr<String>;
 
     /**
      * @brief Returns a new string with the reverse of this one
      */
-    [[nodiscard]] auto to_reverse() const -> String;
-    [[nodiscard]] auto try_to_reverse() const -> ErrorOr<String>;
+    [[nodiscard]]
+    auto to_reverse() const -> String;
+    auto try_to_reverse() const -> ErrorOr<String>;
 
     /**
      * @brief Comparison operators
      */
-    [[nodiscard]] auto operator==(String const& rhs) const -> bool;
-    [[nodiscard]] auto operator==(StringView const& rhs) const -> bool;
-    [[nodiscard]] auto operator!=(String const& rhs) const -> bool;
-    [[nodiscard]] auto operator!=(StringView const& rhs) const -> bool;
-    [[nodiscard]] auto operator<(String const& rhs) const -> bool;
-    [[nodiscard]] auto operator<(StringView const& rhs) const -> bool;
-    [[nodiscard]] auto operator<=(String const& rhs) const -> bool;
-    [[nodiscard]] auto operator<=(StringView const& rhs) const -> bool;
-    [[nodiscard]] auto operator>(String const& rhs) const -> bool;
-    [[nodiscard]] auto operator>(StringView const& rhs) const -> bool;
-    [[nodiscard]] auto operator>=(String const& rhs) const -> bool;
-    [[nodiscard]] auto operator>=(StringView const& rhs) const -> bool;
+    [[nodiscard]]
+    auto operator==(String const& rhs) const -> bool;
+    [[nodiscard]]
+    auto operator==(StringView const& rhs) const -> bool;
+    [[nodiscard]]
+    auto operator!=(String const& rhs) const -> bool;
+    [[nodiscard]]
+    auto operator!=(StringView const& rhs) const -> bool;
+    [[nodiscard]]
+    auto operator<(String const& rhs) const -> bool;
+    [[nodiscard]]
+    auto operator<(StringView const& rhs) const -> bool;
+    [[nodiscard]]
+    auto operator<=(String const& rhs) const -> bool;
+    [[nodiscard]]
+    auto operator<=(StringView const& rhs) const -> bool;
+    [[nodiscard]]
+    auto operator>(String const& rhs) const -> bool;
+    [[nodiscard]]
+    auto operator>(StringView const& rhs) const -> bool;
+    [[nodiscard]]
+    auto operator>=(String const& rhs) const -> bool;
+    [[nodiscard]]
+    auto operator>=(StringView const& rhs) const -> bool;
 
     /**
      * @brief Returns whether the given rhs is contained into this String
      */
-    [[nodiscard]] auto contains(StringView rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
-    [[nodiscard]] auto contains(char rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
+    [[nodiscard]]
+    auto contains(StringView rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
+    [[nodiscard]]
+    auto contains(char rhs, CaseSensitivity case_sensitivity = CaseSensitivity::Sensitive) const -> bool;
 
     /**
      * @brief For-each support
@@ -198,13 +236,18 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] auto as_cstr() const -> char const*;
-    [[nodiscard]] auto len() const -> usize;
-    [[nodiscard]] auto count() const -> usize;
+    [[nodiscard]]
+    auto as_cstr() const -> char const*;
+    [[nodiscard]]
+    auto len() const -> usize;
+    [[nodiscard]]
+    auto count() const -> usize;
 
-    [[nodiscard]] auto is_empty() const -> bool;
+    [[nodiscard]]
+    auto is_empty() const -> bool;
 
-    [[nodiscard]] auto as_string_view() const -> StringView;
+    [[nodiscard]]
+    auto as_string_view() const -> StringView;
 
 private:
     explicit String(NonNullRef<StringStorage> string_storage);

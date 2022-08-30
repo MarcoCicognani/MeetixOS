@@ -32,7 +32,8 @@ public:
     /**
      * @brief Error safe Factory functions
      */
-    [[nodiscard]] static constexpr auto construct_from_view(StringView source_view) -> Lexer {
+    [[nodiscard]]
+    static constexpr auto construct_from_view(StringView source_view) -> Lexer {
         return Lexer{ source_view };
     }
 
@@ -99,31 +100,40 @@ public:
     /**
      * @brief Peeks the next character
      */
-    [[nodiscard]] auto peek(usize offset = 0) const -> char;
+    [[nodiscard]]
+    auto peek(usize offset = 0) const -> char;
 
     /**
      * @brief Returns whether the following peek(s) matches the given argument
      */
-    [[nodiscard]] auto next_is(char c) const -> bool;
-    [[nodiscard]] auto next_is(StringView word) const -> bool;
-    [[nodiscard]] auto next_is(Predicate<char> auto predicate) const -> bool {
+    [[nodiscard]]
+    auto next_is(char c) const -> bool;
+    [[nodiscard]]
+    auto next_is(StringView word) const -> bool;
+    [[nodiscard]]
+    auto next_is(Predicate<char> auto predicate) const -> bool {
         return predicate(peek());
     }
 
     /**
      * @brief Getters
      */
-    [[nodiscard]] auto remaining() const -> StringView;
-    [[nodiscard]] auto index() const -> usize;
-    [[nodiscard]] auto left_char_count() const -> usize;
-    [[nodiscard]] auto is_end() const -> bool;
+    [[nodiscard]]
+    auto remaining() const -> StringView;
+    [[nodiscard]]
+    auto index() const -> usize;
+    [[nodiscard]]
+    auto left_char_count() const -> usize;
+    [[nodiscard]]
+    auto is_end() const -> bool;
 
 protected:
-    explicit constexpr Lexer(StringView source_view) noexcept
+    explicit constexpr Lexer(StringView source_view)
         : m_source_view{ Cxx::move(source_view) } {
     }
 
-    [[nodiscard]] auto source_view() const -> StringView;
+    [[nodiscard]]
+    auto source_view() const -> StringView;
 
 private:
     StringView m_source_view{};

@@ -29,57 +29,101 @@ auto Suite::inst() -> NonNullRef<Suite> {
 }
 
 auto Suite::run(Vector<StringView> args) -> ErrorOr<void> {
-    usize test_completed      = 0;
-    usize test_failed         = 0;
-    usize benchmark_completed = 0;
-    usize benchmark_failed    = 0;
+    usize tests_completed = 0;
+    usize tests_failed    = 0;
+    usize tests_skipped   = 0;
 
-    FmtIO::outln("- Starting test suite {}..."sv, args[0], m_test_cases.count());
-    auto const all_tests_start_timestamp = s_millis();
+    usize benchmarks_completed = 0;
+    usize benchmarks_failed    = 0;
+    usize benchmarks_skipped   = 0;
+
+    TRY(FmtIO::outln("- Starting test suite {}{}{}...\n"sv, FmtIO::foreground(FmtIO::Color::Yellow), args[0], FmtIO::reset(), m_test_cases.count()));
+
+    auto const all_cases_start_ts = s_millis();
     for ( auto const* test_case : m_test_cases ) {
-        if ( args.count() > 1 && !args.find(test_case->name()).is_present() )
+        /* if tests names are given execute only those are explicitly cited */
+        if ( args.count() > 1 && !args.find(test_case->name()).is_present() ) {
+            if ( test_case->is_benchmark() )
+                ++benchmarks_skipped;
+            else
+                ++tests_skipped;
             continue;
+        }
 
         m_current_test_have_failed = false;
-
-        auto const test_type = test_case->is_benchmark() ? "Benchmark"sv : "Test"sv;
-        FmtIO::outln("{} - {} - Running"sv, test_case->name(), test_type);
+        TRY(FmtIO::outln("{} - {} - Running"sv, test_case->name(), test_case->is_benchmark() ? "Benchmark"sv : "Test"sv));
 
         /* run the test */
-        auto const start_timestamp = s_millis();
+        auto const case_start_ts = s_millis();
         test_case->run_test();
-        auto const end_timestamp = s_millis();
+        auto const case_end_ts = s_millis();
 
-        auto const exec_time = end_timestamp - start_timestamp;
-        FmtIO::outln("\t{} in {} ms"sv, m_current_test_have_failed ? "\033[31mFailed\033[0m"sv : "\033[32mCompleted\033[0m"sv, exec_time);
+        auto const case_exec_time = case_end_ts - case_start_ts;
+        if ( m_current_test_have_failed )
+            TRY(FmtIO::outln("\t{}Failed{} in {} ms"sv, FmtIO::foreground(FmtIO::Color::Red), FmtIO::reset(), case_exec_time));
+        else
+            TRY(FmtIO::outln("\t{}Completed{} in {} ms"sv, FmtIO::foreground(FmtIO::Color::Green), FmtIO::reset(), case_exec_time));
 
         if ( m_current_test_have_failed ) {
             if ( test_case->is_benchmark() )
-                ++benchmark_failed;
+                ++benchmarks_failed;
             else
-                ++test_failed;
+                ++tests_failed;
         } else {
             if ( test_case->is_benchmark() )
-                ++benchmark_completed;
+                ++benchmarks_completed;
             else
-                ++test_completed;
+                ++tests_completed;
         }
     }
-    auto all_tests_end_timestamp = s_millis();
+    auto const all_cases_end_ts = s_millis();
 
-    FmtIO::outln("{} - Executed \033[32m{}\033[0m tests (\033[32m{}\033[0m tests/\033[32m{}\033[0m benchmarks) in {} ms"sv,
-                 args[0],
-                 m_test_cases.count(),
-                 test_completed + test_failed,
-                 benchmark_completed + benchmark_failed,
-                 all_tests_end_timestamp - all_tests_start_timestamp);
-    if ( test_completed + test_failed > 0 )
-        FmtIO::outln("\tTests      - \033[32m{:3}\033[0m Completed/\033[31m{:3}\033[0m Failed"sv, test_completed, test_failed);
-    if ( benchmark_completed + benchmark_failed > 0 )
-        FmtIO::outln("\tBenchmarks - \033[32m{:3}\033[0m Completed/\033[31m{:3}\033[0m Failed"sv, benchmark_completed, benchmark_failed);
+    auto const all_tests_time       = all_cases_end_ts - all_cases_start_ts;
+    auto const tests_executed       = tests_completed + tests_failed;
+    auto const benchmarks_executed  = benchmarks_completed + benchmarks_failed;
+    auto const total_cases_executed = tests_executed + benchmarks_executed;
 
-    if ( test_failed != 0 || benchmark_failed != 0 )
-        return Error{ "Some tests are failed" };
+    TRY(FmtIO::outln("\n- Executed {}{}/{}{} cases ({}{}{}/{}{}{} tests {}{}{}/{}{}{} benchmarks) in {} ms"sv,
+                     FmtIO::foreground(FmtIO::Color::Green),
+                     total_cases_executed,
+                     m_test_cases.count(),
+                     FmtIO::reset(),
+                     FmtIO::foreground(FmtIO::Color::Green),
+                     tests_executed,
+                     FmtIO::reset(),
+                     FmtIO::foreground(FmtIO::Color::Yellow),
+                     tests_skipped,
+                     FmtIO::reset(),
+                     FmtIO::foreground(FmtIO::Color::Green),
+                     benchmarks_executed,
+                     FmtIO::reset(),
+                     FmtIO::foreground(FmtIO::Color::Yellow),
+                     benchmarks_skipped,
+                     FmtIO::reset(),
+                     all_tests_time));
+    if ( tests_executed > 0 ) {
+        TRY(FmtIO::outln("- Tests      - {}{:3}{} Completed | {}{:3}{} Failed | {:3} Skipped"sv,
+                         FmtIO::foreground(FmtIO::Color::Green),
+                         tests_completed,
+                         FmtIO::reset(),
+                         FmtIO::foreground(FmtIO::Color::Red),
+                         tests_failed,
+                         FmtIO::reset(),
+                         tests_skipped));
+    }
+    if ( benchmarks_executed > 0 ) {
+        TRY(FmtIO::outln("- Benchmarks - {}{:3}{} Completed | {}{:3}{} Failed | {:3} Skipped"sv,
+                         FmtIO::foreground(FmtIO::Color::Green),
+                         benchmarks_completed,
+                         FmtIO::reset(),
+                         FmtIO::foreground(FmtIO::Color::Red),
+                         benchmarks_failed,
+                         FmtIO::reset(),
+                         benchmarks_skipped));
+    }
+
+    if ( tests_failed != 0 || benchmarks_failed != 0 )
+        return Error::construct_from_literal("Not all the cases have successfully completed");
     else
         return {};
 }
@@ -90,10 +134,6 @@ void Suite::current_test_must_fail() {
 
 void Suite::add_case_to_suite(Case& test_case) {
     m_test_cases.append(&test_case);
-}
-
-constexpr Suite::Suite() noexcept
-    : m_test_cases{ Vector<Case*>::construct_empty() } {
 }
 
 } /* namespace UnitTest */

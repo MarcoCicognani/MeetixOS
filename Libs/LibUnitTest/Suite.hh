@@ -44,10 +44,10 @@ public:
     auto current_test_must_fail() -> void;
 
 private:
-    explicit constexpr Suite() noexcept;
+    explicit constexpr Suite() = default;
 
 private:
-    Vector<Case*> m_test_cases;
+    Vector<Case*> m_test_cases{ Vector<Case*>::construct_empty() };
     bool          m_current_test_have_failed{ false };
 };
 

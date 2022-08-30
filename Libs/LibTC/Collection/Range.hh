@@ -27,20 +27,21 @@ template<Integral T, bool IsReverse>
 class RangeIterator {
 public:
     /**
-     * @brief Constructor
+     * @brief Error safe factory functions
      */
-    explicit constexpr RangeIterator(T first)
-        : m_current{ first } {
+    [[nodiscard]]
+    static auto construct_from_current(T current) -> RangeIterator<T, IsReverse> {
+        return RangeIterator<T, IsReverse>{ current };
     }
 
-    RangeIterator(RangeIterator const&) = default;
-
+    RangeIterator(RangeIterator const&)                    = default;
     auto operator=(RangeIterator const&) -> RangeIterator& = default;
 
     /**
      * @brief Increment operators
      */
-    [[gnu::always_inline]] auto operator++() -> RangeIterator& {
+    [[gnu::always_inline]]
+    auto operator++() -> RangeIterator& {
         if constexpr ( IsReverse ) {
             --m_current;
         } else {
@@ -48,7 +49,8 @@ public:
         }
         return *this;
     }
-    [[gnu::always_inline]] auto operator++(int) -> RangeIterator {
+    [[gnu::always_inline]]
+    auto operator++(int) -> RangeIterator {
         RangeIterator it{ *this };
 
         operator++();
@@ -58,7 +60,8 @@ public:
     /**
      * @brief ValueReference access operators
      */
-    [[gnu::always_inline]] auto operator*() const -> T {
+    [[gnu::always_inline]]
+    auto operator*() const -> T {
         return m_current;
     }
 
@@ -72,7 +75,13 @@ public:
     /**
      * @brief Comparison operator
      */
-    [[nodiscard]] inline auto operator<=>(RangeIterator const&) const -> bool = default;
+    [[nodiscard]]
+    inline auto operator<=>(RangeIterator const&) const -> bool = default;
+
+private:
+    explicit constexpr RangeIterator(T current)
+        : m_current{ current } {
+    }
 
 private:
     T m_current;
@@ -91,7 +100,7 @@ public:
     /**
      * @brief Constructor
      */
-    explicit constexpr Range(T first, T end) noexcept
+    explicit constexpr Range(T first, T end)
         : m_first{ first }
         , m_end{ end } {
     }
@@ -99,18 +108,22 @@ public:
     /**
      * @brief IteratorProvider
      */
-    [[gnu::always_inline]] auto begin() const -> Iterator {
-        return Iterator{ m_first };
+    [[gnu::always_inline]]
+    auto begin() const -> Iterator {
+        return Iterator::construct_from_current(m_first);
     }
-    [[gnu::always_inline]] auto end() const -> Iterator {
-        return Iterator{ m_end };
+    [[gnu::always_inline]]
+    auto end() const -> Iterator {
+        return Iterator::construct_from_current(m_end);
     }
 
-    [[gnu::always_inline]] auto rbegin() const -> Iterator {
-        return ReverseIterator{ m_end };
+    [[gnu::always_inline]]
+    auto rbegin() const -> Iterator {
+        return ReverseIterator::construct_from_current(m_end);
     }
-    [[gnu::always_inline]] auto rend() const -> Iterator {
-        return ReverseIterator{ m_first };
+    [[gnu::always_inline]]
+    auto rend() const -> Iterator {
+        return ReverseIterator::construct_from_current(m_first);
     }
 
     auto reverse_iter() const -> ReverseIteratorWrapper {
@@ -128,7 +141,7 @@ public:
     /**
      * @brief Constructor
      */
-    explicit constexpr RangeInclusive(T first, T last) noexcept
+    explicit constexpr RangeInclusive(T first, T last)
         : Range<T>{ first, last + 1 } {
     }
 };

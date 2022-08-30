@@ -32,17 +32,22 @@ template<typename TCollection, typename T, bool IsReverse>
 class ListIterator {
 public:
     /**
-     * @brief Constructors
+     * @brief Error safe factory functions
      */
-    explicit ListIterator(TCollection& collection)
-        : m_collection{ &collection } {
+    [[nodiscard]]
+    static auto construct_empty() -> ListIterator<TCollection, T, IsReverse> {
+        return ListIterator<TCollection, T, IsReverse>{};
     }
-    ListIterator(TCollection& collection, typename TCollection::Node* node)
-        : m_collection{ &collection }
-        , m_current_node{ node } {
+    [[nodiscard]]
+    static auto construct_from_begin(TCollection& collection) -> ListIterator<TCollection, T, IsReverse> {
+        return ListIterator<TCollection, T, IsReverse>{ &collection, collection.m_head_node };
     }
-    ListIterator(ListIterator const&) = default;
+    [[nodiscard]]
+    static auto construct_from_rbegin(TCollection& collection) -> ListIterator<TCollection, T, IsReverse> {
+        return ListIterator<TCollection, T, IsReverse>{ &collection, collection.m_tail_node };
+    }
 
+    ListIterator(ListIterator const&)                    = default;
     auto operator=(ListIterator const&) -> ListIterator& = default;
 
     /**
@@ -101,7 +106,8 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] auto is_end() const -> bool {
+    [[nodiscard]]
+    auto is_end() const -> bool {
         return m_current_node == nullptr;
     }
 
@@ -118,6 +124,12 @@ public:
 
 private:
     friend TCollection;
+
+    explicit ListIterator() = default;
+    explicit ListIterator(TCollection* collection, typename TCollection::Node* current_node)
+        : m_collection{ collection }
+        , m_current_node{ current_node } {
+    }
 
     void delete_node() {
         delete m_current_node;
@@ -143,6 +155,9 @@ template<typename T>
 class List {
     TC_DENY_COPY(List);
 
+    template<typename TCollection, typename TT, bool IsReverse>
+    friend class Details::ListIterator;
+
 public:
     using Iterator                    = Details::ListIterator<List, T, false>;
     using ConstIterator               = Details::ListIterator<List const, T const, false>;
@@ -155,39 +170,42 @@ public:
 
 public:
     /**
-     * @brief Non-error safe Factory functions
+     * @brief Non-errno_code safe Factory functions
      */
-    [[nodiscard]] static constexpr auto construct_empty() -> List<T> {
+    [[nodiscard]]
+    static constexpr auto construct_empty() -> List<T> {
         return List<T>{};
     }
-    [[nodiscard]] static auto construct_from_other(List<T> const& rhs) -> List<T> {
+    [[nodiscard]]
+    static auto construct_from_other(List<T> const& rhs) -> List<T> {
         return MUST(try_construct_from_other(rhs));
     }
-    [[nodiscard]] static auto construct_from_list(Cxx::initializer_list<T> initializer_list) -> List<T> {
+    [[nodiscard]]
+    static auto construct_from_list(Cxx::initializer_list<T> initializer_list) -> List<T> {
         return MUST(try_construct_from_list(initializer_list));
     }
 
     /**
      * @brief Error safe Factory functions
      */
-    [[nodiscard]] static auto try_construct_from_other(List<T> const& rhs) -> ErrorOr<List<T>> {
+    static auto try_construct_from_other(List<T> const& rhs) -> ErrorOr<List<T>> {
         auto list = construct_empty();
-        for ( auto const& element : rhs ) {
+        for ( auto const& e : rhs ) {
             if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
-                TRY(list.try_append(TRY(element.try_clone())));
+                TRY(list.try_append(TRY(e.try_clone())));
             } else if constexpr ( Cloneable<T> ) {
-                TRY(list.try_append(element.clone()));
+                TRY(list.try_append(e.clone()));
             } else if constexpr ( CopyConstructible<T> ) {
-                TRY(list.try_append(element));
+                TRY(list.try_append(e));
             }
         }
 
         return list;
     }
-    [[nodiscard]] static auto try_construct_from_list(Cxx::initializer_list<T> initializer_list) -> ErrorOr<List<T>> {
+    static auto try_construct_from_list(Cxx::initializer_list<T> initializer_list) -> ErrorOr<List<T>> {
         auto list = construct_empty();
-        for ( auto const& element : initializer_list ) /* even with auto initializer_list exposes only T const& */
-            TRY(list.try_append(Cxx::move(const_cast<T&>(element))));
+        for ( auto const& e : initializer_list ) /* even with <auto> the <std::initializer_list> exposes only <T const&> */
+            TRY(list.try_append(Cxx::move(const_cast<T&>(e))));
 
         return list;
     }
@@ -195,12 +213,12 @@ public:
     /**
      * @brief Move constructor and move assignment
      */
-    List(List<T>&& rhs) noexcept
+    List(List<T>&& rhs)
         : m_head_node{ Cxx::exchange(rhs.m_head_node, nullptr) }
         , m_tail_node{ Cxx::exchange(rhs.m_tail_node, nullptr) }
         , m_values_count{ Cxx::exchange(rhs.m_values_count, 0) } {
     }
-    auto operator=(List<T>&& rhs) noexcept -> List<T>& {
+    auto operator=(List<T>&& rhs) -> List<T>& {
         List list{ Cxx::move(rhs) };
         swap(list);
         return *this;
@@ -213,10 +231,11 @@ public:
     /**
      * @brief Deep cloning
      */
-    [[nodiscard]] auto clone() const -> List<T> {
+    [[nodiscard]]
+    auto clone() const -> List<T> {
         return MUST(try_clone());
     }
-    [[nodiscard]] auto try_clone() const -> ErrorOr<List<T>> {
+    auto try_clone() const -> ErrorOr<List<T>> {
         return List<T>::try_construct_from_other(*this);
     }
 
@@ -237,7 +256,7 @@ public:
     /**
      * @brief Swaps in O(1) the content of this List with another
      */
-    auto swap(List<T>& rhs) noexcept {
+    auto swap(List<T>& rhs) {
         Cxx::swap(m_head_node, rhs.m_head_node);
         Cxx::swap(m_tail_node, rhs.m_tail_node);
         Cxx::swap(m_values_count, rhs.m_values_count);
@@ -250,9 +269,9 @@ public:
         MUST(try_append(Cxx::move(value)));
     }
     auto try_append(T value) -> ErrorOr<void> {
-        auto const new_node = new (nothrow) Node{ Cxx::move(value) };
+        auto const new_node = new Node{ Cxx::move(value) };
         if ( new_node == nullptr )
-            return Error{ ENOMEM };
+            return Error::construct_from_errno(ENOMEM);
 
         if ( m_tail_node != nullptr ) {
             m_tail_node->m_next_node = new_node;
@@ -272,9 +291,9 @@ public:
         MUST(try_prepend(Cxx::move(value)));
     }
     auto try_prepend(T value) -> ErrorOr<void> {
-        auto const new_node = new (nothrow) Node{ Cxx::move(value) };
+        auto const new_node = new Node{ Cxx::move(value) };
         if ( new_node == nullptr )
-            return Error{ ENOMEM };
+            return Error::construct_from_errno(ENOMEM);
 
         if ( m_head_node != nullptr ) {
             m_head_node->m_prev_node = new_node;
@@ -285,27 +304,6 @@ public:
         m_head_node = new_node;
         ++m_values_count;
         return {};
-    }
-
-    /**
-     * @brief Removes the node referenced by the given iterator
-     */
-    template<typename TIterator>
-    auto erase(TIterator& iterator) {
-        VERIFY_FALSE(iterator.is_end());
-
-        auto const node_to_erase = iterator.m_current_node;
-        if ( m_head_node == node_to_erase )
-            m_head_node = node_to_erase->m_next_node;
-        if ( m_tail_node == node_to_erase )
-            m_tail_node = node_to_erase->m_prev_node;
-        if ( node_to_erase->m_prev_node != nullptr )
-            node_to_erase->m_prev_node->m_next_node = node_to_erase->m_next_node;
-        if ( node_to_erase->m_next_node != nullptr )
-            node_to_erase->m_next_node->m_prev_node = node_to_erase->m_prev_node;
-
-        iterator.delete_node();
-        --m_values_count;
     }
 
     /**
@@ -360,34 +358,34 @@ public:
      * @brief for-each support
      */
     auto begin() -> Iterator {
-        return Iterator{ *this, m_head_node };
+        return Iterator::construct_from_begin(*this);
     }
     auto end() -> Iterator {
-        return Iterator{ *this };
+        return Iterator::construct_empty();
     }
 
     auto begin() const -> ConstIterator {
-        return ConstIterator{ *this, m_head_node };
+        return ConstIterator::construct_from_begin(*this);
     }
     auto end() const -> ConstIterator {
-        return ConstIterator{ *this };
+        return ConstIterator::construct_empty();
     }
 
     /**
      * @brief reverse for-each support
      */
     auto rbegin() -> ReverseIterator {
-        return ReverseIterator{ *this, m_tail_node };
+        return ReverseIterator::construct_from_rbegin(*this);
     }
     auto rend() -> ReverseIterator {
-        return ReverseIterator{ *this };
+        return ReverseIterator::construct_empty();
     }
 
     auto rbegin() const -> ConstReverseIterator {
-        return ConstReverseIterator{ *this, m_tail_node };
+        return ConstReverseIterator::construct_from_rbegin(*this);
     }
     auto rend() const -> ConstReverseIterator {
-        return ConstReverseIterator{ *this };
+        return ConstReverseIterator::construct_empty();
     }
 
     auto reverse_iter() -> ReverseIteratorWrapper {
@@ -400,47 +398,75 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]] auto count() const -> usize {
+    [[nodiscard]]
+    auto count() const -> usize {
         return m_values_count;
     }
-    [[nodiscard]] auto is_empty() const -> bool {
+    [[nodiscard]]
+    auto is_empty() const -> bool {
         return count() == 0;
     }
 
+    [[nodiscard]]
     auto head() -> Node* {
         return m_head_node;
     }
+    [[nodiscard]]
     auto head() const -> Node const* {
         return m_head_node;
     }
 
+    [[nodiscard]]
     auto tail() -> Node* {
         return m_tail_node;
     }
+    [[nodiscard]]
     auto tail() const -> Node const* {
         return m_tail_node;
     }
 
+    [[nodiscard]]
     auto first() -> T& {
         VERIFY_NOT_NULL(m_head_node);
         return m_head_node->m_value;
     }
+    [[nodiscard]]
     auto first() const -> T const& {
         VERIFY_NOT_NULL(m_head_node);
         return m_head_node->m_value;
     }
 
+    [[nodiscard]]
     auto last() -> T& {
         VERIFY_NOT_NULL(m_tail_node);
         return m_tail_node->m_value;
     }
+    [[nodiscard]]
     auto last() const -> T const& {
         VERIFY_NOT_NULL(m_tail_node);
         return m_tail_node->m_value;
     }
 
 private:
-    explicit constexpr List() noexcept = default;
+    explicit constexpr List() = default;
+
+    template<typename TIterator>
+    auto erase(TIterator& iterator) {
+        VERIFY_FALSE(iterator.is_end());
+
+        auto const node_to_erase = iterator.m_current_node;
+        if ( m_head_node == node_to_erase )
+            m_head_node = node_to_erase->m_next_node;
+        if ( m_tail_node == node_to_erase )
+            m_tail_node = node_to_erase->m_prev_node;
+        if ( node_to_erase->m_prev_node != nullptr )
+            node_to_erase->m_prev_node->m_next_node = node_to_erase->m_next_node;
+        if ( node_to_erase->m_next_node != nullptr )
+            node_to_erase->m_next_node->m_prev_node = node_to_erase->m_prev_node;
+
+        iterator.delete_node();
+        --m_values_count;
+    }
 
 private:
     Node* m_head_node{ nullptr };

@@ -22,7 +22,7 @@ TEST_CASE(value_and_error) {
         if ( value == 100 )
             return 110;
         else
-            return Error{ EINVAL };
+            return Error::construct_from_errno(EINVAL);
     };
 
     VERIFY_IS_VALUE_EQUAL(return_110_on_100(100), 110);
@@ -49,13 +49,13 @@ TEST_CASE(unwrap_value) {
 }
 
 TEST_CASE(unwrap_error) {
-    ErrorOr<i32> error_or_i32 = Error{ ENOENT, "No Entry Found" };
+    ErrorOr<i32> error_or_i32 = Error::construct_from_literal("No Entry Found");
     VERIFY(error_or_i32.is_error());
 
     auto& error = error_or_i32.error();
-    VERIFY_EQUAL(error.os_error(), ENOENT);
+    VERIFY_EQUAL(error.errno_code(), ENOENT);
 
-    error = Error{ EINVAL };
+    error = Error::construct_from_errno(EINVAL);
 
     auto error_value = error_or_i32.unwrap_error();
     VERIFY_EQUAL(error_value, EINVAL);
@@ -88,7 +88,7 @@ TEST_CASE(reference_as_value) {
 TEST_CASE(assignment_operator) {
     ErrorOr<i32> error_or_i32{ 512 };
 
-    error_or_i32 = Error{ ENOENT };
+    error_or_i32 = Error::construct_from_errno(ENOENT);
     VERIFY_IS_ERROR_EQUAL(error_or_i32, ENOENT);
 
     error_or_i32 = 486;
@@ -96,7 +96,7 @@ TEST_CASE(assignment_operator) {
 
     ErrorOr<void> error_or_void{};
 
-    error_or_void = Error{ EINVAL };
+    error_or_void = Error::construct_from_errno(EINVAL);
     VERIFY_IS_ERROR_EQUAL(error_or_void, EINVAL);
 
     ErrorOr<Box<i32>> error_or_boxed_i32 = Box<i32>::construct_from_args(64);

@@ -13,7 +13,7 @@
 #pragma once
 
 /**
- * @brief Works like Rust's try!() macro: If <expression> produces an empty or error variant then it returns the error to the
+ * @brief Works like Rust's try!() macro: If <expression> produces an empty or error variant then it returns the errno_code to the
  * caller function, otherwise unwraps the value to the current function
  */
 #define TRY(expression)                                                                                                                                        \

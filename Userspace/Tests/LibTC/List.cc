@@ -22,6 +22,8 @@ TEST_CASE(empty_list) {
 
     VERIFY(empty_list.is_empty());
     VERIFY_EQUAL(empty_list.count(), 0);
+
+    VERIFY(0);
 }
 
 TEST_CASE(initializer_list) {

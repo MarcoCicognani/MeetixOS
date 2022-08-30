@@ -47,7 +47,7 @@ auto vout(FILE* file, StringView format_view, TArgs&&... args) -> ErrorOr<void> 
     /* write the result into the stdout */
     auto const res = fwrite(string_builder.as_string_view().as_cstr(), 1, string_builder.len(), file);
     if ( res < string_builder.len() )
-        return Error::construct_from_errno(static_cast<OSError>(ferror(stdout)));
+        return Error::construct_from_errno(static_cast<ErrnoCode>(ferror(stdout)));
     else
         return {};
 }

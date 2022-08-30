@@ -77,7 +77,7 @@ auto StringBuilder::try_append(StringView string_view) -> ErrorOr<void> {
     return {};
 }
 
-[[maybe_unused]] auto StringBuilder::ensure_capacity(usize capacity) {
+auto StringBuilder::ensure_capacity(usize capacity) {
     MUST(try_ensure_capacity(capacity));
 }
 
@@ -103,10 +103,6 @@ auto StringBuilder::is_empty() const -> bool {
 
 auto StringBuilder::as_string_view() const -> StringView {
     return StringView{ m_char_vector.raw_data(), len() };
-}
-
-constexpr StringBuilder::StringBuilder() noexcept
-    : m_char_vector{ Vector<char>::construct_empty() } {
 }
 
 } /* namespace TC::Collection */
