@@ -10,6 +10,9 @@
  * GNU General Public License version 3
  */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
+
 #include <LibApi/Api/User.h>
 #include <LibC/sched.h>
 
@@ -19,4 +22,7 @@ int sched_yield() {
     s_yield();
     return 0;
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

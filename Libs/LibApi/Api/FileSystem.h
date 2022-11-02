@@ -32,7 +32,8 @@ typedef u64 FsPhysID;   /* Filesystem node id */
 /**
  * @brief Limits
  */
-#define PATH_MAX     4096
+CONST_VALUE(PATH_MAX, int, 4096);
+//#define PATH_MAX     4096
 #define FILENAME_MAX 512
 
 /**

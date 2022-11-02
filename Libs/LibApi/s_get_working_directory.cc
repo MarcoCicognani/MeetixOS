@@ -13,7 +13,7 @@
 #include <Api/User.h>
 
 GetWorkingDirectoryStatus s_get_working_directory(char* buffer) {
-    return s_get_working_directory_l(buffer, PATH_MAX);
+    return s_get_working_directory_l(buffer, 512 /* PATH_MAX */);
 }
 
 GetWorkingDirectoryStatus s_get_working_directory_l(char* buffer, usize buffer_len) {

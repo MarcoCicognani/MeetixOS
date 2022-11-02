@@ -10,13 +10,22 @@
  * GNU General Public License version 3
  */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-use-trailing-return-type"
+
 #include <LibC/errno.h>
-#include <LibTC/BitCast.hh>
+#include <LibTC/Lang/Cxx.hh>
 
 extern "C" {
+
 __thread ErrnoCode g_errno_value = ENOERR;
 
 int* errno_location() {
     return bit_cast<int*>(&g_errno_value);
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop
+
+#pragma clang diagnostic pop

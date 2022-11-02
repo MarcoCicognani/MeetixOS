@@ -11,6 +11,9 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <dir.h>
 #include <stdint.h>
@@ -20,29 +23,24 @@
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
+CONST_VALUE(DT_UNKNOWN, uint8_t, 0); /* Entry type unknown */
+CONST_VALUE(DT_REG, uint8_t, 1);     /* Entry type regular file */
+CONST_VALUE(DT_DIR, uint8_t, 2);     /* Entry type directory */
+CONST_VALUE(DT_FIFO, uint8_t, 3);    /* Entry type pipe */
+CONST_VALUE(DT_SOCK, uint8_t, 4);    /* Entry type socket */
+CONST_VALUE(DT_CHR, uint8_t, 5);     /* Entry type character device */
+CONST_VALUE(DT_BLK, uint8_t, 6);     /* Entry type block device */
+CONST_VALUE(DT_LNK, uint8_t, 7);     /* Entry type symlink */
 
-#define DT_UNKNOWN 0 /* Entry type unknown */
-#define DT_REG     1 /* Entry type regular file */
-#define DT_DIR     2 /* Entry type directory */
-#define DT_FIFO    3 /* Entry type pipe */
-#define DT_SOCK    4 /* Entry type socket */
-#define DT_CHR     5 /* Entry type character device */
-#define DT_BLK     6 /* Entry type block device */
-#define DT_LNK     7 /* Entry type symlink */
-
-/* ------------------------------------------- C types ------------------------------------------ */
-
-typedef struct dirent {
-    ino_t d_fileno;             /* inode of the entry */
-    usize d_reclen;             /* size of the entry */
-    usize d_namlen;             /* name length of the entry */
-    dev_t d_dev;                /* device identifier */
-    u8    d_type;               /* node type (file/directory) */
-    char  d_name[FILENAME_MAX]; /* entry name */
-} dirent;
-
-/* ------------------------------------ C function prototypes ----------------------------------- */
+struct dirent {
+    ino_t   d_fileno;             /* inode of the entry */
+    usize   d_reclen;             /* size of the entry */
+    usize   d_namlen;             /* name length of the entry */
+    dev_t   d_dev;                /* device identifier */
+    uint8_t d_type;               /* node type (file/directory) */
+    char    d_name[FILENAME_MAX]; /* entry name */
+};
+TYPE_ALIAS(dirent, struct dirent);
 
 DIR*    opendir(const char*);
 dirent* readdir(DIR*);
@@ -50,5 +48,7 @@ int     closedir(DIR*);
 void    rewinddir(DIR*);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

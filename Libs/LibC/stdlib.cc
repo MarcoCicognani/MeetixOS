@@ -10,17 +10,22 @@
  * GNU General Public License version 3
  */
 
-#include "libc_main_internal.hh"
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
+
+#include "lib.hh"
 
 #include <LibC/errno.h>
 #include <LibC/limits.h>
 #include <LibC/stdlib.h>
 #include <LibC/string.h>
 
-#include <LibTC/Assertions.hh>
-#include <LibTC/CharTypes.hh>
-#include <LibTC/Collection/StringView.hh>
-#include <LibTC/Concept.hh>
+#include <LibApi/Api/User.h>
+
+#include <LibTC/Core/Assertions.hh>
+#include <LibTC/Core/CharTypes.hh>
+#include <LibTC/Core/Concept.hh>
+#include <LibTC/Lang/StringView.hh>
 
 static u64 g_seed;
 
@@ -149,13 +154,13 @@ long double strtold(const char*, char**) {
 }
 
 long strtol(const char* str, char** endptr, int base) {
-    auto const string_view = StringView{ str, strlen(str) };
+    auto const string_view = StringView::construct_from_cstr(str);
     auto const int_base    = int_base_from(string_view, base);
 
     /* convert the string to integer */
     auto error_or_int_value = string_view.as_int<long>(int_base, ParseMode::TrimWhitesAndBegin);
     if ( error_or_int_value.is_error() ) {
-        errno = error_or_int_value.error().errno_code();
+        errno = error_or_int_value.error().code();
         return 0;
     }
 
@@ -170,13 +175,13 @@ long strtol(const char* str, char** endptr, int base) {
 }
 
 unsigned long strtoul(const char* str, char** endptr, int base) {
-    auto const string_view = StringView{ str, strlen(str) };
+    auto const string_view = StringView::construct_from_cstr(str);
     auto const int_base    = int_base_from(string_view, base);
 
     /* convert the string to integer */
     auto error_or_int_value = string_view.as_uint<unsigned long>(int_base, ParseMode::TrimWhitesAndBegin);
     if ( error_or_int_value.is_error() ) {
-        errno = error_or_int_value.error().errno_code();
+        errno = error_or_int_value.error().code();
         return 0;
     }
 
@@ -191,13 +196,13 @@ unsigned long strtoul(const char* str, char** endptr, int base) {
 }
 
 long long strtoll(const char* str, char** endptr, int base) {
-    auto const string_view = StringView{ str, strlen(str) };
+    auto const string_view = StringView::construct_from_cstr(str);
     auto const int_base    = int_base_from(string_view, base);
 
     /* convert the string to integer */
     auto error_or_int_value = string_view.as_int<long long>(int_base, ParseMode::TrimWhitesAndBegin);
     if ( error_or_int_value.is_error() ) {
-        errno = error_or_int_value.error().errno_code();
+        errno = error_or_int_value.error().code();
         return 0;
     }
 
@@ -212,13 +217,13 @@ long long strtoll(const char* str, char** endptr, int base) {
 }
 
 unsigned long long strtoull(const char* str, char** endptr, int base) {
-    auto const string_view = StringView{ str, strlen(str) };
+    auto const string_view = StringView::construct_from_cstr(str);
     auto const int_base    = int_base_from(string_view, base);
 
     /* convert the string to integer */
     auto error_or_int_value = string_view.as_uint<unsigned long long>(int_base, ParseMode::TrimWhitesAndBegin);
     if ( error_or_int_value.is_error() ) {
-        errno = error_or_int_value.error().errno_code();
+        errno = error_or_int_value.error().code();
         return 0;
     }
 
@@ -232,7 +237,7 @@ unsigned long long strtoull(const char* str, char** endptr, int base) {
     return error_or_int_value.value();
 }
 
-void srand(usize s) {
+void srand(int s) {
     g_seed = s - 1;
 }
 
@@ -382,4 +387,7 @@ char* mktemp(char* templ) {
     }
     return templ;
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibTC/Collection/Vector.hh>
-#include <LibTC/Cxx.hh>
+#include <LibTC/Alloc/Vector.hh>
+#include <LibTC/Lang/Cxx.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 

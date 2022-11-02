@@ -10,6 +10,9 @@
  * GNU General Public License version 3
  */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
+
 #include <LibApi/Api.h>
 #include <LibC/sys/param.h>
 
@@ -19,4 +22,7 @@ char* getwd(char* buf) {
     s_get_working_directory(buf);
     return buf;
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

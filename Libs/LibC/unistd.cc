@@ -10,6 +10,9 @@
  * GNU General Public License version 3
  */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
+
 #include <LibApi/Api.h>
 #include <LibC/errno.h>
 #include <LibC/stdio.h>
@@ -24,11 +27,12 @@ int chdir(const char*) {
     return -1;
 }
 
-isize read(int fd, void* buf, usize count) {
+ssize_t read(int fd, void* buf, size_t count) {
     FsReadStatus read_status;
-    usize        read_bytes = s_read_s(fd, buf, count, &read_status);
+
+    auto const read_bytes = s_read_s(fd, buf, count, &read_status);
     if ( read_status == FS_READ_SUCCESSFUL )
-        return static_cast<isize>(read_bytes);
+        return static_cast<ssize_t>(read_bytes);
     else if ( read_status == FS_READ_INVALID_FD )
         errno = EBADF;
     else if ( read_status == FS_READ_BUSY )
@@ -38,11 +42,12 @@ isize read(int fd, void* buf, usize count) {
     return -1;
 }
 
-isize write(int fd, const void* buf, usize count) {
+ssize_t write(int fd, const void* buf, size_t count) {
     FsWriteStatus write_status;
-    auto          written_bytes = s_write_s(fd, buf, count, &write_status);
+
+    auto const written_bytes = s_write_s(fd, buf, count, &write_status);
     if ( write_status == FS_WRITE_SUCCESSFUL )
-        return static_cast<isize>(written_bytes);
+        return static_cast<ssize_t>(written_bytes);
     else if ( write_status == FS_WRITE_INVALID_FD )
         errno = EBADF;
     else if ( write_status == FS_WRITE_BUSY )
@@ -63,7 +68,8 @@ off_t lseek(int fd, off_t offset, int whence) {
 
     /* perform the seek operation */
     FsSeekStatus seek_status;
-    i64          new_offset = s_seek_s(fd, offset, mode, &seek_status);
+
+    auto const new_offset = s_seek_s(fd, offset, mode, &seek_status);
     if ( seek_status == FS_SEEK_SUCCESSFUL )
         return new_offset;
     else if ( seek_status == FS_SEEK_INVALID_FD )
@@ -78,7 +84,7 @@ long int tell(int fd) {
 }
 
 int close(int fd) {
-    auto close_status = s_close(fd);
+    auto const close_status = s_close(fd);
     if ( close_status == FS_CLOSE_SUCCESSFUL )
         return 0;
     else if ( close_status == FS_CLOSE_INVALID_FD )
@@ -110,8 +116,8 @@ pid_t getppid() {
     return s_get_pid();
 }
 
-char* getcwd(char* buf, usize size) {
-    auto work_dir_stat = s_get_working_directory_l(buf, size);
+char* getcwd(char* buf, size_t size) {
+    auto const work_dir_stat = s_get_working_directory_l(buf, size);
     if ( work_dir_stat == GET_WORKING_DIRECTORY_SUCCESSFUL )
         return buf;
     else if ( work_dir_stat == GET_WORKING_DIRECTORY_SIZE_EXCEEDED )
@@ -119,7 +125,7 @@ char* getcwd(char* buf, usize size) {
     return nullptr;
 }
 
-int isatty(A_UNUSED int fd) {
+int isatty(int) {
     __NOT_IMPLEMENTED(isatty);
     return -1;
 }
@@ -134,7 +140,7 @@ int fcntl(int, int, ...) {
     return -1;
 }
 
-int rmdir(const char* path) {
+int rmdir(const char*) {
     __NOT_IMPLEMENTED(rmdir);
     return -1;
 }
@@ -143,4 +149,7 @@ int symlink(const char*, const char*) {
     __NOT_IMPLEMENTED(symlink);
     return -1;
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

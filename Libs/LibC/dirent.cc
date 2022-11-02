@@ -10,11 +10,14 @@
  * GNU General Public License version 3
  */
 
-#include <LibApi/Api/FileSystem.h>
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-use-trailing-return-type"
+
+#include <LibApi/Api.h>
 #include <LibC/dirent.h>
 #include <LibC/errno.h>
 #include <LibC/string.h>
-#include <LibTC/Assertions.hh>
+#include <LibTC/Core/Assertions.hh>
 
 extern "C" {
 
@@ -77,4 +80,7 @@ int closedir(DIR* dir) {
     delete dir;
     return 0;
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

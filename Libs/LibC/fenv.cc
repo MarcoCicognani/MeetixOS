@@ -12,37 +12,43 @@
 
 /* Implementation taken from https://github.com/SerenityOS/serenity/blob/master/Userland/Libraries/LibC/fenv.cpp */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "ConstantFunctionResult"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
+
 #include <LibC/fenv.h>
 
-static_assert(sizeof(__x87_floating_point_environment) == 28);
+static constexpr uint32_t c_default_mxcsr_value = 0x1f80;
 
-static u16 read_status_register() {
-    u16 status_register;
+namespace Details {
+
+static uint16_t read_status_register() {
+    uint16_t status_register;
     asm volatile("fstsw %0" : "=m"(status_register));
     return status_register;
 }
 
-static u16 read_control_word() {
-    u16 control_word;
+static uint16_t read_control_word() {
+    uint16_t control_word;
     asm volatile("fstcw %0" : "=m"(control_word));
     return control_word;
 }
 
-static void set_control_word(u16 new_control_word) {
+static void set_control_word(uint16_t new_control_word) {
     asm volatile("fldcw %0" ::"m"(new_control_word));
 }
 
-static u32 read_mxcsr() {
-    u32 mxcsr;
+static auto read_mxcsr() -> uint32_t {
+    uint32_t mxcsr;
     asm volatile("stmxcsr %0" : "=m"(mxcsr));
     return mxcsr;
 }
 
-static void set_mxcsr(u32 new_mxcsr) {
+static void set_mxcsr(uint32_t new_mxcsr) {
     asm volatile("ldmxcsr %0" ::"m"(new_mxcsr));
 }
 
-static constexpr u32 default_mxcsr_value = 0x1f80;
+} /* namespace Details */
 
 extern "C" {
 
@@ -51,22 +57,22 @@ int fegetenv(fenv_t* env) {
         return 1;
 
     asm volatile("fstenv %0" : "=m"(env->__x87_fpu_env)::"memory");
-    env->__mxcsr = read_mxcsr();
+    env->__mxcsr = Details::read_mxcsr();
     return 0;
 }
 
-int fesetenv(const fenv_t* env) {
+int fesetenv(fenv_t const* env) {
     if ( !env )
         return 1;
 
     if ( env == FE_DFL_ENV ) {
         asm volatile("finit");
-        set_mxcsr(default_mxcsr_value);
+        Details::set_mxcsr(c_default_mxcsr_value);
         return 0;
     }
 
     asm volatile("fldenv %0" ::"m"(env) : "memory");
-    set_mxcsr(env->__mxcsr);
+    Details::set_mxcsr(env->__mxcsr);
     return 0;
 }
 
@@ -84,7 +90,7 @@ int feholdexcept(fenv_t* env) {
     return 0;
 }
 
-int feupdateenv(const fenv_t* env) {
+int feupdateenv(fenv_t const* env) {
     auto raised_exceptions = fetestexcept(FE_ALL_EXCEPT);
 
     fesetenv(env);
@@ -96,11 +102,11 @@ int fegetexceptflag(fexcept_t* except, int exceptions) {
     if ( !except )
         return 1;
 
-    *except = static_cast<u16>(fetestexcept(exceptions));
+    *except = static_cast<uint16_t>(fetestexcept(exceptions));
     return 0;
 }
 
-int fesetexceptflag(const fexcept_t* except, int exceptions) {
+int fesetexceptflag(fexcept_t const* except, int exceptions) {
     if ( !except )
         return 1;
 
@@ -116,24 +122,24 @@ int fesetexceptflag(const fexcept_t* except, int exceptions) {
 }
 
 int fegetround() {
-    return (read_status_register() >> 10) & 3;
+    return (Details::read_status_register() >> 10) & 3;
 }
 
 int fesetround(int rounding_mode) {
     if ( rounding_mode < FE_TONEAREST || rounding_mode > FE_TOWARDZERO )
         return 1;
 
-    auto control_word = read_control_word();
+    auto control_word = Details::read_control_word();
     control_word &= ~(3 << 10);
     control_word |= rounding_mode << 10;
 
-    set_control_word(control_word);
+    Details::set_control_word(control_word);
 
-    auto mxcsr = read_mxcsr();
+    auto mxcsr = Details::read_mxcsr();
     mxcsr &= ~(3 << 13);
     mxcsr |= rounding_mode << 13;
 
-    set_mxcsr(mxcsr);
+    Details::set_mxcsr(mxcsr);
     return 0;
 }
 
@@ -151,7 +157,7 @@ int feclearexcept(int exceptions) {
 }
 
 int fetestexcept(int exceptions) {
-    u16 status_register = read_status_register() & FE_ALL_EXCEPT;
+    uint16_t status_register = Details::read_status_register() & FE_ALL_EXCEPT;
     exceptions &= FE_ALL_EXCEPT;
 
     return status_register & exceptions;
@@ -167,7 +173,7 @@ int feraiseexcept(int exceptions) {
      * before FE_INEXACT, so handle that case in this branch
      */
     if ( exceptions & FE_INEXACT ) {
-        env.__x87_fpu_env.__status_word &= ((u16)exceptions & ~FE_INEXACT);
+        env.__x87_fpu_env.__status_word &= (static_cast<uint16_t>(exceptions) & ~FE_INEXACT);
         fesetenv(&env);
         asm volatile("fwait"); /* "raise" the exception by performing a floating point operation */
 
@@ -183,4 +189,7 @@ int feraiseexcept(int exceptions) {
     asm volatile("fwait");
     return 0;
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

@@ -11,6 +11,10 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "bugprone-reserved-identifier"
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <stdint.h>
 
@@ -18,40 +22,44 @@
 extern "C" {
 #endif
 
-#define FE_TONEAREST  0
-#define FE_DOWNWARD   1
-#define FE_UPWARD     2
-#define FE_TOWARDZERO 3
-#define FE_INVALID    1u << 0
-#define FE_DIVBYZERO  1u << 2
-#define FE_OVERFLOW   1u << 3
-#define FE_UNDERFLOW  1u << 4
-#define FE_INEXACT    1u << 5
-#define FE_ALL_EXCEPT (FE_DIVBYZERO | FE_INEXACT | FE_INVALID | FE_OVERFLOW | FE_UNDERFLOW)
-#define FE_DFL_ENV    ((const fenv_t*)-1)
+TYPE_ALIAS(fexcept_t, uint16_t);
+TYPE_ALIAS(fenv_t, struct fenv_t);
 
-typedef u16 fexcept_t;
+CONST_VALUE(FE_TONEAREST, int, 0);
+CONST_VALUE(FE_DOWNWARD, int, 1);
+CONST_VALUE(FE_UPWARD, int, 2);
+CONST_VALUE(FE_TOWARDZERO, int, 3);
+CONST_VALUE(FE_INVALID, int, 1u << 0);
+CONST_VALUE(FE_DIVBYZERO, int, 1u << 2);
+CONST_VALUE(FE_OVERFLOW, int, 1u << 3);
+CONST_VALUE(FE_UNDERFLOW, int, 1u << 4);
+CONST_VALUE(FE_INEXACT, int, 1u << 5);
+CONST_VALUE(FE_ALL_EXCEPT, int, FE_DIVBYZERO | FE_INEXACT | FE_INVALID | FE_OVERFLOW | FE_UNDERFLOW);
+
+#define FE_DFL_ENV ((const fenv_t*)-1)
 
 struct __x87_floating_point_environment {
-    u16 __control_word;
-    u16 __reserved1;
-    u16 __status_word;
-    u16 __reserved2;
-    u16 __tag_word;
-    u16 __reserved3;
-    u32 __fpu_ip_offset;
-    u16 __fpu_ip_selector;
-    u16 __opcode    : 11;
-    u16 __reserved4 : 5;
-    u32 __fpu_data_offset;
-    u16 __fpu_data_selector;
-    u16 __reserved5;
+    uint16_t __control_word;
+    uint16_t : 16;
+    uint16_t __status_word;
+    uint16_t : 16;
+    uint16_t __tag_word;
+    uint16_t : 16;
+    uint32_t __fpu_ip_offset;
+    uint16_t __fpu_ip_selector;
+    uint16_t __opcode : 11;
+    uint16_t          : 5;
+    uint32_t __fpu_data_offset;
+    uint16_t __fpu_data_selector;
+    uint16_t : 16;
 };
+static_assert(sizeof(__x87_floating_point_environment) == 28);
 
-typedef struct fenv_t {
+struct fenv_t {
     struct __x87_floating_point_environment __x87_fpu_env;
-    u32                                     __mxcsr;
-} fenv_t;
+
+    uint32_t __mxcsr;
+};
 
 int fegetenv(fenv_t*);
 int fesetenv(const fenv_t*);
@@ -69,5 +77,7 @@ int fesetround(int);
 int fegetround(void);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

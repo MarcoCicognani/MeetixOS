@@ -11,46 +11,38 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
-#include <Api.h>
 #include <file.h>
-#include <sys/types.h>
+#include <limits.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
+#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
+CONST_VALUE(_IOFBF, int, 1); /* full buffering */
+CONST_VALUE(_IOLBF, int, 2); /* line buffering */
+CONST_VALUE(_IONBF, int, 3); /* no buffering */
 
-#define _IOFBF 1 /* full buffering */
-#define _IOLBF 2 /* line buffering */
-#define _IONBF 3 /* no buffering */
+CONST_VALUE(BUFSIZ, int, 0x2000);
+CONST_VALUE(BUFSIZMIN, int, 128);
 
-#define BUFSIZ    0x2000
-#define BUFSIZMIN 128
+CONST_VALUE(EOF, int, (-1));
 
-#define EOF (-1)
+CONST_VALUE(FOPEN_MAX, int, 1024);
+CONST_VALUE(TMP_MAX, int, FOPEN_MAX);
+CONST_VALUE(L_tmpnam, int, PATH_MAX);
 
-#define FOPEN_MAX 1024
-#define TMP_MAX   FOPEN_MAX
-#define L_tmpnam  PATH_MAX
-
-#ifdef SEEK_CUR
-#    undef SEEK_CUR
-#endif
-#define SEEK_CUR 1
-
-#ifdef SEEK_END
-#    undef SEEK_END
-#endif
-#define SEEK_END 2
-
-#ifdef SEEK_SET
-#    undef SEEK_SET
-#endif
-#define SEEK_SET 3
+CONST_VALUE(SEEK_CUR, int, 1);
+CONST_VALUE(SEEK_END, int, 2);
+CONST_VALUE(SEEK_SET, int, 3);
 
 extern FILE* g_stderr_ptr;
 #define stderr g_stderr_ptr
@@ -61,15 +53,11 @@ extern FILE* g_stdin_ptr;
 extern FILE* g_stdout_ptr;
 #define stdout g_stdout_ptr
 
-#define STDIN_FILENO  0
-#define STDOUT_FILENO 1
-#define STDERR_FILENO 2
+CONST_VALUE(STDIN_FILENO, int, 0);
+CONST_VALUE(STDOUT_FILENO, int, 1);
+CONST_VALUE(STDERR_FILENO, int, 2);
 
-/* ------------------------------------------- C types ------------------------------------------ */
-
-typedef off_t fpos_t;
-
-/* ------------------------------------ C function prototypes ----------------------------------- */
+TYPE_ALIAS(fpos_t, off_t);
 
 /* path operations */
 
@@ -89,28 +77,28 @@ FILE* fdopen(int, const char*);
 /* FILE stream buffering management */
 
 void setbuf(FILE*, char*);
-int  setvbuf(FILE*, char*, int, usize);
+int  setvbuf(FILE*, char*, int, size_t);
 
 /* FILE stream read operations */
 
-int   fgetc(FILE*);
-int   getc(FILE*);
-char* fgets(char*, int, FILE*);
-usize fread(void*, usize, usize, FILE*);
-bool  readline(FILE*, char*, usize);
-int   fscanf(FILE*, const char*, ...);
-int   vfscanf(FILE*, const char*, va_list);
+int    fgetc(FILE*);
+int    getc(FILE*);
+char*  fgets(char*, int, FILE*);
+size_t fread(void*, size_t, size_t, FILE*);
+bool   readline(FILE*, char*, size_t);
+int    fscanf(FILE*, const char*, ...);
+int    vfscanf(FILE*, const char*, va_list);
 
 /* FILE stream write operations */
 
-int   putc(int, FILE*);
-int   fputc(int, FILE*);
-int   fputs(const char*, FILE*);
-int   ungetc(int, FILE*);
-int   fungetc(int, FILE*);
-usize fwrite(const void*, usize, usize, FILE*);
-int   fprintf(FILE*, const char*, ...) A_PRINTF(2, 3);
-int   vfprintf(FILE*, const char*, va_list);
+int    putc(int, FILE*);
+int    fputc(int, FILE*);
+int    fputs(const char*, FILE*);
+int    ungetc(int, FILE*);
+int    fungetc(int, FILE*);
+size_t fwrite(const void*, size_t, size_t, FILE*);
+int    fprintf(FILE*, const char*, ...) A_PRINTF(2, 3);
+int    vfprintf(FILE*, const char*, va_list);
 
 /* FILE stream cursor position writers */
 
@@ -143,9 +131,6 @@ int vprintf(const char*, va_list);
 int putchar(int);
 int puts(const char*);
 
-int cbprintf(void*, isize (*)(void*, const char*, usize), const char*, ...) A_PRINTF(3, 4);
-int vcbprintf(void*, isize (*)(void*, const char*, usize), const char*, va_list);
-
 /* Standard I/O read functions */
 
 int scanf(const char*, ...);
@@ -155,8 +140,8 @@ int getchar();
 
 int sprintf(char*, const char*, ...) A_PRINTF(2, 3);
 int vsprintf(char*, const char*, va_list);
-int snprintf(char*, usize, const char*, ...) A_PRINTF(3, 4);
-int vsnprintf(char*, usize, const char*, va_list);
+int snprintf(char*, size_t, const char*, ...) A_PRINTF(3, 4);
+int vsnprintf(char*, size_t, const char*, va_list);
 
 /* Standard I/O buffer read functions */
 
@@ -176,5 +161,7 @@ void  perror(const char*);
 int   pclose(FILE*);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

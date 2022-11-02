@@ -11,107 +11,109 @@
 #
 
 set(ASM_SOURCES
-        system/interrupts/handling/InterruptStubs.asm
         system/interrupts/descriptors/IdtMounter.asm
+        system/interrupts/handling/InterruptStubs.asm
         system/processor.asm)
 set_source_files_properties(${ASM_SOURCES} PROPERTIES LANGUAGE ASM_NASM)
 
-# TODO missing ctype, memcpy, memset, memmove, strlen
 set(LIBTC_SOURCES
-        ../../Libs/LibTC/Collection/String.cc
-        ../../Libs/LibTC/Collection/StringBuilder.cc
-        ../../Libs/LibTC/Collection/StringStorage.cc
-        ../../Libs/LibTC/Collection/StringView.cc
-        ../../Libs/LibTC/Text/FormatParser.cc
-        ../../Libs/LibTC/Text/Formatter.cc
-        ../../Libs/LibTC/Text/Format.cc
-        ../../Libs/LibTC/Text/Lexer.cc
-        ../../Libs/LibTC/Text/FormatLexer.cc
-        ../../Libs/LibTC/SourceLocation.cc
-        ../../Libs/LibTC/Error.cc
-        ../../Libs/LibTC/Hashing.cc)
+        ../../Libs/LibTC/Alloc/String.cc
+        ../../Libs/LibTC/Alloc/StringBuilder.cc
+        ../../Libs/LibTC/Alloc/StringStorage.cc
+        ../../Libs/LibTC/Alloc/Text/Format.cc
+        ../../Libs/LibTC/Alloc/Text/FormatLexer.cc
+        ../../Libs/LibTC/Alloc/Text/FormatParser.cc
+        ../../Libs/LibTC/Alloc/Text/Formatter.cc
+        ../../Libs/LibTC/Alloc/Text/Lexer.cc
+        ../../Libs/LibTC/Core/Error.cc
+        ../../Libs/LibTC/Core/Hashing.cc
+        ../../Libs/LibTC/Core/SourceLocation.cc
+        ../../Libs/LibTC/Lang/StringView.cc)
 
 set(LIBC_SOURCES
-        ../../Libs/LibC/ctype.cc
+        ../../Libs/LibC/errno.cc
         ../../Libs/LibC/string.cc)
 
-add_executable(Kernel
-        EvangelionNG.cpp
-        filesystem/FsDelegateTasked.cpp
-        filesystem/FsDelegatePipe.cpp
-        filesystem/FsDelegateRamdisk.cpp
-        filesystem/FsTransactionHandlerGetLength.cpp
-        filesystem/FsTransactionHandlerWrite.cpp
-        filesystem/FsTransactionHandlerDiscovery.cpp
-        filesystem/FsTransactionHandlerClose.cpp
-        filesystem/FsTransactionHandlerReadDirectory.cpp
-        filesystem/FsTransactionHandlerOpen.cpp
-        filesystem/pipes.cpp
-        filesystem/FsTransactionStore.cpp
-        filesystem/FsDescriptors.cpp
-        filesystem/FsTransactionHandlerRead.cpp
-        filesystem/FsTransactionHandlerDirectoryRefresh.cpp
-        filesystem/FsNode.cpp
-        filesystem/FsDelegateMount.cpp
-        filesystem/filesystem.cpp
-        memory/LowerHeap.cpp
-        memory/collections/AddressStack.cpp
-        memory/collections/AddressRangePool.cpp
-        memory/physical/PPallocator.cpp
-        memory/physical/PPreferenceTracker.cpp
-        memory/AddressSpace.cpp
-        memory/gdt/GdtManager.cpp
-        memory/allocators/ChunkAllocator.cpp
-        memory/TemporaryPagingUtil.cpp
-        memory/KernelHeap.cpp
-        init.cpp
-        ramdisk/Ramdisk.cpp
-        calls/SyscallHandlerVm86.cpp
-        calls/SyscallHandlerMemory.cpp
+set(KERNEL_SOURCES
+        calls/SyscallHandler.cpp
+        calls/SyscallHandlerFilesystem.cpp
         calls/SyscallHandlerInfo.cpp
         calls/SyscallHandlerLog.cpp
-        calls/SyscallHandler.cpp
+        calls/SyscallHandlerMemory.cpp
         calls/SyscallHandlerMessaging.cpp
-        calls/SyscallHandlerFilesystem.cpp
+        calls/SyscallHandlerServer.cpp
         calls/SyscallHandlerSpawning.cpp
         calls/SyscallHandlerTasking.cpp
-        calls/SyscallHandlerServer.cpp
         calls/SyscallHandlerTime.cc
-        utils/string.cpp
-        logger/logger.cpp
-        tasking/tasking.cpp
-        tasking/thread.cpp
-        tasking/process.cpp
-        tasking/ThreadManager.cpp
-        tasking/communication/MessageController.cpp
-        tasking/scheduling/scheduler.cpp
+        calls/SyscallHandlerVm86.cpp
         debug/DebugInterfaceKernel.cpp
+        EvangelionNG.cpp
         executable/Elf32Loader.cpp
-        system/interrupts/handling/InterruptExceptionHandler.cpp
-        system/interrupts/handling/InterruptDispatcher.cpp
-        system/interrupts/handling/InterruptRequestHandler.cpp
-        system/interrupts/ioapic.cpp
-        system/interrupts/lapic.cpp
-        system/interrupts/IoapicManager.cpp
-        system/interrupts/descriptors/ivt.cpp
-        system/interrupts/descriptors/idt.cpp
-        system/interrupts/pic.cpp
-        system/processor.cpp
-        system/system.cpp
-        system/smp/smp.cpp
-        system/smp/GlobalLock.cpp
-        system/smp/GlobalRecursiveLock.cpp
-        system/pci/pci.cpp
-        system/timing/pit.cpp
-        system/acpi/RsdpLookupUtil.cpp
+        filesystem/filesystem.cpp
+        filesystem/FsDelegateMount.cpp
+        filesystem/FsDelegatePipe.cpp
+        filesystem/FsDelegateRamdisk.cpp
+        filesystem/FsDelegateTasked.cpp
+        filesystem/FsDescriptors.cpp
+        filesystem/FsNode.cpp
+        filesystem/FsTransactionHandlerClose.cpp
+        filesystem/FsTransactionHandlerDirectoryRefresh.cpp
+        filesystem/FsTransactionHandlerDiscovery.cpp
+        filesystem/FsTransactionHandlerGetLength.cpp
+        filesystem/FsTransactionHandlerOpen.cpp
+        filesystem/FsTransactionHandlerRead.cpp
+        filesystem/FsTransactionHandlerReadDirectory.cpp
+        filesystem/FsTransactionHandlerWrite.cpp
+        filesystem/FsTransactionStore.cpp
+        filesystem/pipes.cpp
+        init.cpp
+        logger/logger.cpp
+        memory/AddressSpace.cpp
+        memory/allocators/ChunkAllocator.cpp
+        memory/collections/AddressRangePool.cpp
+        memory/collections/AddressStack.cpp
+        memory/gdt/GdtManager.cpp
+        memory/KernelHeap.cpp
+        memory/LowerHeap.cpp
+        memory/physical/PPallocator.cpp
+        memory/physical/PPreferenceTracker.cpp
+        memory/TemporaryPagingUtil.cpp
+        ramdisk/Ramdisk.cpp
         system/acpi/acpi.cpp
         system/acpi/AcpiEntry.cpp
         system/acpi/madt.cpp
+        system/acpi/RsdpLookupUtil.cpp
+        system/interrupts/descriptors/idt.cpp
+        system/interrupts/descriptors/ivt.cpp
+        system/interrupts/handling/InterruptDispatcher.cpp
+        system/interrupts/handling/InterruptExceptionHandler.cpp
+        system/interrupts/handling/InterruptRequestHandler.cpp
+        system/interrupts/ioapic.cpp
+        system/interrupts/IoapicManager.cpp
+        system/interrupts/lapic.cpp
+        system/interrupts/pic.cpp
+        system/pci/pci.cpp
+        system/processor.cpp
+        system/smp/GlobalLock.cpp
+        system/smp/GlobalRecursiveLock.cpp
+        system/smp/smp.cpp
+        system/system.cpp
+        system/timing/pit.cpp
         system/timing/RTC.cc
-        vm86/Virtual8086Monitor.cpp
+        tasking/communication/MessageController.cpp
+        tasking/process.cpp
+        tasking/scheduling/scheduler.cpp
+        tasking/tasking.cpp
+        tasking/thread.cpp
+        tasking/ThreadManager.cpp
+        utils/string.cpp
+        vm86/Virtual8086Monitor.cpp)
+
+add_executable(Kernel
         ${ASM_SOURCES}
+        ${LIBC_SOURCES}
         ${LIBTC_SOURCES}
-        ${LIBC_SOURCES})
+        ${KERNEL_SOURCES})
 
 target_include_directories(Kernel PRIVATE . ../Shared)
 target_link_libraries(Kernel Shared gcc)

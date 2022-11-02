@@ -14,9 +14,13 @@
 #include <LibC/stdio.h>
 #include <LibC/stdlib.h>
 
-extern "C" A_NORETURN void assert_failed(const char* message) {
-    fprintf(stdout, "\033[31mASSERTION FAILED: %s\033[0m\n", message);
-    fflush(stdout);
+extern "C" {
+
+A_NORETURN void libc_runtime_panic(const char* file, int line, const char* expression) {
+    fprintf(stderr, "\e[31mLibC RunTime Panic\e[0m in %s:%d\n> { %s }\n", file, line, expression);
+    fflush(stderr);
 
     exit(EXIT_FAILURE);
 }
+
+} /* extern "C" */

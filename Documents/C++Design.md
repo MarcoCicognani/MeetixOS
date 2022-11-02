@@ -1,10 +1,10 @@
 # MeetixOS C++ Code Design
 
 * In classes public constructors and assignment operator overloads are **not** allowed except for
-  * ```noexcept``` conversion/wrapping constructors (i.e ```Option(T const&)```/```Option(T&&)```)
-  * ```noexcept``` move constructors
-  * ```noexcept``` conversion/wrapping assignment operator overload (i.e ```Option::operator=(T const&)```/```Option::operator=(T&&)```)
-  * ```noexcept``` move assignment operator overload
+  * conversion/wrapping constructors (i.e ```Option(T const&)```/```Option(T&&)```)
+  * move constructors
+  * conversion/wrapping assignment operator overload (i.e ```Option::operator=(T const&)```/```Option::operator=(T&&)```)
+  * move assignment operator overload
 
 Instead, static factory functions must be used (i.e ```[try_]construct_<with,from>...()```) to construct objects.
 

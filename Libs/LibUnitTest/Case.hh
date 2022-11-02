@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <LibTC/Collection/StringView.hh>
+#include <LibTC/Lang/StringView.hh>
 
 /**
  * @brief Define a Case for testing an aspect of something

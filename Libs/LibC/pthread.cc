@@ -10,9 +10,18 @@
  * GNU General Public License version 3
  */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
+
 #include <LibApi/Api.h>
 #include <LibC/errno.h>
 #include <LibC/pthread.h>
+#include <LibTC/Alloc/Box.hh>
+#include <LibTC/Core/ErrorOr.hh>
+#include <LibTC/Lang/Cxx.hh>
+#include <LibTC/Lang/Function.hh>
+
+extern "C" {
 
 struct pthread_t {
     Tid            m_thread_id;
@@ -20,23 +29,24 @@ struct pthread_t {
     pthread_attr_t m_pthread_attr;
 };
 
-using PThreadFn = void* (*)(void*);
+} /* extern "C" */
+
+static thread_local pthread_t s_pthread_self{ s_get_tid() };
 
 struct PThreadArgs {
-    void*      m_arg_ptr{ nullptr };
-    pthread_t* m_pthread{ nullptr };
-    PThreadFn  m_user_routine{ nullptr };
+    void*                  m_arg_ptr{ nullptr };
+    pthread_t*             m_pthread{ nullptr };
+    Function<void*(void*)> m_user_routine;
 
-    PThreadArgs(void* arg_ptr, pthread_t* pthread, PThreadFn user_routine)
-        : m_arg_ptr{ arg_ptr }
-        , m_pthread{ pthread }
-        , m_user_routine{ user_routine } {
+    [[nodiscard]] static auto construct_from_args(void* arg_ptr, pthread_t* pthread, Function<void*(void*)> user_routine) -> ErrorOr<Box<PThreadArgs>> {
+        return Box<PThreadArgs>::try_construct_from_emplace(arg_ptr, pthread, Cxx::move(user_routine));
     }
 };
 
-static A_NOINLINE void pthread_entry_point(PThreadArgs* pthread_args) {
-    pthread_args->m_pthread->m_exit_value = pthread_args->m_user_routine(pthread_args->m_arg_ptr);
-    delete pthread_args;
+[[gnu::noinline]] static auto pthread_entry_point(PThreadArgs* pthread_args_ptr) -> void {
+    auto pthread_args_box = Box<PThreadArgs>::construct_from_adopt(*pthread_args_ptr);
+
+    pthread_args_box->m_pthread->m_exit_value = pthread_args_box->m_user_routine(pthread_args_box->m_arg_ptr);
 }
 
 extern "C" {
@@ -47,11 +57,17 @@ int pthread_create(pthread_t* pthread, const pthread_attr_t* pthread_attr, void*
         return -1;
     }
 
-    /* start the PThread */
-    CreateThreadStatus create_thread_status;
-    pthread->m_thread_id = s_create_thread_ds(reinterpret_cast<void*>(pthread_entry_point),
-                                              new PThreadArgs{ arg_ptr, pthread, start_routine },
-                                              &create_thread_status);
+    /* construct the pthread arguments */
+    auto error_or_pthread_args = PThreadArgs::construct_from_args(arg_ptr, pthread, start_routine);
+    if ( error_or_pthread_args.is_error() ) {
+        errno = error_or_pthread_args.unwrap_error().code();
+        return -1;
+    }
+
+    auto pthread_args         = error_or_pthread_args.unwrap();
+    auto create_thread_status = CREATE_THREAD_STATUS_FAILED;
+    auto entry_point          = bit_cast<void*>(&pthread_entry_point);
+    pthread->m_thread_id      = s_create_thread_ds(entry_point, pthread_args.leak_ptr(), &create_thread_status);
 
     /* copy the attribute value */
     if ( pthread_attr )
@@ -69,7 +85,7 @@ int pthread_create(pthread_t* pthread, const pthread_attr_t* pthread_attr, void*
 }
 
 pthread_t* pthread_self(void) {
-    return new pthread_t{ s_get_tid() };
+    return &s_pthread_self;
 }
 
 int pthread_join(pthread_t* pthread, void** ret_val) {
@@ -143,4 +159,7 @@ int pthread_set_detachstate(pthread_attr_t* pthread_attr, int detach_state) {
     *pthread_attr = detach_state;
     return 0;
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

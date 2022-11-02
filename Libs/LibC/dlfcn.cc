@@ -10,8 +10,11 @@
  * GNU General Public License version 3
  */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-use-trailing-return-type"
+
 #include <LibC/dlfcn.h>
-#include <LibTC/Collection/StringView.hh>
+#include <LibTC/Lang/StringView.hh>
 
 static auto const g_dl_error_string_view = "dlfcn not available"sv;
 
@@ -32,4 +35,7 @@ A_WEAK char* dlerror(void) {
 A_WEAK int dlclose(void*) {
     return -1;
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

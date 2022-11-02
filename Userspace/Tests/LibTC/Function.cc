@@ -10,11 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <LibTC/Collection/Function.hh>
+#include <LibTC/Lang/Function.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
-
-using namespace TC;
 
 TEST_CASE(construct) {
     Function<i32()> function = []() -> i32 { return 0; };
@@ -50,7 +48,7 @@ TEST_CASE(move) {
     Function<i32()> function_1 = []() -> i32 { return 1; };
     VERIFY_EQUAL(function_1(), 1);
 
-    function_1 = Cxx::move(function_0);
+    function_1 = move(function_0);
     VERIFY_EQUAL(function_1(), 0);
 }
 
@@ -84,7 +82,7 @@ TEST_CASE(copy_capturing_lambda) {
 }
 
 void ensure_call_equals_with_functor(Function<usize()> function) {
-    for ( usize i : Range{ 0, 1'000'000 } ) {
+    for ( auto const i : Range{ 0u, 1'000'000u } ) {
         VERIFY_EQUAL(function(), i);
     }
 }
@@ -96,7 +94,7 @@ BENCHMARK_CASE(call_one_hundred_thousand_times) {
 }
 
 void ensure_call_equals_with_template(Callable<usize> auto function) {
-    for ( usize i : Range{ 0, 1'000'000 } ) {
+    for ( auto const i : Range{ 0u, 1'000'000u } ) {
         VERIFY_EQUAL(function(), i);
     }
 }

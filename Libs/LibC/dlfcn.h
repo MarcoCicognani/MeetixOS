@@ -11,17 +11,18 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
+
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
-
-#define RTLD_LAZY 0
-#define RTLD_NOW  1
-
-/* ------------------------------------ C function prototypes ----------------------------------- */
+CONST_VALUE(RTLD_LAZY, int, 0);
+CONST_VALUE(RTLD_NOW, int, 1);
 
 void* dlopen(const char*, int);
 int   dlclose(void*);
@@ -29,5 +30,7 @@ void* dlsym(void*, const char*);
 char* dlerror(void);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

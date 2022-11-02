@@ -11,6 +11,9 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <stdint.h>
 
@@ -18,16 +21,14 @@
 extern "C" {
 #endif
 
-/* ------------------------------------------- C types ------------------------------------------ */
-
-typedef void* iconv_t;
-
-/* ------------------------------------ C function prototypes ----------------------------------- */
+TYPE_ALIAS(iconv_t, void*);
 
 iconv_t iconv_open(const char*, const char*);
-usize   iconv(iconv_t, char**, size_t*, char**, usize*);
+size_t  iconv(iconv_t, char**, size_t*, char**, size_t*);
 int     iconv_close(iconv_t);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

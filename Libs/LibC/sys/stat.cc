@@ -10,6 +10,9 @@
  * GNU General Public License version 3
  */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
+
 #include <LibApi/Api.h>
 #include <LibC/sys/stat.h>
 
@@ -49,4 +52,7 @@ int mkdir(const char*, mode_t) {
     __NOT_IMPLEMENTED(mkdir);
     return -1;
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

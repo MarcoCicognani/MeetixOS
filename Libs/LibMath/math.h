@@ -11,24 +11,21 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <float.h>
 #include <limits.h>
 #include <stdint.h>
 
-#if __cplusplus >= 201103L
-#    define NOEXCEPT noexcept
-#else
-#    define NOEXCEPT
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define MATH_ERRNO       1
-#define MATH_ERREXCEPT   2
-#define math_errhandling MATH_ERREXCEPT
+CONST_VALUE(MATH_ERRNO, int, 1);
+CONST_VALUE(MATH_ERREXCEPT, int, 2);
+CONST_VALUE(math_errhandling, int, MATH_ERREXCEPT);
 
 #define HUGE_VALF __builtin_huge_valf()
 #define HUGE_VAL  __builtin_huge_val()
@@ -37,53 +34,53 @@ extern "C" {
 #define NAN       __builtin_nan("")
 #define MAXFLOAT  FLT_MAX
 
-#define M_E        2.7182818284590452354
-#define M_LOG2E    1.4426950408889634074
-#define M_LOG10E   0.43429448190325182765
-#define M_LN2      0.69314718055994530942
-#define M_LN10     2.30258509299404568402
-#define M_PI       3.14159265358979323846
-#define M_PI_2     1.57079632679489661923
-#define M_PI_4     0.78539816339744830962
-#define M_1_PI     0.31830988618379067154
-#define M_2_PI     0.63661977236758134308
-#define M_2_SQRTPI 1.12837916709551257390
-#define M_SQRT2    1.41421356237309504880
-#define M_SQRT1_2  0.70710678118654752440
+CONST_VALUE(M_E, double, 2.7182818284590452354);
+CONST_VALUE(M_LOG2E, double, 1.4426950408889634074);
+CONST_VALUE(M_LOG10E, double, 0.43429448190325182765);
+CONST_VALUE(M_LN2, double, 0.69314718055994530942);
+CONST_VALUE(M_LN10, double, 2.30258509299404568402);
+CONST_VALUE(M_PI, double, 3.14159265358979323846);
+CONST_VALUE(M_PI_2, double, 1.57079632679489661923);
+CONST_VALUE(M_PI_4, double, 0.78539816339744830962);
+CONST_VALUE(M_1_PI, double, 0.31830988618379067154);
+CONST_VALUE(M_2_PI, double, 0.63661977236758134308);
+CONST_VALUE(M_2_SQRTPI, double, 1.12837916709551257390);
+CONST_VALUE(M_SQRT2, double, 1.41421356237309504880);
+CONST_VALUE(M_SQRT1_2, double, 0.70710678118654752440);
 
-#define M_Ef32        2.7182818284590452354f
-#define M_LOG2Ef32    1.4426950408889634074f
-#define M_LOG10Ef32   0.43429448190325182765f
-#define M_LN2f32      0.69314718055994530942f
-#define M_LN10f32     2.30258509299404568402f
-#define M_PIf32       3.14159265358979323846f
-#define M_PI_2f32     1.57079632679489661923f
-#define M_PI_4f32     0.78539816339744830962f
-#define M_1_PIf32     0.31830988618379067154f
-#define M_2_PIf32     0.63661977236758134308f
-#define M_2_SQRTPIf32 1.12837916709551257390f
-#define M_SQRT2f32    1.41421356237309504880f
-#define M_SQRT1_2f32  0.70710678118654752440f
+CONST_VALUE(M_Ef32, float, 2.7182818284590452354f);
+CONST_VALUE(M_LOG2Ef32, float, 1.4426950408889634074f);
+CONST_VALUE(M_LOG10Ef32, float, 0.43429448190325182765f);
+CONST_VALUE(M_LN2f32, float, 0.69314718055994530942f);
+CONST_VALUE(M_LN10f32, float, 2.30258509299404568402f);
+CONST_VALUE(M_PIf32, float, 3.14159265358979323846f);
+CONST_VALUE(M_PI_2f32, float, 1.57079632679489661923f);
+CONST_VALUE(M_PI_4f32, float, 0.78539816339744830962f);
+CONST_VALUE(M_1_PIf32, float, 0.31830988618379067154f);
+CONST_VALUE(M_2_PIf32, float, 0.63661977236758134308f);
+CONST_VALUE(M_2_SQRTPIf32, float, 1.12837916709551257390f);
+CONST_VALUE(M_SQRT2f32, float, 1.41421356237309504880f);
+CONST_VALUE(M_SQRT1_2f32, float, 0.70710678118654752440f);
 
-#define M_El        2.718281828459045235360287471352662498L
-#define M_LOG2El    1.442695040888963407359924681001892137L
-#define M_LOG10El   0.434294481903251827651128918916605082L
-#define M_LN2l      0.693147180559945309417232121458176568L
-#define M_LN10l     2.302585092994045684017991454684364208L
-#define M_PIl       3.141592653589793238462643383279502884L
-#define M_PI_2l     1.570796326794896619231321691639751442L
-#define M_PI_4l     0.785398163397448309615660845819875721L
-#define M_1_PIl     0.318309886183790671537767526745028724L
-#define M_2_PIl     0.636619772367581343075535053490057448L
-#define M_2_SQRTPIl 1.128379167095512573896158903121545172L
-#define M_SQRT2l    1.414213562373095048801688724209698079L
-#define M_SQRT1_2l  0.707106781186547524400844362104849039L
+CONST_VALUE(M_El, long double, 2.718281828459045235360287471352662498L);
+CONST_VALUE(M_LOG2El, long double, 1.442695040888963407359924681001892137L);
+CONST_VALUE(M_LOG10El, long double, 0.434294481903251827651128918916605082L);
+CONST_VALUE(M_LN2l, long double, 0.693147180559945309417232121458176568L);
+CONST_VALUE(M_LN10l, long double, 2.302585092994045684017991454684364208L);
+CONST_VALUE(M_PIl, long double, 3.141592653589793238462643383279502884L);
+CONST_VALUE(M_PI_2l, long double, 1.570796326794896619231321691639751442L);
+CONST_VALUE(M_PI_4l, long double, 0.785398163397448309615660845819875721L);
+CONST_VALUE(M_1_PIl, long double, 0.318309886183790671537767526745028724L);
+CONST_VALUE(M_2_PIl, long double, 0.636619772367581343075535053490057448L);
+CONST_VALUE(M_2_SQRTPIl, long double, 1.128379167095512573896158903121545172L);
+CONST_VALUE(M_SQRT2l, long double, 1.414213562373095048801688724209698079L);
+CONST_VALUE(M_SQRT1_2l, long double, 0.707106781186547524400844362104849039L);
 
-#define FP_NAN        0
-#define FP_INFINITE   1
-#define FP_ZERO       2
-#define FP_SUBNORMAL  3
-#define FP_NORMAL     4
+CONST_VALUE(FP_NAN, int, 0);
+CONST_VALUE(FP_INFINITE, int, 1);
+CONST_VALUE(FP_ZERO, int, 2);
+CONST_VALUE(FP_SUBNORMAL, int, 3);
+CONST_VALUE(FP_NORMAL, int, 4);
 #define fpclassify(x) __builtin_fpclassify(FP_NAN, FP_INFINITE, FP_ZERO, FP_SUBNORMAL, FP_ZERO, x)
 
 #define signbit(x)           __builtin_signbit(x)
@@ -98,277 +95,279 @@ extern "C" {
 #define islessgreater(x, y)  __builtin_islessgreater((x), (y))
 #define isunordered(x, y)    __builtin_isunordered((x), (y))
 
-#define DOUBLE_MAX ((double)0b0111111111101111111111111111111111111111111111111111111111111111)
-#define DOUBLE_MIN ((double)0b0000000000010000000000000000000000000000000000000000000000000000)
+CONST_VALUE(DOUBLE_MAX, double, 0b0111111111101111111111111111111111111111111111111111111111111111);
+CONST_VALUE(DOUBLE_MIN, double, 0b0000000000010000000000000000000000000000000000000000000000000000);
 
-#define FP_ILOGB0  INT_MIN
-#define FP_ILOGNAN INT_MAX
+CONST_VALUE(FP_ILOGB0, int, INT_MIN);
+CONST_VALUE(FP_ILOGNAN, int, INT_MAX);
 
 #define FLT_EVAL_METHOD __FLT_EVAL_METHOD__
 
 #if FLT_EVAL_METHOD == 0
-typedef float  float_t;
-typedef double double_t;
+TYPE_ALIAS(float_t, float);
+TYPE_ALIAS(double_t, double);
 #elif FLT_EVAL_METHOD == 1
-typedef double float_t;
-typedef double double_t;
+TYPE_ALIAS(float_t, double);
+TYPE_ALIAS(double_t, double);
 #elif FLT_EVAL_METHOD == 2
-typedef long double float_t;
-typedef long double double_t;
+TYPE_ALIAS(float_t, long double);
+TYPE_ALIAS(double_t, long double);
 #else
-typedef float  float_t;
-typedef double double_t;
+TYPE_ALIAS(float_t, float);
+TYPE_ALIAS(double_t, double);
 #endif
 
-extern i32 signgam;
+extern int signgam;
 
 /* Basic floating point operations */
-double      fabs(double) NOEXCEPT;
-float       fabsf(float) NOEXCEPT;
-long double fabsl(long double) NOEXCEPT;
+double      fabs(double);
+float       fabsf(float);
+long double fabsl(long double);
 
-double      fmod(double, double) NOEXCEPT;
-float       fmodf(float, float) NOEXCEPT;
-long double fmodl(long double, long double) NOEXCEPT;
+double      fmod(double, double);
+float       fmodf(float, float);
+long double fmodl(long double, long double);
 
-double      fmax(double, double) NOEXCEPT;
-float       fmaxf(float, float) NOEXCEPT;
-long double fmaxl(long double, long double) NOEXCEPT;
+double      fmax(double, double);
+float       fmaxf(float, float);
+long double fmaxl(long double, long double);
 
-double      fmin(double, double) NOEXCEPT;
-float       fminf(float, float) NOEXCEPT;
-long double fminl(long double, long double) NOEXCEPT;
+double      fmin(double, double);
+float       fminf(float, float);
+long double fminl(long double, long double);
 
-double      remainder(double, double) NOEXCEPT;
-float       remainderf(float, float) NOEXCEPT;
-long double remainderl(long double, long double) NOEXCEPT;
+double      remainder(double, double);
+float       remainderf(float, float);
+long double remainderl(long double, long double);
 
-double      nan(const char*) NOEXCEPT;
-float       nanf(const char*) NOEXCEPT;
-long double nanl(const char*) NOEXCEPT;
+double      nan(const char*);
+float       nanf(const char*);
+long double nanl(const char*);
 
 /* Exponential functions */
-double      exp(double) NOEXCEPT;
-float       expf(float) NOEXCEPT;
-long double expl(long double) NOEXCEPT;
+double      exp(double);
+float       expf(float);
+long double expl(long double);
 
-double      exp2(double) NOEXCEPT;
-float       exp2f(float) NOEXCEPT;
-long double exp2l(long double) NOEXCEPT;
+double      exp2(double);
+float       exp2f(float);
+long double exp2l(long double);
 
-double      expm1(double) NOEXCEPT;
-float       expm1f(float) NOEXCEPT;
-long double expm1l(long double) NOEXCEPT;
+double      expm1(double);
+float       expm1f(float);
+long double expm1l(long double);
 
-double      log(double) NOEXCEPT;
-float       logf(float) NOEXCEPT;
-long double logl(long double) NOEXCEPT;
+double      log(double);
+float       logf(float);
+long double logl(long double);
 
-double      log2(double) NOEXCEPT;
-float       log2f(float) NOEXCEPT;
-long double log2l(long double) NOEXCEPT;
+double      log2(double);
+float       log2f(float);
+long double log2l(long double);
 
-double      log10(double) NOEXCEPT;
-float       log10f(float) NOEXCEPT;
-long double log10l(long double) NOEXCEPT;
+double      log10(double);
+float       log10f(float);
+long double log10l(long double);
 
-double      log1p(double) NOEXCEPT;
-float       log1pf(float) NOEXCEPT;
-long double log1pl(long double) NOEXCEPT;
+double      log1p(double);
+float       log1pf(float);
+long double log1pl(long double);
 
 /* Power functions */
-double      pow(double, double) NOEXCEPT;
-float       powf(float, float) NOEXCEPT;
-long double powl(long double, long double) NOEXCEPT;
+double      pow(double, double);
+float       powf(float, float);
+long double powl(long double, long double);
 
-double      sqrt(double) NOEXCEPT;
-float       sqrtf(float) NOEXCEPT;
-long double sqrtl(long double) NOEXCEPT;
+double      sqrt(double);
+float       sqrtf(float);
+long double sqrtl(long double);
 
-double      cbrt(double) NOEXCEPT;
-float       cbrtf(float) NOEXCEPT;
-long double cbrtl(long double) NOEXCEPT;
+double      cbrt(double);
+float       cbrtf(float);
+long double cbrtl(long double);
 
-double      hypot(double, double) NOEXCEPT;
-float       hypotf(float, float) NOEXCEPT;
-long double hypotl(long double, long double) NOEXCEPT;
+double      hypot(double, double);
+float       hypotf(float, float);
+long double hypotl(long double, long double);
 
 /* Trigonometric functions */
-double      sin(double) NOEXCEPT;
-float       sinf(float) NOEXCEPT;
-long double sinl(long double) NOEXCEPT;
+double      sin(double);
+float       sinf(float);
+long double sinl(long double);
 
-double      cos(double) NOEXCEPT;
-float       cosf(float) NOEXCEPT;
-long double cosl(long double) NOEXCEPT;
+double      cos(double);
+float       cosf(float);
+long double cosl(long double);
 
-double      tan(double) NOEXCEPT;
-float       tanf(float) NOEXCEPT;
-long double tanl(long double) NOEXCEPT;
+double      tan(double);
+float       tanf(float);
+long double tanl(long double);
 
-double      asin(double) NOEXCEPT;
-float       asinf(float) NOEXCEPT;
-long double asinl(long double) NOEXCEPT;
+double      asin(double);
+float       asinf(float);
+long double asinl(long double);
 
-double      acos(double) NOEXCEPT;
-float       acosf(float) NOEXCEPT;
-long double acosl(long double) NOEXCEPT;
+double      acos(double);
+float       acosf(float);
+long double acosl(long double);
 
-double      atan(double) NOEXCEPT;
-float       atanf(float) NOEXCEPT;
-long double atanl(long double) NOEXCEPT;
+double      atan(double);
+float       atanf(float);
+long double atanl(long double);
 
-double      atan2(double, double) NOEXCEPT;
-float       atan2f(float, float) NOEXCEPT;
-long double atan2l(long double, long double) NOEXCEPT;
+double      atan2(double, double);
+float       atan2f(float, float);
+long double atan2l(long double, long double);
 
 /* Hyperbolic functions*/
-double      sinh(double) NOEXCEPT;
-float       sinhf(float) NOEXCEPT;
-long double sinhl(long double) NOEXCEPT;
+double      sinh(double);
+float       sinhf(float);
+long double sinhl(long double);
 
-double      cosh(double) NOEXCEPT;
-float       coshf(float) NOEXCEPT;
-long double coshl(long double) NOEXCEPT;
+double      cosh(double);
+float       coshf(float);
+long double coshl(long double);
 
-double      tanh(double) NOEXCEPT;
-float       tanhf(float) NOEXCEPT;
-long double tanhl(long double) NOEXCEPT;
+double      tanh(double);
+float       tanhf(float);
+long double tanhl(long double);
 
-double      asinh(double) NOEXCEPT;
-float       asinhf(float) NOEXCEPT;
-long double asinhl(long double) NOEXCEPT;
+double      asinh(double);
+float       asinhf(float);
+long double asinhl(long double);
 
-double      acosh(double) NOEXCEPT;
-float       acoshf(float) NOEXCEPT;
-long double acoshl(long double) NOEXCEPT;
+double      acosh(double);
+float       acoshf(float);
+long double acoshl(long double);
 
-double      atanh(double) NOEXCEPT;
-float       atanhf(float) NOEXCEPT;
-long double atanhl(long double) NOEXCEPT;
+double      atanh(double);
+float       atanhf(float);
+long double atanhl(long double);
 
 /* Error and gamma functions */
-double      erf(double) NOEXCEPT;
-float       erff(float) NOEXCEPT;
-long double erfl(long double) NOEXCEPT;
+double      erf(double);
+float       erff(float);
+long double erfl(long double);
 
-double      erfc(double) NOEXCEPT;
-float       erfcf(float) NOEXCEPT;
-long double erfcl(long double) NOEXCEPT;
+double      erfc(double);
+float       erfcf(float);
+long double erfcl(long double);
 
-double gamma(double) NOEXCEPT;
+double gamma(double);
 
-double      tgamma(double) NOEXCEPT;
-float       tgammaf(float) NOEXCEPT;
-long double tgammal(long double) NOEXCEPT;
+double      tgamma(double);
+float       tgammaf(float);
+long double tgammal(long double);
 
-double      lgamma(double) NOEXCEPT;
-float       lgammaf(float) NOEXCEPT;
-long double lgammal(long double) NOEXCEPT;
+double      lgamma(double);
+float       lgammaf(float);
+long double lgammal(long double);
 
-double      lgamma_r(double, i32*) NOEXCEPT;
-float       lgammaf_r(float, i32*) NOEXCEPT;
-long double lgammal_r(long double, i32*) NOEXCEPT;
+double      lgamma_r(double, int*);
+float       lgammaf_r(float, int*);
+long double lgammal_r(long double, int*);
 
 /* Nearest integer floating point operations */
-double      ceil(double) NOEXCEPT;
-float       ceilf(float) NOEXCEPT;
-long double ceill(long double) NOEXCEPT;
+double      ceil(double);
+float       ceilf(float);
+long double ceill(long double);
 
-double      floor(double) NOEXCEPT;
-float       floorf(float) NOEXCEPT;
-long double floorl(long double) NOEXCEPT;
+double      floor(double);
+float       floorf(float);
+long double floorl(long double);
 
-double      trunc(double) NOEXCEPT;
-float       truncf(float) NOEXCEPT;
-long double truncl(long double) NOEXCEPT;
+double      trunc(double);
+float       truncf(float);
+long double truncl(long double);
 
-double      round(double) NOEXCEPT;
-float       roundf(float) NOEXCEPT;
-long double roundl(long double) NOEXCEPT;
+double      round(double);
+float       roundf(float);
+long double roundl(long double);
 
-long lround(double) NOEXCEPT;
-long lroundf(float) NOEXCEPT;
-long lroundl(long double) NOEXCEPT;
+long lround(double);
+long lroundf(float);
+long lroundl(long double);
 
-long long llround(double) NOEXCEPT;
-long long llroundf(float) NOEXCEPT;
-long long llroundl(long double) NOEXCEPT;
-long long llroundd(long double) NOEXCEPT;
+long long llround(double);
+long long llroundf(float);
+long long llroundl(long double);
+long long llroundd(long double);
 
-double      nearbyint(double) NOEXCEPT;
-float       nearbyintf(float) NOEXCEPT;
-long double nearbyintl(long double) NOEXCEPT;
+double      nearbyint(double);
+float       nearbyintf(float);
+long double nearbyintl(long double);
 
-double      rint(double) NOEXCEPT;
-float       rintf(float) NOEXCEPT;
-long double rintl(long double) NOEXCEPT;
+double      rint(double);
+float       rintf(float);
+long double rintl(long double);
 
-long lrint(double) NOEXCEPT;
-long lrintf(float) NOEXCEPT;
-long lrintl(long double) NOEXCEPT;
+long lrint(double);
+long lrintf(float);
+long lrintl(long double);
 
-long long llrint(double) NOEXCEPT;
-long long llrintf(float) NOEXCEPT;
-long long llrintl(long double) NOEXCEPT;
+long long llrint(double);
+long long llrintf(float);
+long long llrintl(long double);
 
 /* Floating point manipulation functions */
-double      frexp(double, i32*) NOEXCEPT;
-float       frexpf(float, i32*) NOEXCEPT;
-long double frexpl(long double, i32*) NOEXCEPT;
+double      frexp(double, int*);
+float       frexpf(float, int*);
+long double frexpl(long double, int*);
 
-double      ldexp(double, i32) NOEXCEPT;
-float       ldexpf(float, i32) NOEXCEPT;
-long double ldexpl(long double, i32) NOEXCEPT;
+double      ldexp(double, int);
+float       ldexpf(float, int);
+long double ldexpl(long double, int);
 
-double      modf(double, double*) NOEXCEPT;
-float       modff(float, float*) NOEXCEPT;
-long double modfl(long double, long double*) NOEXCEPT;
+double      modf(double, double*);
+float       modff(float, float*);
+long double modfl(long double, long double*);
 
-double      scalbn(double, i32) NOEXCEPT;
-float       scalbnf(float, i32) NOEXCEPT;
-long double scalbnl(long double, i32) NOEXCEPT;
+double      scalbn(double, int);
+float       scalbnf(float, int);
+long double scalbnl(long double, int);
 
-double      scalbln(double, long) NOEXCEPT;
-float       scalbnlf(float, long) NOEXCEPT;
-float       scalblnf(float, long) NOEXCEPT;
-long double scalblnl(long double, long) NOEXCEPT;
+double      scalbln(double, long);
+float       scalbnlf(float, long);
+float       scalblnf(float, long);
+long double scalblnl(long double, long);
 
-i32 ilogb(double) NOEXCEPT;
-i32 ilogbf(float) NOEXCEPT;
-i32 ilogbl(long double) NOEXCEPT;
+int ilogb(double);
+int ilogbf(float);
+int ilogbl(long double);
 
-double      logb(double) NOEXCEPT;
-float       logbf(float) NOEXCEPT;
-long double logbl(long double) NOEXCEPT;
+double      logb(double);
+float       logbf(float);
+long double logbl(long double);
 
-double      nextafter(double, double) NOEXCEPT;
-float       nextafterf(float, float) NOEXCEPT;
-long double nextafterl(long double, long double) NOEXCEPT;
+double      nextafter(double, double);
+float       nextafterf(float, float);
+long double nextafterl(long double, long double);
 
-double      nexttoward(double, long double) NOEXCEPT;
-float       nexttowardf(float, long double) NOEXCEPT;
-long double nexttowardl(long double, long double) NOEXCEPT;
+double      nexttoward(double, long double);
+float       nexttowardf(float, long double);
+long double nexttowardl(long double, long double);
 
-double      copysign(double, double) NOEXCEPT;
-float       copysignf(float, float) NOEXCEPT;
-long double copysignl(long double, long double) NOEXCEPT;
+double      copysign(double, double);
+float       copysignf(float, float);
+long double copysignl(long double, long double);
 
 /* positive difference */
-double      fdim(double, double) NOEXCEPT;
-float       fdimf(float, float) NOEXCEPT;
-long double fdiml(long double, long double) NOEXCEPT;
+double      fdim(double, double);
+float       fdimf(float, float);
+long double fdiml(long double, long double);
 
 /* floating-point multiply and add */
-double      fma(double, double, double) NOEXCEPT;
-float       fmaf(float, float, float) NOEXCEPT;
-long double fmal(long double x, long double y, long double z) NOEXCEPT;
+double      fma(double, double, double);
+float       fmaf(float, float, float);
+long double fmal(long double x, long double y, long double z);
 
 /* remainder and part of quotient */
-double      remquo(double, double, i32*) NOEXCEPT;
-float       remquof(float, float, i32*) NOEXCEPT;
-long double remquol(long double, long double, i32*) NOEXCEPT;
+double      remquo(double, double, int*);
+float       remquof(float, float, int*);
+long double remquol(long double, long double, int*);
 
 #ifdef __cplusplus
 }
 #endif
+
+#pragma clang diagnostic pop

@@ -11,15 +11,15 @@
 #
 
 add_library(LibTC STATIC
-        Collection/String.cc
-        Collection/StringBuilder.cc
-        Collection/StringStorage.cc
-        Collection/StringView.cc
-        Text/Format.cc
-        Text/FormatLexer.cc
-        Text/FormatParser.cc
-        Text/Formatter.cc
-        Text/Lexer.cc
-        Error.cc
-        Hashing.cc
-        SourceLocation.cc)
+        Alloc/String.cc
+        Alloc/StringBuilder.cc
+        Alloc/StringStorage.cc
+        Lang/StringView.cc
+        Alloc/Text/Format.cc
+        Alloc/Text/FormatLexer.cc
+        Alloc/Text/FormatParser.cc
+        Alloc/Text/Formatter.cc
+        Alloc/Text/Lexer.cc
+        Core/Error.cc
+        Core/Hashing.cc
+        Core/SourceLocation.cc Prelude.cc Alloc/AllocLayout.cc)

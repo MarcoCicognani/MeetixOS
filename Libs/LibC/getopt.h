@@ -11,6 +11,9 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <stdint.h>
 
@@ -18,10 +21,9 @@
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
-#define no_argument       0
-#define required_argument 1
-#define optional_argument 2
+CONST_VALUE(no_argument, int, 0);
+CONST_VALUE(required_argument, int, 1);
+CONST_VALUE(optional_argument, int, 2);
 
 extern char* g_optarg;
 #define optarg g_optarg
@@ -38,8 +40,6 @@ extern int g_optopt;
 extern int g_optreset;
 #define optreset g_optreset
 
-/* ------------------------------------------- C types ------------------------------------------ */
-
 struct option {
     const char* name;
     int         has_arg;
@@ -47,11 +47,11 @@ struct option {
     int         val;
 };
 
-/* ------------------------------------ C function prototypes ----------------------------------- */
-
 int getopt(int, const char**, const char*);
 int getopt_long(int, const char**, const char*, struct option*, int*);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

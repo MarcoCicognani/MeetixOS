@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <LibTC/Collection/Map.hh>
-#include <LibTC/Collection/String.hh>
-#include <LibTC/Collection/StringView.hh>
+#include <LibTC/Alloc/Map.hh>
+#include <LibTC/Alloc/String.hh>
+#include <LibTC/Lang/StringView.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
@@ -34,7 +34,7 @@ TEST_CASE(initializer_list) {
 
 TEST_CASE(construct_from_other) {
     auto const map = Map<StringView, NonNullRef<i32>>::construct_from_list(
-        { { "One"sv, NonNullRef<i32>::construct_from_args(10) }, { "Two"sv, NonNullRef<i32>::construct_from_args(20) } });
+        { { "One"sv, NonNullRef<i32>::construct_from_emplace(10) }, { "Two"sv, NonNullRef<i32>::construct_from_emplace(20) } });
 
     auto const map_2 = Map<StringView, NonNullRef<i32>>::construct_from_other(map);
 

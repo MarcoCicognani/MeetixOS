@@ -11,8 +11,8 @@
  */
 
 #pragma once
-
-/* ------------------------------------------ C defines ----------------------------------------- */
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-macro-to-enum"
 
 #define USE_LOCKS 1 /* 1 - use internal spinlock implementation */
 #define HAVE_MMAP 0 /* 0 - fallbacks to sbrk() implementation */
@@ -21,3 +21,5 @@
 
 #define DEBUG   0
 #define FOOTERS 0
+
+#pragma clang diagnostic pop

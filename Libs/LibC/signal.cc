@@ -10,10 +10,14 @@
  * GNU General Public License version 3
  */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
+
 #include <LibApi/Api/User.h>
 #include <LibC/errno.h>
 #include <LibC/signal.h>
 #include <LibC/stdlib.h>
+#include <LibTC/Lang/Cxx.hh>
 
 extern "C" {
 
@@ -31,11 +35,12 @@ sig_handler_t signal(int sig, sig_handler_t sig_handler) {
     } else if ( sig_handler == SIG_IGN )
         sig_handler = sig_handler_SIG_IGN;
 
-    return reinterpret_cast<sig_handler_t>(s_register_signal_handler(sig, reinterpret_cast<void*>(sig_handler)));
+    auto const prev_sig_handler = s_register_signal_handler(sig, bit_cast<void*>(&sig_handler));
+    return bit_cast<sig_handler_t>(prev_sig_handler);
 }
 
-int raise(int sig) {
-    auto raise_status = s_raise_signal(s_get_tid(), sig);
+int raise(int signal) {
+    auto const raise_status = s_raise_signal(s_get_tid(), signal);
     if ( raise_status == RAISE_SIGNAL_STATUS_SUCCESSFUL ) {
         return 0;
     } else if ( raise_status == RAISE_SIGNAL_STATUS_INVALID_SIGNAL ) {
@@ -46,4 +51,7 @@ int raise(int sig) {
         return -1;
     }
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

@@ -16,11 +16,9 @@
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
-
 #define alignas _Alignas
 #define __alignas_is_defined 1
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif

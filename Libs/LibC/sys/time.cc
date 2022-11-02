@@ -10,6 +10,9 @@
  * GNU General Public License version 3
  */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
+
 #include <LibApi/Api.h>
 #include <LibC/sys/time.h>
 
@@ -19,4 +22,7 @@ int gettimeofday(struct timeval*, struct timezone*) {
     __NOT_IMPLEMENTED(gettimeofday);
     return -1;
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

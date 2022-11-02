@@ -10,6 +10,9 @@
  * GNU General Public License version 3
  */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
+
 #include <LibC/ctype.h>
 
 extern "C" {
@@ -107,4 +110,7 @@ int tolower(int c) {
 int toupper(int c) {
     return __inline_toupper(c);
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

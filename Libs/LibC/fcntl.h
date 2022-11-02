@@ -11,45 +11,44 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <Api/FileSystem.h>
-#include <Api/StdInt.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
+CONST_VALUE(O_READ, int, FILE_FLAG_MODE_READ);
+CONST_VALUE(O_WRITE, int, FILE_FLAG_MODE_WRITE);
+CONST_VALUE(O_APPEND, int, FILE_FLAG_MODE_APPEND);
+CONST_VALUE(O_CREAT, int, FILE_FLAG_MODE_CREATE);
+CONST_VALUE(O_TRUNC, int, FILE_FLAG_MODE_TRUNCATE);
+CONST_VALUE(O_EXCL, int, FILE_FLAG_MODE_EXCLUSIVE);
+CONST_VALUE(O_RDONLY, int, FILE_FLAG_MODE_READ);
+CONST_VALUE(O_WRONLY, int, FILE_FLAG_MODE_WRITE);
+CONST_VALUE(O_RDWR, int, FILE_FLAG_MODE_READ | FILE_FLAG_MODE_WRITE);
 
-#define O_READ   FILE_FLAG_MODE_READ
-#define O_WRITE  FILE_FLAG_MODE_WRITE
-#define O_APPEND FILE_FLAG_MODE_APPEND
-#define O_CREAT  FILE_FLAG_MODE_CREATE
-#define O_TRUNC  FILE_FLAG_MODE_TRUNCATE
-#define O_EXCL   FILE_FLAG_MODE_EXCLUSIVE
-#define O_RDONLY FILE_FLAG_MODE_READ
-#define O_WRONLY FILE_FLAG_MODE_WRITE
-#define O_RDWR   (FILE_FLAG_MODE_READ | FILE_FLAG_MODE_WRITE)
+CONST_VALUE(F_DUPFD, int, 0);
+CONST_VALUE(F_GETFD, int, 0);
+CONST_VALUE(F_SETFD, int, 0);
+CONST_VALUE(F_SETFL, int, 0);
+CONST_VALUE(F_GETLK, int, 0);
+CONST_VALUE(F_SETLK, int, 0);
+CONST_VALUE(F_SETLKW, int, 0);
+CONST_VALUE(F_GETOWN, int, 0);
+CONST_VALUE(F_SETOWN, int, 0);
+CONST_VALUE(FD_CLOEXEC, int, 0);
 
-#define F_DUPFD    0
-#define F_GETFD    0
-#define F_SETFD    0
-#define F_SETFL    0
-#define F_GETLK    0
-#define F_SETLK    0
-#define F_SETLKW   0
-#define F_GETOWN   0
-#define F_SETOWN   0
-#define FD_CLOEXEC 0
-
-/* ------------------------------------------- C types ------------------------------------------ */
-
-typedef i32 mode_t;
-
-/* ------------------------------------ C function prototypes ----------------------------------- */
+TYPE_ALIAS(mode_t, int32_t);
 
 int open(const char*, int, ...);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

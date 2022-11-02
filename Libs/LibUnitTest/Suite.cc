@@ -12,9 +12,9 @@
 
 #include <Api/User.h>
 #include <LibFmtIO/Out.hh>
-#include <LibTC/Collection/StringView.hh>
-#include <LibTC/Functional/Option.hh>
-#include <LibTC/Memory/NonNullRef.hh>
+#include <LibTC/Alloc/NonNullRef.hh>
+#include <LibTC/Lang/Option.hh>
+#include <LibTC/Lang/StringView.hh>
 #include <LibUnitTest/Suite.hh>
 
 namespace UnitTest {
@@ -23,7 +23,7 @@ static Option<NonNullRef<Suite>> s_instance = None;
 
 auto Suite::inst() -> NonNullRef<Suite> {
     if ( !s_instance.is_present() )
-        s_instance = NonNullRef<Suite>::construct_from_args();
+        s_instance = NonNullRef<Suite>::construct_from_emplace();
 
     return s_instance.value().clone();
 }
@@ -37,7 +37,7 @@ auto Suite::run(Vector<StringView> args) -> ErrorOr<void> {
     usize benchmarks_failed    = 0;
     usize benchmarks_skipped   = 0;
 
-    TRY(FmtIO::outln("- Starting test suite {}{}{}...\n"sv, FmtIO::foreground(FmtIO::Color::Yellow), args[0], FmtIO::reset(), m_test_cases.count()));
+    try$(FmtIO::outln("- Starting test suite {}{}{}...\n"sv, FmtIO::foreground(FmtIO::Color::Yellow), args[0], FmtIO::reset(), m_test_cases.count()));
 
     auto const all_cases_start_ts = s_millis();
     for ( auto const* test_case : m_test_cases ) {
@@ -51,7 +51,7 @@ auto Suite::run(Vector<StringView> args) -> ErrorOr<void> {
         }
 
         m_current_test_have_failed = false;
-        TRY(FmtIO::outln("{} - {} - Running"sv, test_case->name(), test_case->is_benchmark() ? "Benchmark"sv : "Test"sv));
+        try$(FmtIO::outln("{} - {} - Running"sv, test_case->name(), test_case->is_benchmark() ? "Benchmark"sv : "Test"sv));
 
         /* run the test */
         auto const case_start_ts = s_millis();
@@ -60,9 +60,9 @@ auto Suite::run(Vector<StringView> args) -> ErrorOr<void> {
 
         auto const case_exec_time = case_end_ts - case_start_ts;
         if ( m_current_test_have_failed )
-            TRY(FmtIO::outln("\t{}Failed{} in {} ms"sv, FmtIO::foreground(FmtIO::Color::Red), FmtIO::reset(), case_exec_time));
+            try$(FmtIO::outln("\t{}Failed{} in {} ms"sv, FmtIO::foreground(FmtIO::Color::Red), FmtIO::reset(), case_exec_time));
         else
-            TRY(FmtIO::outln("\t{}Completed{} in {} ms"sv, FmtIO::foreground(FmtIO::Color::Green), FmtIO::reset(), case_exec_time));
+            try$(FmtIO::outln("\t{}Completed{} in {} ms"sv, FmtIO::foreground(FmtIO::Color::Green), FmtIO::reset(), case_exec_time));
 
         if ( m_current_test_have_failed ) {
             if ( test_case->is_benchmark() )
@@ -83,7 +83,7 @@ auto Suite::run(Vector<StringView> args) -> ErrorOr<void> {
     auto const benchmarks_executed  = benchmarks_completed + benchmarks_failed;
     auto const total_cases_executed = tests_executed + benchmarks_executed;
 
-    TRY(FmtIO::outln("\n- Executed {}{}/{}{} cases ({}{}{}/{}{}{} tests {}{}{}/{}{}{} benchmarks) in {} ms"sv,
+    try$(FmtIO::outln("\n- Executed {}{}/{}{} cases ({}{}{}/{}{}{} tests {}{}{}/{}{}{} benchmarks) in {} ms"sv,
                      FmtIO::foreground(FmtIO::Color::Green),
                      total_cases_executed,
                      m_test_cases.count(),
@@ -102,7 +102,7 @@ auto Suite::run(Vector<StringView> args) -> ErrorOr<void> {
                      FmtIO::reset(),
                      all_tests_time));
     if ( tests_executed > 0 ) {
-        TRY(FmtIO::outln("- Tests      - {}{:3}{} Completed | {}{:3}{} Failed | {:3} Skipped"sv,
+        try$(FmtIO::outln("- Tests      - {}{:3}{} Completed | {}{:3}{} Failed | {:3} Skipped"sv,
                          FmtIO::foreground(FmtIO::Color::Green),
                          tests_completed,
                          FmtIO::reset(),
@@ -112,7 +112,7 @@ auto Suite::run(Vector<StringView> args) -> ErrorOr<void> {
                          tests_skipped));
     }
     if ( benchmarks_executed > 0 ) {
-        TRY(FmtIO::outln("- Benchmarks - {}{:3}{} Completed | {}{:3}{} Failed | {:3} Skipped"sv,
+        try$(FmtIO::outln("- Benchmarks - {}{:3}{} Completed | {}{:3}{} Failed | {:3} Skipped"sv,
                          FmtIO::foreground(FmtIO::Color::Green),
                          benchmarks_completed,
                          FmtIO::reset(),

@@ -11,28 +11,29 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
 
-#include <Api.h>
+#include <Api/FileSystem.h>
+#include <Api/Kernel.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* ------------------------------------------- C types ------------------------------------------ */
-
-typedef Pid     pid_t;
-typedef int64_t off_t;
-typedef int64_t ssize_t;
-
-typedef FsVirtID ino_t;
-typedef FsVirtID dev_t;
-
-typedef int nlink_t;
-typedef int uid_t;
-typedef int gid_t;
-typedef int blksize_t;
-typedef int blkcnt_t;
+TYPE_ALIAS(pid_t, Pid);
+TYPE_ALIAS(off_t, int64_t);
+TYPE_ALIAS(ino_t, FsVirtID);
+TYPE_ALIAS(dev_t, FsVirtID);
+TYPE_ALIAS(nlink_t, int);
+TYPE_ALIAS(uid_t, int);
+TYPE_ALIAS(gid_t, int);
+TYPE_ALIAS(blksize_t, int);
+TYPE_ALIAS(blkcnt_t, int);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

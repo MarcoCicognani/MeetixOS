@@ -11,6 +11,10 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "bugprone-reserved-identifier"
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <file.h>
 #include <stdarg.h>
@@ -19,29 +23,22 @@
 extern "C" {
 #endif
 
-/* ------------------------------------------  defines ----------------------------------------- */
-
-#define WEOF 0xffffffffu
-
-/* -------------------------------------------  types ------------------------------------------ */
+CONST_VALUE(WEOF, wchar_t, 0xffffffffu);
 
 struct tm;
-
-typedef struct {
-    usize __place_older;
-} mbstate_t;
-
-typedef __WINT_TYPE__ wint_t;
-
-/* ------------------------------------  function prototypes ----------------------------------- */
+struct mbstate_t {
+    size_t __place_older;
+};
+TYPE_ALIAS(mbstate_t, struct mbstate_t);
+TYPE_ALIAS(wint_t, __WINT_TYPE__);
 
 int      fwprintf(FILE*, const wchar_t*, ...);
 int      fwscanf(FILE*, const wchar_t*, ...);
-int      swprintf(wchar_t*, usize, const wchar_t*, ...);
+int      swprintf(wchar_t*, size_t, const wchar_t*, ...);
 int      swscanf(const wchar_t*, const wchar_t*, ...);
 int      vfwprintf(FILE*, const wchar_t*, va_list);
 int      vfwscanf(FILE*, const wchar_t*, va_list);
-int      vswprintf(wchar_t*, usize, const wchar_t*, va_list);
+int      vswprintf(wchar_t*, size_t, const wchar_t*, va_list);
 int      vswscanf(const wchar_t*, const wchar_t*, va_list);
 int      vwprintf(const wchar_t*, va_list);
 int      vwscanf(const wchar_t*, va_list);
@@ -68,36 +65,38 @@ unsigned long int      wcstoul(const wchar_t*, wchar_t**, int);
 unsigned long long int wcstoull(const wchar_t*, wchar_t**, int);
 
 wchar_t* wcscpy(wchar_t*, const wchar_t*);
-wchar_t* wcsncpy(wchar_t*, const wchar_t*, usize);
-wchar_t* wmemcpy(wchar_t*, const wchar_t*, usize);
-wchar_t* wmemmove(wchar_t*, const wchar_t*, usize);
+wchar_t* wcsncpy(wchar_t*, const wchar_t*, size_t);
+wchar_t* wmemcpy(wchar_t*, const wchar_t*, size_t);
+wchar_t* wmemmove(wchar_t*, const wchar_t*, size_t);
 wchar_t* wcscat(wchar_t*, const wchar_t*);
-wchar_t* wcsncat(wchar_t*, const wchar_t*, usize);
+wchar_t* wcsncat(wchar_t*, const wchar_t*, size_t);
 int      wcscmp(const wchar_t*, const wchar_t*);
 int      wcscoll(const wchar_t*, const wchar_t*);
-int      wcsncmp(const wchar_t*, const wchar_t*, usize);
-usize    wcsxfrm(wchar_t*, const wchar_t*, usize);
-int      wmemcmp(const wchar_t*, const wchar_t*, usize);
+int      wcsncmp(const wchar_t*, const wchar_t*, size_t);
+size_t   wcsxfrm(wchar_t*, const wchar_t*, size_t);
+int      wmemcmp(const wchar_t*, const wchar_t*, size_t);
 wchar_t* wcschr(const wchar_t*, wchar_t);
-usize    wcscspn(const wchar_t*, const wchar_t*);
+size_t   wcscspn(const wchar_t*, const wchar_t*);
 wchar_t* wcspbrk(const wchar_t*, const wchar_t*);
 wchar_t* wcsrchr(const wchar_t*, wchar_t);
-usize    wcsspn(const wchar_t*, const wchar_t*);
+size_t   wcsspn(const wchar_t*, const wchar_t*);
 wchar_t* wcsstr(const wchar_t*, const wchar_t*);
 wchar_t* wcstok(wchar_t*, const wchar_t*, wchar_t**);
-wchar_t* wmemchr(const wchar_t*, wchar_t, usize);
-usize    wcslen(const wchar_t*);
-wchar_t* wmemset(wchar_t*, wchar_t, usize);
-usize    wcsftime(wchar_t*, usize, const wchar_t*, const struct tm*);
+wchar_t* wmemchr(const wchar_t*, wchar_t, size_t);
+size_t   wcslen(const wchar_t*);
+wchar_t* wmemset(wchar_t*, wchar_t, size_t);
+size_t   wcsftime(wchar_t*, size_t, const wchar_t*, const struct tm*);
 wint_t   btowc(int);
 int      wctob(wint_t);
 int      mbsinit(const mbstate_t*);
-usize    mbrlen(const char*, usize, mbstate_t*);
-usize    mbrtowc(wchar_t*, const char*, usize, mbstate_t*);
-usize    wcrtomb(char*, wchar_t, mbstate_t*);
-usize    mbsrtowcs(wchar_t*, const char**, usize, mbstate_t*);
-usize    wcsrtombs(char*, const wchar_t**, usize, mbstate_t*);
+size_t   mbrlen(const char*, size_t, mbstate_t*);
+size_t   mbrtowc(wchar_t*, const char*, size_t, mbstate_t*);
+size_t   wcrtomb(char*, wchar_t, mbstate_t*);
+size_t   mbsrtowcs(wchar_t*, const char**, size_t, mbstate_t*);
+size_t   wcsrtombs(char*, const wchar_t**, size_t, mbstate_t*);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

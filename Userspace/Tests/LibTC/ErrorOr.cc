@@ -10,19 +10,17 @@
  * GNU General Public License version 3
  */
 
-#include <LibTC/Functional/ErrorOr.hh>
-#include <LibTC/Memory/Box.hh>
+#include <LibTC/Alloc/Box.hh>
+#include <LibTC/Core/ErrorOr.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
-
-using namespace TC;
 
 TEST_CASE(value_and_error) {
     auto return_110_on_100 = [](i32 value) -> ErrorOr<i32> {
         if ( value == 100 )
             return 110;
         else
-            return Error::construct_from_errno(EINVAL);
+            return Error::construct_from_code(EINVAL);
     };
 
     VERIFY_IS_VALUE_EQUAL(return_110_on_100(100), 110);
@@ -53,9 +51,9 @@ TEST_CASE(unwrap_error) {
     VERIFY(error_or_i32.is_error());
 
     auto& error = error_or_i32.error();
-    VERIFY_EQUAL(error.errno_code(), ENOENT);
+    VERIFY_EQUAL(error.code(), ENOENT);
 
-    error = Error::construct_from_errno(EINVAL);
+    error = Error::construct_from_code(EINVAL);
 
     auto error_value = error_or_i32.unwrap_error();
     VERIFY_EQUAL(error_value, EINVAL);
@@ -64,7 +62,7 @@ TEST_CASE(unwrap_error) {
 }
 
 TEST_CASE(reference_as_value) {
-    auto boxed_i32 = Box<i32>::construct_from_args(123);
+    auto boxed_i32 = Box<i32>::construct_from_emplace(123);
 
     auto& i32_ref = boxed_i32.as_ref();
 
@@ -88,7 +86,7 @@ TEST_CASE(reference_as_value) {
 TEST_CASE(assignment_operator) {
     ErrorOr<i32> error_or_i32{ 512 };
 
-    error_or_i32 = Error::construct_from_errno(ENOENT);
+    error_or_i32 = Error::construct_from_code(ENOENT);
     VERIFY_IS_ERROR_EQUAL(error_or_i32, ENOENT);
 
     error_or_i32 = 486;
@@ -96,9 +94,9 @@ TEST_CASE(assignment_operator) {
 
     ErrorOr<void> error_or_void{};
 
-    error_or_void = Error::construct_from_errno(EINVAL);
+    error_or_void = Error::construct_from_code(EINVAL);
     VERIFY_IS_ERROR_EQUAL(error_or_void, EINVAL);
 
-    ErrorOr<Box<i32>> error_or_boxed_i32 = Box<i32>::construct_from_args(64);
+    ErrorOr<Box<i32>> error_or_boxed_i32 = Box<i32>::construct_from_emplace(64);
     VERIFY(error_or_boxed_i32.is_value());
 }

@@ -12,9 +12,9 @@
 
 #pragma once
 
+#include <LibTC/Alloc/Vector.hh>
 #include <LibTC/Collection/StringView.hh>
-#include <LibTC/Collection/Vector.hh>
-#include <LibTC/Functional/ErrorOr.hh>
+#include <LibTC/Core/ErrorOr.hh>
 
 /**
  * @brief Custom MeetixOS entry point for userspace applications

@@ -11,20 +11,18 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "bugprone-reserved-identifier"
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
-#include <Api/Common.h>
 #include <stdint.h>
-#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
-
 #define _GLIBCXX_HAVE_ALIGNED_ALLOC 1 /* needed by libstdc++ to build */
-
-/* ------------------------------------ C function prototypes ----------------------------------- */
 
 void* malloc(size_t);
 void* calloc(size_t, size_t);
@@ -33,5 +31,7 @@ void* aligned_alloc(size_t, size_t);
 void  free(void*);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

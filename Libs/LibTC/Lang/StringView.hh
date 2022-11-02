@@ -1,0 +1,389 @@
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
+
+#pragma once
+
+#include <LibTC/Forward.hh>
+
+#include <LibTC/Core/Concept.hh>
+//#include <LibTC/Core/ErrorOr.hh>
+#include <LibTC/Core/Hashing.hh>
+#include <LibTC/Core/TypeTraits.hh>
+#include <LibTC/Lang/Cxx.hh>
+#include <LibTC/Lang/IntTypes.hh>
+#include <LibTC/Lang/Option.hh>
+#include <LibTC/Lang/ReverseIteratorSupport.hh>
+
+#define as_string_view$(c_str) #c_str##sv
+#define FILE_sv$()             as_string_view$(__FILE__)
+
+namespace Details {
+
+template<typename TStringView, bool IsReverse>
+class StringViewIterator final {
+    using TIndex = ::Conditional<IsReverse, isize, usize>;
+
+public:
+    /**
+     * @brief Construction functions
+     */
+    [[nodiscard]]
+    static auto construct_from_begin(TStringView const* string_view) -> StringViewIterator {
+        return StringViewIterator{ string_view, 0 };
+    }
+    [[nodiscard]]
+    static auto construct_from_end(TStringView const* string_view) -> StringViewIterator {
+        return StringViewIterator{ string_view, string_view->len() };
+    }
+
+    [[nodiscard]]
+    static auto construct_from_rbegin(TStringView const* string_view) -> StringViewIterator {
+        return StringViewIterator{ string_view, string_view->len() - 1 };
+    }
+    [[nodiscard]]
+    static auto construct_from_rend(TStringView const* string_view) -> StringViewIterator {
+        return StringViewIterator{ string_view, -1 };
+    }
+
+    StringViewIterator(StringViewIterator const&)                    = default;
+    auto operator=(StringViewIterator const&) -> StringViewIterator& = default;
+
+    /**
+     * @brief Increment operators
+     */
+    auto operator++() -> StringViewIterator& {
+        if constexpr ( IsReverse ) {
+            --m_index;
+        } else {
+            ++m_index;
+        }
+        return *this;
+    }
+    auto operator++(int) -> StringViewIterator {
+        StringViewIterator it{ *this };
+
+        operator++();
+        return it;
+    }
+
+    /**
+     * @brief ValueReference access operators
+     */
+    auto operator*() const -> char const& {
+        VERIFY_FALSE(is_end());
+        if constexpr ( IsReverse ) {
+            return m_string_view->at(static_cast<usize>(m_index));
+        } else {
+            return m_string_view->at(m_index);
+        }
+    }
+
+    /**
+     * @brief Pointer access operators
+     */
+    auto operator->() const -> char const* {
+        return &operator*();
+    }
+
+    /**
+     * @brief Getters
+     */
+    [[nodiscard]]
+    auto is_end() const -> bool {
+        if constexpr ( IsReverse ) {
+            return m_index == construct_from_rend(m_string_view).index();
+        } else {
+            return m_index == construct_from_end(m_string_view).index();
+        }
+    }
+    [[nodiscard]]
+    auto index() const -> usize {
+        return m_index;
+    }
+
+    /**
+     * @brief Comparison operators
+     */
+    [[nodiscard]]
+    auto operator==(StringViewIterator const& rhs) const -> bool {
+        return m_index == rhs.m_index;
+    }
+    [[nodiscard]]
+    auto operator!=(StringViewIterator const& rhs) const -> bool {
+        return m_index != rhs.m_index;
+    }
+    [[nodiscard]]
+    auto operator<(StringViewIterator const& rhs) const -> bool {
+        return m_index < rhs.m_index;
+    }
+    [[nodiscard]]
+    auto operator>(StringViewIterator const& rhs) const -> bool {
+        return m_index > rhs.m_index;
+    }
+    [[nodiscard]]
+    auto operator<=(StringViewIterator const& rhs) const -> bool {
+        return m_index <= rhs.m_index;
+    }
+    [[nodiscard]]
+    auto operator>=(StringViewIterator const& rhs) const -> bool {
+        return m_index >= rhs.m_index;
+    }
+
+private:
+    explicit constexpr StringViewIterator(TStringView const* string_view, TIndex index)
+        : m_string_view{ string_view }
+        , m_index{ index } {
+    }
+
+private:
+    TStringView const* m_string_view;
+    TIndex             m_index{ 0 };
+};
+
+} /* namespace Details */
+
+class StringView final {
+public:
+    enum class CaseSensible {
+        Yes,
+        No
+    };
+
+    enum class KeepEmpty {
+        Yes,
+        No
+    };
+
+    enum class IntBase {
+        Binary  = 2,
+        Octal   = 8,
+        Decimal = 10,
+        Hex     = 16
+    };
+
+    enum class ParseMode {
+        Begin,
+        TrimWhitesAndBegin,
+        BeginToEnd,
+        TrimWhitesAndBeginToEnd,
+    };
+
+    enum class TrimMode {
+        Left,
+        Right,
+        Both
+    };
+
+    using ConstIterator               = Details::StringViewIterator<StringView, false>;
+    using ConstReverseIterator        = Details::StringViewIterator<StringView, true>;
+    using ConstReverseIteratorWrapper = ReverseIteratorSupport::Wrapper<StringView const>;
+
+public:
+    /**
+     * @brief Error safe factory function
+     */
+    [[nodiscard]]
+    static auto construct_from_cstr(char const*) -> StringView;
+    [[nodiscard]]
+    static constexpr auto construct_from_raw_parts(char const* c_str, usize len) -> StringView {
+        return StringView{ c_str, len };
+    }
+
+    /**
+     * @brief Constructors
+     */
+    constexpr explicit(false) StringView() = default;
+    constexpr explicit(false) StringView(StringView const& rhs)
+        : StringView{ rhs.m_chars_ptr, rhs.m_chars_count } {
+    }
+    constexpr explicit(false) StringView(StringView&& rhs)
+        : m_chars_ptr{ Cxx::exchange(rhs.m_chars_ptr, nullptr) }
+        , m_chars_count{ Cxx::exchange(rhs.m_chars_count, 0) } {
+    }
+    ~StringView() = default;
+
+    auto operator=(StringView const&) -> StringView&;
+    auto operator=(StringView&&) -> StringView&;
+
+    /**
+     * @brief Swaps this string view with another
+     */
+    auto swap(StringView&) -> void;
+
+    /**
+     * @brief Access operators
+     */
+    [[nodiscard]]
+    auto at(usize index) const -> char const&;
+    [[nodiscard]]
+    auto operator[](usize index) const -> char const&;
+
+    /**
+     * @brief Compares this string view with another
+     */
+    [[nodiscard]]
+    auto compare(StringView) const -> int; /* TODO LibTC.Lang.Order */
+    [[nodiscard]]
+    auto equals_ignore_case(StringView) const -> bool;
+
+    /**
+     * @brief Returns a sub_string_view of this string view
+     */
+    [[nodiscard]]
+    auto sub_string_view(usize start) const -> StringView;
+    [[nodiscard]]
+    auto sub_string_view(usize start, usize count) const -> StringView;
+
+    /**
+     * @brief Returns a sub-StringView of this trimmed out of chars
+     */
+    [[nodiscard]]
+    auto trim(StringView chars, TrimMode = TrimMode::Both) const -> StringView;
+    [[nodiscard]]
+    auto trim_whitespaces(TrimMode = TrimMode::Both) const -> StringView;
+
+    /**
+     * @brief Returns whether the given rhs is at the start of this string view
+     */
+    [[nodiscard]]
+    auto starts_with(StringView rhs, CaseSensible = CaseSensible::Yes) const -> bool;
+    [[nodiscard]]
+    auto starts_with(char rhs, CaseSensible = CaseSensible::Yes) const -> bool;
+
+    [[nodiscard]]
+    auto ends_with(StringView rhs, CaseSensible = CaseSensible::Yes) const -> bool;
+    [[nodiscard]]
+    auto ends_with(char rhs, CaseSensible = CaseSensible::Yes) const -> bool;
+
+    /**
+     * @brief Converts this StringView into an integer
+     */
+    template<typename T = i32>
+    auto as_int(IntBase = IntBase::Decimal, ParseMode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
+
+    template<typename T = u32>
+    auto as_uint(IntBase = IntBase::Decimal, ParseMode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
+
+    /**
+     * @brief Returns the index of the given needle into the src StringView
+     */
+    auto find(char needle, usize start = 0) const -> Option<usize>;
+    auto find(StringView needle, usize start = 0) const -> Option<usize>;
+
+    /**
+     * @brief Returns the last index of the given needle into the src StringView
+     */
+    auto find_last(char needle) const -> Option<usize>;
+    auto find_last_if(Predicate<char> auto predicate) const -> Option<usize> {
+        for ( auto i = len() - 1; i > 0; --i ) { /* TODO use LibTC.Lang.Range when modules will be available */
+            if ( predicate(at(i)) )
+                return i;
+        }
+        return {};
+    }
+
+    /**
+     * @brief Returns all the indexes of needle inside the src StringView
+     */
+    [[nodiscard]]
+    auto find_all(StringView) const -> Vector<usize>;
+    auto try_find_all(StringView) const -> ErrorOr<Vector<usize>>;
+
+    /**
+     * @brief Splits this StringView and puts the split_view values into a vector or pass them to a predicate
+     */
+    [[nodiscard]]
+    auto split_view(char separator, KeepEmpty = KeepEmpty::No) const -> Vector<StringView>;
+    [[nodiscard]]
+    auto split_view(StringView separator, KeepEmpty = KeepEmpty::No) const -> Vector<StringView>;
+
+    auto try_split_view(char separator, KeepEmpty = KeepEmpty::No) const -> ErrorOr<Vector<StringView>>;
+    auto try_split_view(StringView separator, KeepEmpty = KeepEmpty::No) const -> ErrorOr<Vector<StringView>>;
+
+    /**
+     * @brief Comparison operators
+     */
+    [[nodiscard]]
+    auto operator==(StringView const&) const -> bool;
+    [[nodiscard]]
+    auto operator!=(StringView const&) const -> bool;
+    [[nodiscard]]
+    auto operator<(StringView const&) const -> bool;
+    [[nodiscard]]
+    auto operator<=(StringView const&) const -> bool;
+    [[nodiscard]]
+    auto operator>(StringView const&) const -> bool;
+    [[nodiscard]]
+    auto operator>=(StringView const&) const -> bool;
+
+    /**
+     * @brief Returns whether the given rhs is contained into this StringView
+     */
+    [[nodiscard]]
+    auto contains(StringView rhs, CaseSensible = CaseSensible::Yes) const -> bool;
+    [[nodiscard]]
+    auto contains(char rhs, CaseSensible = CaseSensible::Yes) const -> bool;
+
+    /**
+     * @brief For-each support
+     */
+    auto begin() const -> ConstIterator;
+    auto end() const -> ConstIterator;
+
+    /**
+     * @brief Reverse for-each support
+     */
+    auto rbegin() const -> ConstReverseIterator;
+    auto rend() const -> ConstReverseIterator;
+    auto reverse_iter() const -> ConstReverseIteratorWrapper;
+
+    /**
+     * @brief Getters
+     */
+    [[nodiscard]]
+    auto as_cstr() const -> char const*;
+    [[nodiscard]]
+    auto len() const -> usize;
+
+    [[nodiscard]]
+    auto is_empty() const -> bool;
+    [[nodiscard]]
+    auto is_null() const -> bool;
+    [[nodiscard]]
+    auto is_null_or_empty() const -> bool;
+
+private:
+    constexpr explicit StringView(char const* c_str, usize count)
+        : m_chars_ptr{ c_str }
+        , m_chars_count{ count } {
+    }
+
+private:
+    char const* m_chars_ptr{ nullptr };
+    usize       m_chars_count{ 0 };
+};
+
+[[nodiscard]]
+constexpr auto operator""sv(char const* c_str, usize len) -> StringView {
+    return StringView::construct_from_raw_parts(c_str, len);
+}
+
+template<>
+struct TypeTraits<StringView> final : public Details::TypeTraits<StringView> {
+    static auto hash(StringView const& value) -> usize {
+        return Hashing::string_calculate_hash(value.as_cstr(), value.len());
+    }
+
+    static constexpr auto is_trivial() -> bool {
+        return true; /* since this type is a read-only view of a slice the destructor does nothing */
+    }
+};

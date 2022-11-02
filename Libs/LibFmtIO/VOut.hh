@@ -13,12 +13,13 @@
 #pragma once
 
 #include <LibC/stdio.h>
-#include <LibTC/Collection/StringBuilder.hh>
-#include <LibTC/Collection/StringView.hh>
-#include <LibTC/Cxx.hh>
-#include <LibTC/Functional/ErrorOr.hh>
-#include <LibTC/Functional/Try.hh>
-#include <LibTC/Text/Format.hh>
+
+#include <LibTC/Alloc/StringBuilder.hh>
+#include <LibTC/Alloc/Text/Format.hh>
+#include <LibTC/Core/ErrorOr.hh>
+#include <LibTC/Lang/Cxx.hh>
+#include <LibTC/Lang/StringView.hh>
+#include <LibTC/Lang/Try.hh>
 
 namespace FmtIO {
 
@@ -42,20 +43,20 @@ template<typename... TArgs>
 auto vout(FILE* file, StringView format_view, TArgs&&... args) -> ErrorOr<void> {
     /* format the arguments according to the given <format_view> */
     auto string_builder = StringBuilder::construct_empty();
-    TRY(format(string_builder, format_view, Cxx::forward<TArgs>(args)...));
+    try$(format(string_builder, format_view, Cxx::forward<TArgs>(args)...));
 
     /* write the result into the stdout */
     auto const res = fwrite(string_builder.as_string_view().as_cstr(), 1, string_builder.len(), file);
     if ( res < string_builder.len() )
-        return Error::construct_from_errno(static_cast<ErrnoCode>(ferror(stdout)));
+        return Error::construct_from_code(static_cast<ErrnoCode>(ferror(stdout)));
     else
         return {};
 }
 
 template<typename... TArgs>
 auto voutln(FILE* file, StringView format_view, TArgs&&... args) -> ErrorOr<void> {
-    TRY(vout(file, format_view, Cxx::forward<TArgs>(args)...));
-    TRY(vout(file, "\n"sv));
+    try$(vout(file, format_view, Cxx::forward<TArgs>(args)...));
+    try$(vout(file, "\n"sv));
     return {};
 }
 

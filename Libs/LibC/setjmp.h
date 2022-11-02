@@ -11,12 +11,13 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "bugprone-reserved-identifier"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* ------------------------------------------ C defines ----------------------------------------- */
 
 #ifdef __x86_64__
 #    define __JMP_BUF_LENGTH 8
@@ -35,15 +36,13 @@ extern "C" {
 #    error "no architecture-specific 'jmp_buf' type defined"
 #endif
 
-/* ------------------------------------------- C types ------------------------------------------ */
-
-typedef __JMP_BUF_TYPE jmp_buf[__JMP_BUF_LENGTH];
-
-/* ------------------------------------ C function prototypes ----------------------------------- */
+TYPE_ALIAS(jmp_buf, __JMP_BUF_TYPE[__JMP_BUF_LENGTH]);
 
 int  setjmp(jmp_buf);
 void longjmp(jmp_buf, int) A_NORETURN;
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

@@ -11,32 +11,33 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
-#include <stddef.h>
+#include <stdint.h>
+#include <wchar.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* ------------------------------------------- C types ------------------------------------------ */
+TYPE_ALIAS(wctrans_t, const void*);
+TYPE_ALIAS(wctype_t, const void*);
 
-typedef const void* wctrans_t;
-typedef const void* wctype_t;
+int iswalpha(wint_t);
+int iswblank(wint_t);
+int iswcntrl(wint_t);
+int iswdigit(wint_t);
+int iswgraph(wint_t);
+int iswlower(wint_t);
+int iswprint(wint_t);
+int iswpunct(wint_t);
+int iswspace(wint_t);
+int iswupper(wint_t);
+int iswxdigit(wint_t);
+int iswctype(wint_t, wctype_t);
 
-/* ------------------------------------ C function prototypes ----------------------------------- */
-
-int       iswalpha(wint_t);
-int       iswblank(wint_t);
-int       iswcntrl(wint_t);
-int       iswdigit(wint_t);
-int       iswgraph(wint_t);
-int       iswlower(wint_t);
-int       iswprint(wint_t);
-int       iswpunct(wint_t);
-int       iswspace(wint_t);
-int       iswupper(wint_t);
-int       iswxdigit(wint_t);
-int       iswctype(wint_t, wctype_t);
 wctype_t  wctype(const char*);
 wint_t    towlower(wint_t);
 wint_t    towupper(wint_t);
@@ -44,5 +45,7 @@ wint_t    towctrans(wint_t, wctrans_t);
 wctrans_t wctrans(const char*);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

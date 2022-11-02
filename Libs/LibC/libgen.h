@@ -11,16 +11,19 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* ------------------------------------ C function prototypes ----------------------------------- */
-
 char* basename(char*);
 char* dirname(char*);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

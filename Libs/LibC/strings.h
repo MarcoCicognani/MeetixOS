@@ -11,6 +11,9 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-deprecated-headers"
+#pragma ide diagnostic ignored "modernize-use-trailing-return-type"
 
 #include <stdint.h>
 
@@ -18,11 +21,11 @@
 extern "C" {
 #endif
 
-/* ------------------------------------ C function prototypes ----------------------------------- */
-
 int strcasecmp(const char*, const char*);
-int strncasecmp(const char*, const char*, usize);
+int strncasecmp(const char*, const char*, size_t);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

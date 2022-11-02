@@ -10,12 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <LibTC/Collection/List.hh>
-#include <LibTC/Cxx.hh>
+#include <LibTC/Alloc/List.hh>
+#include <LibTC/Lang/Cxx.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
-
-using namespace TC;
 
 TEST_CASE(empty_list) {
     auto const empty_list = List<i32>::construct_empty();
@@ -263,7 +261,7 @@ TEST_CASE(assignment_operator) {
     auto list  = List<i32>::construct_empty();
     auto list2 = List<i32>::construct_from_list({ 1, 2, 3, 4, 5 });
 
-    list = Cxx::move(list2);
+    list = move(list2);
     VERIFY(list2.is_empty());
     VERIFY_EQUAL(list2.count(), 0);
     VERIFY_FALSE(list.is_empty());

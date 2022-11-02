@@ -1,0 +1,38 @@
+/**
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
+ */
+
+#pragma once
+
+#include <initializer_list>
+#include <new>
+#include <utility>
+
+namespace Cxx {
+
+using std::nullptr_t;
+
+using std::declval;
+using std::exchange;
+using std::forward;
+using std::move;
+using std::swap;
+
+template<typename T>
+using InitializerList = std::initializer_list<T>;
+
+template<typename T, typename U>
+[[nodiscard]]
+constexpr auto bit_cast(U const& from) -> T {
+    return __builtin_bit_cast(T, from);
+}
+
+} /* namespace Cxx */

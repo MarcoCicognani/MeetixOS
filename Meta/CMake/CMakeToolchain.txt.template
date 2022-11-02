@@ -48,6 +48,7 @@ set(CMAKE_ASM_NASM_COMPILE_OBJECT "${CMAKE_ASM_NASM_COMPILER} -f elf -o <OBJECT>
 add_compile_options(-m32)
 add_compile_options(-nostdinc) # See following include_directories() for explanation
 add_compile_options(-Wdouble-promotion)
+add_compile_options(-Wno-unknown-pragmas)
 add_compile_options(-fdiagnostics-color=always)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-literal-suffix>)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fconcepts-diagnostics-depth=10>)

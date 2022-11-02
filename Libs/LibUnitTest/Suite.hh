@@ -12,15 +12,15 @@
 
 #pragma once
 
-#include <LibTC/Collection/Vector.hh>
-#include <LibTC/Functional/ErrorOr.hh>
-#include <LibTC/Memory/NonNullRef.hh>
+#include <LibTC/Alloc/NonNullRef.hh>
+#include <LibTC/Alloc/Vector.hh>
+#include <LibTC/Core/ErrorOr.hh>
 #include <LibUnitTest/Case.hh>
 
 namespace UnitTest {
 
 class Suite {
-    TC_NON_NULL_REF_CONSTRUCTIBLE(Suite);
+    TCNonNullRefConstructible$(Suite);
 
 public:
     /**

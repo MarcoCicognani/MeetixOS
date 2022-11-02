@@ -11,14 +11,14 @@
  */
 
 #include <LibMain/Main.hh>
-#include <LibTC/Collection/Vector.hh>
-#include <LibTC/Cxx.hh>
+#include <LibTC/Alloc/Vector.hh>
+#include <LibTC/Lang/Cxx.hh>
 #include <LibUnitTest/Suite.hh>
 
 /**
  * @brief Test suite entry point, it only calls the run method
  */
 auto entry(Vector<StringView> args) -> ErrorOr<void> {
-    TRY(UnitTest::Suite::inst().as_ref().run(Cxx::move(args)));
+    try$(UnitTest::Suite::inst().as_ref().run(Cxx::move(args)));
     return {};
 }

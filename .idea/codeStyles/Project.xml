@@ -57,6 +57,7 @@
     <files>
       <extensions>
         <pair source="cc" header="hh" fileNamingConvention="PASCAL_CASE" />
+        <pair source="c" header="h" fileNamingConvention="PASCAL_CASE" />
       </extensions>
     </files>
     <codeStyleSettings language="JSON">

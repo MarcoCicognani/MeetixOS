@@ -12,120 +12,34 @@
 
 add_library(LibC
         STATIC
-        fenv.cc
-        stdio/rewind.cc
-        stdio/parse_mode_flags.cc
-        stdio/ftell.cc
-        stdio/perror.cc
-        stdio/popen.cc
-        stdio/tmpfile.cc
-        stdio/fseterr.cc
-        stdio/fflush.cc
-        stdio/fputs.cc
-        stdio/fgetpos.cc
-        stdio/printf.cc
-        stdio/sprintf.cc
-        stdio/ftello_unlocked.cc
-        stdio/setbuf.cc
-        stdio/vfprintf.cc
-        stdio/fread.cc
-        stdio/stdio_impl_fileno.cc
-        stdio/stdio.cc
-        stdio/vprintf.cc
-        stdio/fopen.cc
-        stdio/fprintf.cc
-        stdio/fflush_write_unlocked.cc
-        stdio/fgets.cc
-        stdio/stdio_impl_seek.cc
-        stdio/rename.cc
-        stdio/freopen.cc
-        stdio/stdio_impl_close.cc
-        stdio/fclose.cc
-        stdio/vsprintf.cc
-        stdio/fdopen_static.cc
-        stdio/fopen_static.cc
-        stdio/getchar.cc
-        stdio/fputc_unlocked.cc
-        stdio/fgetc_unlocked.cc
-        stdio/putchar.cc
-        stdio/puts.cc
-        stdio/setvbuf_unlocked.cc
-        stdio/remove.cc
-        stdio/fflush_write.cc
-        stdio/vsnprintf.cc
-        stdio/setdefbuf_unlocked.cc
-        stdio/fgetc.cc
-        stdio/fclose_static.cc
-        stdio/ungetc.cc
-        stdio/stdio_impl_read.cc
-        stdio/stdio_impl_eof.cc
-        stdio/pclose.cc
-        stdio/stdio_impl_clearerr.cc
-        stdio/fflush_unlocked.cc
-        stdio/fclose_static_unlocked.cc
-        stdio/putc.cc
-        stdio/stdio_impl_seterr.cc
-        stdio/klog.cc
-        stdio/fflush_read.cc
-        stdio/fileno.cc
-        stdio/fread_unlocked.cc
-        stdio/stdio_impl_tell.cc
-        stdio/setvbuf.cc
-        stdio/tmpnam.cc
-        stdio/snprintf.cc
-        stdio/ferror.cc
-        stdio/fdopen.cc
-        stdio/fungetc.cc
-        stdio/readline.cc
-        stdio/feof.cc
-        stdio/stdio_impl_error.cc
-        stdio/fputc.cc
-        stdio/fflush_read_unlocked.cc
-        stdio/open_file_list.cc
-        stdio/vcbprintf.cc
-        stdio/vfprintf_unlocked.cc
-        stdio/fscanf.cc
-        stdio/stdio_impl_write.cc
-        stdio/sscanf.cc
-        stdio/stdio_impl_reopen.cc
-        stdio/clearerr.cc
-        stdio/getc.cc
-        stdio/kvlog.cc
-        stdio/cbprintf.cc
-        stdio/clearerr_unlocked.cc
-        stdio/println.cc
-        stdio/fwrite.cc
-        stdio/fungetc_unlocked.cc
-        stdio/fseek.cc
-        stdio/fseeko_unlocked.cc
-        stdio/fsetpos.cc
-        stdio/fwrite_unlocked.cc
-        libc_main.cc
-        strings.cc
-        stdlib.cc
-        parse_cli_args.cc
-        string.cc
-        unistd.cc
-        OptionsParser.cc
         abi_support.cc
-        ctype.cc
-        time.cc
         assert.cc
-        malloc.c
-        sys/stat.cc
-        sys/param.cc
-        sys/time.cc
-        setjmp.S
+        ctype.cc
         dirent.cc
         dlfcn.cc
         errno.cc
         fcntl.cc
+        fenv.cc
         getopt.cc
+        lib.cc
         libgen.cc
         locale.cc
+        malloc.c
         pthread.cc
         sched.cc
-        signal.cc)
+        setjmp.S
+        signal.cc
+        stdio.cc
+        stdlib.cc
+        string.cc
+        strings.cc
+        sys/param.cc
+        sys/stat.cc
+        sys/time.cc
+        time.cc
+        unistd.cc
+        wchar.cc
+        wctype.cc)
 
 target_compile_options(LibC PRIVATE -Wno-narrowing)
 target_link_libraries(LibC LibApi LibMath)

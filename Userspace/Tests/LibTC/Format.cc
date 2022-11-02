@@ -11,19 +11,17 @@
  */
 
 #include <LibMath/math.h>
-#include <LibTC/Collection/List.hh>
-#include <LibTC/Cxx.hh>
-#include <LibTC/Text/Format.hh>
+#include <LibTC/Alloc/List.hh>
+#include <LibTC/Lang/Cxx.hh>
+#include <LibTC/Alloc/Text/Format.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
-
-using namespace TC;
 
 template<typename... Args>
 void ensure_formatted(StringView expected_result, StringView format_view, Args... args) {
     auto string_builder = StringBuilder::construct_empty();
 
-    VERIFY_IS_VALUE(format(string_builder, format_view, Cxx::forward<Args>(args)...));
+    VERIFY_IS_VALUE(format(string_builder, format_view, forward<Args>(args)...));
     VERIFY_EQUAL(string_builder.as_string_view(), expected_result);
 }
 

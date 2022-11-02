@@ -11,6 +11,8 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "bugprone-reserved-identifier"
 
 #include <Api/Common.h>
 
@@ -24,9 +26,7 @@
 #undef assert
 
 #ifndef NDEBUG
-#    define assert(expression)                                                                                         \
-        (__builtin_expect(!(expression), 0) ? assert_failed(#expression "\n" __FILE__ ":" __stringify(__LINE__))       \
-                                            : (void)0)
+#    define assert(expression) (__builtin_expect(!(expression), 0) ? libc_runtime_panic(__FILE__, __LINE__, #    expression) : (void)0)
 #else
 #    define assert(expression) ((void)0)
 #endif
@@ -35,8 +35,10 @@
 extern "C" {
 #endif
 
-A_NORETURN void assert_failed(const char*);
+A_NORETURN void libc_runtime_panic(const char* file, int line, const char* expression);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

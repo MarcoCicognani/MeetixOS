@@ -11,6 +11,9 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <fcntl.h>
 #include <stdint.h>
@@ -21,28 +24,24 @@
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
-
-#define S_IXOTH 01
-#define S_IWOTH 02
-#define S_IROTH 03
-#define S_IRWXO 07
-#define S_IXGRP 010
-#define S_IWGRP 020
-#define S_IRGRP 040
-#define S_IRWXG 070
-#define S_IXUSR 0100
-#define S_IWUSR 0200
-#define S_IRUSR 0400
-#define S_IRWXU 0700
+CONST_VALUE(S_IXOTH, mode_t, 0001);
+CONST_VALUE(S_IWOTH, mode_t, 0002);
+CONST_VALUE(S_IROTH, mode_t, 0003);
+CONST_VALUE(S_IRWXO, mode_t, 0007);
+CONST_VALUE(S_IXGRP, mode_t, 0010);
+CONST_VALUE(S_IWGRP, mode_t, 0020);
+CONST_VALUE(S_IRGRP, mode_t, 0040);
+CONST_VALUE(S_IRWXG, mode_t, 0070);
+CONST_VALUE(S_IXUSR, mode_t, 0100);
+CONST_VALUE(S_IWUSR, mode_t, 0200);
+CONST_VALUE(S_IRUSR, mode_t, 0400);
+CONST_VALUE(S_IRWXU, mode_t, 0700);
 
 #define S_ISREG(mode)  1
 #define S_ISDIR(mode)  0
 #define S_ISCHR(mode)  0
 #define S_ISBLK(mode)  0
 #define S_ISFIFO(mode) 0
-
-/* ------------------------------------------- C types ------------------------------------------ */
 
 struct stat {
     dev_t     st_dev;
@@ -59,8 +58,6 @@ struct stat {
     blkcnt_t  st_blocks;
 };
 
-/* ------------------------------------ C function prototypes ----------------------------------- */
-
 int    stat(const char*, struct stat*);
 int    fstat(int, struct stat*);
 int    lstat(const char*, struct stat*);
@@ -70,5 +67,7 @@ mode_t umask(mode_t);
 int    mkdir(const char*, mode_t);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

@@ -29,6 +29,8 @@
 extern "C" {
 #endif
 
+
+
 /**
  * Performs an atomic wait. If the atom is true, the executing task must
  * wait until the task that owns the atom has finished its work and sets
@@ -87,14 +89,8 @@ void s_atomic_block_dual(bool* atom1, bool* atom2);
  * @security-level APPLICATION
  */
 SpawnStatus s_spawn(const char* path, const char* args, const char* work_dir, SecurityLevel security_level);
-SpawnStatus
-s_spawn_p(const char* path, const char* args, const char* work_dir, SecurityLevel security_level, Pid* out_pid);
-SpawnStatus s_spawn_po(const char*   path,
-                       const char*   args,
-                       const char*   work_dir,
-                       SecurityLevel security_level,
-                       Pid*          out_pid,
-                       FileHandle    out_stdio[3]);
+SpawnStatus s_spawn_p(const char* path, const char* args, const char* work_dir, SecurityLevel security_level, Pid* out_pid);
+SpawnStatus s_spawn_po(const char* path, const char* args, const char* work_dir, SecurityLevel security_level, Pid* out_pid, FileHandle out_stdio[3]);
 SpawnStatus s_spawn_poi(const char*   path,
                         const char*   args,
                         const char*   work_dir,
@@ -128,8 +124,7 @@ RegisterAsServerStatus s_register_as_server(const char* server_identifier, Secur
  * @param data_len:					the length of the data buffer
  * @return one of the {ServerManageStatus} codes.
  */
-ServerManageStatus
-s_server_manage(const char* server_identifier, ServerManageCommand manage_command, void* data_ptr, usize data_len);
+ServerManageStatus s_server_manage(const char* server_identifier, ServerManageCommand manage_command, void* data_ptr, usize data_len);
 
 /**
  * call spawner to reboot the computer
@@ -456,7 +451,7 @@ Pid s_get_pid_for_tid(Tid thread_id);
  *
  * @security-level APPLICATION
  */
-void s_exit(int exit_code);
+[[noreturn]] void s_exit(int exit_code);
 
 /**
  * Creates an asynchronous thread added to the current process.
@@ -501,8 +496,7 @@ Tid s_create_thread_dns(void* func_ptr, void* data, const char* name, CreateThre
 MessageSendStatus s_send_message(Tid target, void* buffer, usize buffer_len);
 MessageSendStatus s_send_message_m(Tid target, void* buffer, usize buffer_len, MessageSendMode send_mode);
 MessageSendStatus s_send_message_t(Tid target, void* buffer, usize buffer_len, MessageTransaction tx);
-MessageSendStatus
-s_send_message_tm(Tid target, void* buffer, usize buffer_len, MessageTransaction tx, MessageSendMode send_mode);
+MessageSendStatus s_send_message_tm(Tid target, void* buffer, usize buffer_len, MessageTransaction tx, MessageSendMode send_mode);
 
 /**
  * Receives a message. At maximum <max> bytes will be attempted to be copied to
@@ -535,13 +529,8 @@ s_send_message_tm(Tid target, void* buffer, usize buffer_len, MessageTransaction
 MessageReceiveStatus s_receive_message(void* buffer, usize buffer_len);
 MessageReceiveStatus s_receive_message_m(void* buffer, usize buffer_len, MessageReceiveMode receive_mode);
 MessageReceiveStatus s_receive_message_t(void* buffer, usize buffer_len, MessageTransaction tx);
-MessageReceiveStatus
-s_receive_message_tm(void* buffer, usize buffer_len, MessageTransaction tx, MessageReceiveMode receive_mode);
-MessageReceiveStatus s_receive_message_tmb(void*              buffer,
-                                           usize              buffer_len,
-                                           MessageTransaction tx,
-                                           MessageReceiveMode receive_mode,
-                                           bool*              break_condition);
+MessageReceiveStatus s_receive_message_tm(void* buffer, usize buffer_len, MessageTransaction tx, MessageReceiveMode receive_mode);
+MessageReceiveStatus s_receive_message_tmb(void* buffer, usize buffer_len, MessageTransaction tx, MessageReceiveMode receive_mode, bool* break_condition);
 
 /**
  * Registers the executing task for the given identifier.
@@ -712,11 +701,7 @@ FileHandle s_clone_fd_s(FileHandle source_fd, Pid source_proc_id, Pid target_pro
  * @security-level APPLICATION
  */
 FileHandle s_clone_fd_t(FileHandle source_fd, Pid source_proc_id, FileHandle target_fd, Pid target_proc_id);
-FileHandle s_clone_fd_ts(FileHandle       source_fd,
-                         Pid              source_proc_id,
-                         FileHandle       target_fd,
-                         Pid              target_proc_id,
-                         FsCloneFdStatus* out_status);
+FileHandle s_clone_fd_ts(FileHandle source_fd, Pid source_proc_id, FileHandle target_fd, Pid target_proc_id, FsCloneFdStatus* out_status);
 
 /**
  * Opens a pipe.
@@ -798,11 +783,7 @@ void* s_create_pages_in_spaces(ProcessCreationIdentifier process, Address virtua
  *
  * @security-level KERNEL
  */
-bool s_write_tls_master_for_process(ProcessCreationIdentifier process,
-                                    u8*                       content,
-                                    usize                     copy_size,
-                                    usize                     total_size,
-                                    usize                     alignment);
+bool s_write_tls_master_for_process(ProcessCreationIdentifier process, u8* content, usize copy_size, usize total_size, usize alignment);
 
 /**
  * Attaches and therefore starts a process during process creation at the given execution point.
@@ -844,10 +825,8 @@ Pid s_get_created_process_id(ProcessCreationIdentifier process);
  *
  * @security-level DRIVER
  */
-FsRegisterAsDelegateStatus s_fs_register_as_delegate(const char* name,
-                                                     FsPhysID    phys_mountpoint_id,
-                                                     FsVirtID*   out_mountpoint_id,
-                                                     Address*    out_transaction_storage);
+FsRegisterAsDelegateStatus
+s_fs_register_as_delegate(const char* name, FsPhysID phys_mountpoint_id, FsVirtID* out_mountpoint_id, Address* out_transaction_storage);
 
 /**
  * Updates the status for a filesystem transaction.
@@ -871,8 +850,7 @@ void s_fs_set_transaction_status(FsTransactionID id, FsTransactionStatus status)
  *
  * @security-level DRIVER
  */
-FsCreateNodeStatus
-s_fs_create_node(usize parent, const char* name, FsNodeType type, usize fs_id, usize* out_created_id);
+FsCreateNodeStatus s_fs_create_node(usize parent, const char* name, FsNodeType type, usize fs_id, usize* out_created_id);
 
 /**
  * Registers the <handler> routine as the handler for the <irq>.

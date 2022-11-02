@@ -11,24 +11,22 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
-#include <Api/Common.h>
-#include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
-
-#define LC_ALL      0
-#define LC_COLLATE  1
-#define LC_CTYPE    2
-#define LC_MONETARY 3
-#define LC_NUMERIC  4
-#define LC_TIME     5
-
-/* ------------------------------------------- C types ------------------------------------------ */
+CONST_VALUE(LC_ALL, int, 0);
+CONST_VALUE(LC_COLLATE, int, 1);
+CONST_VALUE(LC_CTYPE, int, 2);
+CONST_VALUE(LC_MONETARY, int, 3);
+CONST_VALUE(LC_NUMERIC, int, 4);
+CONST_VALUE(LC_TIME, int, 5);
 
 struct lconv {
     char* decimal_point;      /* default to "." */
@@ -57,11 +55,11 @@ struct lconv {
     char  int_n_sign_posn;    /* default to CHAR_MAX */
 };
 
-/* ------------------------------------ C function prototypes ----------------------------------- */
-
 char*         setlocale(int, const char*);
 struct lconv* localeconv();
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

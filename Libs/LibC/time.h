@@ -11,6 +11,10 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "bugprone-reserved-identifier"
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <stdint.h>
 
@@ -18,19 +22,15 @@
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
+CONST_VALUE(CLOCKS_PER_SEC, ssize_t, 1000000L);
+CONST_VALUE(TIME_UTC, int, 1);
 
-#define CLOCKS_PER_SEC 1000000L
-#define TIME_UTC       1
+TYPE_ALIAS(time_t, long);
+TYPE_ALIAS(suseconds_t, long);
 
-/* ------------------------------------------- C types ------------------------------------------ */
-
-typedef long time_t;
-typedef long suseconds_t;
-
-typedef void* timer_t;
-typedef int   clockid_t;
-typedef long  clock_t;
+TYPE_ALIAS(timer_t, void*);
+TYPE_ALIAS(clockid_t, int);
+TYPE_ALIAS(clock_t, long);
 
 struct tm {
     int         tm_sec;   /* Seconds. [0-60] (1 leap second) */
@@ -46,13 +46,11 @@ struct tm {
     const char* __tm_zone;
 };
 
-/* ------------------------------------ C function prototypes ----------------------------------- */
-
 clock_t    clock(void);
 time_t     time(time_t*);
 double     difftime(time_t, time_t);
 time_t     mktime(struct tm*);
-usize      strftime(char*, usize, const char*, const struct tm*);
+size_t     strftime(char*, size_t, const char*, const struct tm*);
 char*      strptime(const char*, const char*, struct tm*);
 struct tm* gmtime(const time_t*);
 struct tm* localtime(const time_t*);
@@ -60,5 +58,7 @@ char*      asctime(const struct tm*);
 char*      ctime(const time_t*);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

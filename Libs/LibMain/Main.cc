@@ -14,11 +14,11 @@
 #include <LibC/string.h>
 #include <LibFmtIO/Err.hh>
 #include <LibMain/Main.hh>
-#include <LibTC/Cxx.hh>
-#include <LibTC/Functional/Must.hh>
+#include <LibTC/Lang/Cxx.hh>
+#include <LibTC/Lang/Must.hh>
 
-auto runtime_error(Error const& error) -> int {
-    MUST(FmtIO::errln("{}Runtime Error{} in {}"sv, FmtIO::foreground(FmtIO::Color::Red), FmtIO::reset(), error));
+auto runtime_error(Error error) -> int {
+    must$(FmtIO::errln("{}Runtime Error{} in {}"sv, FmtIO::foreground(FmtIO::Color::Red), FmtIO::reset(), error));
     return EXIT_FAILURE;
 }
 
@@ -28,12 +28,12 @@ auto main(int argc, char const* const* argv) -> int {
         return runtime_error(error_or_args_vector.unwrap_error());
 
     /* append all the C-Style arguments into the vector of string views */
-    auto args = error_or_args_vector.unwrap();
+    auto args_vector = error_or_args_vector.unwrap();
     for ( auto const i : Range{ 0, argc } )
-        args.append_unchecked(StringView{ argv[i], strlen(argv[i]) });
+        args_vector.append_unchecked(StringView::construct_from_cstr(argv[i]));
 
     /* call the application entry point */
-    auto error_or_void = entry(Cxx::move(args));
+    auto error_or_void = entry(Cxx::move(args_vector));
     if ( error_or_void.is_error() )
         return runtime_error(error_or_void.unwrap_error());
     else

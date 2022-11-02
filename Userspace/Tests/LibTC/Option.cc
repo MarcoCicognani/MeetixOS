@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibTC/Functional/Option.hh>
-#include <LibTC/Memory/Box.hh>
+#include <LibTC/Alloc/Box.hh>
+#include <LibTC/Lang/Option.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
@@ -48,7 +48,7 @@ TEST_CASE(unwrap_reset_value) {
 }
 
 TEST_CASE(option_with_reference) {
-    auto boxed_ptr = Box<u32>::construct_from_args(0xdeadbeef);
+    auto boxed_ptr = Box<u32>::construct_from_emplace(0xdeadbeef);
     auto& int_ref = boxed_ptr.as_ref();
 
     Option<u32&> option = int_ref;
@@ -78,7 +78,7 @@ TEST_CASE(assignment_operator) {
     option = None;
     VERIFY_FALSE(option.is_present());
 
-    auto boxed_ptr = Box<u32>::construct_from_args(0xcafebabe);
+    auto boxed_ptr = Box<u32>::construct_from_emplace(0xcafebabe);
     auto& int_ref = boxed_ptr.as_ref();
 
     Option<u32&> option2 = int_ref;

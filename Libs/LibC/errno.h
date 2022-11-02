@@ -11,17 +11,12 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* ------------------------------------------ C defines ----------------------------------------- */
-
-int* errno_location();
-
-#undef errno
-#define errno *errno_location()
 
 enum ErrnoCode {
     ENOERR,          /* no error */
@@ -102,8 +97,11 @@ enum ErrnoCode {
     ETXTBSY,         /* text file busy */
     EWOULDBLOCK,     /* operation would block (maybe the same value as [EAGAIN]) */
     EXDEV,           /* cross-device link */
-    ECUSTOM          /* custom error, used only by LibTC/Error when only string is provided */
+    ECUSTOM,         /* custom error, used only by LibTC/Error when only string is provided */
+    EMAX             /* maximum error value */
 };
+
+/* Here the values are defined too because errno values must be available to the CPP too */
 
 #define ENOERR          ENOERR
 #define E2BIG           E2BIG
@@ -184,7 +182,17 @@ enum ErrnoCode {
 #define EWOULDBLOCK     EWOULDBLOCK
 #define EXDEV           EXDEV
 #define ECUSTOM         ECUSTOM
+#define EMAX            EMAX
+
+#ifdef errno
+#    undef errno
+#endif
+#define errno *errno_location() /* use the errno location as errno symbol */
+
+int* errno_location();
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

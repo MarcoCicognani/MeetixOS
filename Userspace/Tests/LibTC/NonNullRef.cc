@@ -10,24 +10,24 @@
  * GNU General Public License version 3
  */
 
-#include <LibTC/Collection/List.hh>
-#include <LibTC/Cxx.hh>
-#include <LibTC/IntTypes.hh>
-#include <LibTC/Memory/NonNullRef.hh>
+#include <LibTC/Alloc/List.hh>
+#include <LibTC/Alloc/NonNullRef.hh>
+#include <LibTC/Lang/Cxx.hh>
+#include <LibTC/Lang/IntTypes.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
 using namespace TC;
 
 TEST_CASE(construct) {
-    auto const ref_i32 = NonNullRef<i32>::construct_from_args(64);
+    auto const ref_i32 = NonNullRef<i32>::construct_from_emplace(64);
 
     VERIFY_EQUAL(ref_i32.strong_ref_count(), 1);
     VERIFY_EQUAL(ref_i32.as_ref(), 64u);
 }
 
 TEST_CASE(copy) {
-    auto const ref_i32   = NonNullRef<i32>::construct_from_args(64);
+    auto const ref_i32   = NonNullRef<i32>::construct_from_emplace(64);
     auto const ref_i32_2 = ref_i32.clone();
 
     VERIFY_EQUAL(ref_i32.strong_ref_count(), 2);
@@ -50,7 +50,7 @@ TEST_CASE(with_object) {
     };
 
     {
-        auto const ref_object_0 = NonNullRef<Object>::construct_from_args();
+        auto const ref_object_0 = NonNullRef<Object>::construct_from_emplace();
         {
             auto const ref_object_1 = ref_object_0.clone();
             VERIFY_EQUAL(ref_object_1.strong_ref_count(), 2);
@@ -63,11 +63,11 @@ TEST_CASE(with_object) {
 }
 
 TEST_CASE(swap) {
-    auto ref_i32_512 = NonNullRef<i32>::construct_from_args(512);
+    auto ref_i32_512 = NonNullRef<i32>::construct_from_emplace(512);
     VERIFY_EQUAL(ref_i32_512.as_ref(), 512u);
     VERIFY_EQUAL(ref_i32_512.strong_ref_count(), 1);
 
-    auto ref_i32_768 = NonNullRef<i32>::construct_from_args(768);
+    auto ref_i32_768 = NonNullRef<i32>::construct_from_emplace(768);
     VERIFY_EQUAL(ref_i32_768.as_ref(), 768u);
     VERIFY_EQUAL(ref_i32_768.strong_ref_count(), 1);
 
@@ -94,7 +94,7 @@ public:
 
 TEST_CASE(ref_count_into_vector) {
     {
-        auto ref_object = NonNullRef<Object>::construct_from_args(64u);
+        auto ref_object = NonNullRef<Object>::construct_from_emplace(64u);
 
         auto list_1 = List<NonNullRef<Object>>::construct_from_list({ ref_object.clone() });
         auto list_2 = List<NonNullRef<Object>>::construct_from_list({ ref_object.clone() });

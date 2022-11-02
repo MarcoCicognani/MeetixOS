@@ -11,16 +11,19 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* ------------------------------------------- C types ------------------------------------------ */
-
-struct DirStream;
-typedef struct DirStream DIR;
+TYPE_ALIAS(DIR, struct DirStream);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

@@ -19,6 +19,10 @@
 #define V_MINOR 0
 #define V_PATCH 1
 
+auto cc_main(Vector<StringView> args) -> ErrorOr<void> {
+
+}
+
 int main(int argc, const char** argv) {
     std::string src_path{};
     std::string dst_path{};

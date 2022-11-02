@@ -11,6 +11,10 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "bugprone-reserved-identifier"
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <stdint.h>
 
@@ -45,16 +49,16 @@ extern "C" {
 #define PDP_ENDIAN    __PDP_ENDIAN
 #define BYTE_ORDER    __BYTE_ORDER
 
-static __inline u16 __bswap16(u16 x) {
+static inline uint16_t __bswap16(uint16_t x) {
     return x << 8 | x >> 8;
 }
 
-static __inline u32 __bswap32(u32 x) {
+static inline uint32_t __bswap32(uint32_t x) {
     return x >> 24 | (x >> 8 & 0xff00) | (x << 8 & 0xff0000) | x << 24;
 }
 
-static __inline u64 __bswap64(u64 x) {
-    return __bswap32(x) + 0ULL << 32 | __bswap32(x >> 32);
+static inline uint64_t __bswap64(uint64_t x) {
+    return (__bswap32(x) + 0ULL) << 32 | __bswap32(x >> 32);
 }
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
@@ -100,3 +104,5 @@ static __inline u64 __bswap64(u64 x) {
 #ifdef __cplusplus
 }
 #endif
+
+#pragma clang diagnostic pop

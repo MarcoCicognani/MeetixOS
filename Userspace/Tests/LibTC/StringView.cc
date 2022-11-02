@@ -10,13 +10,12 @@
  * GNU General Public License version 3
  */
 
-#include <LibTC/Collection/String.hh>
-#include <LibTC/Collection/StringView.hh>
-#include <LibTC/Cxx.hh>
+#include <LibTC/Alloc/String.hh>
+#include <LibTC/Lang/Cxx.hh>
+#include <LibTC/Lang/StringView.hh>
+
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
-
-using namespace TC;
 
 TEST_CASE(construction) {
     StringView empty_string_view{};
@@ -139,18 +138,18 @@ TEST_CASE(trim) {
     VERIFY_EQUAL(string_view.trim_whitespaces(), "Yeah Buddy!"sv);
 
     auto const string_view2 = "---Yeah Buddy+++"sv;
-    VERIFY_EQUAL(string_view2.trim("-+"sv, TrimMode::Left), "Yeah Buddy+++"sv);
-    VERIFY_EQUAL(string_view2.trim("-+"sv, TrimMode::Right), "---Yeah Buddy"sv);
-    VERIFY_EQUAL(string_view2.trim("-+"sv, TrimMode::Both), "Yeah Buddy"sv);
+    VERIFY_EQUAL(string_view2.trim("-+"sv, StringView::TrimMode::Left), "Yeah Buddy+++"sv);
+    VERIFY_EQUAL(string_view2.trim("-+"sv, StringView::TrimMode::Right), "---Yeah Buddy"sv);
+    VERIFY_EQUAL(string_view2.trim("-+"sv, StringView::TrimMode::Both), "Yeah Buddy"sv);
 }
 
 TEST_CASE(starts_with) {
     auto const string_view = "Hi I'm a StringView test"sv;
 
     VERIFY(string_view.starts_with('H'));
-    VERIFY(string_view.starts_with('h', CaseSensitivity::Insensitive));
+    VERIFY(string_view.starts_with('h', StringView::CaseSensible::Yes));
     VERIFY(string_view.starts_with("Hi"sv));
-    VERIFY(string_view.starts_with("hi i'm a"sv, CaseSensitivity::Insensitive));
+    VERIFY(string_view.starts_with("hi i'm a"sv, StringView::CaseSensible::Yes));
 }
 
 TEST_CASE(ends_with) {

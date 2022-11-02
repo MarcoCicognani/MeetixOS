@@ -11,14 +11,16 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "bugprone-reserved-identifier"
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* ------------------------------------------ C defines ----------------------------------------- */
 
 #if UINTPTR_MAX == UINT64_MAX
 #    define __PRI64  "l"
@@ -219,14 +221,11 @@ extern "C" {
 #define SCNuPTR __PRIPTR "u"
 #define SCNxPTR __PRIPTR "x"
 
-/* ------------------------------------------- C types ------------------------------------------ */
-
-typedef struct {
-    intmax_t quot; // quotient
-    intmax_t rem;  // remainder
-} imaxdiv_t;
-
-/* ------------------------------------ C function prototypes ----------------------------------- */
+struct imaxdiv_t {
+    intmax_t quot; /* quotient */
+    intmax_t rem;  /* remainder */
+};
+TYPE_ALIAS(imaxdiv_t, struct imaxdiv_t);
 
 intmax_t  imaxabs(intmax_t);
 imaxdiv_t imaxdiv(intmax_t, intmax_t);
@@ -236,5 +235,7 @@ intmax_t  wcstoimax(const wchar_t*, wchar_t**, int);
 uintmax_t wcstoumax(const wchar_t*, wchar_t**, int);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

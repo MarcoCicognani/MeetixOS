@@ -12,28 +12,31 @@
 
 #pragma once
 
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "bugprone-reserved-identifier"
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
+
 #include <Api/signal.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
-
 #define SIG_DFL ((sig_handler_t)0)  /* default action (none) */
 #define SIG_IGN ((sig_handler_t)1)  /* ignore handler */
 #define SIG_ERR ((sig_handler_t)-1) /* error return value */
 
-/* ------------------------------------------- C types ------------------------------------------ */
-
-typedef __SIG_ATOMIC_TYPE__ sig_atomic_t;
-typedef void (*sig_handler_t)(int);
-
-/* ------------------------------------ C function prototypes ----------------------------------- */
+TYPE_ALIAS(sig_atomic_t, __SIG_ATOMIC_TYPE__);
+TYPE_ALIAS(sig_handler_t, void (*)(int));
 
 sig_handler_t signal(int, sig_handler_t);
-int           raise(int);
+
+int raise(int);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

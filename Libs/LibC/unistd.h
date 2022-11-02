@@ -11,6 +11,8 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-use-trailing-return-type"
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -19,22 +21,18 @@
 extern "C" {
 #endif
 
-/* ------------------------------------------ C defines ----------------------------------------- */
-
-#define F_OK 0 /* file existence */
-#define X_OK 1 /* execute or search permission */
-#define W_OK 2 /* write permission */
-#define R_OK 3 /* read permission */
+CONST_VALUE(F_OK, int, 0); /* file existence */
+CONST_VALUE(X_OK, int, 1); /* execute or search permission */
+CONST_VALUE(W_OK, int, 2); /* write permission */
+CONST_VALUE(R_OK, int, 3); /* read permission */
 
 extern char** g_environ;
 #define environ g_environ
 
-/* ------------------------------------ C function prototypes ----------------------------------- */
-
 int chdir(const char*);
 
-isize read(int, void*, usize);
-isize write(int, const void*, usize);
+ssize_t read(int, void*, size_t);
+ssize_t write(int, const void*, size_t);
 
 off_t    lseek(int fd, off_t offset, int);
 long int tell(int);
@@ -47,7 +45,7 @@ unsigned sleep(unsigned);
 pid_t getpid();
 pid_t getppid();
 
-char* getcwd(char*, usize);
+char* getcwd(char*, size_t);
 int   isatty(int);
 int   access(const char*, int);
 int   fcntl(int, int, ...);
@@ -55,5 +53,7 @@ int   rmdir(const char*);
 int   symlink(const char*, const char*);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop

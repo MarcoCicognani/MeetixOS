@@ -10,6 +10,9 @@
  * GNU General Public License version 3
  */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-use-trailing-return-type"
+
 #include <LibApi/Api.h>
 #include <LibC/time.h>
 
@@ -37,7 +40,7 @@ time_t mktime(struct tm*) {
     return 0;
 }
 
-usize strftime(char*, usize, const char*, const struct tm*) {
+size_t strftime(char*, size_t, const char*, const struct tm*) {
     __NOT_IMPLEMENTED(strftime);
     return 0;
 }
@@ -66,4 +69,7 @@ char* ctime(const time_t*) {
     __NOT_IMPLEMENTED(ctime);
     return nullptr;
 }
-}
+
+} /* extern "C" */
+
+#pragma clang diagnostic pop

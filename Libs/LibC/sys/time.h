@@ -11,14 +11,15 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <time.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* ------------------------------------------- C types ------------------------------------------ */
 
 struct timeval {
     time_t      tv_sec;  /* seconds */
@@ -30,10 +31,10 @@ struct timezone {
     int tz_dsttime;     /* type of DST correction */
 };
 
-/* ------------------------------------ C function prototypes ----------------------------------- */
-
 int gettimeofday(struct timeval*, struct timezone*);
 
 #ifdef __cplusplus
 }
 #endif
+
+#pragma clang diagnostic pop

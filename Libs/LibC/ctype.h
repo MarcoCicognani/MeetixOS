@@ -11,6 +11,10 @@
  */
 
 #pragma once
+#pragma clang diagnostic push
+#pragma ide diagnostic   ignored "bugprone-reserved-identifier"
+#pragma ide diagnostic   ignored "modernize-deprecated-headers"
+#pragma ide diagnostic   ignored "modernize-use-trailing-return-type"
 
 #include <stdint.h>
 
@@ -18,67 +22,67 @@
 extern "C" {
 #endif
 
-#define _U 01   /* Upper case */
-#define _L 02   /* Lower case */
-#define _N 04   /* Digit */
-#define _S 010  /* Space */
-#define _P 020  /* Punctuator */
-#define _C 040  /* Control character */
-#define _X 0100 /* Blank */
-#define _B 0200 /* Hexadecimal digit */
+CONST_VALUE(_U, uint8_t, 0001); /* Upper case */
+CONST_VALUE(_L, uint8_t, 0002); /* Lower case */
+CONST_VALUE(_N, uint8_t, 0004); /* Digit */
+CONST_VALUE(_S, uint8_t, 0010); /* Space */
+CONST_VALUE(_P, uint8_t, 0020); /* Punctuator */
+CONST_VALUE(_C, uint8_t, 0040); /* Control character */
+CONST_VALUE(_X, uint8_t, 0100); /* Blank */
+CONST_VALUE(_B, uint8_t, 0200); /* Hexadecimal digit */
 
 extern const char _ctype_[256];
 
 static inline int __inline_isalnum(int c) {
-    return _ctype_[(u8)(c)] & (_U | _L | _N);
+    return _ctype_[(uint8_t)(c)] & (_U | _L | _N);
 }
 
 static inline int __inline_isalpha(int c) {
-    return _ctype_[(u8)(c)] & (_U | _L);
+    return _ctype_[(uint8_t)(c)] & (_U | _L);
 }
 
 static inline int __inline_isascii(int c) {
-    return (unsigned)c <= 127;
+    return (uint32_t)c <= 127;
 }
 
 static inline int __inline_iscntrl(int c) {
-    return _ctype_[(u8)(c)] & (_C);
+    return _ctype_[(uint8_t)(c)] & _C;
 }
 
 static inline int __inline_isdigit(int c) {
-    return _ctype_[(u8)(c)] & (_N);
+    return _ctype_[(uint8_t)(c)] & _N;
 }
 
 static inline int __inline_isxdigit(int c) {
-    return _ctype_[(u8)(c)] & (_N | _X);
+    return _ctype_[(uint8_t)(c)] & (_N | _X);
 }
 
 static inline int __inline_isspace(int c) {
-    return _ctype_[(u8)(c)] & (_S);
+    return _ctype_[(uint8_t)(c)] & _S;
 }
 
 static inline int __inline_ispunct(int c) {
-    return _ctype_[(u8)(c)] & (_P);
+    return _ctype_[(uint8_t)(c)] & _P;
 }
 
 static inline int __inline_isprint(int c) {
-    return _ctype_[(u8)(c)] & (_P | _U | _L | _N | _B);
+    return _ctype_[(uint8_t)(c)] & (_P | _U | _L | _N | _B);
 }
 
 static inline int __inline_isgraph(int c) {
-    return _ctype_[(u8)(c)] & (_P | _U | _L | _N);
+    return _ctype_[(uint8_t)(c)] & (_P | _U | _L | _N);
 }
 
 static inline int __inline_islower(int c) {
-    return _ctype_[(u8)(c)] & (_L);
+    return _ctype_[(uint8_t)(c)] & _L;
 }
 
 static inline int __inline_isupper(int c) {
-    return _ctype_[(u8)(c)] & (_U);
+    return _ctype_[(uint8_t)(c)] & _U;
 }
 
 static inline int __inline_isblank(int c) {
-    return _ctype_[(u8)(c)] & (_B) || (c == '\t');
+    return _ctype_[(uint8_t)(c)] & _B || (c == '\t');
 }
 
 static inline int __inline_toascii(int c) {
@@ -134,5 +138,7 @@ int toupper(int);
 #define toupper  __inline_toupper
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#pragma clang diagnostic pop
