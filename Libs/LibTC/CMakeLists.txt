@@ -14,7 +14,6 @@ add_library(LibTC STATIC
         Alloc/String.cc
         Alloc/StringBuilder.cc
         Alloc/StringStorage.cc
-        Lang/StringView.cc
         Alloc/Text/Format.cc
         Alloc/Text/FormatLexer.cc
         Alloc/Text/FormatParser.cc
@@ -22,4 +21,5 @@ add_library(LibTC STATIC
         Alloc/Text/Lexer.cc
         Core/Error.cc
         Core/Hashing.cc
-        Core/SourceLocation.cc Prelude.cc Alloc/AllocLayout.cc)
+        Core/SourceLocation.cc
+        Lang/StringView.cc)
