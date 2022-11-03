@@ -138,7 +138,7 @@ TEST_CASE(prepend) {
 TEST_CASE(erase) {
     auto list = List<i32>::construct_from_list({ 9, 5, 4, 6, 3, 2 });
 
-    list.erase_if([](auto const& v) -> bool { return v % 2; });
+    list.erase_if([](i32 const& v) -> bool { return v % 2; });
 
     VERIFY_FALSE(list.is_empty());
     VERIFY_EQUAL(list.count(), 3);
@@ -261,7 +261,7 @@ TEST_CASE(assignment_operator) {
     auto list  = List<i32>::construct_empty();
     auto list2 = List<i32>::construct_from_list({ 1, 2, 3, 4, 5 });
 
-    list = move(list2);
+    list = Cxx::move(list2);
     VERIFY(list2.is_empty());
     VERIFY_EQUAL(list2.count(), 0);
     VERIFY_FALSE(list.is_empty());

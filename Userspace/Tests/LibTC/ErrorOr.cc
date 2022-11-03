@@ -47,7 +47,7 @@ TEST_CASE(unwrap_value) {
 }
 
 TEST_CASE(unwrap_error) {
-    ErrorOr<i32> error_or_i32 = Error::construct_from_literal("No Entry Found");
+    ErrorOr<i32> error_or_i32 = Error::construct_from_literal("No Entry Found"sv);
     VERIFY(error_or_i32.is_error());
 
     auto& error = error_or_i32.error();

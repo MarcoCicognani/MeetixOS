@@ -13,11 +13,8 @@
 #include <LibTC/Alloc/List.hh>
 #include <LibTC/Alloc/NonNullRef.hh>
 #include <LibTC/Lang/Cxx.hh>
-#include <LibTC/Lang/IntTypes.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
-
-using namespace TC;
 
 TEST_CASE(construct) {
     auto const ref_i32 = NonNullRef<i32>::construct_from_emplace(64);
@@ -83,23 +80,32 @@ TEST_CASE(swap) {
 
 static i32 s_destructor_called_count = 0;
 
-struct Object {
+struct MovableOnlyObject {
+    TCDenyCopy$(MovableOnlyObject);
+
 public:
     usize m_value{ 0 };
 
-    ~Object() {
+    explicit MovableOnlyObject(usize value)
+        : m_value{ value } {
+    }
+
+    MovableOnlyObject(MovableOnlyObject&&)                    = default;
+    auto operator=(MovableOnlyObject&&) -> MovableOnlyObject& = default;
+
+    ~MovableOnlyObject() {
         ++s_destructor_called_count;
     }
 };
 
 TEST_CASE(ref_count_into_vector) {
     {
-        auto ref_object = NonNullRef<Object>::construct_from_emplace(64u);
+        auto ref_object = NonNullRef<MovableOnlyObject>::construct_from_emplace(64u);
 
-        auto list_1 = List<NonNullRef<Object>>::construct_from_list({ ref_object.clone() });
-        auto list_2 = List<NonNullRef<Object>>::construct_from_list({ ref_object.clone() });
-        auto const list_3 = List<NonNullRef<Object>>::construct_from_list({ ref_object.clone() });
-        auto const list_4 = List<NonNullRef<Object>>::construct_from_list({ ref_object.clone() });
+        auto       list_1 = List<NonNullRef<MovableOnlyObject>>::construct_from_list({ ref_object.clone() });
+        auto       list_2 = List<NonNullRef<MovableOnlyObject>>::construct_from_list({ ref_object.clone() });
+        auto const list_3 = List<NonNullRef<MovableOnlyObject>>::construct_from_list({ ref_object.clone() });
+        auto const list_4 = List<NonNullRef<MovableOnlyObject>>::construct_from_list({ ref_object.clone() });
         VERIFY_EQUAL(ref_object.strong_ref_count(), 5);
 
         list_1.append(ref_object.clone());

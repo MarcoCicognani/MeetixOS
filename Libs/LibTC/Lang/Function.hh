@@ -80,7 +80,7 @@ public:
      */
     [[gnu::always_inline]]
     auto operator()(TArgs... args) const -> TReturn {
-        return storage_as_callable()->invoke(forward<TArgs>(args)...);
+        return storage_as_callable()->invoke(Cxx::forward<TArgs>(args)...);
     }
 
 private:
@@ -104,7 +104,7 @@ private:
 
         [[gnu::always_inline]]
         auto invoke(TArgs&&... args) -> TReturn override {
-            return m_callable(forward<TArgs>(args)...);
+            return m_callable(Cxx::forward<TArgs>(args)...);
         }
 
         auto move_this_to(u8* destination) -> void override {
@@ -117,7 +117,7 @@ private:
 
     [[nodiscard]]
     constexpr auto storage_as_callable() const -> ICallable* {
-        return bit_cast<ICallable*>(&m_inline_storage);
+        return Cxx::bit_cast<ICallable*>(&m_inline_storage);
     }
 
     alignas(alignof(ICallable)) u8 m_inline_storage[INLINE_STORAGE_SIZE]{};

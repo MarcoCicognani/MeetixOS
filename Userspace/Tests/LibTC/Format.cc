@@ -21,7 +21,7 @@ template<typename... Args>
 void ensure_formatted(StringView expected_result, StringView format_view, Args... args) {
     auto string_builder = StringBuilder::construct_empty();
 
-    VERIFY_IS_VALUE(format(string_builder, format_view, forward<Args>(args)...));
+    VERIFY_IS_VALUE(format(string_builder, format_view, Cxx::forward<Args>(args)...));
     VERIFY_EQUAL(string_builder.as_string_view(), expected_result);
 }
 
@@ -170,6 +170,6 @@ TEST_CASE(range_format) {
 }
 
 TEST_CASE(map_format) {
-    auto const map = OrderedMap<StringView, usize>::construct_from_list({ { "z"sv, 1uL }, { "y"sv, 2uL }, { "x"sv, 3uL } });
-    ensure_formatted("{ z: 1, y: 2, x: 3 }"sv, "{}"sv, map.clone());
+    auto const unordered_map = OrderedMap<StringView, usize>::construct_from_list({ { "z"sv, 1uL }, { "y"sv, 2uL }, { "x"sv, 3uL } });
+    ensure_formatted("{ z: 1, y: 2, x: 3 }"sv, "{}"sv, unordered_map.clone());
 }

@@ -21,6 +21,9 @@
 #include <LibTC/Lang/DenyCopy.hh>
 #include <LibTC/Lang/IntTypes.hh>
 
+using MapReplaceExisting = Details::ReplaceExisting;
+using MapInsertResult    = Details::InsertResult;
+
 template<typename K, typename T, typename KTraits, bool IsOrdered>
 class Map final {
     TCDenyCopy$(Map);
@@ -68,9 +71,6 @@ private:
     };
 
 public:
-    using ReplaceExisting = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ReplaceExisting;
-    using InsertResult    = typename Set<KeyValue, KeyValueTraits, IsOrdered>::InsertResult;
-
     using Iterator                    = typename Set<KeyValue, KeyValueTraits, IsOrdered>::Iterator;
     using ConstIterator               = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ConstIterator;
     using ReverseIterator             = typename Set<KeyValue, KeyValueTraits, IsOrdered>::ReverseIterator;
@@ -159,17 +159,17 @@ public:
     /**
      * @brief Inserts a new pair if doesn't exists or update it
      */
-    auto insert(KeyValue key_value, ReplaceExisting replace_existing = ReplaceExisting::Yes) -> InsertResult {
+    auto insert(KeyValue key_value, MapReplaceExisting replace_existing = MapReplaceExisting::Yes) -> MapInsertResult {
         return m_hash_set.insert(Cxx::move(key_value), replace_existing);
     }
-    auto insert(K key, T value, ReplaceExisting replace_existing = ReplaceExisting::Yes) -> InsertResult {
+    auto insert(K key, T value, MapReplaceExisting replace_existing = MapReplaceExisting::Yes) -> MapInsertResult {
         return m_hash_set.insert(KeyValue{ Cxx::move(key), Cxx::move(value) }, replace_existing);
     }
 
-    auto try_insert(KeyValue key_value, ReplaceExisting replace_existing = ReplaceExisting::Yes) -> ErrorOr<InsertResult> {
+    auto try_insert(KeyValue key_value, MapReplaceExisting replace_existing = MapReplaceExisting::Yes) -> ErrorOr<MapInsertResult> {
         return m_hash_set.insert(Cxx::move(key_value), replace_existing);
     }
-    auto try_insert(K key, T value, ReplaceExisting replace_existing = ReplaceExisting::Yes) -> ErrorOr<InsertResult> {
+    auto try_insert(K key, T value, MapReplaceExisting replace_existing = MapReplaceExisting::Yes) -> ErrorOr<MapInsertResult> {
         return m_hash_set.insert(KeyValue{ Cxx::move(key), Cxx::move(value) }, replace_existing);
     }
 
@@ -209,7 +209,7 @@ public:
     }
     [[nodiscard]]
     auto has_value(T const& value) const -> bool {
-        return any_of(begin(), end(), [&value](auto const& pair) { return TypeTraits<T>::equals(pair.m_value, value); });
+        return any_of<KeyValue>(begin(), end(), [&value](auto const& pair) { return TypeTraits<T>::equals(pair.m_value, value); });
     }
 
     /**

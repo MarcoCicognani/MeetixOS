@@ -21,7 +21,7 @@ TEST_CASE(construct) {
 }
 
 TEST_CASE(construct_complex_function) {
-    Function<usize(i32, char, usize)> sum_function = [](i32 a, char b, usize c) -> usize { return a + b + c; };
+    Function<usize(i32, char, usize)> sum_function = [](i32 a, char b, usize c) { return a + b + c; };
 
     VERIFY_EQUAL(sum_function(1, 2, 3), 6);
     VERIFY_EQUAL(sum_function(10, 10, 10), 30);
@@ -29,10 +29,10 @@ TEST_CASE(construct_complex_function) {
 }
 
 TEST_CASE(swap) {
-    Function<char()> a_function = []() -> char { return 'a'; };
+    Function<char()> a_function = []() { return 'a'; };
     VERIFY_EQUAL(a_function(), 'a');
 
-    Function<char()> b_function = []() -> char { return 'b'; };
+    Function<char()> b_function = []() { return 'b'; };
     VERIFY_EQUAL(b_function(), 'b');
 
     b_function.swap(a_function);
@@ -42,13 +42,13 @@ TEST_CASE(swap) {
 }
 
 TEST_CASE(move) {
-    Function<i32()> function_0 = []() -> i32 { return 0; };
+    Function<i32()> function_0 = []() { return 0; };
     VERIFY_EQUAL(function_0(), 0);
 
-    Function<i32()> function_1 = []() -> i32 { return 1; };
+    Function<i32()> function_1 = []() { return 1; };
     VERIFY_EQUAL(function_1(), 1);
 
-    function_1 = move(function_0);
+    function_1 = Cxx::move(function_0);
     VERIFY_EQUAL(function_1(), 0);
 }
 
@@ -90,7 +90,7 @@ void ensure_call_equals_with_functor(Function<usize()> function) {
 BENCHMARK_CASE(call_one_hundred_thousand_times) {
     usize counter = 0;
 
-    ensure_call_equals_with_functor([&counter]() -> usize { return counter++; });
+    ensure_call_equals_with_functor([&counter]() { return counter++; });
 }
 
 void ensure_call_equals_with_template(Callable<usize> auto function) {
@@ -102,5 +102,5 @@ void ensure_call_equals_with_template(Callable<usize> auto function) {
 BENCHMARK_CASE(call_one_hunder_thousand_times) {
     usize counter = 0;
 
-    ensure_call_equals_with_template([&counter]() -> usize { return counter++; });
+    ensure_call_equals_with_template([&counter]() { return counter++; });
 }

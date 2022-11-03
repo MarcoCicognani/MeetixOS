@@ -371,7 +371,7 @@ public:
 
         /* forward to the integral formatter */
         auto usize_formatter = Formatter<usize>::construct_from_format_applier(clone_format_applier());
-        try$(usize_formatter.format(bit_cast<usize>(value)));
+        try$(usize_formatter.format(Cxx::bit_cast<usize>(value)));
         return {};
     }
 
@@ -930,7 +930,7 @@ public:
             try$(v_formatter.format(option.value()));
             try$(try_put_literal(")"sv));
         } else
-            try$(try_put_literal("None"sv));
+            try$(try_put_literal("OptNone"sv));
 
         return {};
     }

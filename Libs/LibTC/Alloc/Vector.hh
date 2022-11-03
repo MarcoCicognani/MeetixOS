@@ -112,9 +112,9 @@ public:
     [[nodiscard]]
     auto is_end() const -> bool {
         if constexpr ( IsReverse ) {
-            return m_index == construct_from_rend(*m_collection).index();
+            return m_index == construct_from_rend(m_collection).index();
         } else {
-            return m_index == construct_from_end(*m_collection).index();
+            return m_index == construct_from_end(m_collection).index();
         }
     }
     [[nodiscard]]

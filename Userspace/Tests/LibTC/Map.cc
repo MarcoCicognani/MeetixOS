@@ -16,8 +16,6 @@
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
-using namespace TC;
-
 TEST_CASE(default_construction) {
     auto const map = Map<i32, u64>::construct_empty();
 
@@ -45,11 +43,11 @@ TEST_CASE(construct_from_other) {
 TEST_CASE(insert) {
     auto map = Map<StringView, StringView>::construct_empty();
 
-    VERIFY_IS_VALUE_EQUAL(map.try_insert("a"sv, "xxx"sv), InsertResult::InsertedNew);
-    VERIFY_IS_VALUE_EQUAL(map.try_insert("b"sv, "yyy"sv), InsertResult::InsertedNew);
-    VERIFY_IS_VALUE_EQUAL(map.try_insert("c"sv, "zzz"sv), InsertResult::InsertedNew);
-    VERIFY_IS_VALUE_EQUAL(map.try_insert("b"sv, "000"sv), InsertResult::ReplacedExisting);
-    VERIFY_IS_VALUE_EQUAL(map.try_insert("c"sv, "aaa"sv, OnExistingEntry::Keep), InsertResult::KeptExisting);
+    VERIFY_IS_VALUE_EQUAL(map.try_insert("a"sv, "xxx"sv), MapInsertResult::New);
+    VERIFY_IS_VALUE_EQUAL(map.try_insert("b"sv, "yyy"sv), MapInsertResult::New);
+    VERIFY_IS_VALUE_EQUAL(map.try_insert("c"sv, "zzz"sv), MapInsertResult::New);
+    VERIFY_IS_VALUE_EQUAL(map.try_insert("b"sv, "000"sv), MapInsertResult::Replaced);
+    VERIFY_IS_VALUE_EQUAL(map.try_insert("c"sv, "aaa"sv, MapReplaceExisting::No), MapInsertResult::Kept);
 
     VERIFY_FALSE(map.is_empty());
     VERIFY_EQUAL(map.count(), 3);
@@ -128,7 +126,7 @@ TEST_CASE(remove) {
     VERIFY(map.remove("Three"sv));
     VERIFY_EQUAL(map.count(), 1);
 
-    VERIFY_IS_VALUE_EQUAL(map.try_insert("Hundred"sv, "Black"sv), InsertResult::InsertedNew);
+    VERIFY_IS_VALUE_EQUAL(map.try_insert("Hundred"sv, "Black"sv), MapInsertResult::New);
 
     VERIFY_FALSE(map.remove("Five"sv));
     VERIFY_EQUAL(map.count(), 2);

@@ -16,8 +16,6 @@
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
-using namespace TC;
-
 TEST_CASE(default_construction) {
     auto const set = Set<i32>::construct_empty();
 
@@ -58,11 +56,11 @@ TEST_CASE(clone_other) {
 TEST_CASE(insert) {
     auto set = Set<i32>::construct_with_capacity(3);
 
-    VERIFY_IS_VALUE_EQUAL(set.try_insert(10), InsertResult::InsertedNew);
-    VERIFY_IS_VALUE_EQUAL(set.try_insert(100), InsertResult::InsertedNew);
-    VERIFY_IS_VALUE_EQUAL(set.try_insert(1000), InsertResult::InsertedNew);
-    VERIFY_IS_VALUE_EQUAL(set.try_insert(100), InsertResult::ReplacedExisting);
-    VERIFY_IS_VALUE_EQUAL(set.try_insert(1000, OnExistingEntry::Keep), InsertResult::KeptExisting);
+    VERIFY_IS_VALUE_EQUAL(set.try_insert(10), SetInsertResult::New);
+    VERIFY_IS_VALUE_EQUAL(set.try_insert(100), SetInsertResult::New);
+    VERIFY_IS_VALUE_EQUAL(set.try_insert(1000), SetInsertResult::New);
+    VERIFY_IS_VALUE_EQUAL(set.try_insert(100), SetInsertResult::Replaced);
+    VERIFY_IS_VALUE_EQUAL(set.try_insert(1000, SetReplaceExisting::No), SetInsertResult::Kept);
 
     VERIFY_FALSE(set.is_empty());
     VERIFY_EQUAL(set.count(), 3);
@@ -117,7 +115,7 @@ TEST_CASE(remove) {
     VERIFY(ordered_set.remove("Hi"sv));
     VERIFY_EQUAL(ordered_set.count(), 1);
 
-    VERIFY_IS_VALUE_EQUAL(ordered_set.try_insert("Hello"sv), InsertResult::InsertedNew);
+    VERIFY_IS_VALUE_EQUAL(ordered_set.try_insert("Hello"sv), SetInsertResult::New);
 
     VERIFY_FALSE(ordered_set.remove("Eee"sv));
     VERIFY_EQUAL(ordered_set.count(), 2);

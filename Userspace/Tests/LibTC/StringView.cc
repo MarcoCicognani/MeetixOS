@@ -156,9 +156,9 @@ TEST_CASE(ends_with) {
     auto const string_view = "Beautiful world and beautiful country"sv;
 
     VERIFY(string_view.ends_with('y'));
-    VERIFY(string_view.ends_with('Y', CaseSensitivity::Insensitive));
+    VERIFY(string_view.ends_with('Y', StringView::CaseSensible::No));
     VERIFY(string_view.ends_with("country"sv));
-    VERIFY(string_view.ends_with("BeAuTifUl cOuNtRy"sv, CaseSensitivity::Insensitive));
+    VERIFY(string_view.ends_with("BeAuTifUl cOuNtRy"sv, StringView::CaseSensible::No));
 }
 
 TEST_CASE(as_int) {
@@ -166,14 +166,14 @@ TEST_CASE(as_int) {
     VERIFY_IS_VALUE_EQUAL("-32"sv.as_int<i8>(), -32);
     VERIFY_IS_VALUE_EQUAL("450\n"sv.as_int(), 450);
     VERIFY_IS_VALUE_EQUAL("-65536"sv.as_int(), -65536);
-    VERIFY_IS_VALUE_EQUAL("  \t64begin"sv.as_int(IntBase::Decimal, ParseMode::TrimWhitesAndBegin), 64);
+    VERIFY_IS_VALUE_EQUAL("  \t64begin"sv.as_int(StringView::IntBase::Decimal, StringView::ParseMode::TrimWhitesAndBegin), 64);
 
-    VERIFY_IS_VALUE_EQUAL("0xabc45"sv.as_int<i32>(IntBase::Hex), 0xabc45);
-    VERIFY_IS_VALUE_EQUAL("-1ff24bc"sv.as_int<i32>(IntBase::Hex), -0x1ff24bc);
+    VERIFY_IS_VALUE_EQUAL("0xabc45"sv.as_int<i32>(StringView::IntBase::Hex), 0xabc45);
+    VERIFY_IS_VALUE_EQUAL("-1ff24bc"sv.as_int<i32>(StringView::IntBase::Hex), -0x1ff24bc);
 
-    VERIFY_IS_ERROR_EQUAL("\n 75"sv.as_int<i8>(IntBase::Decimal, ParseMode::BeginToEnd), EINVAL);
-    VERIFY_IS_ERROR_EQUAL("7p5"sv.as_int<i8>(IntBase::Decimal), EINVAL);
-    VERIFY_IS_ERROR_EQUAL("512"sv.as_int<i8>(IntBase::Decimal), EOVERFLOW);
+    VERIFY_IS_ERROR_EQUAL("\n 75"sv.as_int<i8>(StringView::IntBase::Decimal, StringView::ParseMode::BeginToEnd), EINVAL);
+    VERIFY_IS_ERROR_EQUAL("7p5"sv.as_int<i8>(StringView::IntBase::Decimal), EINVAL);
+    VERIFY_IS_ERROR_EQUAL("512"sv.as_int<i8>(StringView::IntBase::Decimal), EOVERFLOW);
 }
 
 TEST_CASE(as_uint) {
@@ -229,15 +229,15 @@ TEST_CASE(contains) {
 
     VERIFY(string_view.contains('1'));
     VERIFY(string_view.contains('e'));
-    VERIFY(string_view.contains('E', CaseSensitivity::Insensitive));
+    VERIFY(string_view.contains('E', StringView::CaseSensible::No));
     VERIFY_FALSE(string_view.contains('x'));
-    VERIFY_FALSE(string_view.contains('E', CaseSensitivity::Sensitive));
+    VERIFY_FALSE(string_view.contains('E', StringView::CaseSensible::Yes));
 
     VERIFY(string_view.contains("to"sv));
     VERIFY(string_view.contains("2,3,4"sv));
-    VERIFY(string_view.contains("eVeRyoNe"sv, CaseSensitivity::Insensitive));
+    VERIFY(string_view.contains("eVeRyoNe"sv, StringView::CaseSensible::No));
     VERIFY_FALSE(string_view.contains("not"sv));
-    VERIFY_FALSE(string_view.contains("HI"sv, CaseSensitivity::Sensitive));
+    VERIFY_FALSE(string_view.contains("HI"sv, StringView::CaseSensible::Yes));
 }
 
 TEST_CASE(iterator) {

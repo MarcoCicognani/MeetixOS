@@ -112,7 +112,7 @@ TEST_CASE(move) {
     VERIFY_EQUAL(boxed_usize_pair->m_first_value, 512u);
     VERIFY_EQUAL(boxed_usize_pair->m_second_value, 1024u);
 
-    auto boxed_usize_pair_2 = move(boxed_usize_pair);
+    auto boxed_usize_pair_2 = Cxx::move(boxed_usize_pair);
     VERIFY_EQUAL(boxed_usize_pair_2->m_first_value, 512uL);
     VERIFY_EQUAL(boxed_usize_pair_2->m_second_value, 1024uL);
 
@@ -120,7 +120,7 @@ TEST_CASE(move) {
     VERIFY_EQUAL(boxed_usize_pair_3->m_first_value, 0xab);
     VERIFY_EQUAL(boxed_usize_pair_3->m_second_value, 0xcd);
 
-    boxed_usize_pair = move(boxed_usize_pair_3);
+    boxed_usize_pair = Cxx::move(boxed_usize_pair_3);
     VERIFY_EQUAL(boxed_usize_pair->m_first_value, 0xab);
     VERIFY_EQUAL(boxed_usize_pair->m_second_value, 0xcd);
 }
@@ -142,7 +142,7 @@ TEST_CASE(vector_of_boxes) {
     vector_of_boxes.append(Box<i32>::construct_from_emplace(1024));
 
     auto boxed_i32 = Box<i32>::construct_from_emplace(4096);
-    vector_of_boxes.append(move(boxed_i32));
+    vector_of_boxes.append(Cxx::move(boxed_i32));
 
     VERIFY_EQUAL(vector_of_boxes[0].as_ref(), 256);
     VERIFY_EQUAL(vector_of_boxes[1].as_ref(), 512);

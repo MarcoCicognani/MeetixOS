@@ -218,10 +218,10 @@ private:
 template<typename T>
 struct SetBucket final {
     auto slot() -> T* {
-        return bit_cast<T*>(&m_storage);
+        return Cxx::bit_cast<T*>(&m_storage);
     }
     auto slot() const -> T const* {
-        return bit_cast<T const*>(&m_storage);
+        return Cxx::bit_cast<T const*>(&m_storage);
     }
 
     SetBucketState m_bucket_state;
@@ -231,10 +231,10 @@ struct SetBucket final {
 template<typename T>
 struct OrderedSetBucket final {
     auto slot() -> T* {
-        return bit_cast<T*>(&m_storage);
+        return Cxx::bit_cast<T*>(&m_storage);
     }
     auto slot() const -> T const* {
-        return bit_cast<T const*>(&m_storage);
+        return Cxx::bit_cast<T const*>(&m_storage);
     }
 
     OrderedSetBucket* m_prev_bucket;
@@ -253,7 +253,21 @@ struct OrderedCollectionData {
     BucketType* m_tail{ nullptr };
 };
 
+enum class ReplaceExisting {
+    Yes,
+    No
+};
+
+enum class InsertResult {
+    New,
+    Replaced,
+    Kept
+};
+
 } /* namespace Details */
+
+using SetReplaceExisting = Details::ReplaceExisting;
+using SetInsertResult    = Details::InsertResult;
 
 template<typename T, typename TTraits, bool IsOrdered>
 class Set final {
@@ -268,17 +282,6 @@ private:
     using DataCollection = Conditional<IsOrdered, Details::OrderedCollectionData<Bucket>, Details::CollectionData>;
 
 public:
-    enum class ReplaceExisting {
-        Yes,
-        No
-    };
-
-    enum class InsertResult {
-        New,
-        Replaced,
-        Kept
-    };
-
     using Iterator             = Conditional<IsOrdered, Details::OrderedSetIterator<T, Bucket, false>, Details::SetIterator<T, Bucket>>;
     using ConstIterator        = Conditional<IsOrdered, Details::OrderedSetIterator<T const, Bucket const, false>, Details::SetIterator<T const, Bucket const>>;
     using ReverseIterator      = Details::OrderedSetIterator<T, Bucket, true>;
@@ -377,7 +380,7 @@ public:
         if ( m_data_capacity > 0 ) {
             Details::heap_free_with_size(m_buckets_storage, size_in_bytes(capacity()));
             m_buckets_storage = nullptr;
-            m_data_capacity = 0;
+            m_data_capacity   = 0;
         }
     }
     auto clear_keep_capacity() -> void {
@@ -413,22 +416,22 @@ public:
 
     /**
      * @brief Inserts a value using his hash. The value may already exists inside the set, then the given
-     * ReplaceExisting value is used to perform a decision
+     * SetReplaceExisting value is used to perform a decision
      */
-    auto insert(T value, ReplaceExisting replace_existing = ReplaceExisting::Yes) -> InsertResult {
-        return must$(try_insert(move(value), replace_existing));
+    auto insert(T value, SetReplaceExisting replace_existing = SetReplaceExisting::Yes) -> SetInsertResult {
+        return must$(try_insert(Cxx::move(value), replace_existing));
     }
-    auto try_insert(T value, ReplaceExisting replace_existing = ReplaceExisting::Yes) -> ErrorOr<InsertResult> {
+    auto try_insert(T value, SetReplaceExisting replace_existing = SetReplaceExisting::Yes) -> ErrorOr<SetInsertResult> {
         /* find a found_bucket which is suitable for writing the value */
         auto found_bucket = try$(try_lookup_for_writing(value));
         if ( Details::set_bucket_state_is_used(found_bucket->m_bucket_state) ) {
             /* keep the existing value and return */
-            if ( replace_existing == ReplaceExisting::No )
-                return InsertResult::Kept;
+            if ( replace_existing == SetReplaceExisting::No )
+                return SetInsertResult::Kept;
 
             /* replace the value with the given one */
             (*found_bucket->slot()) = Cxx::move(value); /* use move assignment to let the existing value to be correctly replaced */
-            return InsertResult::Replaced;
+            return SetInsertResult::Replaced;
         }
 
         /* write the value into the new bucket.
@@ -452,7 +455,7 @@ public:
         }
 
         ++m_values_count;
-        return InsertResult::New;
+        return SetInsertResult::New;
     }
 
     /**
@@ -685,7 +688,7 @@ private:
             return {};
 
         /* move the values to the new memory */
-        for ( auto it = move(old_iter); it != end(); ++it ) {
+        for ( auto it = Cxx::move(old_iter); it != end(); ++it ) {
             insert_during_rehash(Cxx::move(*it));
             it->~T();
         }
@@ -704,8 +707,7 @@ private:
         for ( auto const i : Range{ 0u, m_data_capacity } ) {
             auto& bucket = m_buckets_storage[i];
 
-            if ( bucket.m_bucket_state == Details::SetBucketState::Rehashed
-                 || bucket.m_bucket_state == Details::SetBucketState::End
+            if ( bucket.m_bucket_state == Details::SetBucketState::Rehashed || bucket.m_bucket_state == Details::SetBucketState::End
                  || bucket.m_bucket_state == Details::SetBucketState::Free )
                 continue;
             if ( bucket.m_bucket_state == Details::SetBucketState::Deleted ) {

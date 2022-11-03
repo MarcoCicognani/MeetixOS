@@ -15,8 +15,6 @@
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
-using namespace TC;
-
 TEST_CASE(may_produce_value) {
     auto may_produce_value = [](int value) -> Option<int> {
         if ( value <= 10 )
@@ -75,7 +73,7 @@ TEST_CASE(assignment_operator) {
     VERIFY(option.is_present());
     VERIFY_EQUAL(option.value(), 'b');
 
-    option = None;
+    option = OptNone;
     VERIFY_FALSE(option.is_present());
 
     auto boxed_ptr = Box<u32>::construct_from_emplace(0xcafebabe);

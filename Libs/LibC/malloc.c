@@ -720,7 +720,7 @@ MAX_RELEASE_CHECK_RATE   default: 4095 unless not HAVE_MMAP
 
 /*
   mallopt tuning options.  SVID/XPG defines four standard parameter
-  numbers for mallopt, normally defined in malloc.h.  None of these
+  numbers for mallopt, normally defined in malloc.h.  OptNone of these
   are used in this malloc, so setting them has no effect. But this
   malloc does support the following options.
 */
@@ -953,7 +953,7 @@ DLMALLOC_EXPORT void* dlvalloc(size_t);
   maximum unsigned size_t value.
 
   SVID/XPG/ANSI defines four standard param numbers for mallopt,
-  normally defined in malloc.h.  None of these are use in this malloc,
+  normally defined in malloc.h.  OptNone of these are use in this malloc,
   so setting them has no effect. But this malloc also supports other
   options in mallopt. See below for details.  Briefly, supported
   parameters are as follows (listed defaults are for "typical"

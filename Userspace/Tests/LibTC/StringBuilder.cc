@@ -14,8 +14,6 @@
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
-using namespace TC;
-
 TEST_CASE(append_char) {
     auto string_builder = StringBuilder::construct_empty();
     VERIFY(string_builder.is_empty());

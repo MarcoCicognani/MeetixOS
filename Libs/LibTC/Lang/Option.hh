@@ -22,8 +22,9 @@
 #include <LibTC/Lang/IntTypes.hh>
 
 enum class OptionNoneTag {
-    None
+    OptNone
 };
+using enum OptionNoneTag;
 
 template<Concrete T>
 class [[nodiscard("You cannot ignore a possible empty Option<T>")]] Option<T> final {
@@ -176,7 +177,7 @@ public:
     [[nodiscard]]
     auto backward() const -> OptionNoneTag {
         VERIFY_FALSE(is_present());
-        return OptionNoneTag::None;
+        return OptionNoneTag::OptNone;
     }
     [[nodiscard]]
     auto operator!() const -> bool {
@@ -327,7 +328,7 @@ public:
     [[nodiscard]]
     auto backward() const -> OptionNoneTag {
         VERIFY_FALSE(is_present());
-        return OptionNoneTag::None;
+        return OptionNoneTag::OptNone;
     }
     [[nodiscard]]
     auto operator!() const -> bool {

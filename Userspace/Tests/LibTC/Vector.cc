@@ -15,8 +15,6 @@
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
-using namespace TC;
-
 TEST_CASE(default_constructor) {
     auto const vector = Vector<i32>::construct_empty();
 
@@ -50,11 +48,11 @@ TEST_CASE(ensure_capacity) {
 TEST_CASE(clear) {
     auto vector = Vector<i32>::construct_from_list({ 1, 2, 3, 4, 5 });
 
-    vector.clear(KeepStorageCapacity::Yes);
+    vector.clear_keep_capacity();
     VERIFY(vector.is_empty());
     VERIFY_GREATER_EQUAL(vector.capacity(), 5);
 
-    vector.clear(KeepStorageCapacity::No);
+    vector.clear();
     VERIFY(vector.is_empty());
     VERIFY_EQUAL(vector.capacity(), 0);
 }
@@ -369,7 +367,7 @@ BENCHMARK_CASE(one_hundred_thousand_append_unchecked_without_reallocations) {
     };
 
     auto vector = Vector<U64>::construct_with_capacity(100'000);
-    for ( u64 i = 0; i < 100'000; ++i )
+    for ( auto const i : Range{ 0uLL, 100'000uLL } )
         vector.append_unchecked(U64{ i * 34 });
 
     VERIFY_EQUAL(vector.count(), 100'000);
