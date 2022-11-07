@@ -14,6 +14,7 @@
 
 #include <LibTC/Forward.hh>
 
+#include <LibTC/Alloc/New.hh>
 #include <LibTC/Core/Assertions.hh>
 #include <LibTC/Core/ErrorOr.hh>
 #include <LibTC/Lang/Cxx.hh>
@@ -106,11 +107,11 @@ public:
      */
     template<typename... TArgs>
     [[nodiscard]]
-    static auto construct_from_emplace(TArgs&&... args) -> NonNullRef<T> {
-        return must$(try_construct_from_emplace(Cxx::forward<TArgs>(args)...));
+    static auto new_from_emplace(TArgs&&... args) -> NonNullRef<T> {
+        return must$(try_new_from_emplace(Cxx::forward<TArgs>(args)...));
     }
     [[nodiscard]]
-    static auto construct_from_adopt(Details::RefCounted<T>& ref_counted_ref) -> NonNullRef<T> {
+    static auto new_from_adopt(Details::RefCounted<T>& ref_counted_ref) -> NonNullRef<T> {
         return NonNullRef<T>{ &ref_counted_ref };
     }
 
@@ -119,12 +120,12 @@ public:
      */
     template<typename... TArgs>
     [[nodiscard]]
-    static auto try_construct_from_emplace(TArgs&&... args) -> ErrorOr<NonNullRef<T>> {
-        auto ref_counted_ptr = new Details::RefCounted<T>{ Details::FromArgsTag::FromArgs, Cxx::forward<TArgs>(args)... };
+    static auto try_new_from_emplace(TArgs&&... args) -> ErrorOr<NonNullRef<T>> {
+        auto ref_counted_ptr = new (nothrow) Details::RefCounted<T>{ Details::FromArgsTag::FromArgs, Cxx::forward<TArgs>(args)... };
         if ( ref_counted_ptr != nullptr ) [[likely]]
             return NonNullRef<T>{ ref_counted_ptr };
         else
-            return Error::construct_from_code(ENOMEM);
+            return Error::new_from_code(ENOMEM);
     }
 
     /**

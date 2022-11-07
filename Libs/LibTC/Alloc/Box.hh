@@ -14,6 +14,7 @@
 
 #include <LibTC/Forward.hh>
 
+#include <LibTC/Alloc/New.hh>
 #include <LibTC/Lang/Cxx.hh>
 #include <LibTC/Lang/Must.hh>
 #include <LibTC/Core/Assertions.hh>
@@ -21,7 +22,7 @@
 #include <LibTC/Lang/DenyCopy.hh>
 
 #define TCBoxConstructible$(ClassName) \
-    template<typename T>              \
+    template<typename T>               \
     friend class Box
 
 template<typename T>
@@ -34,11 +35,11 @@ public:
      */
     template<typename... TArgs>
     [[nodiscard]]
-    static auto construct_from_emplace(TArgs&&... args) -> Box<T> {
-        return must$(try_construct_from_emplace(Cxx::forward<TArgs>(args)...));
+    static auto new_from_emplace(TArgs&&... args) -> Box<T> {
+        return must$(try_new_from_emplace(Cxx::forward<TArgs>(args)...));
     }
     [[nodiscard]]
-    static auto construct_from_adopt(T& unboxed_ref) -> Box<T> {
+    static auto new_from_adopt(T& unboxed_ref) -> Box<T> {
         return Box<T>{ &unboxed_ref };
     }
 
@@ -47,12 +48,12 @@ public:
      */
     template<typename... TArgs>
     [[nodiscard]]
-    static auto try_construct_from_emplace(TArgs&&... args) -> ErrorOr<Box<T>> {
-        auto unboxed_ptr = new T{ Cxx::forward<TArgs>(args)... };
+    static auto try_new_from_emplace(TArgs&&... args) -> ErrorOr<Box<T>> {
+        auto unboxed_ptr = new (nothrow) T{ Cxx::forward<TArgs>(args)... };
         if ( unboxed_ptr != nullptr ) [[likely]]
             return Box<T>{ unboxed_ptr };
         else
-            return Error::construct_from_code(ENOMEM);
+            return Error::new_from_code(ENOMEM);
     }
 
     /**

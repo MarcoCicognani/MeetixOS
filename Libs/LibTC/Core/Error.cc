@@ -14,11 +14,11 @@
 #include <LibTC/Lang/Cxx.hh>
 #include <LibTC/Lang/StringView.hh>
 
-auto Error::construct_from_code(u32 code, FromSyscall from_syscall, SourceLocation error_location) -> Error {
+auto Error::new_from_code(u32 code, FromSyscall from_syscall, SourceLocation error_location) -> Error {
     return Error{ code, ""sv, from_syscall, Cxx::move(error_location) };
 }
 
-auto Error::construct_from_literal(StringView string_literal, FromSyscall from_syscall, SourceLocation error_location) -> Error {
+auto Error::new_from_literal(StringView string_literal, FromSyscall from_syscall, SourceLocation error_location) -> Error {
     return Error{ 0, string_literal, from_syscall, Cxx::move(error_location) };
 }
 

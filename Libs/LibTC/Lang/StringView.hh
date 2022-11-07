@@ -37,20 +37,20 @@ public:
      * @brief Construction functions
      */
     [[nodiscard]]
-    static auto construct_from_begin(TStringView const* string_view) -> StringViewIterator {
+    static auto new_from_begin(TStringView const* string_view) -> StringViewIterator {
         return StringViewIterator{ string_view, 0 };
     }
     [[nodiscard]]
-    static auto construct_from_end(TStringView const* string_view) -> StringViewIterator {
+    static auto new_from_end(TStringView const* string_view) -> StringViewIterator {
         return StringViewIterator{ string_view, string_view->len() };
     }
 
     [[nodiscard]]
-    static auto construct_from_rbegin(TStringView const* string_view) -> StringViewIterator {
+    static auto new_from_rbegin(TStringView const* string_view) -> StringViewIterator {
         return StringViewIterator{ string_view, string_view->len() - 1 };
     }
     [[nodiscard]]
-    static auto construct_from_rend(TStringView const* string_view) -> StringViewIterator {
+    static auto new_from_rend(TStringView const* string_view) -> StringViewIterator {
         return StringViewIterator{ string_view, -1 };
     }
 
@@ -100,9 +100,9 @@ public:
     [[nodiscard]]
     auto is_end() const -> bool {
         if constexpr ( IsReverse ) {
-            return m_index == construct_from_rend(m_string_view).index();
+            return m_index == new_from_rend(m_string_view).index();
         } else {
-            return m_index == construct_from_end(m_string_view).index();
+            return m_index == new_from_end(m_string_view).index();
         }
     }
     [[nodiscard]]
@@ -153,12 +153,12 @@ private:
 
 class StringView final {
 public:
-    enum class CaseSensible {
+    enum class CaseSensible : bool {
         Yes,
         No
     };
 
-    enum class KeepEmpty {
+    enum class KeepEmpty : bool {
         Yes,
         No
     };
@@ -192,9 +192,9 @@ public:
      * @brief Error safe factory function
      */
     [[nodiscard]]
-    static auto construct_from_cstr(char const*) -> StringView;
+    static auto new_from_cstr(char const*) -> StringView;
     [[nodiscard]]
-    static constexpr auto construct_from_raw_parts(char const* c_str, usize len) -> StringView {
+    static constexpr auto new_from_raw_parts(char const* c_str, usize len) -> StringView {
         return StringView{ c_str, len };
     }
 
@@ -374,7 +374,7 @@ private:
 
 [[nodiscard]]
 constexpr auto operator""sv(char const* c_str, usize len) -> StringView {
-    return StringView::construct_from_raw_parts(c_str, len);
+    return StringView::new_from_raw_parts(c_str, len);
 }
 
 template<>

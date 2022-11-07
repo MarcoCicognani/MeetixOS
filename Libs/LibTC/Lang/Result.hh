@@ -94,11 +94,10 @@ public:
      */
     template<typename U>
     auto map(Mapper<T, U> auto predicate) -> Result<U, E> {
-        if ( is_value() ) {
-            auto result = predicate(value());
-            return result;
-        } else
-            return {};
+        if ( is_value() )
+          return predicate(unwrap_value());
+        else
+            return unwrap_error();
     }
 
     /**
@@ -107,9 +106,9 @@ public:
     template<typename U>
     auto map_error(Mapper<E, U> auto predicate) -> Result<T, U> {
         if ( is_error() )
-            return predicate(error());
+            return predicate(unwrap_error());
         else
-            return {};
+            return unwrap_value();
     }
 
     /**
@@ -237,11 +236,10 @@ public:
      */
     template<typename U>
     auto map(Mapper<void, U> auto predicate) -> Result<U, E> {
-        if ( is_value() ) {
-            auto result = predicate(value());
-            return result;
-        } else
-            return {};
+        if ( is_value() )
+            return predicate();
+        else
+            return unwrap_error();
     }
 
     /**
@@ -250,7 +248,7 @@ public:
     template<typename U>
     auto map_error(Mapper<E, U> auto predicate) -> Result<void, U> {
         if ( is_error() )
-            return predicate(error());
+            return predicate(unwrap_error());
         else
             return {};
     }
@@ -388,11 +386,10 @@ public:
      */
     template<typename U>
     auto map(Mapper<T, U> auto predicate) -> Result<U, E> {
-        if ( is_value() ) {
-            auto result = predicate(value());
-            return result;
-        } else
-            return {};
+        if ( is_value() )
+            return predicate(unwrap_value());
+        else
+            return unwrap_error();
     }
 
     /**
@@ -401,9 +398,9 @@ public:
     template<typename U>
     auto map_error(Mapper<E, U> auto predicate) -> Result<T, U> {
         if ( is_error() )
-            return predicate(error());
+            return predicate(unwrap_error());
         else
-            return {};
+            return unwrap_value();
     }
 
     /**

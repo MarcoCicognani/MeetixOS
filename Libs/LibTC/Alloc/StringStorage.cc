@@ -17,33 +17,22 @@
 #include <LibTC/Lang/StringView.hh>
 #include <LibTC/Lang/Try.hh>
 
-using RCStringStorage = Details::RefCounted<StringStorage>;
-
-auto StringStorage::try_construct_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>> {
+auto StringStorage::try_new_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>> {
     if ( string_view.is_null() )
-        return Error::construct_from_code(EINVAL);
+        return Error::new_from_code(EINVAL);
 
-    auto ref_counted_string_storage = try$(Details::heap_alloc_clean_object<void>(alloc_size(string_view.len())));
-    auto ref_counted_string_ptr     = new (ref_counted_string_storage) RCStringStorage{ Details::FromArgsTag::FromArgs, string_view };
+    auto chars_storage_ptr = try$(Details::__heap_plug_alloc_mem<char>(AllocLayout::new_for_array_of<char>(string_view.len())));
+    __builtin_memcpy(chars_storage_ptr, string_view.as_cstr(), sizeof(char) * string_view.len());
 
-    return NonNullRef<StringStorage>::construct_from_adopt(*ref_counted_string_ptr);
+    return NonNullRef<StringStorage>::try_new_from_emplace(chars_storage_ptr, string_view.len());
 }
 
-StringStorage::StringStorage(StringView string_view)
-    : m_char_count{ string_view.len() } {
-    __builtin_memcpy(m_inline_storage, string_view.as_cstr(), sizeof(char) * m_char_count);
-}
-
-auto StringStorage::operator delete(void* raw_string_storage) -> void {
-    if ( raw_string_storage == nullptr ) [[unlikely]]
-        return;
-
-    auto string_storage = Cxx::bit_cast<RCStringStorage*>(raw_string_storage);
-    Details::heap_free_with_size(string_storage, alloc_size(string_storage->shared_object().m_char_count));
+StringStorage::~StringStorage() {
+    delete m_storage_ptr;
 }
 
 auto StringStorage::storage_ptr() const -> char const* {
-    return m_inline_storage;
+    return m_storage_ptr;
 }
 
 auto StringStorage::len() const -> usize {
@@ -52,8 +41,4 @@ auto StringStorage::len() const -> usize {
 
 auto StringStorage::is_empty() const -> bool {
     return m_char_count == 0;
-}
-
-auto StringStorage::alloc_size(usize char_count) -> usize {
-    return sizeof(RCStringStorage) + sizeof(char) * char_count;
 }

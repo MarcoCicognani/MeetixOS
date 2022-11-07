@@ -266,6 +266,8 @@ template<typename T> constexpr bool IsClass = __is_class(T);
 template<typename T> constexpr bool IsUnion = __is_union(T);
 template<typename T> constexpr bool IsEnum  = __is_enum(T);
 
+template<typename T> using UnderlyingType = __underlying_type(T);
+
 template<typename TDerive, typename TBase>
 constexpr bool IsDerived = __is_base_of(TBase, TDerive);
 

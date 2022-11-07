@@ -15,72 +15,45 @@
 #ifdef IN_KERNEL
 #    include <memory/KernelHeap.hpp>
 #else
-#    include <LibC/malloc.h> /* TODO use import LibRT.Heap */
+#include <LibRT/Heap.hh>
 #endif
 
 #include <LibTC/Forward.hh>
 
+#include <LibTC/Alloc/AllocLayout.hh>
 #include <LibTC/Core/ErrorOr.hh>
 #include <LibTC/Lang/Cxx.hh>
+#include <LibTC/Lang/Must.hh>
 
 namespace Details {
 
 #ifdef IN_KERNEL
 
 template<typename T>
-constexpr auto heap_alloc_clean_array(usize object_count) -> ErrorOr<T*> {
-    auto start_ptr = KernelHeap::allocate(sizeof(T) * object_count);
+auto __heap_plug_alloc_mem(AllocLayout alloc_layout) -> ErrorOr<T*> {
+    auto start_ptr = KernelHeap::allocate(alloc_layout.size());
     if ( start_ptr != nullptr ) {
-        __builtin_memset(start_ptr, 0, object_count * sizeof(T));
+        __builtin_memset(start_ptr, 0, alloc_layout.size());
         return Cxx::bit_cast<T*>(start_ptr);
     } else
-        return Error::construct_from_code(ENOMEM);
+        return Error::new_from_code(ENOMEM);
 }
 
 template<typename T>
-constexpr auto heap_alloc_clean_object(usize custom_size) -> ErrorOr<T*> {
-    VERIFY_GREATER_EQUAL(custom_size, sizeof(T));
-
-    auto object_ptr = KernelHeap::allocate(custom_size);
-    if ( object_ptr != nullptr ) {
-        __builtin_memset(object_ptr, 0, custom_size);
-        return Cxx::bit_cast<T*>(object_ptr);
-    } else
-        return Error::construct_from_code(ENOMEM);
-}
-
-template<typename T>
-constexpr auto heap_free_with_size(T* object_start, usize) -> void {
-    KernelHeap::free(Cxx::bit_cast<void*>(object_start));
+auto __heap_plug_dealloc_mem(AllocLayout, T* object_ptr) {
+    KernelHeap::free(Cxx::bit_cast<void*>(object_ptr));
 }
 
 #else
 
 template<typename T>
-constexpr auto heap_alloc_clean_array(usize object_count) -> ErrorOr<T*> {
-    // return try$(heap_alloc<T>(AllocLayout::construct_for_array_of<T>(object_count), ZeroMemory::Yes));
-
-    auto start_ptr = Cxx::bit_cast<T*>(calloc(sizeof(T), object_count));
-    if ( start_ptr != nullptr )
-        return start_ptr;
-    else
-        return Error::construct_from_code(ENOMEM);
+auto __heap_plug_alloc_mem(AllocLayout alloc_layout) -> ErrorOr<T*> {
+    return Heap::alloc(alloc_layout, Heap::Clean::Yes).template map<T*>([](auto ptr) -> T* { return Cxx::bit_cast<T*>(ptr); });
 }
 
 template<typename T>
-constexpr auto heap_alloc_clean_object(usize custom_size) -> ErrorOr<T*> {
-    // return try$(heap_alloc<T>(AllocLayout::construct_for_type<T>(), ZeroMemory::Yes));
-
-    auto object_ptr = Cxx::bit_cast<T*>(calloc(custom_size, 1));
-    if ( object_ptr != nullptr )
-        return object_ptr;
-    else
-        return Error::construct_from_code(ENOMEM);
-}
-
-template<typename T>
-constexpr auto heap_free_with_size(T* object_start, usize) -> void {
-    free(Cxx::bit_cast<void*>(object_start));
+auto __heap_plug_dealloc_mem(AllocLayout alloc_layout, T* object_ptr) {
+    must$(Heap::dealloc(alloc_layout, object_ptr));
 }
 
 #endif

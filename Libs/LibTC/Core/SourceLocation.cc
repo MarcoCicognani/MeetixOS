@@ -12,7 +12,7 @@
 
 #include <LibTC/Core/SourceLocation.hh>
 
-auto SourceLocation::construct_from_here(const char* file_path, const char* function, u32 line) -> SourceLocation {
+auto SourceLocation::new_from_here(const char* file_path, const char* function, u32 line) -> SourceLocation {
     return SourceLocation{ file_path, function, line };
 }
 
@@ -29,7 +29,7 @@ auto SourceLocation::line() const -> u32 {
 }
 
 SourceLocation::SourceLocation(const char* file_path, const char* function, u32 line)
-    : m_file_path{ StringView::construct_from_cstr(file_path) }
-    , m_function{ StringView::construct_from_cstr(function) }
+    : m_file_path{ StringView::new_from_cstr(file_path) }
+    , m_function{ StringView::new_from_cstr(function) }
     , m_line{ line } {
 }

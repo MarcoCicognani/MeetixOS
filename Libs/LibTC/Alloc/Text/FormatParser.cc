@@ -21,13 +21,13 @@ auto FormatParser::Result::display_as_is_numeric() const -> bool {
         || m_display_as == DisplayAs::HexUpperCase;
 }
 
-auto FormatParser::construct_from_lexer(FormatLexer& format_lexer) -> FormatParser {
+auto FormatParser::new_from_lexer(FormatLexer& format_lexer) -> FormatParser {
     return FormatParser{ format_lexer };
 }
 
 auto FormatParser::try_parse() -> ErrorOr<FormatParser::Result> {
     if ( !m_format_lexer.consume_specific('{') )
-        return Error::construct_from_code(EINVAL);
+        return Error::new_from_code(EINVAL);
 
     /* parse the format specifiers */
     auto result = Result{};
@@ -44,7 +44,7 @@ auto FormatParser::try_parse() -> ErrorOr<FormatParser::Result> {
             if ( usize precision; m_format_lexer.consume_number(precision) )
                 result.m_precision = precision;
             else
-                return Error::construct_from_code(EINVAL);
+                return Error::new_from_code(EINVAL);
         }
 
         parse_display_as(result);
@@ -52,7 +52,7 @@ auto FormatParser::try_parse() -> ErrorOr<FormatParser::Result> {
 
     /* parse the termination tag */
     if ( !m_format_lexer.consume_specific('}') )
-        return Error::construct_from_code(EINVAL);
+        return Error::new_from_code(EINVAL);
     else
         return result;
 }

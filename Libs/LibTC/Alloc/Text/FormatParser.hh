@@ -33,12 +33,12 @@ public:
         Yes
     };
 
-    enum class ShowBase {
+    enum class ShowBase : bool {
         Yes,
         No
     };
 
-    enum class ZeroPad {
+    enum class ZeroPad : bool {
         Yes,
         No
     };
@@ -78,7 +78,7 @@ public:
      * @brief Error safe Factory functions
      */
     [[nodiscard]]
-    static auto construct_from_lexer(FormatLexer&) -> FormatParser;
+    static auto new_from_lexer(FormatLexer&) -> FormatParser;
 
     /**
      * @brief Parses the current format string from the given lexer

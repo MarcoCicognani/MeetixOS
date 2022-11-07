@@ -83,39 +83,39 @@ public:
      * @brief Non-Error safe factory functions
      */
     [[nodiscard]]
-    static constexpr auto construct_empty() -> Map<K, T, KTraits, IsOrdered> {
+    static constexpr auto new_empty() -> Map<K, T, KTraits, IsOrdered> {
         return Map<K, T, KTraits, IsOrdered>{};
     }
     [[nodiscard]]
-    static auto construct_with_capacity(usize capacity) -> Map<K, T, KTraits, IsOrdered> {
-        return must$(try_construct_with_capacity(capacity));
+    static auto new_with_capacity(usize capacity) -> Map<K, T, KTraits, IsOrdered> {
+        return must$(try_new_with_capacity(capacity));
     }
     [[nodiscard]]
-    static auto construct_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> Map<K, T, KTraits, IsOrdered> {
-        return must$(try_construct_from_other(rhs));
+    static auto new_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> Map<K, T, KTraits, IsOrdered> {
+        return must$(try_new_from_other(rhs));
     }
     [[nodiscard]]
-    static auto construct_from_list(Cxx::InitializerList<KeyValue> initializer_list) -> Map<K, T, KTraits, IsOrdered> {
-        return must$(try_construct_from_list(initializer_list));
+    static auto new_from_list(Cxx::InitializerList<KeyValue> initializer_list) -> Map<K, T, KTraits, IsOrdered> {
+        return must$(try_new_from_list(initializer_list));
     }
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
-        auto map = construct_empty();
+    static auto try_new_with_capacity(usize capacity) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+        auto map = new_empty();
         try$(map.try_ensure_capacity(capacity));
         return map;
     }
-    static auto try_construct_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
-        auto map = try$(try_construct_with_capacity(rhs.count()));
+    static auto try_new_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+        auto map = try$(try_new_with_capacity(rhs.count()));
         for ( auto const& key_value : rhs )
             try$(map.try_insert(try$(key_value.try_clone())));
 
         return map;
     }
-    static auto try_construct_from_list(Cxx::InitializerList<KeyValue> initializer_list) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
-        auto map = construct_empty();
+    static auto try_new_from_list(Cxx::InitializerList<KeyValue> initializer_list) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
+        auto map = new_empty();
         for ( auto const& key_value : initializer_list ) /* even with auto initializer_list exposes only T const& */
             try$(map.try_insert(Cxx::move(const_cast<KeyValue&>(key_value))));
 
@@ -136,7 +136,7 @@ public:
         return must$(try_clone());
     }
     auto try_clone() const -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
-        return Map<K, T, KTraits, IsOrdered>::try_construct_from_other(*this);
+        return Map<K, T, KTraits, IsOrdered>::try_new_from_other(*this);
     }
 
     /**
@@ -300,5 +300,5 @@ private:
     explicit constexpr Map() = default;
 
 private:
-    Set<KeyValue, KeyValueTraits, IsOrdered> m_hash_set{ Set<KeyValue, KeyValueTraits, IsOrdered>::construct_empty() };
+    Set<KeyValue, KeyValueTraits, IsOrdered> m_hash_set{ Set<KeyValue, KeyValueTraits, IsOrdered>::new_empty() };
 };

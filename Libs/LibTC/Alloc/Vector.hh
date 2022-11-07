@@ -38,20 +38,20 @@ public:
      * @brief Construction functions
      */
     [[nodiscard]]
-    static auto construct_from_begin(TVector* vector) -> VectorIterator {
+    static auto new_from_begin(TVector* vector) -> VectorIterator {
         return VectorIterator<TVector, T, IsReverse>{ vector, 0 };
     }
     [[nodiscard]]
-    static auto construct_from_end(TVector* vector) -> VectorIterator {
+    static auto new_from_end(TVector* vector) -> VectorIterator {
         return VectorIterator<TVector, T, IsReverse>{ vector, vector->count() };
     }
 
     [[nodiscard]]
-    static auto construct_from_rbegin(TVector* vector) -> VectorIterator {
+    static auto new_from_rbegin(TVector* vector) -> VectorIterator {
         return VectorIterator<TVector, T, IsReverse>{ vector, vector->count() - 1 };
     }
     [[nodiscard]]
-    static auto construct_from_rend(TVector* vector) -> VectorIterator {
+    static auto new_from_rend(TVector* vector) -> VectorIterator {
         return VectorIterator<TVector, T, IsReverse>{ vector, -1 };
     }
 
@@ -112,9 +112,9 @@ public:
     [[nodiscard]]
     auto is_end() const -> bool {
         if constexpr ( IsReverse ) {
-            return m_index == construct_from_rend(m_collection).index();
+            return m_index == new_from_rend(m_collection).index();
         } else {
-            return m_index == construct_from_end(m_collection).index();
+            return m_index == new_from_end(m_collection).index();
         }
     }
     [[nodiscard]]
@@ -180,32 +180,32 @@ public:
      * @brief Non-Error safe factory functions
      */
     [[nodiscard]]
-    static constexpr auto construct_empty() -> Vector<T> {
+    static constexpr auto new_empty() -> Vector<T> {
         return Vector<T>{};
     }
     [[nodiscard]]
-    static auto construct_with_capacity(usize capacity) -> Vector<T> {
-        return must$(try_construct_with_capacity(capacity));
+    static auto new_with_capacity(usize capacity) -> Vector<T> {
+        return must$(try_new_with_capacity(capacity));
     }
     [[nodiscard]]
-    static auto construct_from_other(Vector<T> const& rhs) -> Vector<T> {
-        return must$(try_construct_from_other(rhs));
+    static auto new_from_other(Vector<T> const& rhs) -> Vector<T> {
+        return must$(try_new_from_other(rhs));
     }
     [[nodiscard]]
-    static auto construct_from_list(Cxx::InitializerList<T> initializer_list) -> Vector<T> {
-        return must$(try_construct_from_list(initializer_list));
+    static auto new_from_list(Cxx::InitializerList<T> initializer_list) -> Vector<T> {
+        return must$(try_new_from_list(initializer_list));
     }
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<Vector<T>> {
-        auto vector = construct_empty();
+    static auto try_new_with_capacity(usize capacity) -> ErrorOr<Vector<T>> {
+        auto vector = new_empty();
         try$(vector.try_ensure_capacity(capacity));
         return vector;
     }
-    static auto try_construct_from_other(Vector<T> const& rhs) -> ErrorOr<Vector<T>> {
-        auto vector = try$(try_construct_with_capacity(rhs.count()));
+    static auto try_new_from_other(Vector<T> const& rhs) -> ErrorOr<Vector<T>> {
+        auto vector = try$(try_new_with_capacity(rhs.count()));
         for ( auto const& e : rhs ) {
             if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
                 try$(vector.try_append(try$(e.try_clone())));
@@ -218,8 +218,8 @@ public:
 
         return vector;
     }
-    static auto try_construct_from_list(Cxx::InitializerList<T> initializer_list) -> ErrorOr<Vector<T>> {
-        auto vector = construct_empty();
+    static auto try_new_from_list(Cxx::InitializerList<T> initializer_list) -> ErrorOr<Vector<T>> {
+        auto vector = new_empty();
         for ( auto const& e : initializer_list ) /* even with auto initializer_list exposes only T const& */
             try$(vector.try_append(Cxx::move(const_cast<T&>(e))));
 
@@ -252,7 +252,7 @@ public:
         return must$(try_clone());
     }
     auto try_clone() const -> ErrorOr<Vector<T>> {
-        return Vector<T>::try_construct_from_other(*this);
+        return Vector<T>::try_new_from_other(*this);
     }
 
     /**
@@ -262,7 +262,7 @@ public:
         clear_keep_capacity();
 
         if ( m_data_capacity > 0 ) {
-            Details::heap_free_with_size(m_data_storage, m_data_capacity);
+            Details::__heap_plug_dealloc_mem(AllocLayout::new_for_array_of<T>(m_data_capacity), m_data_storage);
             m_data_storage  = nullptr;
             m_data_capacity = 0;
         }
@@ -292,7 +292,7 @@ public:
     }
     auto try_insert_at(usize index, T value) -> ErrorOr<void> {
         if ( index > m_values_count )
-            return Error::construct_from_code(EINVAL);
+            return Error::new_from_code(EINVAL);
 
         try$(try_ensure_capacity(m_values_count + 1));
 
@@ -409,7 +409,7 @@ public:
      */
     auto erase_at(usize index) -> ErrorOr<void> {
         if ( index >= m_values_count )
-            return Error::construct_from_code(EINVAL);
+            return Error::new_from_code(EINVAL);
 
         /* shift all the values one position back */
         if constexpr ( TypeTraits<T>::is_trivial() )
@@ -431,7 +431,7 @@ public:
                 return {};
             }
         }
-        return Error::construct_from_code(ENOENT);
+        return Error::new_from_code(ENOENT);
     }
     auto erase_all_of(T const& value) -> ErrorOr<usize> {
         return erase_all_matches([&value](T const& current) { return TypeTraits<T>::equals(current, value); });
@@ -449,7 +449,7 @@ public:
         if ( erased_count > 0 )
             return erased_count;
         else
-            return Error::construct_from_code(ENOENT);
+            return Error::new_from_code(ENOENT);
     }
 
     /**
@@ -484,7 +484,7 @@ public:
             new_capacity = capacity + capacity / 4;
 
         /* allocate new memory and move the content into it */
-        auto new_data_storage = try$(Details::heap_alloc_clean_array<T>(new_capacity));
+        auto new_data_storage = try$(Details::__heap_plug_alloc_mem<T>(AllocLayout::new_for_array_of<T>(new_capacity)));
         if constexpr ( TypeTraits<T>::is_trivial() )
             __builtin_memmove(new_data_storage, m_data_storage, m_values_count * sizeof(T));
         else {
@@ -496,7 +496,7 @@ public:
 
         /* destroy the previous buffer if exists and update the other fields */
         if ( m_data_storage )
-            Details::heap_free_with_size<T>(m_data_storage, m_data_capacity);
+            Details::__heap_plug_dealloc_mem<T>(AllocLayout::new_for_array_of<T>(m_data_capacity), m_data_storage);
 
         m_data_storage  = new_data_storage;
         m_data_capacity = new_capacity;
@@ -507,34 +507,34 @@ public:
      * @brief for-each support
      */
     auto begin() -> Iterator {
-        return Iterator::construct_from_begin(this);
+        return Iterator::new_from_begin(this);
     }
     auto end() -> Iterator {
-        return Iterator::construct_from_end(this);
+        return Iterator::new_from_end(this);
     }
 
     auto begin() const -> ConstIterator {
-        return ConstIterator::construct_from_begin(this);
+        return ConstIterator::new_from_begin(this);
     }
     auto end() const -> ConstIterator {
-        return ConstIterator::construct_from_end(this);
+        return ConstIterator::new_from_end(this);
     }
 
     /**
      * @brief reverse for-each support
      */
     auto rbegin() -> ReverseIterator {
-        return ReverseIterator::construct_from_rbegin(this);
+        return ReverseIterator::new_from_rbegin(this);
     }
     auto rend() -> ReverseIterator {
-        return ReverseIterator::construct_from_rend(this);
+        return ReverseIterator::new_from_rend(this);
     }
 
     auto rbegin() const -> ConstReverseIterator {
-        return ReverseIterator::construct_from_rbegin(this);
+        return ReverseIterator::new_from_rbegin(this);
     }
     auto rend() const -> ConstReverseIterator {
-        return ReverseIterator::construct_from_rend(this);
+        return ReverseIterator::new_from_rend(this);
     }
 
     auto reverse_iter() -> ReverseIteratorWrapper {

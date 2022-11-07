@@ -23,7 +23,7 @@ public:
      * @brief Error safe factory function
      */
     [[nodiscard]]
-    static auto construct_from_here(char const* file_path = __builtin_FILE(),
+    static auto new_from_here(char const* file_path = __builtin_FILE(),
                                     char const* function  = __builtin_FUNCTION(),
                                     u32         line      = __builtin_LINE()) -> SourceLocation;
 

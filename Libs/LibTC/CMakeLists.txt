@@ -11,6 +11,7 @@
 #
 
 add_library(LibTC STATIC
+        Alloc/New.cc
         Alloc/String.cc
         Alloc/StringBuilder.cc
         Alloc/StringStorage.cc

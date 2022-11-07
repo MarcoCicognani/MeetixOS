@@ -10,18 +10,14 @@
  * GNU General Public License version 3
  */
 
-namespace RT {
-
 [[noreturn]]
-auto run() -> void;
-
-} /* namespace RT */
+auto rt_run() -> void;
 
 extern "C" {
 
 [[noreturn]]
 void _start() {
-    RT::run();
+    rt_run();
 }
 
 } /* extern "C" */

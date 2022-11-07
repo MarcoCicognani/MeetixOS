@@ -30,17 +30,17 @@ public:
      * @brief Non-Error safe factory functions
      */
     [[nodiscard]]
-    static auto construct_empty() -> StringBuilder;
+    static auto new_empty() -> StringBuilder;
     [[nodiscard]]
-    static auto construct_with_capacity(usize capacity) -> StringBuilder;
+    static auto new_with_capacity(usize capacity) -> StringBuilder;
     [[nodiscard]]
-    static auto construct_from_other(StringBuilder const& rhs) -> StringBuilder;
+    static auto new_from_other(StringBuilder const& rhs) -> StringBuilder;
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_construct_with_capacity(usize capacity) -> ErrorOr<StringBuilder>;
-    static auto try_construct_from_other(StringBuilder const& rhs) -> ErrorOr<StringBuilder>;
+    static auto try_new_with_capacity(usize capacity) -> ErrorOr<StringBuilder>;
+    static auto try_new_from_other(StringBuilder const& rhs) -> ErrorOr<StringBuilder>;
 
     /**
      * @brief Move constructor and move assignment
@@ -103,5 +103,5 @@ private:
     explicit constexpr StringBuilder() = default;
 
 private:
-    Vector<char> m_char_vector{ Vector<char>::construct_empty() };
+    Vector<char> m_char_vector{ Vector<char>::new_empty() };
 };

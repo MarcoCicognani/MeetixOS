@@ -14,26 +14,26 @@
 #include <LibTC/Lang/Must.hh>
 #include <LibTC/Lang/Try.hh>
 
-auto StringBuilder::construct_empty() -> StringBuilder {
+auto StringBuilder::new_empty() -> StringBuilder {
     return StringBuilder{};
 }
 
-auto StringBuilder::construct_with_capacity(usize capacity) -> StringBuilder {
-    return must$(try_construct_with_capacity(capacity));
+auto StringBuilder::new_with_capacity(usize capacity) -> StringBuilder {
+    return must$(try_new_with_capacity(capacity));
 }
 
-auto StringBuilder::construct_from_other(const StringBuilder& rhs) -> StringBuilder {
-    return must$(try_construct_from_other(rhs));
+auto StringBuilder::new_from_other(const StringBuilder& rhs) -> StringBuilder {
+    return must$(try_new_from_other(rhs));
 }
 
-auto StringBuilder::try_construct_with_capacity(usize capacity) -> ErrorOr<StringBuilder> {
-    auto string_builder = construct_empty();
+auto StringBuilder::try_new_with_capacity(usize capacity) -> ErrorOr<StringBuilder> {
+    auto string_builder = new_empty();
     try$(string_builder.try_ensure_capacity(capacity));
     return string_builder;
 }
 
-auto StringBuilder::try_construct_from_other(const StringBuilder& rhs) -> ErrorOr<StringBuilder> {
-    auto string_builder = try$(try_construct_with_capacity(rhs.len()));
+auto StringBuilder::try_new_from_other(const StringBuilder& rhs) -> ErrorOr<StringBuilder> {
+    auto string_builder = try$(try_new_with_capacity(rhs.len()));
     for ( auto const& c : rhs.as_string_view() )
         try$(string_builder.try_append(c));
 
@@ -45,7 +45,7 @@ auto StringBuilder::clone() const -> StringBuilder {
 }
 
 auto StringBuilder::try_clone() const -> ErrorOr<StringBuilder> {
-    return StringBuilder::try_construct_from_other(*this);
+    return StringBuilder::try_new_from_other(*this);
 }
 
 auto StringBuilder::clear() -> void {
@@ -92,7 +92,7 @@ auto StringBuilder::to_string() const -> String {
 }
 
 auto StringBuilder::try_to_string() const -> ErrorOr<String> {
-    return String::try_construct_from_view(as_string_view());
+    return String::try_new_from_view(as_string_view());
 }
 
 auto StringBuilder::len() const -> usize {
@@ -104,5 +104,5 @@ auto StringBuilder::is_empty() const -> bool {
 }
 
 auto StringBuilder::as_string_view() const -> StringView {
-    return StringView::construct_from_raw_parts(m_char_vector.raw_data(), len());
+    return StringView::new_from_raw_parts(m_char_vector.raw_data(), len());
 }

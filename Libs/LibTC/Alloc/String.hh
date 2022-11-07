@@ -44,18 +44,18 @@ public:
      * @brief Non-Error safe factory functions
      */
     [[nodiscard]]
-    static auto construct_empty() -> String;
+    static auto new_empty() -> String;
     [[nodiscard]]
-    static auto construct_from_other(String const&) -> String;
+    static auto new_from_other(String const&) -> String;
     [[nodiscard]]
-    static auto construct_from_view(StringView) -> String;
+    static auto new_from_view(StringView) -> String;
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_construct_empty() -> ErrorOr<String>;
-    static auto try_construct_from_other(String const&) -> ErrorOr<String>;
-    static auto try_construct_from_view(StringView) -> ErrorOr<String>;
+    static auto try_new_empty() -> ErrorOr<String>;
+    static auto try_new_from_other(String const&) -> ErrorOr<String>;
+    static auto try_new_from_view(StringView) -> ErrorOr<String>;
 
     /**
      * @brief Move constructor and move assignment

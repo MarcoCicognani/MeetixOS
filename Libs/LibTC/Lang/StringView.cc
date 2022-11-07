@@ -22,8 +22,8 @@
 #include <LibTC/Lang/StringView.hh>
 #include <LibTC/Lang/Try.hh>
 
-auto StringView::construct_from_cstr(const char* c_str) -> StringView {
-    return construct_from_raw_parts(c_str, __builtin_strlen(c_str));
+auto StringView::new_from_cstr(const char* c_str) -> StringView {
+    return new_from_raw_parts(c_str, __builtin_strlen(c_str));
 }
 
 auto StringView::operator=(StringView const& rhs) -> StringView& {
@@ -236,13 +236,13 @@ auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr
 
     /* check for only whitespaces string */
     if ( string_view.is_empty() )
-        return Error::construct_from_code(EINVAL);
+        return Error::new_from_code(EINVAL);
 
     /* extract the sign from the beginning of the string */
     T sign = 1;
     if ( is_ascii_int_sign(string_view[0]) ) {
         if ( string_view.len() == 1 )
-            return Error::construct_from_code(EINVAL);
+            return Error::new_from_code(EINVAL);
 
         /* for minus set the sign to negative */
         if ( string_view[0] == '-' )
@@ -259,15 +259,15 @@ auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr
             /* according to the parse all flag we decide here if the parser must return
              * with a code or simply break the cycle returning the value parsed until now */
             if ( parse_mode == ParseMode::BeginToEnd || parse_mode == ParseMode::TrimWhitesAndBeginToEnd )
-                return Error::construct_from_code(EINVAL);
+                return Error::new_from_code(EINVAL);
             else
                 break;
         }
 
         if ( __builtin_mul_overflow(int_value, static_cast<T>(int_base), &int_value) )
-            return Error::construct_from_code(EOVERFLOW);
+            return Error::new_from_code(EOVERFLOW);
         if ( __builtin_add_overflow(int_value, digit_value<T>(c), &int_value) )
-            return Error::construct_from_code(EOVERFLOW);
+            return Error::new_from_code(EOVERFLOW);
     }
 
     /* apply the sign to the final value */
@@ -292,7 +292,7 @@ auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorO
 
     /* check for only whitespaces string */
     if ( string_view.is_empty() )
-        return Error::construct_from_code(EINVAL);
+        return Error::new_from_code(EINVAL);
 
     /* convert the string into the integer */
     T int_value = 0;
@@ -301,15 +301,15 @@ auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorO
             /* according to the parse all flag we decide here if the parser must return
              * with a code or simply break the cycle returning the value parsed until now */
             if ( parse_mode == ParseMode::BeginToEnd || parse_mode == ParseMode::TrimWhitesAndBeginToEnd )
-                return Error::construct_from_code(EINVAL);
+                return Error::new_from_code(EINVAL);
             else
                 break;
         }
 
         if ( __builtin_mul_overflow(int_value, static_cast<T>(int_base), &int_value) )
-            return Error::construct_from_code(EOVERFLOW);
+            return Error::new_from_code(EOVERFLOW);
         if ( __builtin_add_overflow(int_value, digit_value<T>(c), &int_value) )
-            return Error::construct_from_code(EOVERFLOW);
+            return Error::new_from_code(EOVERFLOW);
     }
     return int_value;
 }
@@ -352,7 +352,7 @@ auto StringView::find_all(StringView needle) const -> Vector<usize> {
 }
 
 auto StringView::try_find_all(StringView needle) const -> ErrorOr<Vector<usize>> {
-    auto positions = Vector<usize>::construct_empty();
+    auto positions = Vector<usize>::new_empty();
 
     usize current_position = 0;
     while ( current_position < len() ) {
@@ -387,7 +387,7 @@ static auto try_split_view_if_helper(StringView string_view,
         /* advance the cursor to the next step */
         auto const remaining_chars = part_with_separator.as_cstr() + part_with_separator.len();
 
-        view_cursor   = StringView::construct_from_raw_parts(remaining_chars, view_cursor.len() - (remaining_chars - view_cursor.as_cstr()));
+        view_cursor   = StringView::new_from_raw_parts(remaining_chars, view_cursor.len() - (remaining_chars - view_cursor.as_cstr()));
         index_or_none = view_cursor.find(separator);
     }
 
@@ -411,7 +411,7 @@ auto StringView::try_split_view(char separator, KeepEmpty keep_empty) const -> E
 }
 
 auto StringView::try_split_view(StringView separator, KeepEmpty keep_empty) const -> ErrorOr<Vector<StringView>> {
-    auto vector = Vector<StringView>::construct_empty();
+    auto vector = Vector<StringView>::new_empty();
     try$(try_split_view_if_helper(*this, separator, keep_empty, [&vector](StringView string_view) -> ErrorOr<void> {
         try$(vector.try_append(string_view));
         return {};
@@ -484,19 +484,19 @@ auto StringView::contains(char rhs, CaseSensible case_sensible) const -> bool {
 }
 
 auto StringView::begin() const -> StringView::ConstIterator {
-    return ConstIterator::construct_from_begin(this);
+    return ConstIterator::new_from_begin(this);
 }
 
 auto StringView::end() const -> StringView::ConstIterator {
-    return ConstIterator::construct_from_end(this);
+    return ConstIterator::new_from_end(this);
 }
 
 auto StringView::rbegin() const -> StringView::ConstReverseIterator {
-    return ConstReverseIterator::construct_from_rbegin(this);
+    return ConstReverseIterator::new_from_rbegin(this);
 }
 
 auto StringView::rend() const -> StringView::ConstReverseIterator {
-    return ConstReverseIterator::construct_from_rend(this);
+    return ConstReverseIterator::new_from_rend(this);
 }
 
 auto StringView::reverse_iter() const -> StringView::ConstReverseIteratorWrapper {

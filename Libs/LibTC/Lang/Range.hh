@@ -28,7 +28,7 @@ public:
      * @brief Error safe factory functions
      */
     [[nodiscard]]
-    static auto construct_from_current(T current) -> RangeIterator<T, IsReverse> {
+    static auto new_from_current(T current) -> RangeIterator<T, IsReverse> {
         return RangeIterator<T, IsReverse>{ current };
     }
 
@@ -101,20 +101,20 @@ public:
      */
     [[gnu::always_inline]]
     auto begin() const -> Iterator {
-        return Iterator::construct_from_current(m_first);
+        return Iterator::new_from_current(m_first);
     }
     [[gnu::always_inline]]
     auto end() const -> Iterator {
-        return Iterator::construct_from_current(m_end);
+        return Iterator::new_from_current(m_end);
     }
 
     [[gnu::always_inline]]
     auto rbegin() const -> Iterator {
-        return ReverseIterator::construct_from_current(m_end);
+        return ReverseIterator::new_from_current(m_end);
     }
     [[gnu::always_inline]]
     auto rend() const -> Iterator {
-        return ReverseIterator::construct_from_current(m_first);
+        return ReverseIterator::new_from_current(m_first);
     }
 
     auto reverse_iter() const -> ReverseIteratorWrapper {
@@ -147,20 +147,20 @@ public:
      */
     [[gnu::always_inline]]
     auto begin() const -> Iterator {
-        return Iterator::construct_from_current(m_first);
+        return Iterator::new_from_current(m_first);
     }
     [[gnu::always_inline]]
     auto end() const -> Iterator {
-        return Iterator::construct_from_current(m_end);
+        return Iterator::new_from_current(m_end);
     }
 
     [[gnu::always_inline]]
     auto rbegin() const -> Iterator {
-        return ReverseIterator::construct_from_current(m_end);
+        return ReverseIterator::new_from_current(m_end);
     }
     [[gnu::always_inline]]
     auto rend() const -> Iterator {
-        return ReverseIterator::construct_from_current(m_first);
+        return ReverseIterator::new_from_current(m_first);
     }
 
     auto reverse_iter() const -> ReverseIteratorWrapper {

@@ -21,17 +21,22 @@ public:
      */
     template<typename T>
     [[nodiscard]]
-    static constexpr auto construct_for_type() -> AllocLayout {
-        return AllocLayout(sizeof(T), alignof(T));
+    static constexpr auto new_for_type() -> AllocLayout {
+        return new_from_raw_parts(sizeof(T), alignof(T));
     }
     template<typename T>
     [[nodiscard]]
-    static constexpr auto construct_for_array_of(usize len) -> AllocLayout {
-        return AllocLayout(sizeof(T) * len, alignof(T));
+    static constexpr auto new_for_type(usize custom_len) -> AllocLayout {
+        return new_from_raw_parts(custom_len, alignof(T));
+    }
+    template<typename T>
+    [[nodiscard]]
+    static constexpr auto new_for_array_of(usize len) -> AllocLayout {
+        return new_from_raw_parts(sizeof(T) * len, alignof(T));
     }
     [[nodiscard]]
-    static constexpr auto construct_from_raw_parts(usize size, usize alignment) -> AllocLayout {
-        return AllocLayout(size, alignment);
+    static constexpr auto new_from_raw_parts(usize size, usize alignment) -> AllocLayout {
+        return AllocLayout{ size, alignment };
     }
 
     /**

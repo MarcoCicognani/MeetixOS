@@ -21,21 +21,16 @@
 class StringStorage final {
     TCDenyCopy$(StringStorage);
     TCDenyMove$(StringStorage);
+    TCNonNullRefConstructible$(StringStorage);
 
 public:
     /**
      * @brief Error safe Factory functions
      */
     [[nodiscard]]
-    static auto try_construct_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>>;
+    static auto try_new_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>>;
 
-    explicit StringStorage(StringView string_view);
-    ~StringStorage() = default;
-
-    /**
-     * @brief Custom delete operator
-     */
-    auto operator delete(void* raw_string_storage) -> void;
+    ~StringStorage();
 
     /**
      * @brief Getters
@@ -49,13 +44,12 @@ public:
     auto is_empty() const -> bool;
 
 private:
-    /**
-     * @brief Since the StringStorage uses inline storage the requested size to the heap allocator is the size of the
-     * class plus the capacity for the string storage
-     */
-    static auto alloc_size(usize char_count) -> usize;
+    explicit constexpr StringStorage(char const* storage_ptr, usize char_count)
+        : m_storage_ptr{ storage_ptr }
+        , m_char_count{ char_count } {
+    }
 
 private:
-    usize m_char_count{ 0 };
-    char  m_inline_storage[0];
+    char const* m_storage_ptr{ nullptr };
+    usize       m_char_count{ 0 };
 };
