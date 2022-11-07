@@ -141,7 +141,7 @@ void Logger::printFormatted(const char* constMessage, va_list valist) {
             // indented header printing
             else if ( *message == '!' ) {
                 char*    val       = va_arg(valist, char*);
-                uint32_t headerlen = String::length(val);
+                uint32_t headerlen = StringUtils::length(val);
 
                 if ( headerlen < HEADER_WIDTH ) {
                     for ( uint32_t i = 0; i < HEADER_WIDTH - headerlen; i++ )

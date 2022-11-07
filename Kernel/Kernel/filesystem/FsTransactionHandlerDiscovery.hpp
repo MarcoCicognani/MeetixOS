@@ -58,9 +58,9 @@ public:
     FsTransactionHandlerDiscovery(char* absolutePathIn, bool followSymlinks = true)
         : followSymlinks(followSymlinks) {
         // clone incoming path
-        int lenAbs   = String::length(absolutePathIn);
+        int lenAbs   = StringUtils::length(absolutePathIn);
         absolutePath = new char[lenAbs + 1];
-        String::copy(absolutePath, absolutePathIn);
+        StringUtils::copy(absolutePath, absolutePathIn);
     }
 
     /**

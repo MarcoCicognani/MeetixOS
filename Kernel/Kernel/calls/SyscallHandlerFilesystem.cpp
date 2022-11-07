@@ -47,11 +47,11 @@ SYSCALL_HANDLER(getWorkingDirectory) {
 
     char* cwd = currentThread->process->workingDirectory;
     if ( cwd ) {
-        size_t length = String::length(cwd);
+        size_t length = StringUtils::length(cwd);
         if ( length + 1 > data->m_out_buffer_len )
             data->m_working_directory_status = GET_WORKING_DIRECTORY_SIZE_EXCEEDED;
         else {
-            String::copy(data->m_out_buffer, cwd);
+            StringUtils::copy(data->m_out_buffer, cwd);
             data->m_working_directory_status = GET_WORKING_DIRECTORY_SUCCESSFUL;
         }
     }
@@ -73,8 +73,8 @@ SYSCALL_HANDLER(getExecutablePath) {
         data->m_out_buffer[0] = 0;
         data->m_len           = 0;
     } else {
-        String::copy(data->m_out_buffer, currentThread->process->sourcePath);
-        data->m_len = String::length(currentThread->process->sourcePath);
+        StringUtils::copy(data->m_out_buffer, currentThread->process->sourcePath);
+        data->m_len = StringUtils::length(currentThread->process->sourcePath);
     }
 
     return currentThread;
@@ -124,8 +124,8 @@ SYSCALL_HANDLER(fsCreateNode) {
     else {
         // create the node
         node       = FileSystem::createNode();
-        node->name = new char[String::length(data->m_node_name) + 1];
-        String::copy(node->name, data->m_node_name);
+        node->name = new char[StringUtils::length(data->m_node_name) + 1];
+        StringUtils::copy(node->name, data->m_node_name);
         parent->addChild(node);
         DEBUG_INTERFACE_FILESYSTEM_UPDATE_NODE(node);
 

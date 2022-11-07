@@ -82,7 +82,7 @@ auto kmp_memmem(uint8_t const* haystack, size_t haystack_len, uint8_t const* nee
             ++needle_index;
             ++current_haystack_index;
             if ( static_cast<size_t>(needle_index) == needle_len )
-                return bit_cast<void const*>(haystack + needle_index);
+                return Cxx::bit_cast<void const*>(haystack + needle_index);
             else
                 continue;
         }
@@ -107,18 +107,18 @@ void* memcpy(void* dest, const void* src, size_t num) {
 }
 
 void* memmove(void* dest, const void* src, size_t num) {
-    if ( (bit_cast<size_t>(dest) - bit_cast<size_t>(src)) >= num )
+    if ( (Cxx::bit_cast<size_t>(dest) - Cxx::bit_cast<size_t>(src)) >= num )
         return memcpy(dest, src, num);
 
-    auto dst_byte = bit_cast<uint8_t*>(dest);
-    auto src_byte = bit_cast<uint8_t const*>(src);
+    auto dst_byte = Cxx::bit_cast<uint8_t*>(dest);
+    auto src_byte = Cxx::bit_cast<uint8_t const*>(src);
     for ( dst_byte += num, src_byte += num; num--; )
         *--dst_byte = *--src_byte;
     return dest;
 }
 
 void* memset(void* mem, int value, size_t len) {
-    auto dest = bit_cast<size_t>(mem);
+    auto dest = Cxx::bit_cast<size_t>(mem);
     if ( !(dest & 0x3) && len >= 12 ) {
         auto ints_len       = len / sizeof(size_t);
         auto byte_value     = static_cast<uint8_t>(value);
@@ -134,8 +134,8 @@ void* memset(void* mem, int value, size_t len) {
 }
 
 int memcmp(const void* mem_a, const void* mem_b, size_t len) {
-    auto byte_a = bit_cast<uint8_t const*>(mem_a);
-    auto byte_b = bit_cast<uint8_t const*>(mem_b);
+    auto byte_a = Cxx::bit_cast<uint8_t const*>(mem_a);
+    auto byte_b = Cxx::bit_cast<uint8_t const*>(mem_b);
 
     for ( auto const i : Range{ 0u, len } ) {
         if ( byte_a[i] > byte_b[i] )
@@ -147,10 +147,10 @@ int memcmp(const void* mem_a, const void* mem_b, size_t len) {
 }
 
 void* memchr(const void* mem, int value, size_t num) {
-    auto byte = bit_cast<uint8_t const*>(mem);
+    auto byte = Cxx::bit_cast<uint8_t const*>(mem);
     while ( num-- ) {
         if ( *byte == static_cast<uint8_t>(value) )
-            return bit_cast<void*>(const_cast<uint8_t*>(byte));
+            return Cxx::bit_cast<void*>(const_cast<uint8_t*>(byte));
         ++byte;
     }
     return nullptr;
@@ -173,7 +173,7 @@ const void* memmem(const void* haystack, size_t haystack_len, const void* needle
     if ( needle_len < 32 )
         return ::Details::bitwise_memmem(haystack, haystack_len, needle, needle_len);
     else
-        return ::Details::kmp_memmem(bit_cast<uint8_t const*>(haystack), haystack_len, bit_cast<uint8_t const*>(needle), needle_len);
+        return ::Details::kmp_memmem(Cxx::bit_cast<uint8_t const*>(haystack), haystack_len, Cxx::bit_cast<uint8_t const*>(needle), needle_len);
 }
 
 char* strcpy(char* dest, const char* src) {
@@ -383,7 +383,7 @@ size_t strlen(const char* str) {
 
 char* strdup(const char* str) {
     auto buffer_len          = strlen(str);
-    auto error_or_new_buffer = TC::Raw::clean_alloc_array<char>(buffer_len + 1);
+    auto error_or_new_buffer = Details::heap_alloc_clean_array<char>(buffer_len + 1); /* TODO use LibRT.Heap, since LibTC.Alloc.Details will be private */
     if ( error_or_new_buffer.is_error() ) {
         errno = error_or_new_buffer.unwrap_error().code();
         return nullptr;

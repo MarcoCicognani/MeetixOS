@@ -31,6 +31,6 @@
  * @param source:	string to duplicate
  * @return the duplicated string
  */
-char* String::duplicate(const char* source) {
+char* StringUtils::duplicate(const char* source) {
     return (char*)source;
 }

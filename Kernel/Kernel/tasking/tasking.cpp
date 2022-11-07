@@ -221,7 +221,7 @@ uint8_t Tasking::addServer(Process* process) {
     if ( !process->isServer ) {
         // find if there is another server with the same name
         for ( llist<Process*>::iterator it = servers->begin(); it != servers->end(); ++it )
-            if ( String::equals(process->main->getIdentifier(), (*it)->main->getIdentifier()) )
+            if ( StringUtils::equals(process->main->getIdentifier(), (*it)->main->getIdentifier()) )
                 return false;
 
         // add to the list
@@ -241,7 +241,7 @@ uint8_t Tasking::addServer(Process* process) {
 Process* Tasking::getServer(const char* identifier) {
     // find if there is another server with the same name
     for ( llist<Process*>::iterator it = servers->begin(); it != servers->end(); ++it )
-        if ( String::equals(identifier, (*it)->main->getIdentifier()) )
+        if ( StringUtils::equals(identifier, (*it)->main->getIdentifier()) )
             return *it;
 
     return 0;
@@ -296,7 +296,7 @@ Thread* Tasking::getTaskByIdentifier(const char* identifier) {
 const char*
 Tasking::adjustTaskIdentifier(Thread* target, Thread* firstExist, const char* preferredIdentifier) {
     // legalize the identifier from illegal characters
-    String::replace((char*)preferredIdentifier, ':', '_');
+    StringUtils::replace((char*)preferredIdentifier, ':', '_');
 
     // find all task with this name and add to new
     int     lastNum = 1;
@@ -305,9 +305,9 @@ Tasking::adjustTaskIdentifier(Thread* target, Thread* firstExist, const char* pr
     // iterate while find a valid task
     while ( next != 0 ) {
         // create the identifier
-        const char* strnum = String::fromInt(lastNum, BASE_DECIMAL);
-        char        nextID[String::length(preferredIdentifier) + String::length(strnum) + 1];
-        String::concat(preferredIdentifier, strnum, nextID);
+        const char* strnum = StringUtils::fromInt(lastNum, BASE_DECIMAL);
+        char        nextID[StringUtils::length(preferredIdentifier) + StringUtils::length(strnum) + 1];
+        StringUtils::concat(preferredIdentifier, strnum, nextID);
 
         // remove the string and increase the num
         delete strnum;
@@ -318,9 +318,9 @@ Tasking::adjustTaskIdentifier(Thread* target, Thread* firstExist, const char* pr
     }
 
     // now create the definitive indentifier
-    const char* effectivenum = String::fromInt(lastNum, BASE_DECIMAL);
-    char        identifier[String::length(preferredIdentifier) + String::length(effectivenum) + 1];
-    String::concat(preferredIdentifier, effectivenum, identifier);
+    const char* effectivenum = StringUtils::fromInt(lastNum, BASE_DECIMAL);
+    char        identifier[StringUtils::length(preferredIdentifier) + StringUtils::length(effectivenum) + 1];
+    StringUtils::concat(preferredIdentifier, effectivenum, identifier);
 
     // set the identifier
     target->setIdentifier(identifier);
@@ -345,25 +345,25 @@ bool Tasking::registerTaskForIdentifier(Thread*     task,
     if (task->type == THREAD_TYPE_SUB)
     {
             // get a duplicate of the name
-            char *previd = String::duplicate(task->getIdentifier());
-            uint32_t length = String::length(previd);
+            char *previd = StringUtils::duplicate(task->getIdentifier());
+            uint32_t length = StringUtils::length(previd);
 
             // the thread name is already appended
             if (previd[length - 1] != ':')
             {
                     // remove the thread name appendix
-                    uint32_t lastDoubleDot = String::lastIndexOf(previd, ':');
+                    uint32_t lastDoubleDot = StringUtils::lastIndexOf(previd, ':');
                     uint32_t appendixLen = length - lastDoubleDot - 1;
                     Memory::setWords(&previd[lastDoubleDot], '\0', appendixLen);
             }
 
             // no name appended to root, concat and destroy duplicate
-            String::concat(previd, newIdentifier, completeName);
+            StringUtils::concat(previd, newIdentifier, completeName);
             delete previd;
     }
 
     // thread is a main or vm86
-    else String::copy(completeName, task->getIdentifier());
+    else StringUtils::copy(completeName, task->getIdentifier());
 
     // test name
     if (*completeName != '\0')
@@ -377,7 +377,7 @@ bool Tasking::registerTaskForIdentifier(Thread*     task,
     adding a supplementary numeric id", "tasking", task->id, newIdentifier);
 
                     // we have to adjust the name
-                    if (selectedIdentifier) String::copy(selectedIdentifier,
+                    if (selectedIdentifier) StringUtils::copy(selectedIdentifier,
     adjustTaskIdentifier(task, existing, newIdentifier)); return false;
             }
     }*/

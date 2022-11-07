@@ -59,7 +59,7 @@ MultibootModule* MultibootUtils::findModule(MultibootInformation* info, const ch
         logDebug("%#  module: %s", module->path);
 
         // Check modules path
-        if ( String::equals(module->path, path) )
+        if ( StringUtils::equals(module->path, path) )
             return module;
     }
 

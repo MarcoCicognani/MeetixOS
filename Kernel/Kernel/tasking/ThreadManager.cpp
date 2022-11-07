@@ -672,15 +672,15 @@ void ThreadManager::setupInitialIdentifier(Thread* task, ThreadType type) {
     // setup name for main type of thread
     if ( type == THREAD_TYPE_MAIN || type == THREAD_TYPE_VM86 ) {
         // get name of task from basename of path
-        char* name  = String::basename(task->process->sourcePath);
-        int   index = String::indexOf(name, '.');
+        char* name  = StringUtils::basename(task->process->sourcePath);
+        int   index = StringUtils::indexOf(name, '.');
         if ( index == -1 )
             task->setIdentifier(name);
         else {
             // get length of extension of file
-            char* ext     = String::getOccurenceOf(name, '.');
-            int   extlen  = String::length(ext);
-            int   namelen = String::length(name);
+            char* ext     = StringUtils::getOccurenceOf(name, '.');
+            int   extlen  = StringUtils::length(ext);
+            int   namelen = StringUtils::length(name);
 
             // erase extension
             if ( extlen < namelen ) {
@@ -695,10 +695,10 @@ void ThreadManager::setupInitialIdentifier(Thread* task, ThreadType type) {
     // on subthread get the name from main thread of process and add "::"
     else if ( type == THREAD_TYPE_SUB ) {
         const char* mainName = task->process->main->getIdentifier();
-        int         len      = String::length(mainName);
+        int         len      = StringUtils::length(mainName);
 
         char threadname[len + 2];
-        String::concat(mainName, "::", threadname);
+        StringUtils::concat(mainName, "::", threadname);
 
         task->setIdentifier(threadname);
     }

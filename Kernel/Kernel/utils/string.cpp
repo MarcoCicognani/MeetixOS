@@ -31,7 +31,7 @@
  * @param source:	string to duplicate
  * @return the duplicated string
  */
-char* String::duplicate(const char* source) {
+char* StringUtils::duplicate(const char* source) {
     // create a new string and store on it the content of source
     char* duplicated = new char[length(source) + 1];
     copy(duplicated, source);

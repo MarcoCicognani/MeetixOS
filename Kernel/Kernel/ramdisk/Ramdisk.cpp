@@ -137,7 +137,7 @@ RamdiskEntry* Ramdisk::load(MultibootModule* module) {
 RamdiskEntry* Ramdisk::findChild(RamdiskEntry* parent, const char* childName) {
     RamdiskEntry* current = firstHeader;
     do {
-        if ( current->parentid == parent->id && String::equals(current->name, childName) )
+        if ( current->parentid == parent->id && StringUtils::equals(current->name, childName) )
             return current;
     } while ( (current = current->next) != 0 );
 
@@ -163,13 +163,13 @@ RamdiskEntry* Ramdisk::findAbsolute(const char* path) {
  */
 RamdiskEntry* Ramdisk::findRelative(RamdiskEntry* node, const char* path) {
     char     buf[RAMDISK_MAXIMUM_PATH_LENGTH];
-    uint32_t pathLen = String::length(path);
+    uint32_t pathLen = StringUtils::length(path);
     Memory::copy(buf, path, pathLen);
     buf[pathLen] = 0;
 
     RamdiskEntry* currentNode = node;
-    while ( String::length(buf) > 0 ) {
-        int slashIndex = String::indexOf(buf, '/');
+    while ( StringUtils::length(buf) > 0 ) {
+        int slashIndex = StringUtils::indexOf(buf, '/');
         if ( slashIndex >= 0 ) {
             // Set current node to next layer
             if ( slashIndex > 0 ) {
@@ -181,7 +181,7 @@ RamdiskEntry* Ramdisk::findRelative(RamdiskEntry* node, const char* path) {
             }
 
             // Cut off layer
-            uint32_t len = String::length(buf) - (slashIndex + 1);
+            uint32_t len = StringUtils::length(buf) - (slashIndex + 1);
             Memory::copy(buf, &buf[slashIndex + 1], len);
             buf[len] = 0;
         }
@@ -282,9 +282,9 @@ RamdiskEntry* Ramdisk::createChild(RamdiskEntry* parent, const char* filename) {
     firstHeader           = newNode;
 
     // copy name
-    int namelen   = String::length(filename);
+    int namelen   = StringUtils::length(filename);
     newNode->name = new char[namelen + 1];
-    String::copy(newNode->name, filename);
+    StringUtils::copy(newNode->name, filename);
 
     newNode->type     = RAMDISK_ENTRY_TYPE_FILE;
     newNode->id       = nextUnusedId++;

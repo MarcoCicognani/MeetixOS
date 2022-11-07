@@ -42,7 +42,7 @@ FsNode* FsDelegateRamdisk::createVfsNode(RamdiskEntry* ramdiskNode, FsNode* pare
     else
         node->type = FS_NODE_TYPE_FOLDER;
 
-    int len    = String::length(ramdiskNode->name);
+    int len    = StringUtils::length(ramdiskNode->name);
     node->name = new char[len + 1];
     Memory::copy(node->name, ramdiskNode->name, len);
     node->name[len] = 0;
@@ -287,8 +287,8 @@ FsDelegateRamdisk::requestDirectoryRefresh(Thread*                              
             FileSystem::getRealPathToNode(folder, absolute());
 
             // append child name
-            int absCurLen = String::length((const char*)absolute());
-            int childlen  = String::length(rdChild->name);
+            int absCurLen = StringUtils::length((const char*)absolute());
+            int childlen  = StringUtils::length(rdChild->name);
             Memory::copy(&absolute()[absCurLen], "/", 1);
             Memory::copy(&absolute()[absCurLen + 1], rdChild->name, childlen);
             absolute()[absCurLen + 1 + childlen] = 0;

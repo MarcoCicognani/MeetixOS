@@ -107,7 +107,7 @@ FsTransactionID FsDelegateTasked::requestDiscovery(Thread*                      
 
     FsTaskedDelegateTransactionStorageDiscovery* disc
         = (FsTaskedDelegateTransactionStorageDiscovery*)transactionStorage();
-    int childlen = String::length(child);
+    int childlen = StringUtils::length(child);
     if ( childlen > FILENAME_MAX ) {
         logInfo("tried to discover a node that has a name with an illegal length");
         configurationFine = false;
@@ -572,7 +572,7 @@ FsTransactionID FsDelegateTasked::requestOpen(Thread*                   requeste
         = (FsTaskedDelegateTransactionStorageOpen*)transactionStorage();
     disc->physFsID = node->physFsID;
 
-    int childlen = String::length(filename);
+    int childlen = StringUtils::length(filename);
     if ( childlen > FILENAME_MAX ) {
         logInfo("tried to open a node that has a name with an illegal length");
         configurationFine = false;

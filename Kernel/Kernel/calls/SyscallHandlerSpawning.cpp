@@ -92,7 +92,7 @@ SYSCALL_HANDLER(cliArgsStore) {
 
         // allocate the command line buffer
         otherProcess->cliArguments = new char[CLIARGS_BUFFER_LENGTH];
-        uint32_t argsLen           = String::length(data->m_arguments);
+        uint32_t argsLen           = StringUtils::length(data->m_arguments);
         Memory::copy(otherProcess->cliArguments, data->m_arguments, argsLen);
         otherProcess->cliArguments[argsLen] = 0;
 
@@ -122,7 +122,7 @@ SYSCALL_HANDLER(cliArgsRelease) {
 
     // Copy args if available
     if ( process->cliArguments != 0 ) {
-        auto args_len = String::length(process->cliArguments);
+        auto args_len = StringUtils::length(process->cliArguments);
 
         Memory::copy(data->m_out_buffer, process->cliArguments, args_len);
         data->m_out_buffer[args_len] = 0;

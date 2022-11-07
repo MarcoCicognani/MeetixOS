@@ -80,6 +80,6 @@ Process::~Process() {
  */
 void Process::setPath(const char* path) {
     if ( !sourcePath )
-        sourcePath = new char[String::length(path) + 1];
-    String::copy(sourcePath, path);
+        sourcePath = new char[StringUtils::length(path) + 1];
+    StringUtils::copy(sourcePath, path);
 }

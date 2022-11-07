@@ -33,7 +33,7 @@
  */
 bool AcpiEntry::hasSignature(const char* signature) {
     // SDT headers always have a signature with length 4
-    if ( String::length(signature) != 4 )
+    if ( StringUtils::length(signature) != 4 )
         return false;
 
     // Check if the headers signature is equal to the wanted signature

@@ -128,7 +128,7 @@ void Thread::setIdentifier(const char* newIdentifier) {
     // only if is provided a value
     if ( newIdentifier ) {
         // get the length of string
-        uint32_t newlength = String::length(newIdentifier);
+        uint32_t newlength = StringUtils::length(newIdentifier);
 
         if ( type == THREAD_TYPE_MAIN || type == THREAD_TYPE_VM86 ) {
             // remove first
@@ -137,7 +137,7 @@ void Thread::setIdentifier(const char* newIdentifier) {
 
             // allocate and copy on it new identifier
             identifier = new char[newlength + 1];
-            String::copy(identifier, newIdentifier);
+            StringUtils::copy(identifier, newIdentifier);
         }
 
         // set identifier for thread
@@ -145,23 +145,23 @@ void Thread::setIdentifier(const char* newIdentifier) {
             // if there is an old buffer
             if ( identifier ) {
                 // get the length of old identifier
-                uint32_t oldlength = String::length(identifier);
+                uint32_t oldlength = StringUtils::length(identifier);
                 char     oldID[oldlength + 1];
 
                 // copy on temporary buffer and delete the old
-                String::copy(oldID, identifier);
+                StringUtils::copy(oldID, identifier);
                 delete identifier;
 
                 // and concat old and new identifier
                 identifier = new char[newlength + oldlength + 1];
-                String::concat(oldID, newIdentifier, identifier);
+                StringUtils::concat(oldID, newIdentifier, identifier);
             }
 
             // if there isn't
             else {
                 // allocate and copy on it new identifier
                 identifier = new char[newlength + 1];
-                String::copy(identifier, newIdentifier);
+                StringUtils::copy(identifier, newIdentifier);
             }
         }
 

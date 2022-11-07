@@ -62,7 +62,7 @@ public:
                 FileSystem::getRealPathToNode(node, nodeRealpath());
 
                 Thread* target = (unspawnedTarget != nullptr ? unspawnedTarget : task);
-                String::copy(target->process->workingDirectory, nodeRealpath());
+                StringUtils::copy(target->process->workingDirectory, nodeRealpath());
                 data()->m_working_directory_status = SET_WORKING_DIRECTORY_SUCCESSFUL;
                 logDebug("%! cwd of process %i is now '%s'",
                          "filesystem",

@@ -153,10 +153,10 @@ void FileSystem::findExisting(char*    absolutePath,
             break;
 
         // handle specials
-        if ( String::equals("..", nameCurrent) ) {
+        if ( StringUtils::equals("..", nameCurrent) ) {
             if ( parent->parent != 0 )
                 child = parent->parent;
-        } else if ( String::equals(".", nameCurrent) ) { /* skip */
+        } else if ( StringUtils::equals(".", nameCurrent) ) { /* skip */
         } else {
             // check if requested child exists
             child = parent->findChild(nameCurrent);
@@ -277,7 +277,7 @@ void FileSystem::getRealPathToNode(FsNode* node, char* out) {
         }
 
         // get & check length + slash
-        int nameLen = String::length(current->name);
+        int nameLen = StringUtils::length(current->name);
         if ( absLen + nameLen + 1 > PATH_MAX ) {
             logWarn("%! problem: tried to create a path thats longer than PATH_MAX from a node",
                     "filesystem");
@@ -309,7 +309,7 @@ void FileSystem::getRealPathToNode(FsNode* node, char* out) {
  */
 void FileSystem::concatAsAbsolutePath(const char* relativeBase, const char* in, char* out) {
     // check if valid input
-    int lenIn = String::length(in);
+    int lenIn = StringUtils::length(in);
     if ( lenIn == 0 ) {
         out[0] = 0;
         return;
@@ -317,10 +317,10 @@ void FileSystem::concatAsAbsolutePath(const char* relativeBase, const char* in, 
 
     // if path is absolute, only copy to out
     if ( in[0] == '/' )
-        String::copy(out, in);
+        StringUtils::copy(out, in);
     else {
         // otherwise append: cwd + "/" + in
-        int lenCwd = String::length(relativeBase);
+        int lenCwd = StringUtils::length(relativeBase);
         int lenSep = 1;
         Memory::copy(out, relativeBase, lenCwd);
         Memory::copy(&out[lenCwd], "/", lenSep);
@@ -353,8 +353,8 @@ FsRegisterAsDelegateStatus FileSystem::createDelegate(Thread*     thread,
     // create mountpoint
     FsNode* mountpoint = createNode();
     mountpoint->setDelegate(taskedDelegate);
-    mountpoint->name = new char[String::length(name) + 1];
-    String::copy(mountpoint->name, name);
+    mountpoint->name = new char[StringUtils::length(name) + 1];
+    StringUtils::copy(mountpoint->name, name);
 
     mountpoint->type     = FS_NODE_TYPE_MOUNTPOINT;
     mountpoint->physFsID = physMountpointID;

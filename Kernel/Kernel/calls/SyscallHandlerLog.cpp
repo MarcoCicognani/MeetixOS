@@ -29,8 +29,8 @@ SYSCALL_HANDLER(log) {
     SyscallLog* data    = (SyscallLog*)SYSCALL_DATA(currentThread->cpuState);
 
     // % signs are not permitted, because the internal logger would get confused.
-    uint32_t    len = String::length(data->m_message_buffer);
-    Local<char> local_message{ String::duplicate(data->m_message_buffer) };
+    uint32_t    len = StringUtils::length(data->m_message_buffer);
+    Local<char> local_message{ StringUtils::duplicate(data->m_message_buffer) };
 
     for ( uint32_t i = 0; i < len; i++ )
         if ( local_message()[i] == '%' )

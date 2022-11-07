@@ -45,7 +45,7 @@
 /**
  * static class to manage strings
  */
-class String {
+class StringUtils {
 public:
     /**
      * concats two strings and copy the result on out

@@ -40,7 +40,7 @@ FsNode::FsNode()
 FsNode* FsNode::findChild(const char* name) {
     ListEntry<FsNode*>* n = children;
     while ( n ) {
-        if ( n->value->name != 0 && String::equals(n->value->name, name) )
+        if ( n->value->name != 0 && StringUtils::equals(n->value->name, name) )
             return n->value;
         n = n->next;
     }

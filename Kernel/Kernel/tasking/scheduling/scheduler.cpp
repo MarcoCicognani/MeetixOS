@@ -378,7 +378,7 @@ Thread* Scheduler::getTaskByIdentifier(const char* identifier) {
     while ( entry ) {
         if ( entry->value->alive ) {
             const char* taskIdentifier = entry->value->getIdentifier();
-            if ( taskIdentifier != 0 && String::equals(taskIdentifier, identifier) ) {
+            if ( taskIdentifier != 0 && StringUtils::equals(taskIdentifier, identifier) ) {
                 thread = entry->value;
                 break;
             }
@@ -391,7 +391,7 @@ Thread* Scheduler::getTaskByIdentifier(const char* identifier) {
         while ( entry ) {
             if ( entry->value->alive ) {
                 const char* taskIdentifier = entry->value->getIdentifier();
-                if ( taskIdentifier != 0 && String::equals(taskIdentifier, identifier) ) {
+                if ( taskIdentifier != 0 && StringUtils::equals(taskIdentifier, identifier) ) {
                     thread = entry->value;
                     break;
                 }

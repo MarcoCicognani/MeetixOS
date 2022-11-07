@@ -39,13 +39,13 @@ SYSCALL_HANDLER(ename) {
     KernelName* data = (KernelName*)SYSCALL_DATA(currentThread->cpuState);
 
     // copy loader name & version
-    String::copy(data->m_loader_name, LOADER_NAME);
+    StringUtils::copy(data->m_loader_name, LOADER_NAME);
     data->m_loader_major = L_VERSION_MAJOR;
     data->m_loader_minor = L_VERSION_MINOR;
     data->m_loader_patch = L_VERSION_PATCH;
 
     // copy kernel name & version
-    String::copy(data->m_kernel_name, KERNEL_NAME);
+    StringUtils::copy(data->m_kernel_name, KERNEL_NAME);
     data->m_kernel_major = VERSION_MAJOR;
     data->m_kernel_minor = VERSION_MINOR;
     data->m_kernel_sub   = VERSION_SUB;
@@ -71,7 +71,7 @@ SYSCALL_HANDLER(sysinfo) {
     char vendor[13];
     Processor::getVendor(vendor);
     vendor[12] = '\0';
-    String::copy(data->m_cpu_vendor, vendor);
+    StringUtils::copy(data->m_cpu_vendor, vendor);
 
     return currentThread;
 }
@@ -157,7 +157,7 @@ SYSCALL_HANDLER(getThreadDescriptor) {
         // copy identifier
         const char* threadName = thread->getIdentifier();
         if ( threadName )
-            String::copy(data->m_identifier, threadName);
+            StringUtils::copy(data->m_identifier, threadName);
         else
             data->m_identifier[0] = '\0';
 
@@ -219,14 +219,14 @@ SYSCALL_HANDLER(getProcessDescriptor) {
         // copy identifier
         const char* name = main->getIdentifier();
         if ( name )
-            String::copy(data->m_main_thread.m_identifier, name);
+            StringUtils::copy(data->m_main_thread.m_identifier, name);
         else
             data->m_main_thread.m_identifier[0] = '\0';
 
         // copy process source
         char* sourcePath = main->process->sourcePath;
         if ( sourcePath )
-            String::copy(data->m_source_path, sourcePath);
+            StringUtils::copy(data->m_source_path, sourcePath);
         else
             data->m_source_path[0] = '\0';
 

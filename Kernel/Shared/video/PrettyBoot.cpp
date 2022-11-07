@@ -61,7 +61,7 @@ void PrettyBoot::printProgressBar(int percent, uint8_t color) {
  */
 void PrettyBoot::printCentered(const char* string, int y, uint8_t color) {
     // calculate the length and the start cell
-    int strl      = String::length(string);
+    int strl      = StringUtils::length(string);
     int leftBound = 40 - strl / 2;
 
     // draw the background

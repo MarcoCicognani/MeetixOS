@@ -21,11 +21,9 @@ extern "C" {
 __thread ErrnoCode g_errno_value = ENOERR;
 
 int* errno_location() {
-    return bit_cast<int*>(&g_errno_value);
+    return Cxx::bit_cast<int*>(&g_errno_value);
 }
 
 } /* extern "C" */
-
-#pragma clang diagnostic pop
 
 #pragma clang diagnostic pop

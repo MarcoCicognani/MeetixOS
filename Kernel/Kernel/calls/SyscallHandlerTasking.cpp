@@ -90,7 +90,7 @@ SYSCALL_HANDLER(getThreadName) {
     if ( target ) {
         const char* identifier = target->getIdentifier();
         if ( identifier )
-            String::copy(data->m_thread_name, identifier);
+            StringUtils::copy(data->m_thread_name, identifier);
         else
             data->m_thread_name[0] = '\0';
     }

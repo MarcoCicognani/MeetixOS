@@ -71,7 +71,7 @@ FsTransactionHandlerReadDirectory::finishTransaction(Thread* thread, FsDelegate*
     // copy data to output
     Memory::copy(data()->m_directory_iterator->m_entry_buffer.m_name,
                  item->name,
-                 String::length(item->name) + 1);
+                 StringUtils::length(item->name) + 1);
     ++data()->m_directory_iterator->m_position;
     data()->m_directory_iterator->m_entry_buffer.m_node_id   = item->id;
     data()->m_directory_iterator->m_entry_buffer.m_node_type = item->type;

@@ -31,10 +31,10 @@
  * @param a:	firt part of out string
  * @param b:	second part of out string
  */
-void String::concat(const char* a, const char* b, char* out) {
+void StringUtils::concat(const char* a, const char* b, char* out) {
     // get the lengths of the strings
-    int lenA = String::length(a);
-    int lenB = String::length(b);
+    int lenA = StringUtils::length(a);
+    int lenB = StringUtils::length(b);
 
     // copy the strings on out buffer
     Memory::copy(out, a, lenA);
@@ -49,7 +49,7 @@ void String::concat(const char* a, const char* b, char* out) {
  *
  * @param target:	string were copy store source
  */
-void String::copy(char* target, const char* source) {
+void StringUtils::copy(char* target, const char* source) {
     uint32_t len = length(source);
     Memory::copy(target, source, len);
     target[len] = '\0';
@@ -61,7 +61,7 @@ void String::copy(char* target, const char* source) {
  * @param str:		the string that we would know the length
  * @return the string length value
  */
-uint32_t String::length(const char* str) {
+uint32_t StringUtils::length(const char* str) {
     uint32_t size = 0;
     while ( *str++ )
         ++size;
@@ -76,7 +76,7 @@ uint32_t String::length(const char* str) {
  * @param c:		the character to search
  * @return the index of the character if exist, -1 otherwise
  */
-int32_t String::indexOf(const char* str, char c) {
+int32_t StringUtils::indexOf(const char* str, char c) {
     int32_t pos = 0;
     while ( *str ) {
         if ( *str == c )
@@ -95,8 +95,8 @@ int32_t String::indexOf(const char* str, char c) {
  * @param c:		the character to search
  * @return the index of the character if exist, -1 otherwise
  */
-int32_t String::lastIndexOf(const char* str, char c) {
-    int32_t pos = String::length(str) - 1;
+int32_t StringUtils::lastIndexOf(const char* str, char c) {
+    int32_t pos = StringUtils::length(str) - 1;
     while ( str[pos] ) {
         if ( str[pos] == c )
             return pos;
@@ -113,7 +113,7 @@ int32_t String::lastIndexOf(const char* str, char c) {
  * @param strb:		second string to compare
  * @return true if strings are equals, false otherwise
  */
-bool String::equals(const char* stra, const char* strb) {
+bool StringUtils::equals(const char* stra, const char* strb) {
     // check if is the same strings
     if ( stra == strb )
         return true;
@@ -141,7 +141,7 @@ bool String::equals(const char* stra, const char* strb) {
  * @param character:		character to replace
  * @param replacement:		character to substitute to character
  */
-void String::replace(char* str, char character, char replacement) {
+void StringUtils::replace(char* str, char character, char replacement) {
     // check character validity
     while ( *str ) {
         // if character correspond replace it
@@ -157,7 +157,7 @@ void String::replace(char* str, char character, char replacement) {
  * @param pathname:		string with path
  * @return return the string basename
  */
-char* String::basename(char* pathname) {
+char* StringUtils::basename(char* pathname) {
     if ( !pathname || !pathname[0] )
         return (char*)".";
     if ( (pathname[0] == '.' || pathname[0] == '/') && pathname[1] == '\0' )
@@ -182,7 +182,7 @@ char* String::basename(char* pathname) {
  * @param c:		character to search
  * @return the string pointed to the provided character to search
  */
-char* String::getOccurenceOf(const char* str, char c) {
+char* StringUtils::getOccurenceOf(const char* str, char c) {
     while ( *str )
         if ( *str++ == c )
             return (char*)(str - 1);
@@ -196,7 +196,7 @@ char* String::getOccurenceOf(const char* str, char c) {
  * @param str:		the string to reverse
  * @param length:	length of string to reverse
  */
-void String::reverse(char* str, uint32_t length) {
+void StringUtils::reverse(char* str, uint32_t length) {
     uint32_t start = 0;
     uint32_t end   = length - 1;
     while ( start < end ) {
@@ -214,7 +214,7 @@ void String::reverse(char* str, uint32_t length) {
  * @param source:		string that contains the integer expression
  * @return the source converted to integer
  */
-int32_t String::toInt(const char* source) {
+int32_t StringUtils::toInt(const char* source) {
     // check source validiy
     if ( !*source )
         return 0;
@@ -249,7 +249,7 @@ int32_t String::toInt(const char* source) {
  *
  * @return duplicate of vector where the function store converted source
  */
-const char* String::fromInt(int32_t source, uint32_t base) {
+const char* StringUtils::fromInt(int32_t source, uint32_t base) {
     int  i          = 0;
     bool isNegative = false;
     char str[1024];
