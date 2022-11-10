@@ -20,7 +20,6 @@ include(Meta/CMake/CMakeUtils.txt)
 
 # Project sub-directories
 add_subdirectory(Kernel)
-add_subdirectory(Libs)
 add_subdirectory(Userspace)
 
 # Custom target for build ISO

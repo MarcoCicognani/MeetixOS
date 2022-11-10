@@ -25,7 +25,8 @@ set_target_properties(LibFreeType PROPERTIES IMPORTED_LOCATION ${TOOLCHAIN_LIB}/
 add_library(LibCairo STATIC IMPORTED)
 set_target_properties(LibCairo PROPERTIES IMPORTED_LOCATION ${TOOLCHAIN_LIB}/libcairo.a)
 
-add_subdirectory(Apps)
+add_subdirectory(Applications)
 add_subdirectory(Commands)
+add_subdirectory(Libraries)
 add_subdirectory(Servers)
 add_subdirectory(Tests)

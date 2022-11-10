@@ -10,6 +10,4 @@
 # GNU General Public License version 3
 #
 
-add_subdirectory(Input)
-add_subdirectory(Spawner)
-add_subdirectory(Video)
+add_subdirectory(Terminal)

@@ -32,8 +32,8 @@ set(LIBSTC_SOURCES
         ../../ST/Lang/StringView.cc)
 
 set(LIBC_SOURCES
-        ../../Libs/LibC/errno.cc
-        ../../Libs/LibC/string.cc)
+        ../../Userspace/Libraries/LibC/errno.cc
+        ../../Userspace/Libraries/LibC/string.cc)
 
 set(KERNEL_SOURCES
         calls/SyscallHandler.cpp
