@@ -103,18 +103,18 @@ static auto __rt_split_cli_args() -> ErrorOr<Vector<StringView>> {
 }
 
 /**
- * @brief Called by <Start.cc> which becomes <crt0.o>
+ * @brief Called by <crt0.o> in _start()
  */
 [[noreturn]]
 auto __rt_run() -> void {
-    auto run_main = []() -> ErrorOr<void> {
+    auto run_user_main = []() -> ErrorOr<void> {
         try$(cc_main(try$(__rt_split_cli_args())));
         return {};
     };
 
     /* initialize the environment then execute the program */
     __rt_call_constructors();
-    auto error_or_void = run_main();
+    auto error_or_void = run_user_main();
     __rt_call_destructors();
 
     ErrorCode exit_code;
