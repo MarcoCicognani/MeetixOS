@@ -13,6 +13,7 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "bugprone-reserved-identifier"
 
+/* NOTE implemented into crt0Impl.cc */
 [[noreturn]]
 auto __rt_run() -> void;
 
