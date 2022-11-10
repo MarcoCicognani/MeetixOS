@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <LibLS/Alloc/List.hh>
-#include <LibLS/Alloc/NonNullRef.hh>
-#include <LibLS/Lang/Cxx.hh>
+#include <CCLang/Alloc/List.hh>
+#include <CCLang/Alloc/NonNullRef.hh>
+#include <CCLang/Lang/Cxx.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 

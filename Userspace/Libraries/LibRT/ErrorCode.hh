@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <LibLS/Lang/IntTypes.hh>
+#include <CCLang/Lang/IntTypes.hh>
 
 enum class ErrorCode : u16 {
     Denied = 1,

@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <LibLS/Core/ErrorOr.hh>
-#include <LibLS/Lang/IntTypes.hh>
+#include <CCLang/Core/ErrorOr.hh>
+#include <CCLang/Lang/IntTypes.hh>
 
 namespace Heap {
 

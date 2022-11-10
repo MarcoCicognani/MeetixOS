@@ -17,7 +17,7 @@
 #include <LibC/dirent.h>
 #include <LibC/errno.h>
 #include <LibC/string.h>
-#include <LibLS/Core/Assertions.hh>
+#include <CCLang/Core/Assertions.hh>
 
 extern "C" {
 

@@ -77,7 +77,7 @@ include_directories(SYSTEM ${TOOLCHAIN_LIB}/gcc/i686-pc-meetix/11.2.0/include-fi
 #
 
 include_directories(AFTER SYSTEM "${TOOLCHAIN_INCLUDE}")
-include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}") # LibLS
+include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}") # LibCCLang
 include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}/Userspace/Libraries")
 include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}/Userspace/Libraries/LibMath")
 include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}/Userspace/Libraries/LibApi")

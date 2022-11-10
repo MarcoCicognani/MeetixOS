@@ -13,7 +13,7 @@
 #pragma once
 
 #include <LibFmtIO/Err.hh>
-#include <LibLS/Lang/StringView.hh>
+#include <CCLang/Lang/StringView.hh>
 #include <LibUnitTest/Suite.hh>
 
 #undef verify$

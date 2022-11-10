@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <LibLS/Core/Error.hh>
+#include <CCLang/Core/Error.hh>
 
 namespace RT {
 

@@ -14,12 +14,12 @@
 
 #include <LibC/stdio.h>
 
-#include <LibLS/Alloc/StringBuilder.hh>
-#include <LibLS/Alloc/Text/Format.hh>
-#include <LibLS/Core/ErrorOr.hh>
-#include <LibLS/Lang/Cxx.hh>
-#include <LibLS/Lang/StringView.hh>
-#include <LibLS/Lang/Try.hh>
+#include <CCLang/Alloc/StringBuilder.hh>
+#include <CCLang/Alloc/Text/Format.hh>
+#include <CCLang/Core/ErrorOr.hh>
+#include <CCLang/Lang/Cxx.hh>
+#include <CCLang/Lang/StringView.hh>
+#include <CCLang/Lang/Try.hh>
 
 namespace FmtIO {
 

@@ -14,8 +14,8 @@
 #include <LibC/string.h>
 #include <LibFmtIO/Err.hh>
 #include <LibMain/Main.hh>
-#include <LibLS/Lang/Cxx.hh>
-#include <LibLS/Lang/Must.hh>
+#include <CCLang/Lang/Cxx.hh>
+#include <CCLang/Lang/Must.hh>
 
 auto runtime_error(Error error) -> int {
     must$(FmtIO::errln("{}Runtime Error{} in {}"sv, FmtIO::foreground(FmtIO::Color::Red), FmtIO::reset(), error));

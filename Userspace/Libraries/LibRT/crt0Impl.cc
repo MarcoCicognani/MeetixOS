@@ -17,13 +17,13 @@
 
 #include <LibRT/RT.hh>
 
-#include <LibLS/Alloc/Box.hh>
-#include <LibLS/Alloc/StringBuilder.hh>
-#include <LibLS/Alloc/Text/Format.hh>
-#include <LibLS/Alloc/Vector.hh>
-#include <LibLS/Core/ErrorOr.hh>
-#include <LibLS/Lang/Range.hh>
-#include <LibLS/Lang/StringView.hh>
+#include <CCLang/Alloc/Box.hh>
+#include <CCLang/Alloc/StringBuilder.hh>
+#include <CCLang/Alloc/Text/Format.hh>
+#include <CCLang/Alloc/Vector.hh>
+#include <CCLang/Core/ErrorOr.hh>
+#include <CCLang/Lang/Range.hh>
+#include <CCLang/Lang/StringView.hh>
 
 extern "C" void (*__init_array_start[])();
 extern "C" void (*__init_array_end[])();

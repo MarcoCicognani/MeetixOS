@@ -14,7 +14,7 @@
 #pragma ide diagnostic ignored "modernize-use-trailing-return-type"
 
 #include <LibC/errno.h>
-#include <LibLS/Lang/Cxx.hh>
+#include <CCLang/Lang/Cxx.hh>
 
 extern "C" {
 

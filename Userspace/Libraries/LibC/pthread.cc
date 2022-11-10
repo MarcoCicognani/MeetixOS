@@ -16,10 +16,10 @@
 #include <LibApi/Api.h>
 #include <LibC/errno.h>
 #include <LibC/pthread.h>
-#include <LibLS/Alloc/Box.hh>
-#include <LibLS/Core/ErrorOr.hh>
-#include <LibLS/Lang/Cxx.hh>
-#include <LibLS/Lang/Function.hh>
+#include <CCLang/Alloc/Box.hh>
+#include <CCLang/Core/ErrorOr.hh>
+#include <CCLang/Lang/Cxx.hh>
+#include <CCLang/Lang/Function.hh>
 
 extern "C" {
 

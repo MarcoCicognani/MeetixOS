@@ -11,9 +11,9 @@
  */
 
 #include <LibMath/math.h>
-#include <LibLS/Alloc/List.hh>
-#include <LibLS/Lang/Cxx.hh>
-#include <LibLS/Alloc/Text/Format.hh>
+#include <CCLang/Alloc/List.hh>
+#include <CCLang/Lang/Cxx.hh>
+#include <CCLang/Alloc/Text/Format.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 

@@ -12,9 +12,9 @@
 
 #include <Api/User.h>
 #include <LibFmtIO/Out.hh>
-#include <LibLS/Alloc/NonNullRef.hh>
-#include <LibLS/Lang/Option.hh>
-#include <LibLS/Lang/StringView.hh>
+#include <CCLang/Alloc/NonNullRef.hh>
+#include <CCLang/Lang/Option.hh>
+#include <CCLang/Lang/StringView.hh>
 #include <LibUnitTest/Suite.hh>
 
 namespace UnitTest {

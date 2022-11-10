@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <LibLS/Lang/Function.hh>
+#include <CCLang/Lang/Function.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 

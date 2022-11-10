@@ -17,7 +17,7 @@
 #include <LibC/errno.h>
 #include <LibC/signal.h>
 #include <LibC/stdlib.h>
-#include <LibLS/Lang/Cxx.hh>
+#include <CCLang/Lang/Cxx.hh>
 
 extern "C" {
 

@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibLS/Alloc/Vector.hh>
-#include <LibLS/Lang/Cxx.hh>
+#include <CCLang/Alloc/Vector.hh>
+#include <CCLang/Lang/Cxx.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 

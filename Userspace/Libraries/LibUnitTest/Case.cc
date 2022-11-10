@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <LibLS/Lang/Cxx.hh>
+#include <CCLang/Lang/Cxx.hh>
 #include <LibUnitTest/Case.hh>
 #include <LibUnitTest/Suite.hh>
 

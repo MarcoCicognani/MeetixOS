@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <LibLS/Alloc/Box.hh>
-#include <LibLS/Core/ErrorOr.hh>
+#include <CCLang/Alloc/Box.hh>
+#include <CCLang/Core/ErrorOr.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
