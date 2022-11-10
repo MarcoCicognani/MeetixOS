@@ -14,7 +14,7 @@
 #pragma ide diagnostic ignored "modernize-use-trailing-return-type"
 
 #include <LibC/dlfcn.h>
-#include <ST/Lang/StringView.hh>
+#include <LibLS/Lang/StringView.hh>
 
 static auto const g_dl_error_string_view = "dlfcn not available"sv;
 

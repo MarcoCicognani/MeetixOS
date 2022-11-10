@@ -17,19 +17,19 @@ set(ASM_SOURCES
 set_source_files_properties(${ASM_SOURCES} PROPERTIES LANGUAGE ASM_NASM)
 
 set(LIBSTC_SOURCES
-        ../../ST/Alloc/Details.cc
-        ../../ST/Alloc/String.cc
-        ../../ST/Alloc/StringBuilder.cc
-        ../../ST/Alloc/StringStorage.cc
-        ../../ST/Alloc/Text/Format.cc
-        ../../ST/Alloc/Text/FormatLexer.cc
-        ../../ST/Alloc/Text/FormatParser.cc
-        ../../ST/Alloc/Text/Formatter.cc
-        ../../ST/Alloc/Text/Lexer.cc
-        ../../ST/Core/Error.cc
-        ../../ST/Core/Hashing.cc
-        ../../ST/Core/SourceLocation.cc
-        ../../ST/Lang/StringView.cc)
+        ../../LibLS/Alloc/Details.cc
+        ../../LibLS/Alloc/String.cc
+        ../../LibLS/Alloc/StringBuilder.cc
+        ../../LibLS/Alloc/StringStorage.cc
+        ../../LibLS/Alloc/Text/Format.cc
+        ../../LibLS/Alloc/Text/FormatLexer.cc
+        ../../LibLS/Alloc/Text/FormatParser.cc
+        ../../LibLS/Alloc/Text/Formatter.cc
+        ../../LibLS/Alloc/Text/Lexer.cc
+        ../../LibLS/Core/Error.cc
+        ../../LibLS/Core/Hashing.cc
+        ../../LibLS/Core/SourceLocation.cc
+        ../../LibLS/Lang/StringView.cc)
 
 set(LIBC_SOURCES
         ../../Userspace/Libraries/LibC/errno.cc

@@ -16,9 +16,9 @@
 #include <Api/User.h>
 #include <LibC/fenv.h>
 #include <LibMath/math.h>
-#include <ST/Core/Assertions.hh>
-#include <ST/Core/Math.hh>
-#include <ST/Lang/IntTypes.hh>
+#include <LibLS/Core/Assertions.hh>
+#include <LibLS/Core/Math.hh>
+#include <LibLS/Lang/IntTypes.hh>
 
 namespace Details {
 

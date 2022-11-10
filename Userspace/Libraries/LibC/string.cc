@@ -15,10 +15,10 @@
 
 #include <LibC/malloc.h>
 #include <LibC/string.h>
-#include <ST/Alloc/Details.hh>
-#include <ST/Alloc/Vector.hh>
-#include <ST/Lang/Cxx.hh>
-#include <ST/Lang/Range.hh>
+#include <LibLS/Alloc/Details.hh>
+#include <LibLS/Alloc/Vector.hh>
+#include <LibLS/Lang/Cxx.hh>
+#include <LibLS/Lang/Range.hh>
 
 namespace Details {
 

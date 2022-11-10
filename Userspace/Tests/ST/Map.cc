@@ -10,9 +10,9 @@
  * GNU General Public License version 3
  */
 
-#include <ST/Alloc/Map.hh>
-#include <ST/Alloc/String.hh>
-#include <ST/Lang/StringView.hh>
+#include <LibLS/Alloc/Map.hh>
+#include <LibLS/Alloc/String.hh>
+#include <LibLS/Lang/StringView.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 

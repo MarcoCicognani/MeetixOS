@@ -15,8 +15,8 @@
 
 #include <LibC/libgen.h>
 #include <LibC/string.h>
-#include <ST/Core/Assertions.hh>
-#include <ST/Lang/StringView.hh>
+#include <LibLS/Core/Assertions.hh>
+#include <LibLS/Lang/StringView.hh>
 
 static char s_dot[]   = ".";
 static char s_slash[] = "/";

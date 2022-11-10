@@ -11,8 +11,8 @@
  */
 
 #include <cstring>
-#include <ST/Alloc/String.hh>
-#include <ST/Lang/StringView.hh>
+#include <LibLS/Alloc/String.hh>
+#include <LibLS/Lang/StringView.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 

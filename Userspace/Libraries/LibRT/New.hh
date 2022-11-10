@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <ST/Lang/Cxx.hh>
-#include <ST/Lang/IntTypes.hh>
+#include <LibLS/Lang/Cxx.hh>
+#include <LibLS/Lang/IntTypes.hh>
 
 #define DenyUse$(msg) __attribute__((error("Denied the use of " msg)));
 

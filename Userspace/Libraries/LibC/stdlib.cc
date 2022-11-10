@@ -22,10 +22,10 @@
 
 #include <LibApi/Api/User.h>
 
-#include <ST/Core/Assertions.hh>
-#include <ST/Core/CharTypes.hh>
-#include <ST/Core/Concept.hh>
-#include <ST/Lang/StringView.hh>
+#include <LibLS/Core/Assertions.hh>
+#include <LibLS/Core/CharTypes.hh>
+#include <LibLS/Core/Concept.hh>
+#include <LibLS/Lang/StringView.hh>
 
 static u64 g_seed;
 

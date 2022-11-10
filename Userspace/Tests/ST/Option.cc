@@ -10,8 +10,8 @@
  * GNU General Public License version 3
  */
 
-#include <ST/Alloc/Box.hh>
-#include <ST/Lang/Option.hh>
+#include <LibLS/Alloc/Box.hh>
+#include <LibLS/Lang/Option.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 

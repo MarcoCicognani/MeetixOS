@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <ST/Alloc/NonNullRef.hh>
-#include <ST/Alloc/Vector.hh>
-#include <ST/Core/ErrorOr.hh>
+#include <LibLS/Alloc/NonNullRef.hh>
+#include <LibLS/Alloc/Vector.hh>
+#include <LibLS/Core/ErrorOr.hh>
 #include <LibUnitTest/Case.hh>
 
 namespace UnitTest {

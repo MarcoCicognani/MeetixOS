@@ -10,7 +10,7 @@
  * GNU General Public License version 3
  */
 
-#include <ST/Alloc/StringBuilder.hh>
+#include <LibLS/Alloc/StringBuilder.hh>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 

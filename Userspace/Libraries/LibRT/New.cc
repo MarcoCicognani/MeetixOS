@@ -13,8 +13,8 @@
 #include <LibRT/Heap.hh>
 #include <LibRT/New.hh>
 
-#include <ST/Core/Assertions.hh>
-#include <ST/Core/Meta.hh>
+#include <LibLS/Core/Assertions.hh>
+#include <LibLS/Core/Meta.hh>
 
 auto operator new(usize) -> void* {
     verify_not_reached$();
