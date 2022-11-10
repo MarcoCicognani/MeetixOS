@@ -13,7 +13,7 @@
 #include <LibC/getopt.h>
 #include <LibC/stdio.h>
 #include <LibC/string.h>
-#include <LibTC/Lang/StringView.hh>
+#include <ST/Lang/StringView.hh>
 
 /**
  * @brief POSIX says, "When an element of argv[] contains multiple option characters, it is

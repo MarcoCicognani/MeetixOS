@@ -97,7 +97,7 @@ enum ErrnoCode {
     ETXTBSY,         /* text file busy */
     EWOULDBLOCK,     /* operation would block (maybe the same value as [EAGAIN]) */
     EXDEV,           /* cross-device link */
-    ECUSTOM,         /* custom error, used only by LibTC/Error when only string is provided */
+    ECUSTOM,         /* custom error, used only by STC/Error when only string is provided */
     EMAX             /* maximum error value */
 };
 

@@ -11,8 +11,8 @@
  */
 
 #include <LibMain/Main.hh>
-#include <LibTC/Alloc/Vector.hh>
-#include <LibTC/Lang/Cxx.hh>
+#include <ST/Alloc/Vector.hh>
+#include <ST/Lang/Cxx.hh>
 #include <LibUnitTest/Suite.hh>
 
 /**

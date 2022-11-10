@@ -10,14 +10,19 @@
  * GNU General Public License version 3
  */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "bugprone-reserved-identifier"
+
 [[noreturn]]
-auto rt_run() -> void;
+auto __rt_run() -> void;
 
 extern "C" {
 
 [[noreturn]]
 void _start() {
-    rt_run();
+    __rt_run();
 }
 
 } /* extern "C" */
+
+#pragma clang diagnostic pop

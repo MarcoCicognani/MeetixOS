@@ -17,7 +17,7 @@
 #include <LibC/dirent.h>
 #include <LibC/errno.h>
 #include <LibC/string.h>
-#include <LibTC/Core/Assertions.hh>
+#include <ST/Core/Assertions.hh>
 
 extern "C" {
 
@@ -64,7 +64,7 @@ struct dirent* readdir(DIR* dir) {
                 dir->m_entry_buffer->d_type = DT_DIR;
                 break;
             default:
-                VERIFY_NOT_REACHED();
+                verify_not_reached$();
         }
         return entry_buffer;
     } else if ( read_status == FS_READ_DIRECTORY_EOD )

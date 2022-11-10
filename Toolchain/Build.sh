@@ -220,7 +220,7 @@ dir_push ../Build/Release
     build_step "Libs/LibApi"  ninja LibApi
     build_step "Libs/LibC"    ninja LibC
     build_step "Libs/LibMath" ninja LibMath
-    build_step "Libs/LibTC"   ninja LibTC
+    build_step "Libs/LibTC"   ninja STC
 dir_pop
 
 # ---------------------------------------- Script Code: Third Party Libs Build --------------------------------------- #

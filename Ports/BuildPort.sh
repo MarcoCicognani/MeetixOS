@@ -42,7 +42,7 @@ EXTRA_LINK_DIRS=(
 EXTRA_LIBS=(
     LibC
     LibMath
-    LibTC
+    STC
     stdc++
 )
 

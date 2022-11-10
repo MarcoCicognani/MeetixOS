@@ -26,7 +26,7 @@
 #undef assert
 
 #ifndef NDEBUG
-#    define assert(expression) (__builtin_expect(!(expression), 0) ? libc_runtime_panic(__FILE__, __LINE__, #    expression) : (void)0)
+#    define assert(expression) (__builtin_expect(!(expression), 0) ? libc_runtime_panic(__FILE__, __LINE__, #expression) : (void)0)
 #else
 #    define assert(expression) ((void)0)
 #endif

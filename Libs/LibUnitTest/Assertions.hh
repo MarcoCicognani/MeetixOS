@@ -13,26 +13,26 @@
 #pragma once
 
 #include <LibFmtIO/Err.hh>
-#include <LibTC/Lang/StringView.hh>
+#include <ST/Lang/StringView.hh>
 #include <LibUnitTest/Suite.hh>
 
-#undef VERIFY
-#undef VERIFY_EQUAL
-#undef VERIFY_FALSE
-#undef VERIFY_GREATER
-#undef VERIFY_GREATER_EQUAL
-#undef VERIFY_LESS
-#undef VERIFY_LESS_EQUAL
-#undef VERIFY_NOT_EQUAL
-#undef VERIFY_NOT_NULL
-#undef VERIFY_NULL
+#undef verify$
+#undef verify_equal$
+#undef verify_false$
+#undef verify_greater$
+#undef verify_greater_equal$
+#undef verify_less$
+#undef verify_less_equal$
+#undef verify_not_equal$
+#undef verify_not_null$
+#undef verify_null$
 #undef VERIFY_IS_PRESENT_EQUAL
 #undef VERIFY_IS_NONE
 #undef VERIFY_IS_VALUE
 #undef VERIFY_IS_VALUE_EQUAL
 #undef VERIFY_IS_ERROR_EQUAL
 
-#define VERIFY(expression)                                                                                                                                     \
+#define verify$(expression)                                                                                                                                     \
     do {                                                                                                                                                       \
         if ( !static_cast<bool>(expression) ) [[unlikely]] {                                                                                                   \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} != false{} }}"sv,                                                                             \
@@ -47,7 +47,7 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define VERIFY_EQUAL(lhs, rhs)                                                                                                                                 \
+#define verify_equal$(lhs, rhs)                                                                                                                                 \
     do {                                                                                                                                                       \
         if ( !((lhs) == (rhs)) ) [[unlikely]] {                                                                                                                \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == {}{} }}"sv,                                                                                \
@@ -63,7 +63,7 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define VERIFY_FALSE(expression)                                                                                                                               \
+#define verify_false$(expression)                                                                                                                               \
     do {                                                                                                                                                       \
         if ( static_cast<bool>(expression) ) [[unlikely]] {                                                                                                    \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == false{} }}"sv,                                                                             \
@@ -78,7 +78,7 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define VERIFY_GREATER(lhs, rhs)                                                                                                                               \
+#define verify_greater$(lhs, rhs)                                                                                                                               \
     do {                                                                                                                                                       \
         if ( !((lhs) > (rhs)) ) [[unlikely]] {                                                                                                                 \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} > {}{} }}"sv,                                                                                 \
@@ -94,7 +94,7 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define VERIFY_GREATER_EQUAL(lhs, rhs)                                                                                                                         \
+#define verify_greater_equal$(lhs, rhs)                                                                                                                         \
     do {                                                                                                                                                       \
         if ( !((lhs) >= (rhs)) ) [[unlikely]] {                                                                                                                \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} >= {}{} }}"sv,                                                                                \
@@ -110,7 +110,7 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define VERIFY_LESS(lhs, rhs)                                                                                                                                  \
+#define verify_less$(lhs, rhs)                                                                                                                                  \
     do {                                                                                                                                                       \
         if ( !((lhs) < (rhs)) ) [[unlikely]] {                                                                                                                 \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} < {}{} }}"sv,                                                                                 \
@@ -126,7 +126,7 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define VERIFY_LESS_EQUAL(lhs, rhs)                                                                                                                            \
+#define verify_less_equal$(lhs, rhs)                                                                                                                            \
     do {                                                                                                                                                       \
         if ( !((lhs) <= (rhs)) ) [[unlikely]] {                                                                                                                \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} <= {}{} }}"sv,                                                                                \
@@ -142,7 +142,7 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define VERIFY_NOT_EQUAL(lhs, rhs)                                                                                                                             \
+#define verify_not_equal$(lhs, rhs)                                                                                                                             \
     do {                                                                                                                                                       \
         if ( !((lhs) != (rhs)) ) [[unlikely]] {                                                                                                                \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} != {}{} }}"sv,                                                                                \
@@ -158,7 +158,7 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define VERIFY_NOT_NULL(expression)                                                                                                                            \
+#define verify_not_null$(expression)                                                                                                                            \
     do {                                                                                                                                                       \
         if ( !((expression) != nullptr) ) [[unlikely]] {                                                                                                       \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} != nullptr{} }}"sv,                                                                           \
@@ -173,7 +173,7 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define VERIFY_NULL(expression)                                                                                                                                \
+#define verify_null$(expression)                                                                                                                                \
     do {                                                                                                                                                       \
         if ( !((expression) == nullptr) ) [[unlikely]] {                                                                                                       \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == nullptr{} }}"sv,                                                                           \

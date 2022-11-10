@@ -80,7 +80,7 @@ TYPE_ALIAS(ssize_t, __SIZE_TYPE__);
 #undef unsigned
 
 /* MeetixOS custom types */
-/* TODO Unificate with LibTC/IntTypes.hh */
+/* TODO Unificate with STC/IntTypes.hh */
 
 TYPE_ALIAS(i8, int8_t);
 TYPE_ALIAS(u8, uint8_t);

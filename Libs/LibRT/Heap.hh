@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <LibTC/Alloc/AllocLayout.hh>
-#include <LibTC/Core/ErrorOr.hh>
+#include <ST/Core/ErrorOr.hh>
+#include <ST/Lang/IntTypes.hh>
 
 namespace Heap {
 
@@ -22,7 +22,11 @@ enum class Clean : bool {
     No
 };
 
-auto alloc(AllocLayout, Clean) -> ErrorOr<void*>;
-auto dealloc(AllocLayout, void* ptr) -> ErrorOr<void>;
+auto alloc(usize size, Clean) -> ErrorOr<void*>;
+auto realloc(void* ptr, usize new_size) -> ErrorOr<void*>;
+auto dealloc(void* ptr, usize size) -> void;
+
+auto alloc_aligned(usize size, usize alignment, Clean) -> ErrorOr<void*>;
+auto dealloc_aligned(void* ptr, usize size, usize alignment) -> void;
 
 } /* namespace Heap */

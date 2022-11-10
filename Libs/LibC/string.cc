@@ -15,10 +15,10 @@
 
 #include <LibC/malloc.h>
 #include <LibC/string.h>
-#include <LibTC/Alloc/Details.hh>
-#include <LibTC/Alloc/Vector.hh>
-#include <LibTC/Lang/Cxx.hh>
-#include <LibTC/Lang/Range.hh>
+#include <ST/Alloc/Details.hh>
+#include <ST/Alloc/Vector.hh>
+#include <ST/Lang/Cxx.hh>
+#include <ST/Lang/Range.hh>
 
 namespace Details {
 
@@ -373,7 +373,7 @@ char* strtok_r(char* str, const char* delim, char** saved_str) {
 }
 
 size_t strlen(const char* str) {
-    VERIFY_NOT_NULL(str);
+    verify_not_null$(str);
 
     auto const str_start = str;
     while ( *(str++) )
@@ -383,7 +383,7 @@ size_t strlen(const char* str) {
 
 char* strdup(const char* str) {
     auto buffer_len          = strlen(str);
-    auto error_or_new_buffer = Details::heap_alloc_clean_array<char>(buffer_len + 1); /* TODO use LibRT.Heap, since LibTC.Alloc.Details will be private */
+    auto error_or_new_buffer = Details::heap_alloc_clean_array<char>(buffer_len + 1); /* TODO use LibRT.Heap, since STC.Alloc.Details will be private */
     if ( error_or_new_buffer.is_error() ) {
         errno = error_or_new_buffer.unwrap_error().code();
         return nullptr;
@@ -473,7 +473,7 @@ char* strerror(int error) {
                                                       "Text file busy",
                                                       "Operation would block (maybe the same value as [EAGAIN])",
                                                       "Cross-device link",
-                                                      "Custom error, used only by LibTC/Error when only string is provided" };
+                                                      "Custom error, used only by STC/Error when only string is provided" };
 
     if ( error > 0 && error < EMAX )
         return const_cast<char*>(S_ERRNO_AS_STR[error]);

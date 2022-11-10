@@ -22,10 +22,10 @@
 
 #include <LibApi/Api/User.h>
 
-#include <LibTC/Core/Assertions.hh>
-#include <LibTC/Core/CharTypes.hh>
-#include <LibTC/Core/Concept.hh>
-#include <LibTC/Lang/StringView.hh>
+#include <ST/Core/Assertions.hh>
+#include <ST/Core/CharTypes.hh>
+#include <ST/Core/Concept.hh>
+#include <ST/Lang/StringView.hh>
 
 static u64 g_seed;
 
@@ -89,7 +89,7 @@ static auto int_base_from(StringView string_view, i32 base) -> IntBase {
             int_base = IntBase::Hex;
             break;
         default:
-            VERIFY_NOT_REACHED();
+            verify_not_reached$();
     }
     return int_base;
 }
@@ -105,7 +105,7 @@ static auto is_digit_for_base(IntBase int_base, char c) -> bool {
         case IntBase::Hex:
             return is_ascii_hex_digit(c);
         default:
-            VERIFY_NOT_REACHED();
+            verify_not_reached$();
     }
 }
 

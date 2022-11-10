@@ -16,19 +16,20 @@ set(ASM_SOURCES
         system/processor.asm)
 set_source_files_properties(${ASM_SOURCES} PROPERTIES LANGUAGE ASM_NASM)
 
-set(LIBTC_SOURCES
-        ../../Libs/LibTC/Alloc/String.cc
-        ../../Libs/LibTC/Alloc/StringBuilder.cc
-        ../../Libs/LibTC/Alloc/StringStorage.cc
-        ../../Libs/LibTC/Alloc/Text/Format.cc
-        ../../Libs/LibTC/Alloc/Text/FormatLexer.cc
-        ../../Libs/LibTC/Alloc/Text/FormatParser.cc
-        ../../Libs/LibTC/Alloc/Text/Formatter.cc
-        ../../Libs/LibTC/Alloc/Text/Lexer.cc
-        ../../Libs/LibTC/Core/Error.cc
-        ../../Libs/LibTC/Core/Hashing.cc
-        ../../Libs/LibTC/Core/SourceLocation.cc
-        ../../Libs/LibTC/Lang/StringView.cc)
+set(LIBSTC_SOURCES
+        ../../ST/Alloc/Details.cc
+        ../../ST/Alloc/String.cc
+        ../../ST/Alloc/StringBuilder.cc
+        ../../ST/Alloc/StringStorage.cc
+        ../../ST/Alloc/Text/Format.cc
+        ../../ST/Alloc/Text/FormatLexer.cc
+        ../../ST/Alloc/Text/FormatParser.cc
+        ../../ST/Alloc/Text/Formatter.cc
+        ../../ST/Alloc/Text/Lexer.cc
+        ../../ST/Core/Error.cc
+        ../../ST/Core/Hashing.cc
+        ../../ST/Core/SourceLocation.cc
+        ../../ST/Lang/StringView.cc)
 
 set(LIBC_SOURCES
         ../../Libs/LibC/errno.cc
@@ -112,7 +113,7 @@ set(KERNEL_SOURCES
 add_executable(Kernel
         ${ASM_SOURCES}
         ${LIBC_SOURCES}
-        ${LIBTC_SOURCES}
+        ${LIBSTC_SOURCES}
         ${KERNEL_SOURCES})
 
 target_include_directories(Kernel PRIVATE . ../Shared)

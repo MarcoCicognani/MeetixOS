@@ -50,6 +50,7 @@ add_compile_options(-nostdinc) # See following include_directories() for explana
 add_compile_options(-Wdouble-promotion)
 add_compile_options(-Wno-unknown-pragmas)
 add_compile_options(-fdiagnostics-color=always)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Werror>)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-literal-suffix>)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fconcepts-diagnostics-depth=10>)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>)
@@ -60,7 +61,7 @@ add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
 # include paths (both for C and C++) are passed explicitly as -isystem via command line.
 #
 # This ensures that #include_next directives doesn't search into ${TOOLCHAIN_INCLUDE} (which is reserved for ported
-# library installations) but into Libs
+# library installations) but into ${CMAKE_SOURCE_DIR}/Libs
 #
 
 include_directories(SYSTEM ${TOOLCHAIN_ROOT}/i686-pc-meetix/include)
@@ -76,6 +77,7 @@ include_directories(SYSTEM ${TOOLCHAIN_LIB}/gcc/i686-pc-meetix/11.2.0/include-fi
 #
 
 include_directories(AFTER SYSTEM "${TOOLCHAIN_INCLUDE}")
+include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}") # ST library
 include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}/Libs")
 include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}/Libs/LibMath")
 include_directories(AFTER SYSTEM "${CMAKE_SOURCE_DIR}/Libs/LibApi")

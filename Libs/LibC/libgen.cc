@@ -15,8 +15,8 @@
 
 #include <LibC/libgen.h>
 #include <LibC/string.h>
-#include <LibTC/Core/Assertions.hh>
-#include <LibTC/Lang/StringView.hh>
+#include <ST/Core/Assertions.hh>
+#include <ST/Lang/StringView.hh>
 
 static char s_dot[]   = ".";
 static char s_slash[] = "/";
@@ -70,8 +70,8 @@ char* basename(char* path) {
 
     auto const last_slash_index = last_slash_index_or_none.unwrap();
     if ( len == 1 ) {
-        VERIFY_EQUAL(last_slash_index, 0);
-        VERIFY_EQUAL(path[0], '/');
+        verify_equal$(last_slash_index, 0);
+        verify_equal$(path[0], '/');
 
         return s_slash;
     }
