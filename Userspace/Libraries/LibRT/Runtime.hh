@@ -14,8 +14,8 @@
 
 #include <CCLang/Core/Error.hh>
 
-namespace RT {
+namespace Runtime {
 
 auto set_runtime_error_catcher(void (*error_catcher)(Error const&)) -> void;
 
-} /* namespace RT */
+} /* namespace Runtime */

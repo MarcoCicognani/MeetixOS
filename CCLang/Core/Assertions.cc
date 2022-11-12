@@ -20,7 +20,7 @@ auto Details::__assert_plug_panic(char const*, char const*, u32) -> void {
 
 #else
 
-#    include <LibRT/RT.hh>
+#    include <LibRT/Runtime.hh>
 
 auto Details::__assert_plug_panic(char const*, char const*, u32) -> void {
     __builtin_unreachable();

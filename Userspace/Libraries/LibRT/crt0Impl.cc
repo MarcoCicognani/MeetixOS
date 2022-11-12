@@ -15,7 +15,7 @@
 
 #include <LibApi/Api.h> /* TODO Remove */
 
-#include <LibRT/RT.hh>
+#include <LibRT/Runtime.hh>
 
 #include <CCLang/Alloc/Box.hh>
 #include <CCLang/Alloc/StringBuilder.hh>
@@ -47,9 +47,13 @@ static Function<void(Error const&)> s_runtime_error_catcher = [](Error const& er
     s_log(string_builder.as_string_view().as_cstr());
 };
 
-auto rt_set_runtime_error_catcher(void (*error_catcher)(Error const&)) -> void {
+namespace Runtime {
+
+auto set_runtime_error_catcher(void (*error_catcher)(Error const&)) -> void {
     s_runtime_error_catcher = error_catcher;
 }
+
+} /* namespace Runtime */
 
 static auto __rt_call_constructors() -> void {
     /* call pre-init constructors */
@@ -105,8 +109,7 @@ static auto __rt_split_cli_args() -> ErrorOr<Vector<StringView>> {
 /**
  * @brief Called by <crt0.o> in _start()
  */
-[[noreturn]]
-auto __rt_run() -> void {
+[[noreturn]] auto __rt_run() -> void {
     auto run_user_main = []() -> ErrorOr<void> {
         try$(cc_main(try$(__rt_split_cli_args())));
         return {};
