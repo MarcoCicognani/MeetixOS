@@ -10,4 +10,4 @@
 # GNU General Public License version 3
 #
 
-add_subdirectory(ST)
+add_subdirectory(CCLang)

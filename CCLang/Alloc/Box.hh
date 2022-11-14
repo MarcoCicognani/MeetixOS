@@ -21,14 +21,8 @@
 #include <CCLang/Lang/Must.hh>
 #include <CCLang/Lang/Try.hh>
 
-#define TCBoxConstructible$(ClassName) \
-    template<typename T>               \
-    friend class Box
-
 template<typename T>
-class Box {
-    TCDenyCopy$(Box);
-
+class Box : public DenyCopy {
 public:
     /**
      * @brief Non-Error safe factory functions
@@ -47,13 +41,18 @@ public:
      * @brief Error safe Factory functions
      */
     template<typename... TArgs>
-    [[nodiscard]]
     static auto try_new_from_emplace(TArgs&&... args) -> ErrorOr<Box<T>> {
         auto unboxed_ptr = new (nothrow) T{ Cxx::forward<TArgs>(args)... };
         if ( unboxed_ptr != nullptr ) [[likely]]
             return Box<T>{ unboxed_ptr };
         else
             return Error::new_from_code(ErrorCode::NoMemory);
+    }
+    static auto try_new_from_adopt(T* unboxed_ptr) -> ErrorOr<Box<T>> {
+        if ( unboxed_ptr != nullptr ) [[likely]]
+            return Box<T>{ unboxed_ptr };
+        else
+            return Error::new_from_code(ErrorCode::NullPointer);
     }
 
     /**
@@ -168,9 +167,7 @@ private:
 };
 
 template<typename T>
-class Box<T[]> {
-    TCDenyCopy$(Box);
-
+class Box<T[]> : public DenyCopy {
 public:
     /**
      * @brief Non-Error safe factory functions

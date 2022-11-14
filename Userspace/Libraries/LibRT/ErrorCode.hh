@@ -24,5 +24,6 @@ enum class ErrorCode : u16 {
     IntOverflow,
     EmptyData,
     BadLength,
-    BadData
+    BadData,
+    NullPointer
 };

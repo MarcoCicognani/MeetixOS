@@ -16,14 +16,11 @@
 
 #include <CCLang/Alloc/Box.hh>
 #include <CCLang/Alloc/NonNullRef.hh>
+#include <CCLang/Alloc/RefCounted.hh>
 #include <CCLang/Core/ErrorOr.hh>
 #include <CCLang/Lang/IntTypes.hh>
 
-class StringStorage final {
-    TCDenyCopy$(StringStorage);
-    TCDenyMove$(StringStorage);
-    TCNonNullRefConstructible$(StringStorage);
-
+class StringStorage final : public DenyCopy, public DenyMove, public RefCounted {
 public:
     /**
      * @brief Error safe Factory functions
@@ -45,7 +42,7 @@ public:
     auto is_empty() const -> bool;
 
 private:
-    explicit StringStorage(Box<char[]> storage_ptr, usize char_count);
+    explicit StringStorage(Box<char[]>, StringView);
 
 private:
     Box<char[]> m_storage_box;

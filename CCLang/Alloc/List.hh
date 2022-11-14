@@ -150,9 +150,7 @@ public:
 } /* namespace Details */
 
 template<typename T>
-class List final {
-    TCDenyCopy$(List);
-
+class List final : public DenyCopy {
     template<typename TCollection, typename TT, bool IsReverse>
     friend class Details::ListIterator;
 

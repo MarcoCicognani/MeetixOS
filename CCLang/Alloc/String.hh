@@ -25,9 +25,7 @@
 #include <CCLang/Lang/ReverseIteratorSupport.hh>
 #include <CCLang/Lang/StringView.hh>
 
-class String final {
-    TCDenyCopy$(String);
-
+class String final : public DenyCopy {
 public:
     using ConstIterator               = StringView::ConstIterator;
     using ConstReverseIterator        = StringView::ConstReverseIterator;

@@ -164,9 +164,7 @@ private:
 } /* namespace Details */
 
 template<typename T>
-class Vector final {
-    TCDenyCopy$(Vector);
-
+class Vector final : public DenyCopy {
 public:
     using Iterator                    = Details::VectorIterator<Vector, T, false>;
     using ConstIterator               = Details::VectorIterator<Vector const, T const, false>;

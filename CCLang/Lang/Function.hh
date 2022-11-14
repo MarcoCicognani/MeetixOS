@@ -35,9 +35,7 @@ concept CallableNotFunctor = Callable<T, TReturn, TArgs...> && !IsFunctionObject
 } /* namespace Details */
 
 template<typename TReturn, typename... TArgs>
-class Function<TReturn(TArgs...)> final {
-    TCDenyCopy$(Function);
-
+class Function<TReturn(TArgs...)> final : public DenyCopy {
 public:
     /**
      * @brief Constructors

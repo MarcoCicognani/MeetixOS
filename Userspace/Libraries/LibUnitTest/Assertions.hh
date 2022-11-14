@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <LibFmtIO/Err.hh>
 #include <CCLang/Lang/StringView.hh>
+#include <LibFmtIO/Err.hh>
 #include <LibUnitTest/Suite.hh>
 
 #undef verify$
@@ -32,13 +32,13 @@
 #undef VERIFY_IS_VALUE_EQUAL
 #undef VERIFY_IS_ERROR_EQUAL
 
-#define verify$(expression)                                                                                                                                     \
+#define verify$(expression)                                                                                                                                    \
     do {                                                                                                                                                       \
         if ( !static_cast<bool>(expression) ) [[unlikely]] {                                                                                                   \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} != false{} }}"sv,                                                                             \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(expression),                                                                                                          \
                          FmtIO::reset())                                                                                                                       \
@@ -47,13 +47,13 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define verify_equal$(lhs, rhs)                                                                                                                                 \
+#define verify_equal$(lhs, rhs)                                                                                                                                \
     do {                                                                                                                                                       \
         if ( !((lhs) == (rhs)) ) [[unlikely]] {                                                                                                                \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == {}{} }}"sv,                                                                                \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(lhs),                                                                                                                 \
                          as_string_view$(rhs),                                                                                                                 \
@@ -63,13 +63,13 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define verify_false$(expression)                                                                                                                               \
+#define verify_false$(expression)                                                                                                                              \
     do {                                                                                                                                                       \
         if ( static_cast<bool>(expression) ) [[unlikely]] {                                                                                                    \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == false{} }}"sv,                                                                             \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(expression),                                                                                                          \
                          FmtIO::reset())                                                                                                                       \
@@ -78,13 +78,13 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define verify_greater$(lhs, rhs)                                                                                                                               \
+#define verify_greater$(lhs, rhs)                                                                                                                              \
     do {                                                                                                                                                       \
         if ( !((lhs) > (rhs)) ) [[unlikely]] {                                                                                                                 \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} > {}{} }}"sv,                                                                                 \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(lhs),                                                                                                                 \
                          as_string_view$(rhs),                                                                                                                 \
@@ -94,13 +94,13 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define verify_greater_equal$(lhs, rhs)                                                                                                                         \
+#define verify_greater_equal$(lhs, rhs)                                                                                                                        \
     do {                                                                                                                                                       \
         if ( !((lhs) >= (rhs)) ) [[unlikely]] {                                                                                                                \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} >= {}{} }}"sv,                                                                                \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(lhs),                                                                                                                 \
                          as_string_view$(rhs),                                                                                                                 \
@@ -110,13 +110,13 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define verify_less$(lhs, rhs)                                                                                                                                  \
+#define verify_less$(lhs, rhs)                                                                                                                                 \
     do {                                                                                                                                                       \
         if ( !((lhs) < (rhs)) ) [[unlikely]] {                                                                                                                 \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} < {}{} }}"sv,                                                                                 \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(lhs),                                                                                                                 \
                          as_string_view$(rhs),                                                                                                                 \
@@ -126,13 +126,13 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define verify_less_equal$(lhs, rhs)                                                                                                                            \
+#define verify_less_equal$(lhs, rhs)                                                                                                                           \
     do {                                                                                                                                                       \
         if ( !((lhs) <= (rhs)) ) [[unlikely]] {                                                                                                                \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} <= {}{} }}"sv,                                                                                \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(lhs),                                                                                                                 \
                          as_string_view$(rhs),                                                                                                                 \
@@ -142,13 +142,13 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define verify_not_equal$(lhs, rhs)                                                                                                                             \
+#define verify_not_equal$(lhs, rhs)                                                                                                                            \
     do {                                                                                                                                                       \
         if ( !((lhs) != (rhs)) ) [[unlikely]] {                                                                                                                \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} != {}{} }}"sv,                                                                                \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(lhs),                                                                                                                 \
                          as_string_view$(rhs),                                                                                                                 \
@@ -158,13 +158,13 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define verify_not_null$(expression)                                                                                                                            \
+#define verify_not_null$(expression)                                                                                                                           \
     do {                                                                                                                                                       \
         if ( !((expression) != nullptr) ) [[unlikely]] {                                                                                                       \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} != nullptr{} }}"sv,                                                                           \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(expression),                                                                                                          \
                          FmtIO::reset())                                                                                                                       \
@@ -173,13 +173,13 @@
         }                                                                                                                                                      \
     } while ( false )
 
-#define verify_null$(expression)                                                                                                                                \
+#define verify_null$(expression)                                                                                                                               \
     do {                                                                                                                                                       \
         if ( !((expression) == nullptr) ) [[unlikely]] {                                                                                                       \
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == nullptr{} }}"sv,                                                                           \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(expression),                                                                                                          \
                          FmtIO::reset())                                                                                                                       \
@@ -195,7 +195,7 @@
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{}.is_present(){} }}"sv,                                                                         \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(expression),                                                                                                          \
                          FmtIO::reset())                                                                                                                       \
@@ -211,7 +211,7 @@
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == Some({}){} }}"sv,                                                                          \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(expression),                                                                                                          \
                          as_string_view$(expected_value),                                                                                                      \
@@ -228,7 +228,7 @@
             FmtIO::errln(FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
                          "\t{}Verify Failed{} in {}\n\t> {{ {}!{}.is_present(){} }}"sv,                                                                        \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(expression),                                                                                                          \
                          FmtIO::reset())                                                                                                                       \
@@ -244,7 +244,7 @@
             FmtIO::errln(FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
                          "\t{}Verify Failed{} in {}\n\t> {{ {}{}.is_value(){} }}"sv,                                                                           \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(expression),                                                                                                          \
                          FmtIO::reset())                                                                                                                       \
@@ -260,7 +260,7 @@
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == Value({}){} }}"sv,                                                                         \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(expression),                                                                                                          \
                          as_string_view$(expected_value),                                                                                                      \
@@ -277,7 +277,7 @@
             FmtIO::errln("\t{}Verify Failed{} in {}\n\t> {{ {}{} == Error({}){} }}"sv,                                                                         \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          FmtIO::reset(),                                                                                                                       \
-                         SourceLocation::construct_from_here(),                                                                                                \
+                         SourceLocation::new_from_here(),                                                                                                      \
                          FmtIO::foreground(FmtIO::Color::Red),                                                                                                 \
                          as_string_view$(expression),                                                                                                          \
                          as_string_view$(expected_error),                                                                                                      \

@@ -270,9 +270,7 @@ using SetReplaceExisting = Details::ReplaceExisting;
 using SetInsertResult    = Details::InsertResult;
 
 template<typename T, typename TTraits, bool IsOrdered>
-class Set final {
-    TCDenyCopy$(Set);
-
+class Set final : public DenyCopy {
 private:
     enum : usize {
         LoadFactorPercent = 60

@@ -12,7 +12,12 @@
 
 #pragma once
 
-#define TCDenyMove$(ClassName)                        \
-public:                                               \
-    ClassName(ClassName&&)                  = delete; \
-    auto operator=(ClassName&&)->ClassName& = delete;
+class DenyMove {
+public:
+    constexpr DenyMove() = default;
+    DenyMove(DenyMove&&) = delete;
+    auto operator=(DenyMove&&) -> DenyMove& = delete;
+
+protected:
+    ~DenyMove() = default;
+};

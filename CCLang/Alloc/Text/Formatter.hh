@@ -32,9 +32,7 @@
 #include <CCLang/Lang/Result.hh>
 #include <CCLang/Lang/StringView.hh>
 
-class FormatApplier {
-    TCDenyCopy$(FormatApplier);
-
+class FormatApplier : public DenyCopy {
 public:
     /**
      * @brief Error safe factory functions
@@ -47,7 +45,7 @@ public:
     virtual ~FormatApplier() = default;
 
     /**
-     * @brief Cxx::Move constructors
+     * @brief Move constructors
      */
     FormatApplier(FormatApplier&&);
     auto operator=(FormatApplier&&) -> FormatApplier&;

@@ -16,8 +16,9 @@ set(ASM_SOURCES
         system/processor.asm)
 set_source_files_properties(${ASM_SOURCES} PROPERTIES LANGUAGE ASM_NASM)
 
-set(LIBSTC_SOURCES
+set(CCLANG_SOURCES
         ../../CCLang/Alloc/Details.cc
+        ../../CCLang/Alloc/RefCounted.cc
         ../../CCLang/Alloc/String.cc
         ../../CCLang/Alloc/StringBuilder.cc
         ../../CCLang/Alloc/StringStorage.cc
@@ -113,7 +114,7 @@ set(KERNEL_SOURCES
 add_executable(Kernel
         ${ASM_SOURCES}
         ${LIBC_SOURCES}
-        ${LIBSTC_SOURCES}
+        ${CCLANG_SOURCES}
         ${KERNEL_SOURCES})
 
 target_include_directories(Kernel PRIVATE . ../Shared)

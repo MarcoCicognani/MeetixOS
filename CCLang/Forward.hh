@@ -28,6 +28,8 @@ class Map;
 template<typename K, typename T, typename KTraits = TypeTraits<K>>
 using OrderedMap = Map<K, T, KTraits, true>;
 
+class RefCounted;
+
 template<typename T>
 class NonNullRef;
 

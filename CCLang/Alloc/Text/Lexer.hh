@@ -21,10 +21,8 @@
 #include <CCLang/Lang/IntTypes.hh>
 #include <CCLang/Lang/StringView.hh>
 
-class Lexer {
-    TCDenyCopy$(Lexer);
-    TCDenyMove$(Lexer);
-
+class Lexer : public DenyCopy,
+              public DenyMove {
 public:
     /**
      * @brief Error safe Factory functions

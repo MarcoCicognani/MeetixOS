@@ -20,9 +20,6 @@
 #include <CCLang/Lang/StringView.hh>
 
 class FormatLexer final : public Lexer {
-    TCDenyCopy$(FormatLexer);
-    TCDenyMove$(FormatLexer);
-
 public:
     /**
      * @brief Error safe Factory functions

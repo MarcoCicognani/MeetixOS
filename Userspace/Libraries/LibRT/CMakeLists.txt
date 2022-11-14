@@ -10,8 +10,9 @@
 # GNU General Public License version 3
 #
 
-set(LIBSTC_SOURCES
+set(CCLANG_SOURCES
         ../../../CCLang/Alloc/Details.cc
+        ../../../CCLang/Alloc/RefCounted.cc
         ../../../CCLang/Alloc/String.cc
         ../../../CCLang/Alloc/StringBuilder.cc
         ../../../CCLang/Alloc/StringStorage.cc
@@ -43,7 +44,7 @@ add_library(LibRT
         crt0Impl.cc
         Heap.cc
         New.cc
-        ${LIBSTC_SOURCES})
+        ${CCLANG_SOURCES})
 add_custom_command(
         TARGET LibRT
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibRT> ${TOOLCHAIN_LIB}/librt.a

@@ -12,7 +12,12 @@
 
 #pragma once
 
-#define TCDenyCopy$(ClassName)                             \
-public:                                                    \
-    ClassName(ClassName const&)                  = delete; \
-    auto operator=(ClassName const&)->ClassName& = delete;
+class DenyCopy {
+public:
+    constexpr DenyCopy() = default;
+    DenyCopy(DenyCopy const&) = delete;
+    auto operator=(DenyCopy const&) -> DenyCopy& = delete;
+
+protected:
+    ~DenyCopy() = default;
+};

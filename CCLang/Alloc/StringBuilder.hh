@@ -22,9 +22,7 @@
 #include <CCLang/Lang/IntTypes.hh>
 #include <CCLang/Lang/StringView.hh>
 
-class StringBuilder final {
-    TCDenyCopy$(StringBuilder);
-
+class StringBuilder final : public DenyCopy {
 public:
     /**
      * @brief Non-Error safe factory functions
@@ -45,10 +43,15 @@ public:
     /**
      * @brief Move constructor and move assignment
      */
-    StringBuilder(StringBuilder&& rhs)                    = default;
-    auto operator=(StringBuilder&& rhs) -> StringBuilder& = default;
+    StringBuilder(StringBuilder&& rhs);
+    auto operator=(StringBuilder&& rhs) -> StringBuilder&;
 
     ~StringBuilder() = default;
+
+    /**
+     * @brief Swaps in O(1) the content of this StringBuilder with another
+     */
+    auto swap(StringBuilder&) -> void;
 
     /**
      * @brief Deep cloning

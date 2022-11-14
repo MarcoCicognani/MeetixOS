@@ -25,9 +25,7 @@ using MapReplaceExisting = Details::ReplaceExisting;
 using MapInsertResult    = Details::InsertResult;
 
 template<typename K, typename T, typename KTraits, bool IsOrdered>
-class Map final {
-    TCDenyCopy$(Map);
-
+class Map final : public DenyCopy {
 private:
     struct KeyValue final {
         K m_key;
@@ -125,8 +123,14 @@ public:
     /**
      * @brief Move constructor and move assignment
      */
-    Map(Map<K, T, KTraits, IsOrdered>&&)                                              = default;
-    auto operator=(Map<K, T, KTraits, IsOrdered>&&) -> Map<K, T, KTraits, IsOrdered>& = default;
+    Map(Map<K, T, KTraits, IsOrdered>&& rhs)
+        : m_hash_set{ Cxx::move(rhs.m_hash_set) } {
+    }
+    auto operator=(Map<K, T, KTraits, IsOrdered>&& rhs) -> Map<K, T, KTraits, IsOrdered>& {
+        Map map{ Cxx::move(rhs) };
+        swap(map);
+        return *this;
+    }
 
     /**
      * @brief Deep cloning

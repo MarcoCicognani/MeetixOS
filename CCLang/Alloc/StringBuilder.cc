@@ -40,6 +40,20 @@ auto StringBuilder::try_new_from_other(const StringBuilder& rhs) -> ErrorOr<Stri
     return string_builder;
 }
 
+StringBuilder::StringBuilder(StringBuilder&& rhs)
+    : m_char_vector{ Cxx::move(rhs.m_char_vector) } {
+}
+
+auto StringBuilder::operator=(StringBuilder&& rhs) -> StringBuilder& {
+    StringBuilder string_builder{ Cxx::move(rhs) };
+    swap(string_builder);
+    return *this;
+}
+
+auto StringBuilder::swap(StringBuilder& rhs) -> void {
+    m_char_vector.swap(rhs.m_char_vector);
+}
+
 auto StringBuilder::clone() const -> StringBuilder {
     return must$(try_clone());
 }
