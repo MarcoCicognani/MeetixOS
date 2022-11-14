@@ -48,7 +48,6 @@ public:
             return Error::new_from_code(ErrorCode::NoMemory);
     }
     static auto try_new_from_adopt(T* ref_counted_ptr) -> ErrorOr<NonNullRef<T>> {
-        verify_equal$(ref_counted_ptr->strong_ref_count(), 1);
         if ( ref_counted_ptr != nullptr ) [[likely]]
             return NonNullRef<T>{ ref_counted_ptr };
         else
