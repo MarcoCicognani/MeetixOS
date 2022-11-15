@@ -21,8 +21,8 @@ auto StringStorage::try_new_from_view(StringView string_view) -> ErrorOr<NonNull
     if ( string_view.is_null() )
         return Error::new_from_code(ErrorCode::EmptyData);
 
-    auto chars_storage_box = try$(Box<char[]>::try_new_from_len(string_view.len()));
-    return NonNullRef<StringStorage>::try_new_from_adopt(new (nothrow) StringStorage(Cxx::move(chars_storage_box), string_view));
+    auto storage_box = try$(Box<char[]>::try_new_from_len(string_view.len()));
+    return NonNullRef<StringStorage>::try_new_from_adopt(new (nothrow) StringStorage(Cxx::move(storage_box), string_view));
 }
 
 auto StringStorage::storage_ptr() const -> char const* {
@@ -37,8 +37,8 @@ auto StringStorage::is_empty() const -> bool {
     return m_char_count == 0;
 }
 
-StringStorage::StringStorage(Box<char[]> storage_ptr, StringView string_view)
-    : m_storage_box{ Cxx::move(storage_ptr) }
+StringStorage::StringStorage(Box<char[]> storage_box, StringView string_view)
+    : m_storage_box{ Cxx::move(storage_box) }
     , m_char_count{ string_view.len() } {
     __builtin_memcpy(m_storage_box.as_ptr(), string_view.as_cstr(), sizeof(char) * string_view.len());
 }
