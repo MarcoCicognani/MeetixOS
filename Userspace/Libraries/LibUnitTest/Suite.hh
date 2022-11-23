@@ -19,9 +19,7 @@
 
 namespace UnitTest {
 
-class Suite {
-    TCNonNullRefConstructible$(Suite);
-
+class Suite : public RefCounted {
 public:
     /**
      * @brief Singleton provider

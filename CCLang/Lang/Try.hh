@@ -12,15 +12,11 @@
 
 #pragma once
 
-/**
- * @brief Works like Rust's try!() macro: If <expression> produces an empty or error variant then it returns the code to the
- * caller function, otherwise unwraps the value to the current function
- */
-#define try$(expression)                         \
-    ({                                           \
-        auto __tryable_result = (expression);    \
-        if ( !__tryable_result ) [[unlikely]] {  \
-            return __tryable_result.propagate(); \
-        }                                        \
-        __tryable_result.unwrap();               \
+#define try$(expression)                                 \
+    ({                                                   \
+        auto __tryable_result = (expression);            \
+        if ( !__tryable_result ) [[unlikely]] {          \
+            return __tryable_result.propagate_failure(); \
+        }                                                \
+        __tryable_result.unwrap();                       \
     })

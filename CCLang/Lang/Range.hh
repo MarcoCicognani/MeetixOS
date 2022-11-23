@@ -15,13 +15,12 @@
 #include <CCLang/Forward.hh>
 
 #include <CCLang/Core/Assertions.hh>
-#include <CCLang/Core/Meta.hh>
 #include <CCLang/Core/TypeTraits.hh>
 #include <CCLang/Lang/ReverseIteratorSupport.hh>
 
 namespace Details {
 
-template<Integral T, bool IsReverse>
+template<typename T, bool IsReverse>
 class RangeIterator final {
 public:
     /**
@@ -80,7 +79,7 @@ private:
 
 } /* namespace Details */
 
-template<Integral T>
+template<typename T>
 class Range final {
 public:
     using Iterator               = Details::RangeIterator<T, false>;
@@ -126,7 +125,7 @@ private:
     T m_end;
 };
 
-template<Integral T>
+template<typename T>
 class RangeInclusive final {
 public:
     using Iterator               = Details::RangeIterator<T, false>;

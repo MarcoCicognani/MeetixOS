@@ -19,6 +19,7 @@
 #include <CCLang/Core/ErrorOr.hh>
 #include <CCLang/Core/Meta.hh>
 #include <CCLang/Core/TypeTraits.hh>
+#include <CCLang/Lang/Array.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/DenyCopy.hh>
 #include <CCLang/Lang/IntTypes.hh>
@@ -260,14 +261,14 @@ public:
         clear_keep_capacity();
 
         if ( m_data_capacity > 0 ) {
-            Details::__heap_plug_dealloc_mem(m_data_storage, m_data_capacity * sizeof(T));
+            Details::__heap_plug_dealloc_mem(m_data_storage.unwrap(), m_data_capacity * sizeof(T));
             m_data_storage  = nullptr;
             m_data_capacity = 0;
         }
     }
     auto clear_keep_capacity() -> void {
         if constexpr ( !TypeTraits<T>::is_trivial() ) {
-            for ( auto const i : Range{ 0u, m_values_count } )
+            for ( auto const i : Range<usize>{ 0, m_values_count } )
                 m_data_storage[i].~T();
         }
         m_values_count = 0;
@@ -352,9 +353,9 @@ public:
 
         /* move the values after the insertion one place forward */
         if constexpr ( TypeTraits<T>::is_trivial() )
-            __builtin_memmove(data_slot(1), m_data_storage, m_values_count * sizeof(T));
+            __builtin_memmove(data_slot(1), m_data_storage, (m_values_count * sizeof(T)).unwrap());
         else {
-            for ( auto const i : Range{ m_values_count, 0u }.reverse_iter() ) {
+            for ( auto const i : Range<usize>{ m_values_count, 0 }.reverse_iter() ) {
                 new (data_slot(i)) T{ Cxx::move(m_data_storage[i - 1]) };
                 at(i - 1).~T();
             }
@@ -423,7 +424,7 @@ public:
         return {};
     }
     auto erase_first_of(T const& value) -> ErrorOr<void> {
-        for ( auto const i : Range{ 0u, m_values_count } ) {
+        for ( auto const i : Range<usize>{ 0, m_values_count } ) {
             if ( m_data_storage[i] == value ) {
                 try$(erase_at(i));
                 return {};
@@ -483,21 +484,21 @@ public:
 
         /* allocate new memory and move the content into it */
         auto new_data_storage = try$(Details::__heap_plug_alloc_mem(new_capacity * sizeof(T))
-                                         .map<T*>([](auto void_ptr) -> T* {
+                                         .map<UnsafeArrayPtr<T>>([](auto void_ptr) -> UnsafeArrayPtr<T> {
                                              return Cxx::bit_cast<T*>(void_ptr);
                                          }));
         if constexpr ( TypeTraits<T>::is_trivial() )
-            __builtin_memmove(new_data_storage, m_data_storage, m_values_count * sizeof(T));
+            __builtin_memmove(new_data_storage.unwrap(), m_data_storage.unwrap(), (m_values_count * sizeof(T)).unwrap());
         else {
-            for ( auto const i : Range{ 0u, m_values_count } ) {
+            for ( auto const i : Range<usize>{ 0, m_values_count } ) {
                 new (&new_data_storage[i]) T{ Cxx::move(at(i)) };
                 at(i).~T();
             }
         }
 
         /* destroy the previous buffer if exists and update the other fields */
-        if ( m_data_storage )
-            Details::__heap_plug_dealloc_mem(m_data_storage, m_data_capacity * sizeof(T));
+        if ( !m_data_storage.is_null() )
+            Details::__heap_plug_dealloc_mem(m_data_storage.unwrap(), m_data_capacity * sizeof(T));
 
         m_data_storage  = new_data_storage;
         m_data_capacity = new_capacity;
@@ -560,7 +561,7 @@ public:
         return index_if([&value](T const& v) -> bool { return TypeTraits<T>::equals(value, v); });
     }
     auto index_if(Predicate<T const&> auto predicate) const -> Option<usize> {
-        for ( auto const i : Range{ 0u, m_values_count } ) {
+        for ( auto const i : Range<usize>{ 0, m_values_count } ) {
             if ( predicate(m_data_storage[i]) )
                 return i;
         }
@@ -644,7 +645,7 @@ private:
     }
 
 private:
-    T*    m_data_storage{ nullptr };
-    usize m_data_capacity{ 0 };
-    usize m_values_count{ 0 };
+    UnsafeArrayPtr<T> m_data_storage{ nullptr };
+    usize             m_data_capacity{ 0 };
+    usize             m_values_count{ 0 };
 };

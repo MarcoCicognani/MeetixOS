@@ -928,7 +928,7 @@ public:
             try$(v_formatter.format(option.value()));
             try$(try_put_literal(")"sv));
         } else
-            try$(try_put_literal("OptNone"sv));
+            try$(try_put_literal("OptionNone"sv));
 
         return {};
     }

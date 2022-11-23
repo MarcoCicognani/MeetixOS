@@ -16,11 +16,15 @@
 
 #include <CCLang/Core/Concept.hh>
 #include <CCLang/Core/Hashing.hh>
+#include <CCLang/Core/Order.hh>
 #include <CCLang/Core/TypeTraits.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/IntTypes.hh>
 #include <CCLang/Lang/Option.hh>
+#include <CCLang/Lang/Range.hh>
 #include <CCLang/Lang/ReverseIteratorSupport.hh>
+
+#define as_string_view$(expression) #expression##sv
 
 namespace Details {
 
@@ -43,7 +47,7 @@ public:
 
     [[nodiscard]]
     static auto new_from_rbegin(TStringView const* string_view) -> StringViewIterator {
-        return StringViewIterator{ string_view, string_view->len() - 1 };
+        return StringViewIterator{ string_view, string_view->len().template as<isize>() - 1 };
     }
     [[nodiscard]]
     static auto new_from_rend(TStringView const* string_view) -> StringViewIterator {
@@ -227,7 +231,7 @@ public:
      * @brief Compares this string view with another
      */
     [[nodiscard]]
-    auto compare(StringView) const -> int; /* TODO STC.Lang.Order */
+    auto compare(StringView) const -> Order;
     [[nodiscard]]
     auto equals_ignore_case(StringView) const -> bool;
 
@@ -280,7 +284,7 @@ public:
      */
     auto find_last(char needle) const -> Option<usize>;
     auto find_last_if(Predicate<char> auto predicate) const -> Option<usize> {
-        for ( auto i = len() - 1; i > 0; --i ) { /* TODO use STC.Lang.Range when modules will be available */
+        for ( auto const i : Range<usize>{ len() - 1, 0 }.reverse_iter() ) {
             if ( predicate(at(i)) )
                 return i;
         }
@@ -369,7 +373,7 @@ private:
 };
 
 [[nodiscard]]
-constexpr auto operator""sv(char const* c_str, usize len) -> StringView {
+constexpr auto operator""sv(char const* c_str, __SIZE_TYPE__ len) -> StringView {
     return StringView::new_from_raw_parts(c_str, len);
 }
 
@@ -383,3 +387,11 @@ struct TypeTraits<StringView> final : public Details::TypeTraits<StringView> {
         return true; /* since this type is a read-only view of a slice the destructor does nothing */
     }
 };
+
+namespace Cxx {
+
+constexpr auto swap(StringView& lhs, StringView& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx` */

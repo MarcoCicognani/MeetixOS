@@ -12,9 +12,63 @@
 
 #pragma once
 
-#include <CCLang/Core/Concept.hh>
+#ifndef NDEBUG
+static constexpr bool cclang_debugging = true;
+#else
+static constexpr bool cclang_debugging = false;
+#endif
 
-/* STC.Alloc */
+/* CCLang.Lang */
+
+class u8;
+class u16;
+class u32;
+class u64;
+class usize;
+
+class i8;
+class i16;
+class i32;
+class i64;
+class isize;
+
+template<typename>
+class Function;
+
+template<typename TReturn, typename... TArgs>
+class Function<TReturn(TArgs...)>;
+
+template<typename T>
+class Option;
+
+template<typename T>
+class Range;
+
+template<typename T>
+class RangeInclusive;
+
+template<typename T, typename E>
+class Result;
+
+class StringView;
+
+
+/* CCLang.Core */
+
+class Error;
+
+template<typename T>
+struct NumericLimits;
+
+class SourceLocation;
+
+template<typename T>
+struct TypeTraits;
+
+template<typename T>
+using ErrorOr = Result<T, Error>;
+
+/* CCLang.Alloc */
 
 template<typename T>
 class Box;
@@ -48,7 +102,7 @@ class StringStorage;
 template<typename T>
 class Vector;
 
-/* STC.Alloc.Text */
+/* CCLang.Alloc.Text */
 
 class FormatLexer;
 
@@ -58,40 +112,3 @@ template<typename, typename = void>
 class Formatter;
 
 class Lexer;
-
-/* STC.Core */
-
-class Error;
-
-template<typename T>
-struct NumericLimits;
-
-class SourceLocation;
-
-template<typename T>
-struct TypeTraits;
-
-/* STC.Lang */
-
-template<typename>
-class Function;
-
-template<typename TReturn, typename... TArgs>
-class Function<TReturn(TArgs...)>;
-
-template<typename T>
-class Option;
-
-template<Integral T>
-class Range;
-
-template<Integral T>
-class RangeInclusive;
-
-template<typename T, typename E>
-class Result;
-
-class StringView;
-
-template<typename T>
-using ErrorOr = Result<T, Error>;

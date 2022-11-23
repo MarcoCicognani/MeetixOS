@@ -15,6 +15,7 @@
 #include <CCLang/Forward.hh>
 
 #include <CCLang/Core/ErrorOr.hh>
+#include <CCLang/Lang/IntTypes.hh>
 
 #ifdef IN_KERNEL
 #    warning "Kernel implementation of new"

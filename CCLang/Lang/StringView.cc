@@ -48,31 +48,41 @@ auto StringView::swap(StringView& rhs) -> void {
 
 auto StringView::at(usize index) const -> char const& {
     verify_less$(index, len());
-    return m_chars_ptr[index];
+    return m_chars_ptr[index.unwrap()];
 }
 
 auto StringView::operator[](usize index) const -> char const& {
     return at(index);
 }
 
-auto StringView::compare(StringView rhs) const -> int {
+static auto char_compare(char const* lhs, char const* rhs, usize len) -> Order {
+    for ( auto const i : Range<usize>{ 0, len } ) {
+        if ( lhs[i.unwrap()] > rhs[i.unwrap()] )
+            return Order::Greater;
+        if ( lhs[i.unwrap()] < rhs[i.unwrap()] )
+            return Order::Less;
+    }
+    return Order::Equal;
+}
+
+auto StringView::compare(StringView rhs) const -> Order {
     if ( is_null_or_empty() )
-        return rhs.is_null_or_empty() ? 0 : -1;
+        return rhs.is_null_or_empty() ? Order::Equal : Order::Less;
     if ( rhs.is_null_or_empty() )
-        return 1;
+        return Order::Greater;
 
     /* use the optimized mem-cmp for the minimum of the two lengths */
     auto min_len = len() < rhs.len() ? len() : rhs.len();
-    auto res     = __builtin_memcmp(as_cstr(), rhs.as_cstr(), min_len);
-    if ( res == 0 ) {
+    auto order   = char_compare(as_cstr(), rhs.as_cstr(), min_len);
+    if ( order == Order::Equal ) {
         if ( len() < rhs.len() )
-            return -1;
+            return Order::Less;
         else if ( len() == rhs.len() )
-            return 0;
+            return Order::Equal;
         else
-            return 1;
+            return Order::Greater;
     }
-    return res;
+    return order;
 }
 
 auto StringView::equals_ignore_case(StringView rhs) const -> bool {
@@ -97,7 +107,7 @@ auto StringView::trim(StringView chars, TrimMode trim_mode) const -> StringView 
     usize sub_len   = len();
 
     if ( trim_mode == TrimMode::Left || trim_mode == TrimMode::Both ) {
-        for ( auto const i : Range{ 0u, len() } ) {
+        for ( auto const i : Range<usize>{ 0, len() } ) {
             if ( sub_len == 0 )
                 return ""sv;
             if ( !chars.contains(at(i)) )
@@ -137,9 +147,9 @@ auto StringView::starts_with(StringView rhs, CaseSensible case_sensitivity) cons
         return true;
 
     if ( case_sensitivity == CaseSensible::Yes )
-        return __builtin_memcmp(as_cstr(), rhs.as_cstr(), rhs.len()) == 0;
+        return char_compare(as_cstr(), rhs.as_cstr(), rhs.len()) == Order::Equal;
     else {
-        for ( auto const i : Range{ 0u, rhs.len() } ) {
+        for ( auto const i : Range<usize>{ 0, rhs.len() } ) {
             if ( to_ascii_lowercase(at(i)) != to_ascii_lowercase(rhs.at(i)) )
                 return false;
         }
@@ -168,10 +178,10 @@ auto StringView::ends_with(StringView rhs, CaseSensible case_sensitivity) const 
         return false;
 
     if ( case_sensitivity == CaseSensible::Yes )
-        return __builtin_memcmp(as_cstr() + (len() - rhs.len()), rhs.as_cstr(), rhs.len()) == 0;
+        return char_compare(as_cstr() + (len() - rhs.len()), rhs.as_cstr(), rhs.len()) == Order::Equal;
     else {
         usize str_i = len() - rhs.len();
-        for ( auto const i : Range{ 0u, rhs.len() } ) {
+        for ( auto const i : Range<usize>{ 0u, rhs.len() } ) {
             if ( to_ascii_lowercase(at(str_i)) != to_ascii_lowercase(rhs.at(i)) )
                 return false;
 
@@ -336,7 +346,9 @@ auto StringView::find(StringView needle, usize start) const -> Option<usize> {
         return {};
 
     return find_in_memory(as_cstr() + start, len() - start, needle.as_cstr(), needle.len())
-        .map<usize>([this](auto ptr_pos) -> usize { return Cxx::bit_cast<usize>(ptr_pos) - Cxx::bit_cast<usize>(as_cstr()); });
+        .map<usize>([this](char const* ptr_pos) -> usize {
+            return ptr_pos - as_cstr();
+        });
 }
 
 auto StringView::find_last(char needle) const -> Option<usize> {
@@ -420,7 +432,7 @@ auto StringView::try_split_view(StringView separator, KeepEmpty keep_empty) cons
 }
 
 auto StringView::operator==(StringView const& rhs) const -> bool {
-    return len() == rhs.len() && compare(rhs) == 0;
+    return len() == rhs.len() && compare(rhs) == Order::Equal;
 }
 
 auto StringView::operator!=(StringView const& rhs) const -> bool {
@@ -428,19 +440,19 @@ auto StringView::operator!=(StringView const& rhs) const -> bool {
 }
 
 auto StringView::operator<(StringView const& rhs) const -> bool {
-    return len() < rhs.len() || compare(rhs) < 0;
+    return len() < rhs.len() || compare(rhs) == Order::Less;
 }
 
 auto StringView::operator<=(StringView const& rhs) const -> bool {
-    return len() <= rhs.len() || compare(rhs) <= 0;
+    return len() <= rhs.len() || compare(rhs) == Order::Less || compare(rhs) == Order::Equal; /* FIXME not the best solution for the efficiency */
 }
 
 auto StringView::operator>(StringView const& rhs) const -> bool {
-    return len() > rhs.len() || compare(rhs) > 0;
+    return len() > rhs.len() || compare(rhs) == Order::Greater;
 }
 
 auto StringView::operator>=(StringView const& rhs) const -> bool {
-    return len() >= rhs.len() || compare(rhs) >= 0;
+    return len() >= rhs.len() || compare(rhs) == Order::Greater || compare(rhs) == Order::Equal; /* FIXME not the best solution for the efficiency */
 }
 
 auto StringView::contains(StringView rhs, CaseSensible case_sensible) const -> bool {
@@ -451,11 +463,11 @@ auto StringView::contains(StringView rhs, CaseSensible case_sensible) const -> b
         return find_in_memory(as_cstr(), len(), rhs.as_cstr(), rhs.len()).is_present();
 
     auto needle_first = to_ascii_lowercase(rhs.at(0));
-    for ( auto i = 0u; i < len(); ++i ) {
+    for ( usize i = 0; i < len(); ++i ) {
         if ( to_ascii_lowercase(at(i)) != needle_first )
             continue;
 
-        for ( auto ni = 0u; i + ni < len(); ++ni ) {
+        for ( usize ni = 0; i + ni < len(); ++ni ) {
             if ( to_ascii_lowercase(at(i + ni)) != to_ascii_lowercase(rhs.at(ni)) ) {
                 i += ni;
                 break;
@@ -472,14 +484,14 @@ auto StringView::contains(char rhs, CaseSensible case_sensible) const -> bool {
         return false;
 
     return any_of<char>(begin(), end(), [rhs, case_sensible](char const c) {
-        auto unicode_c = u32{ static_cast<u8>(c) };
-        auto unicode_rhs = u32{ static_cast<u8>(rhs) };
+        UTF8Rune char_rune = static_cast<unsigned char>(c);
+        UTF8Rune rhs_rune  = static_cast<unsigned char>(rhs);
         if ( case_sensible == CaseSensible::Yes ) {
-            unicode_c   = to_ascii_lowercase(c);
-            unicode_rhs = to_ascii_lowercase(unicode_rhs);
+            char_rune = to_ascii_lowercase(c);
+            rhs_rune  = to_ascii_lowercase(rhs_rune);
         }
 
-        return unicode_c == unicode_rhs;
+        return char_rune == rhs_rune;
     });
 }
 

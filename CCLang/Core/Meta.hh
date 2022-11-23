@@ -234,20 +234,6 @@ struct MakeUnsigned<bool> {
 
 } /* namespace Details */
 
-template<typename T>
-class FriendOf {
-protected:
-    friend T;
-
-    constexpr FriendOf() = default;
-
-    FriendOf(FriendOf<T> const&) = delete;
-    auto operator=(FriendOf<T> const&) -> FriendOf<T>& = delete;
-
-    FriendOf(FriendOf<T> &&) = delete;
-    auto operator=(FriendOf<T> &&) -> FriendOf<T>& = delete;
-};
-
 template<bool Condition, typename TTrue, typename TFalse>
 using Conditional = typename Details::Conditional<Condition, TTrue, TFalse>::Type;
 

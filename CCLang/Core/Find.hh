@@ -22,11 +22,11 @@
 template<typename T>
 constexpr auto find_in_memory(T const* haystack, usize haystack_count, T const* needle, usize needle_count) -> Option<T const*> {
 
-    /* TODO Implement memmem into STC */
+    /* TODO Implement memmem into CCLang.Core */
 
-    auto result = Cxx::bit_cast<T const*>(memmem(haystack, haystack_count / sizeof(T), needle, needle_count / sizeof(T)));
-    if ( result != nullptr )
-        return result;
-    else
+    //auto result = Cxx::bit_cast<T const*>(memmem(haystack, haystack_count / sizeof(T), needle, needle_count / sizeof(T)));
+    //if ( result != nullptr )
+        //return result;
+    //else
         return {};
 }

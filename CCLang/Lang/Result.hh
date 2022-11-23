@@ -167,7 +167,7 @@ public:
         return unwrap_value();
     }
     [[nodiscard]]
-    auto propagate() -> E {
+    auto propagate_failure() -> E {
         return unwrap_error();
     }
     [[nodiscard]]
@@ -305,7 +305,7 @@ public:
         /* Nothing to return */
     }
     [[nodiscard]]
-    auto propagate() -> E {
+    auto propagate_failure() -> E {
         return unwrap_error();
     }
     [[nodiscard]]
@@ -459,7 +459,7 @@ public:
         return unwrap_value();
     }
     [[nodiscard]]
-    auto propagate() -> E {
+    auto propagate_failure() -> E {
         return unwrap_error();
     }
     [[nodiscard]]
@@ -475,3 +475,12 @@ private:
 static_assert(Tryable<Result<i32, u64>>);
 static_assert(Tryable<Result<i32&, u64>>);
 static_assert(Tryable<Result<void, u64>>);
+
+namespace Cxx {
+
+template<typename T, typename E>
+constexpr auto swap(Result<T, E>& lhs, Result<T,E>& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

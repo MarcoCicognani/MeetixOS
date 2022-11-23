@@ -22,7 +22,7 @@
 #include <CCLang/Lang/IntTypes.hh>
 
 enum class OptionNoneTag {
-    OptNone
+    OptionNone
 };
 using enum OptionNoneTag;
 
@@ -175,9 +175,9 @@ public:
         return to_return;
     }
     [[nodiscard]]
-    auto propagate() const -> OptionNoneTag {
+    auto propagate_failure() const -> OptionNoneTag {
         verify_false$(is_present());
-        return OptionNoneTag::OptNone;
+        return OptionNone;
     }
     [[nodiscard]]
     auto operator!() const -> bool {
@@ -326,9 +326,9 @@ public:
         return *Cxx::exchange(m_optional_ptr, nullptr);
     }
     [[nodiscard]]
-    auto propagate() const -> OptionNoneTag {
+    auto propagate_failure() const -> OptionNoneTag {
         verify_false$(is_present());
-        return OptionNoneTag::OptNone;
+        return OptionNone;
     }
     [[nodiscard]]
     auto operator!() const -> bool {
@@ -341,3 +341,12 @@ private:
 
 static_assert(Tryable<Option<i32>>);
 static_assert(Tryable<Option<i32&>>);
+
+namespace Cxx {
+
+template<typename T>
+constexpr auto swap(Option<T>& lhs, Option<T>& rhs) -> void {
+    return lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

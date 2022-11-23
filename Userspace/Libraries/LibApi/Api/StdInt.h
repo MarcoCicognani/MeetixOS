@@ -79,24 +79,6 @@ TYPE_ALIAS(size_t, __SIZE_TYPE__);
 TYPE_ALIAS(ssize_t, __SIZE_TYPE__);
 #undef unsigned
 
-/* MeetixOS custom types */
-/* TODO Unificate with STC/IntTypes.hh */
-
-TYPE_ALIAS(i8, int8_t);
-TYPE_ALIAS(u8, uint8_t);
-
-TYPE_ALIAS(i16, int16_t);
-TYPE_ALIAS(u16, uint16_t);
-
-TYPE_ALIAS(i32, int32_t);
-TYPE_ALIAS(u32, uint32_t);
-
-TYPE_ALIAS(i64, int64_t);
-TYPE_ALIAS(u64, uint64_t);
-
-TYPE_ALIAS(isize, ssize_t);
-TYPE_ALIAS(usize, size_t);
-
 CONST_VALUE(INT8_MAX, int8_t, __INT8_MAX__);
 CONST_VALUE(INT8_MIN, int8_t, -__INT8_MAX__ - 1);
 

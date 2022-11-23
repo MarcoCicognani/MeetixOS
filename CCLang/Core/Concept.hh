@@ -115,8 +115,11 @@ template<typename T, typename... TArgs>
 concept Consumer = Callable<T, void, TArgs...>;
 
 template<typename T>
+concept CallBack = Callable<T, void>;
+
+template<typename T>
 concept Tryable = requires(T t) {
                       { !t } -> SameAs<bool>;
                       { t.unwrap() };
-                      { t.propagate() };
+                      { t.propagate_failure() };
                   };

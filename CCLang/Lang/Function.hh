@@ -17,9 +17,10 @@
 #include <CCLang/Core/Assertions.hh>
 #include <CCLang/Core/Concept.hh>
 #include <CCLang/Core/Math.hh>
+#include <CCLang/Lang/Array.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/DenyCopy.hh>
-#include <CCLang/Lang/Range.hh>
+#include <CCLang/Lang/IntTypes.hh>
 
 namespace Details {
 
@@ -67,9 +68,8 @@ public:
     /**
      * @brief Swaps in O(1) the content of this List with another
      */
-    auto swap(Function<TReturn(TArgs...)>& rhs) {
-        for ( auto const i : Range{ 0u, INLINE_STORAGE_SIZE } )
-            Cxx::swap(m_inline_storage[i], rhs.m_inline_storage[i]);
+    constexpr auto swap(Function<TReturn(TArgs...)>& rhs) {
+        m_inline_storage.swap(rhs);
     }
 
     /**
@@ -82,7 +82,7 @@ public:
     }
 
 private:
-    static constexpr usize INLINE_STORAGE_SIZE = sizeof(void*) * 8;
+    static constexpr unsigned int INLINE_STORAGE_SIZE = sizeof(void*) * 8;
 
     class ICallable {
     public:
@@ -115,8 +115,17 @@ private:
 
     [[nodiscard]]
     constexpr auto storage_as_callable() const -> ICallable* {
-        return Cxx::bit_cast<ICallable*>(&m_inline_storage);
+        return Cxx::bit_cast<ICallable*>(m_inline_storage.unwrap());
     }
 
-    alignas(alignof(ICallable)) u8 m_inline_storage[INLINE_STORAGE_SIZE]{};
+    alignas(alignof(ICallable)) UnsafeInlineArray<u8, INLINE_STORAGE_SIZE> m_inline_storage;
 };
+
+namespace Cxx {
+
+template<typename TReturn, typename... TArgs>
+constexpr auto swap(Function<TReturn(TArgs...)>& lhs, Function<TReturn(TArgs...)>& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

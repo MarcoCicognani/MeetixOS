@@ -12,19 +12,8 @@
 
 #pragma once
 
-enum class ErrorCode : unsigned short int {
-    Denied = 1,
-    Existing,
-    Invalid,
-    NoMemory,
-    BadFile,
-    NotFound,
-    IntOverflow,
-    EmptyData,
-    BadLength,
-    BadData,
-    NullPointer,
-    IndexOutOfRange,
-    ShiftOverflow,
-    DivisionByZero
+enum class Order {
+    Less,
+    Equal,
+    Greater
 };

@@ -1,1 +1,1 @@
-# MeetixC++ Language Library
+# MeetixC++ Language Framework

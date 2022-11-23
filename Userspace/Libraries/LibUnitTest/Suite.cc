@@ -19,11 +19,11 @@
 
 namespace UnitTest {
 
-static Option<NonNullRef<Suite>> s_instance = None;
+static Option<NonNullRef<Suite>> s_instance = OptionNone;
 
 auto Suite::inst() -> NonNullRef<Suite> {
     if ( !s_instance.is_present() )
-        s_instance = NonNullRef<Suite>::construct_from_emplace();
+        s_instance = must$(NonNullRef<Suite>::try_new_from_adopt(new (nothrow) Suite()));
 
     return s_instance.value().clone();
 }

@@ -21,7 +21,7 @@ TEST_CASE(construct) {
 }
 
 TEST_CASE(construct_complex_function) {
-    Function<usize(i32, char, usize)> sum_function = [](i32 a, char b, usize c) { return a + b + c; };
+    Function<i32(i32, i32, i32)> sum_function = [](i32 a, i32 b, i32 c) { return a + b + c; };
 
     verify_equal$(sum_function(1, 2, 3), 6);
     verify_equal$(sum_function(10, 10, 10), 30);
@@ -42,10 +42,10 @@ TEST_CASE(swap) {
 }
 
 TEST_CASE(move) {
-    Function<i32()> function_0 = []() { return 0; };
+    Function<i32()> function_0 = []() -> i32 { return 0; };
     verify_equal$(function_0(), 0);
 
-    Function<i32()> function_1 = []() { return 1; };
+    Function<i32()> function_1 = []() -> i32 { return 1; };
     verify_equal$(function_1(), 1);
 
     function_1 = Cxx::move(function_0);
@@ -94,7 +94,7 @@ BENCHMARK_CASE(call_one_hundred_thousand_times) {
 }
 
 void ensure_call_equals_with_template(Callable<usize> auto function) {
-    for ( auto const i : Range{ 0u, 1'000'000u } ) {
+    for ( auto const i : Range<usize>{ 0, 1'000'000u } ) {
         verify_equal$(function(), i);
     }
 }

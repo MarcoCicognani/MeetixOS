@@ -16,7 +16,7 @@
 
 #define must$(expression)                     \
     ({                                        \
-        auto __tryable_result = (expression);                                                                                                                  \
-        verify$(__tryable_result.is_value());  \
+        auto __tryable_result = (expression); \
+        verify$(!(!__tryable_result));        \
         __tryable_result.unwrap_value();      \
     })

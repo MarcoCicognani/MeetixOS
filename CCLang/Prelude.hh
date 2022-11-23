@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <CCLang/Alloc/AllocLayout.hh>
-#include <CCLang/Alloc/Box.hh>
 #include <CCLang/Alloc/Details.hh>
 #include <CCLang/Alloc/List.hh>
 #include <CCLang/Alloc/Map.hh>
@@ -40,6 +38,7 @@
 #include <CCLang/Core/Math.hh>
 #include <CCLang/Core/Meta.hh>
 #include <CCLang/Core/NumericLimits.hh>
+#include <CCLang/Core/ScopeGuard.hh>
 #include <CCLang/Core/SourceLocation.hh>
 #include <CCLang/Core/TypeTraits.hh>
 #include <CCLang/Lang/Cxx.hh>

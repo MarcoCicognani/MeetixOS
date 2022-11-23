@@ -24,13 +24,13 @@ TEST_CASE(construction) {
     verify$(empty_string_view.is_null_or_empty());
     verify_equal$(empty_string_view, ""sv);
 
-    auto const string                  = String::construct_from_view("Testing STC Strings"sv);
+    auto const string                  = String::new_from_view("Testing STC Strings"sv);
     auto const from_string_string_view = string.as_string_view();
     verify_false$(from_string_string_view.is_null_or_empty());
     verify_equal$(from_string_string_view.len(), 21);
     verify_equal$(from_string_string_view.len(), string.len());
     verify_equal$(from_string_string_view, "Testing STC Strings"sv);
-    verify_equal$(from_string_string_view, String::construct_from_view("Testing STC Strings"sv));
+    verify_equal$(from_string_string_view, String::new_from_view("Testing STC Strings"sv));
 }
 
 TEST_CASE(assignment_operators) {
@@ -101,10 +101,10 @@ TEST_CASE(at_and_braces) {
 TEST_CASE(compare) {
     auto const string_view = "Hello world OSDev"sv;
 
-    verify_equal$(string_view.compare("Hello"sv), 1);
-    verify_equal$(string_view.compare(""sv), 1);
-    verify_equal$(string_view.compare("Hello world OSDev"sv), 0);
-    verify_equal$(string_view.compare("Hello world OSDeveloper"sv), -1);
+    verify_equal$(string_view.compare("Hello"sv), Order::Greater);
+    verify_equal$(string_view.compare(""sv), Order::Greater);
+    verify_equal$(string_view.compare("Hello world OSDev"sv), Order::Equal);
+    verify_equal$(string_view.compare("Hello world OSDeveloper"sv), Order::Less);
 
     auto const less_string_view  = "Hello"sv;
     auto const more_string_view  = "Hello world OSDeveloper"sv;

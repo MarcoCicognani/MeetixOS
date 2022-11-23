@@ -13,7 +13,6 @@
 #pragma once
 
 #include <CCLang/Core/Meta.hh>
-#include <CCLang/Lang/IntTypes.hh>
 
 namespace std {
 
@@ -21,21 +20,21 @@ struct nothrow_t {
     explicit nothrow_t() = default;
 };
 
-enum class align_val_t : usize {
+enum class align_val_t : __SIZE_TYPE__ {
 };
 
 template<class T>
 class initializer_list {
 public:
     constexpr initializer_list()
-        : m_array(0)
+        : m_array(nullptr)
         , m_len(0) {
     }
 
     /**
      * @brief Getters
      */
-    constexpr usize size() const {
+    constexpr __SIZE_TYPE__ size() const {
         return m_len;
     }
     constexpr T const* begin() const {
@@ -46,14 +45,14 @@ public:
     }
 
 private:
-    constexpr explicit initializer_list(T const* array_begin, usize len)
+    constexpr explicit initializer_list(T const* array_begin, __SIZE_TYPE__ len)
         : m_array(array_begin)
         , m_len(len) {
     }
 
 private:
-    T const* m_array;
-    usize    m_len;
+    T const*      m_array;
+    __SIZE_TYPE__ m_len;
 };
 
 extern const nothrow_t nothrow;
@@ -76,13 +75,15 @@ constexpr auto move(T&& arg) noexcept -> RemoveReference<T>&& {
     return static_cast<RemoveReference<T>&&>(arg);
 }
 
-template<typename T, typename U>
-inline void swap(T& lhs, U& rhs) {
+template<typename T, typename U = T>
+constexpr void swap(T& lhs, U& rhs) {
     if ( &lhs == &rhs )
         return;
-    U tmp = move(lhs);
-    lhs   = move(rhs);
-    rhs   = move(tmp);
+
+    U __tmp = std::move(lhs);
+
+    lhs = std::move(rhs);
+    rhs = std::move(__tmp);
 }
 
 template<typename T, typename U = T>
@@ -122,10 +123,10 @@ using std::nullptr_t;
 
 using std::nothrow;
 
-constexpr void* operator new(usize, void* ptr) {
+constexpr void* operator new(__SIZE_TYPE__, void* ptr) {
     return ptr;
 }
 
-constexpr void* operator new[](usize, void* ptr) {
+constexpr void* operator new[](__SIZE_TYPE__, void* ptr) {
     return ptr;
 }

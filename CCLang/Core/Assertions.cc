@@ -14,7 +14,7 @@
 
 #ifdef IN_KERNEL
 
-auto Details::__assert_plug_panic(char const*, char const*, u32) -> void {
+auto Details::__assert_plug_panic(char const*, char const*, int) -> void {
     __builtin_unreachable();
 }
 
@@ -22,7 +22,7 @@ auto Details::__assert_plug_panic(char const*, char const*, u32) -> void {
 
 #    include <LibRT/Runtime.hh>
 
-auto Details::__assert_plug_panic(char const*, char const*, u32) -> void {
+auto Details::__assert_plug_panic(char const*, char const*, int) -> void {
     __builtin_unreachable();
 }
 

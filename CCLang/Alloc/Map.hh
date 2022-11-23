@@ -132,6 +132,8 @@ public:
         return *this;
     }
 
+    ~Map() = default;
+
     /**
      * @brief Deep cloning
      */

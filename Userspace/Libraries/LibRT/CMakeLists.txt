@@ -25,6 +25,7 @@ set(CCLANG_SOURCES
         ../../../CCLang/Core/Error.cc
         ../../../CCLang/Core/Hashing.cc
         ../../../CCLang/Core/SourceLocation.cc
+        ../../../CCLang/Lang/IntTypes.cc
         ../../../CCLang/Lang/StringView.cc)
 
 # --- crt0.cc ---
