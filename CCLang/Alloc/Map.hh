@@ -159,7 +159,7 @@ public:
      * @brief Swaps in O(1) the content of this BaseMap with another
      */
     auto swap(Map<K, T, KTraits, IsOrdered>& rhs) {
-        m_hash_set.swap(rhs.m_hash_set);
+        Cxx::swap(m_hash_set, rhs.m_hash_set);
     }
 
     /**
@@ -308,3 +308,12 @@ private:
 private:
     Set<KeyValue, KeyValueTraits, IsOrdered> m_hash_set{ Set<KeyValue, KeyValueTraits, IsOrdered>::new_empty() };
 };
+
+namespace Cxx {
+
+template<typename K, typename T, typename KTraits, bool IsOrdered>
+constexpr auto swap(Map<K, T, KTraits, IsOrdered>& lhs, Map<K, T, KTraits, IsOrdered>& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

@@ -27,7 +27,7 @@ enum class OptionNoneTag {
 using enum OptionNoneTag;
 
 template<Concrete T>
-class [[nodiscard("You cannot ignore a possible empty Option<T>")]] Option<T> final {
+class [[nodiscard("You cannot ignore a possible None Option<T>")]] Option<T> final {
 public:
     /**
      * @brief Constructors
@@ -200,7 +200,7 @@ private:
 };
 
 template<LValue T>
-class [[nodiscard("You cannot ignore a possible empty Option<T>")]] Option<T> final {
+class [[nodiscard("You cannot ignore a possible None Option<T>")]] Option<T> final {
 public:
     /**
      * @brief Constructors

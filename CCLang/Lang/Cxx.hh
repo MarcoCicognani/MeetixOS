@@ -66,7 +66,7 @@ constexpr auto forward(RemoveReference<T>& param) noexcept -> T&& {
 
 template<typename T>
 constexpr auto forward(RemoveReference<T>&& param) noexcept -> T&& {
-    static_assert(!IsLValue<T>, "Can't forward an rvalue as an lvalue.");
+    static_assert(!is_lvalue<T>, "Can't forward an rvalue as an lvalue.");
     return static_cast<T&&>(param);
 }
 

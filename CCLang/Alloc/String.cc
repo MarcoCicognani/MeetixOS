@@ -57,7 +57,7 @@ auto String::operator=(String&& rhs) -> String& {
 }
 
 auto String::swap(String& rhs) -> void {
-    m_string_storage_ref.swap(rhs.m_string_storage_ref);
+    Cxx::swap(m_string_storage_ref, rhs.m_string_storage_ref);
 }
 
 auto String::at(usize index) const -> char const& {
@@ -68,7 +68,7 @@ auto String::operator[](usize index) const -> char const& {
     return at(index);
 }
 
-auto String::compare(StringView rhs) const -> int {
+auto String::compare(StringView rhs) const -> Order {
     return as_string_view().compare(rhs);
 }
 

@@ -272,7 +272,7 @@ using SetInsertResult    = Details::InsertResult;
 template<typename T, typename TTraits, bool IsOrdered>
 class Set final : public DenyCopy {
 private:
-    enum : usize {
+    enum : unsigned int {
         LoadFactorPercent = 60
     };
 
@@ -930,3 +930,12 @@ private:
     usize          m_values_count{ 0 };
     usize          m_deleted_count{ 0 };
 };
+
+namespace Cxx {
+
+template<typename T, typename TTraits, bool IsOrdered>
+constexpr auto swap(Set<T, TTraits, IsOrdered>& lhs, Set<T, TTraits, IsOrdered>& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

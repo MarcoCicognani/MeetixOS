@@ -16,15 +16,15 @@
 #include <CCLang/Core/Assertions.hh>
 #include <CCLang/Core/Meta.hh>
 
-auto operator new(usize) -> void* {
+auto operator new(__SIZE_TYPE__) -> void* {
     verify_not_reached$();
 }
 
-auto operator new(usize, align_val_t) -> void* {
+auto operator new(__SIZE_TYPE__, align_val_t) -> void* {
     verify_not_reached$();
 }
 
-auto operator new[](usize) -> void* {
+auto operator new[](__SIZE_TYPE__) -> void* {
     verify_not_reached$();
 }
 
@@ -40,7 +40,7 @@ void operator delete[](void*) noexcept {
     verify_not_reached$();
 }
 
-auto operator new(usize size, nothrow_t const&) noexcept -> void* {
+auto operator new(__SIZE_TYPE__ size, nothrow_t const&) noexcept -> void* {
     auto const error_or_ptr = Heap::alloc(size, Heap::Clean::No);
    if ( error_or_ptr.is_value() )
        return error_or_ptr.value();
@@ -48,7 +48,7 @@ auto operator new(usize size, nothrow_t const&) noexcept -> void* {
        return nullptr;
 }
 
-auto operator new(usize size, align_val_t align, nothrow_t const&) noexcept -> void* {
+auto operator new(__SIZE_TYPE__ size, align_val_t align, nothrow_t const&) noexcept -> void* {
    auto const error_or_ptr = Heap::alloc_aligned(size, UnderlyingType<align_val_t>(align), Heap::Clean::No);
    if ( error_or_ptr.is_value() )
        return error_or_ptr.value();
@@ -56,7 +56,7 @@ auto operator new(usize size, align_val_t align, nothrow_t const&) noexcept -> v
        return nullptr;
 }
 
-auto operator new[](usize size, nothrow_t const&) noexcept -> void* {
+auto operator new[](__SIZE_TYPE__ size, nothrow_t const&) noexcept -> void* {
    auto const error_or_ptr  = Heap::alloc(size, Heap::Clean::No);
    if ( error_or_ptr.is_value() )
        return error_or_ptr.value();
@@ -64,14 +64,14 @@ auto operator new[](usize size, nothrow_t const&) noexcept -> void* {
        return nullptr;
 }
 
-void operator delete(void* ptr, usize size) noexcept {
+void operator delete(void* ptr, __SIZE_TYPE__ size) noexcept {
     Heap::dealloc(ptr, size);
 }
 
-void operator delete(void* ptr, usize size, align_val_t align) noexcept {
+void operator delete(void* ptr, __SIZE_TYPE__ size, align_val_t align) noexcept {
     Heap::dealloc_aligned(ptr, size, UnderlyingType<align_val_t>(align));
 }
 
-void operator delete[](void* ptr, usize size) noexcept {
+void operator delete[](void* ptr, __SIZE_TYPE__ size) noexcept {
     Heap::dealloc(ptr, size);
 }

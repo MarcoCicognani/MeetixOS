@@ -252,7 +252,7 @@ public:
     /**
      * @brief Swaps in O(1) the content of this List with another
      */
-    auto swap(List<T>& rhs) {
+    constexpr auto swap(List<T>& rhs) {
         Cxx::swap(m_head_node, rhs.m_head_node);
         Cxx::swap(m_tail_node, rhs.m_tail_node);
         Cxx::swap(m_values_count, rhs.m_values_count);
@@ -469,3 +469,12 @@ private:
     Node* m_tail_node{ nullptr };
     usize m_values_count{ 0 };
 };
+
+namespace Cxx {
+
+template<typename T>
+constexpr auto swap(List<T>& lhs, List<T>& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

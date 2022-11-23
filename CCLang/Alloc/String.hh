@@ -86,7 +86,7 @@ public:
      * @brief Compares this string with another
      */
     [[nodiscard]]
-    auto compare(StringView) const -> int; /* TODO STC.Lang.Order */
+    auto compare(StringView) const -> Order;
     [[nodiscard]]
     auto equals_ignore_case(StringView) const -> bool;
 
@@ -265,3 +265,11 @@ struct TypeTraits<String> final : public Details::TypeTraits<String> {
         return false;
     }
 };
+
+namespace Cxx {
+
+constexpr auto swap(String& lhs, String& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

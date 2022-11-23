@@ -108,3 +108,13 @@ private:
 private:
     Vector<char> m_char_vector{ Vector<char>::new_empty() };
 };
+
+
+namespace Cxx {
+
+constexpr auto swap(StringBuilder& lhs, StringBuilder& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */
+

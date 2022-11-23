@@ -625,7 +625,7 @@ public:
     }
     [[nodiscard]]
     auto raw_data() const -> T const* {
-        return m_data_storage;
+        return m_data_storage.unwrap();
     }
 
     [[nodiscard]]
@@ -649,3 +649,12 @@ private:
     usize             m_data_capacity{ 0 };
     usize             m_values_count{ 0 };
 };
+
+namespace Cxx {
+
+template<typename T>
+constexpr auto swap(Vector<T>& lhs, Vector<T>& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

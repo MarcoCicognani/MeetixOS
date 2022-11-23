@@ -83,7 +83,7 @@ public:
     /**
      * @brief Swaps this ref with another
      */
-    void swap(NonNullRef<T>& rhs) {
+    constexpr void swap(NonNullRef<T>& rhs) {
         Cxx::swap(m_ref_counted_ptr, rhs.m_ref_counted_ptr);
     }
 
@@ -177,3 +177,12 @@ struct TypeTraits<NonNullRef<T>> final : public Details::TypeTraits<NonNullRef<T
         return a.as_ptr() == b.as_ptr();
     }
 };
+
+namespace Cxx {
+
+template<typename T>
+constexpr auto swap(NonNullRef<T>& lhs, NonNullRef<T>& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

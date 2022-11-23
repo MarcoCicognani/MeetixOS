@@ -20,7 +20,7 @@
 #include <CCLang/Lang/Option.hh>
 
 template<Concrete T, Concrete E>
-class [[nodiscard("You cannot ignore a possible E variant Result<T, E>")]] Result<T, E> final {
+class [[nodiscard("You cannot ignore a possible Error variant Result<T, E>")]] Result<T, E> final {
 public:
     /**
      * @brief Constructors
@@ -85,8 +85,8 @@ public:
      * @brief Swaps this result with another
      */
     constexpr auto swap(Result<T, E>& rhs) {
-        m_value_option.swap(rhs.m_value_option);
-        m_error_option.swap(rhs.m_error_option);
+        Cxx::swap(m_value_option, rhs.m_value_option);
+        Cxx::swap(m_error_option, rhs.m_error_option);
     }
 
     /**
@@ -181,7 +181,7 @@ private:
 };
 
 template<Concrete E>
-class [[nodiscard("You cannot ignore a possible E variant Result<T, E>")]] Result<void, E> final {
+class [[nodiscard("You cannot ignore a possible Error variant Result<T, E>")]] Result<void, E> final {
 public:
     /**
      * @brief Constructors
@@ -228,7 +228,7 @@ public:
      * @brief Swaps this result with another
      */
     constexpr auto swap(Result<void, E>& rhs) {
-        m_error_option.swap(rhs.m_error_option);
+        Cxx::swap(m_error_option, rhs.m_error_option);
     }
 
     /**
@@ -318,7 +318,7 @@ private:
 };
 
 template<LValue T, Concrete E>
-class [[nodiscard("You cannot ignore a possible E variant Result<T, E>")]] Result<T, E> final {
+class [[nodiscard("You cannot ignore a possible Error variant Result<T, E>")]] Result<T, E> final {
 public:
 
 public:
@@ -377,8 +377,8 @@ public:
      * @brief Swaps this result with another
      */
     constexpr auto swap(Result<T, E>& rhs) {
-        m_value_option.swap(rhs.m_value_option);
-        m_error_option.swap(rhs.m_error_option);
+        Cxx::swap(m_value_option, rhs.m_value_option);
+        Cxx::swap(m_error_option, rhs.m_error_option);
     }
 
     /**

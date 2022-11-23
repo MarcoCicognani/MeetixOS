@@ -92,43 +92,47 @@ struct Conditional<false, TTrue, TFalse> {
     using Type = TFalse;
 };
 
-template<typename T> constexpr bool IsConst          = false;
-template<typename T> constexpr bool IsConst<T const> = true;
+template<typename T> constexpr bool is_const          = false;
+template<typename T> constexpr bool is_const<T const> = true;
 
-template<typename T> constexpr bool IsVolatile             = false;
-template<typename T> constexpr bool IsVolatile<T volatile> = true;
-
-template<typename T>
-           constexpr bool IsIntegral                     = false;
-template<> constexpr bool IsIntegral<bool>               = true;
-template<> constexpr bool IsIntegral<unsigned char>      = true;
-template<> constexpr bool IsIntegral<signed char>        = true;
-template<> constexpr bool IsIntegral<char8_t>            = true;
-template<> constexpr bool IsIntegral<char16_t>           = true;
-template<> constexpr bool IsIntegral<char32_t>           = true;
-template<> constexpr bool IsIntegral<unsigned short>     = true;
-template<> constexpr bool IsIntegral<unsigned int>       = true;
-template<> constexpr bool IsIntegral<unsigned long>      = true;
-template<> constexpr bool IsIntegral<unsigned long long> = true;
+template<typename T> constexpr bool is_volatile             = false;
+template<typename T> constexpr bool is_volatile<T volatile> = true;
 
 template<typename T>
-           constexpr bool IsFloatingPoint              = false;
-template<> constexpr bool IsFloatingPoint<float>       = true;
-template<> constexpr bool IsFloatingPoint<double>      = true;
-template<> constexpr bool IsFloatingPoint<long double> = true;
+           constexpr bool is_integral                     = false;
+template<> constexpr bool is_integral<bool>               = true;
+template<> constexpr bool is_integral<unsigned char>      = true;
+template<> constexpr bool is_integral<signed char>        = true;
+template<> constexpr bool is_integral<char8_t>            = true;
+template<> constexpr bool is_integral<char16_t>           = true;
+template<> constexpr bool is_integral<char32_t>           = true;
+template<> constexpr bool is_integral<unsigned short>     = true;
+template<> constexpr bool is_integral<unsigned int>       = true;
+template<> constexpr bool is_integral<unsigned long>      = true;
+template<> constexpr bool is_integral<u8>                 = true;
+template<> constexpr bool is_integral<u16>                = true;
+template<> constexpr bool is_integral<u32>                = true;
+template<> constexpr bool is_integral<u64>                = true;
+template<> constexpr bool is_integral<usize>              = true;
 
-template<typename T> constexpr bool IsPointer     = false;
-template<typename T> constexpr bool IsPointer<T*> = true;
+template<typename T>
+           constexpr bool is_floating_point              = false;
+template<> constexpr bool is_floating_point<float>       = true;
+template<> constexpr bool is_floating_point<double>      = true;
+template<> constexpr bool is_floating_point<long double> = true;
+
+template<typename T> constexpr bool is_pointer     = false;
+template<typename T> constexpr bool is_pointer<T*> = true;
 
 template<typename T, typename U>
-                     constexpr bool IsSame       = false;
-template<typename T> constexpr bool IsSame<T, T> = true;
+                     constexpr bool is_same       = false;
+template<typename T> constexpr bool is_same<T, T> = true;
 
-template<typename T> constexpr bool IsLValue     = false;
-template<typename T> constexpr bool IsLValue<T&> = true;
+template<typename T> constexpr bool is_lvalue     = false;
+template<typename T> constexpr bool is_lvalue<T&> = true;
 
-template<typename T> constexpr bool IsRValue      = false;
-template<typename T> constexpr bool IsRValue<T&&> = true;
+template<typename T> constexpr bool is_rvalue      = false;
+template<typename T> constexpr bool is_rvalue<T&&> = true;
 
 template<typename T>
 struct MakeSigned {
@@ -177,6 +181,26 @@ struct MakeSigned<signed long> {
 template<>
 struct MakeSigned<signed long long> {
     using Type = signed long long;
+};
+template<>
+struct MakeSigned<u8> {
+    using Type = i8;
+};
+template<>
+struct MakeSigned<u16> {
+    using Type = i16;
+};
+template<>
+struct MakeSigned<u32> {
+    using Type = i32;
+};
+template<>
+struct MakeSigned<u64> {
+    using Type = i64;
+};
+template<>
+struct MakeSigned<usize> {
+    using Type = isize;
 };
 
 template<typename T>
@@ -231,6 +255,26 @@ template<>
 struct MakeUnsigned<bool> {
     using Type = bool;
 };
+template<>
+struct MakeUnsigned<i8> {
+    using Type = u8;
+};
+template<>
+struct MakeUnsigned<i16> {
+    using Type = u16;
+};
+template<>
+struct MakeUnsigned<i32> {
+    using Type = u32;
+};
+template<>
+struct MakeUnsigned<i64> {
+    using Type = u64;
+};
+template<>
+struct MakeUnsigned<isize> {
+    using Type = usize;
+};
 
 } /* namespace Details */
 
@@ -252,34 +296,34 @@ template<typename T> using RemoveReference     = typename Details::RemoveReferen
 template<typename T> using MakeSigned   = typename Details::MakeSigned<T>::Type;
 template<typename T> using MakeUnsigned = typename Details::MakeUnsigned<T>::Type;
 
-template<typename T> constexpr bool IsConst    = Details::IsConst<T>;
-template<typename T> constexpr bool IsVolatile = Details::IsVolatile<T>;
+template<typename T> constexpr bool is_const    = Details::is_const<T>;
+template<typename T> constexpr bool is_volatile = Details::is_volatile<T>;
 
 template<typename T, typename U>
-constexpr bool IsSame = Details::IsSame<T, U>;
+constexpr bool is_same = Details::is_same<T, U>;
 
-template<typename T> constexpr bool IsIntegral      = Details::IsIntegral<MakeUnsigned<RemoveConstVolatile<T>>>;
-template<typename T> constexpr bool IsFloatingPoint = Details::IsFloatingPoint<RemoveConstVolatile<T>>;
-template<typename T> constexpr bool IsArithmetic    = IsIntegral<T> || IsFloatingPoint<T>;
+template<typename T> constexpr bool is_integral       = Details::is_integral<MakeUnsigned<RemoveConstVolatile<T>>>;
+template<typename T> constexpr bool is_floating_point = Details::is_floating_point<RemoveConstVolatile<T>>;
+template<typename T> constexpr bool is_arithmetic     = is_integral<T> || is_floating_point<T>;
 
-template<typename T> constexpr bool IsClass = __is_class(T);
-template<typename T> constexpr bool IsUnion = __is_union(T);
-template<typename T> constexpr bool IsEnum  = __is_enum(T);
+template<typename T> constexpr bool is_class = __is_class(T);
+template<typename T> constexpr bool is_union = __is_union(T);
+template<typename T> constexpr bool is_enum  = __is_enum(T);
 
 template<typename T> using UnderlyingType = __underlying_type(T);
 
 template<typename TDerive, typename TBase>
-constexpr bool IsDerived = __is_base_of(TBase, TDerive);
+constexpr bool is_derived = __is_base_of(TBase, TDerive);
 
-template<typename T> constexpr bool IsLValue   = Details::IsLValue<T>;
-template<typename T> constexpr bool IsRValue   = Details::IsRValue<T>;
-template<typename T> constexpr bool IsConcrete = !IsLValue<T> && !IsRValue<T>;
+template<typename T> constexpr bool is_lvalue = Details::is_lvalue<T>;
+template<typename T> constexpr bool is_rvalue = Details::is_rvalue<T>;
+template<typename T> constexpr bool is_value  = !is_lvalue<T> && !is_rvalue<T>;
 
-template<typename T> constexpr bool IsTriviallyCopyable = __is_trivially_copyable(T);
+template<typename T> constexpr bool is_trivially_copyable = __is_trivially_copyable(T);
 
-template<typename T> constexpr bool IsSigned      = IsSame<T, MakeSigned<T>>;
-template<typename T> constexpr bool IsUnsigned    = IsSame<T, MakeUnsigned<T>>;
-template<typename T> constexpr bool IsVoid        = IsSame<void, RemovePointer<RemoveConstVolatile<T>>>;
-template<typename T> constexpr bool IsNullPtr     = IsSame<decltype(nullptr), RemoveConstVolatile<T>>;
-template<typename T> constexpr bool IsFundamental = IsArithmetic<T> || IsVoid<T> || IsNullPtr<T>;
-template<typename T> constexpr bool IsPointer     = Details::IsPointer<RemoveConstVolatile<T>>;
+template<typename T> constexpr bool is_signed      = is_same<T, MakeSigned<T>>;
+template<typename T> constexpr bool is_unsigned    = is_same<T, MakeUnsigned<T>>;
+template<typename T> constexpr bool is_void        = is_same<void, RemovePointer<RemoveConstVolatile<T>>>;
+template<typename T> constexpr bool is_nullptr     = is_same<decltype(nullptr), RemoveConstVolatile<T>>;
+template<typename T> constexpr bool is_fundamental = is_arithmetic<T> || is_void<T> || is_nullptr<T>;
+template<typename T> constexpr bool is_pointer     = Details::is_pointer<RemoveConstVolatile<T>>;

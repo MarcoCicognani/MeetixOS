@@ -647,7 +647,7 @@ auto Formatter<T>::format(T value) -> ErrorOr<void> {
     }
 
     /* put the number into the string-builder */
-    if constexpr ( IsSame<MakeUnsigned<T>, T> ) {
+    if constexpr ( is_same<MakeUnsigned<T>, T> ) {
         try$(try_put_u64(value,
                          base,
                          show_base(),

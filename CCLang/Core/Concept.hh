@@ -16,71 +16,72 @@
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/IntTypes.hh>
 
+/* forward declaration here since we cannot include CCLang.Forward */
 template<typename T>
 struct TypeTraits;
 
 template<typename T>
-concept Const = IsConst<T>;
+concept Const = is_const<T>;
 
 template<typename T>
-concept Volatile = IsVolatile<T>;
+concept Volatile = is_volatile<T>;
 
 template<typename T, typename U>
-concept SameAs = IsSame<T, U>;
+concept SameAs = is_same<T, U>;
 
 template<typename T>
-concept Integral = IsIntegral<T>;
+concept Integral = is_integral<T>;
 
 template<typename T>
-concept FloatingPoint = IsFloatingPoint<T>;
+concept FloatingPoint = is_floating_point<T>;
 
 template<typename T>
-concept Arithmetic = IsArithmetic<T>;
+concept Arithmetic = is_arithmetic<T>;
 
 template<typename T>
-concept Class = IsClass<T>;
+concept Class = is_class<T>;
 
 template<typename T>
-concept Union = IsUnion<T>;
+concept Union = is_union<T>;
 
 template<typename T>
-concept Enum = IsEnum<T>;
+concept Enum = is_enum<T>;
 
 template<typename TDerive, typename TBase>
-concept Derived = IsDerived<TDerive, TBase>;
+concept Derived = is_derived<TDerive, TBase>;
 
 template<typename T>
-concept LValue = IsLValue<T>;
+concept LValue = is_lvalue<T>;
 
 template<typename T>
-concept RValue = IsRValue<T>;
+concept RValue = is_rvalue<T>;
 
 template<typename T>
-concept Concrete = IsConcrete<T>;
+concept Concrete = is_value<T>;
 
 template<typename T>
-concept Signed = IsSigned<T>;
+concept Signed = is_signed<T>;
 
 template<typename T>
-concept Unsigned = IsUnsigned<T>;
+concept Unsigned = is_unsigned<T>;
 
 template<typename T>
-concept Void = IsVoid<T>;
+concept Void = is_void<T>;
 
 template<typename T>
-concept NullPtr = IsNullPtr<T>;
+concept NullPtr = is_nullptr<T>;
 
 template<typename T>
-concept Fundamental = IsFundamental<T>;
+concept Fundamental = is_fundamental<T>;
 
 template<typename T>
-concept Pointer = IsPointer<T>;
+concept Pointer = is_pointer<T>;
 
 template<typename T, typename... TArgs>
 concept ConstructibleWith = requires { ::new T{ Cxx::declval<TArgs>()... }; };
 
 template<typename T>
-concept CopyConstructible = IsTriviallyCopyable<T> || ConstructibleWith<T, AddLValueReference<AddConst<T>>>;
+concept CopyConstructible = is_trivially_copyable<T> || ConstructibleWith<T, AddLValueReference<AddConst<T>>>;
 
 template<typename T>
 concept Cloneable = requires(T t) {

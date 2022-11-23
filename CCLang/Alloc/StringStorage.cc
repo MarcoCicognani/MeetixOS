@@ -40,5 +40,5 @@ auto StringStorage::is_empty() const -> bool {
 StringStorage::StringStorage(Box<char[]> storage_box, StringView string_view)
     : m_storage_box{ Cxx::move(storage_box) }
     , m_char_count{ string_view.len() } {
-    __builtin_memcpy(m_storage_box.as_ptr(), string_view.as_cstr(), sizeof(char) * string_view.len());
+    __builtin_memcpy(m_storage_box.as_ptr(), string_view.as_cstr(), (string_view.len() * sizeof(char)).unwrap());
 }

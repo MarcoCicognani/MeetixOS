@@ -75,7 +75,7 @@ public:
     /**
      * @brief Swaps this box with another
      */
-    void swap(Box<T>& rhs) {
+    constexpr void swap(Box<T>& rhs) {
         Cxx::swap(m_boxed_array_ptr, rhs.m_boxed_array_ptr);
     }
 
@@ -209,7 +209,7 @@ public:
     /**
      * @brief Swaps this box with another
      */
-    void swap(Box<T[]>& rhs) {
+    constexpr void swap(Box<T[]>& rhs) {
         Cxx::swap(m_boxed_array_ptr, rhs.m_boxed_array_ptr);
     }
 
@@ -284,3 +284,12 @@ struct TypeTraits<Box<T>> : public Details::TypeTraits<Box<T>> {
         return a.as_ptr() == b.as_ptr();
     }
 };
+
+namespace Cxx {
+
+template<typename T>
+constexpr auto swap(Box<T>& lhs, Box<T>& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */
