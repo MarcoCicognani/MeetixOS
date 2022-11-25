@@ -920,7 +920,7 @@ auto Formatter<ErrorCode>::format(ErrorCode const& error_code) const -> ErrorOr<
         "BadData"sv
     };
 
-    auto const errno_as_u16 = UnderlyingType<ErrorCode>(error_code);
+    auto const errno_as_u16 = static_cast<UnderlyingType<ErrorCode>>(error_code);
     auto const errno_as_sv  = s_error_code_as_string_view[errno_as_u16];
 
     auto sv_formatter = Formatter<StringView>::new_from_format_applier(clone_format_applier());

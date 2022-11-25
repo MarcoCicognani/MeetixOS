@@ -14,11 +14,11 @@
 #include <CCLang/Core/Assertions.hh>
 
 auto RefCounted::add_strong_ref() const -> void {
-    auto const old_strong_count = __atomic_fetch_add(&m_strong_ref_count, 1, __ATOMIC_RELAXED);
+    auto const old_strong_count = m_strong_ref_count.atomic_fetch_add(1, MemOrder::Relaxed);
     verify_greater_equal$(old_strong_count, 1);
 }
 auto RefCounted::remove_strong_ref() const -> void {
-    auto const old_strong_count = __atomic_fetch_sub(&m_strong_ref_count, 1, __ATOMIC_SEQ_CST);
+    auto const old_strong_count = m_strong_ref_count.atomic_fetch_sub(1, MemOrder::Total);
     verify_greater_equal$(old_strong_count, 1);
 
     /* time to free the referenced object */
@@ -27,7 +27,7 @@ auto RefCounted::remove_strong_ref() const -> void {
 }
 
 auto RefCounted::strong_ref_count() const -> usize {
-    return __atomic_load_n(&m_strong_ref_count, __ATOMIC_SEQ_CST);
+    return m_strong_ref_count.atomic_load(MemOrder::Total);
 }
 
 RefCounted::~RefCounted() {

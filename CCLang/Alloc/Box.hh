@@ -182,7 +182,7 @@ public:
      */
     [[nodiscard]]
     static auto try_new_from_len(usize len) -> ErrorOr<Box<T[]>> {
-        auto unboxed_array_ptr = new (nothrow) T[len];
+        auto unboxed_array_ptr = new (nothrow) T[len.unwrap()];
         if ( unboxed_array_ptr != nullptr ) [[likely]]
             return Box<T[]>{ unboxed_array_ptr };
         else
@@ -217,10 +217,10 @@ public:
      * @brief Access operators
      */
     auto operator[](usize index) -> T& {
-        return as_ptr()[index];
+        return as_ptr()[index.unwrap()];
     }
     auto operator[](usize index) const -> T const& {
-        return as_ptr()[index];
+        return as_ptr()[index.unwrap()];
     }
 
     /**

@@ -11,6 +11,7 @@
  */
 
 #include <CCLang/Core/ErrorOr.hh>
+#include <CCLang/Core/Meta.hh>
 #include <CCLang/Lang/IntTypes.hh>
 #include <CCLang/Lang/Try.hh>
 
@@ -169,6 +170,28 @@
         } else {                                                                                                                                               \
             m_value /= rhs.m_value;                                                                                                                            \
         }                                                                                                                                                      \
+    }                                                                                                                                                          \
+    auto WrapperName::atomic_load(MemOrder mem_order) volatile->WrapperName {                                                                                  \
+        CCIntegerType __value;                                                                                                                                 \
+        __atomic_load(&m_value, &__value, static_cast<UnderlyingType<MemOrder>>(mem_order));                                                                   \
+        return __value;                                                                                                                                        \
+    }                                                                                                                                                          \
+    auto WrapperName::atomic_store(WrapperName rhs, MemOrder mem_order) volatile->void {                                                                       \
+        __atomic_store(&m_value, &rhs.m_value, static_cast<UnderlyingType<MemOrder>>(mem_order));                                                              \
+    }                                                                                                                                                          \
+    auto WrapperName::atomic_add(WrapperName rhs, MemOrder mem_order) volatile->void { (void)atomic_fetch_add(rhs, mem_order); }                               \
+    auto WrapperName::atomic_sub(WrapperName rhs, MemOrder mem_order) volatile->void { (void)atomic_fetch_sub(rhs, mem_order); }                               \
+    auto WrapperName::atomic_fetch_add(WrapperName rhs, MemOrder mem_order) volatile->WrapperName {                                                            \
+        return __atomic_fetch_add(&m_value, rhs.m_value, static_cast<UnderlyingType<MemOrder>>(mem_order));                                                    \
+    }                                                                                                                                                          \
+    auto WrapperName::atomic_fetch_sub(WrapperName rhs, MemOrder mem_order) volatile->WrapperName {                                                            \
+        return __atomic_fetch_sub(&m_value, rhs.m_value, static_cast<UnderlyingType<MemOrder>>(mem_order));                                                    \
+    }                                                                                                                                                          \
+    auto WrapperName::atomic_add_fetch(WrapperName rhs, MemOrder mem_order) volatile->WrapperName {                                                            \
+        return __atomic_add_fetch(&m_value, rhs.m_value, static_cast<UnderlyingType<MemOrder>>(mem_order));                                                    \
+    }                                                                                                                                                          \
+    auto WrapperName::atomic_sub_fetch(WrapperName rhs, MemOrder mem_order) volatile->WrapperName {                                                            \
+        return __atomic_sub_fetch(&m_value, rhs.m_value, static_cast<UnderlyingType<MemOrder>>(mem_order));                                                    \
     }
 
 #define OOUnsignedIntegerWrapperImpl$(WrapperName)                                                                                                             \

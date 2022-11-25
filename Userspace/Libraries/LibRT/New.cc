@@ -49,7 +49,7 @@ auto operator new(__SIZE_TYPE__ size, nothrow_t const&) noexcept -> void* {
 }
 
 auto operator new(__SIZE_TYPE__ size, align_val_t align, nothrow_t const&) noexcept -> void* {
-   auto const error_or_ptr = Heap::alloc_aligned(size, UnderlyingType<align_val_t>(align), Heap::Clean::No);
+   auto const error_or_ptr = Heap::alloc_aligned(size, static_cast<UnderlyingType<align_val_t>>(align), Heap::Clean::No);
    if ( error_or_ptr.is_value() )
        return error_or_ptr.value();
    else
@@ -69,7 +69,7 @@ void operator delete(void* ptr, __SIZE_TYPE__ size) noexcept {
 }
 
 void operator delete(void* ptr, __SIZE_TYPE__ size, align_val_t align) noexcept {
-    Heap::dealloc_aligned(ptr, size, UnderlyingType<align_val_t>(align));
+    Heap::dealloc_aligned(ptr, size, static_cast<UnderlyingType<align_val_t>>(align));
 }
 
 void operator delete[](void* ptr, __SIZE_TYPE__ size) noexcept {
