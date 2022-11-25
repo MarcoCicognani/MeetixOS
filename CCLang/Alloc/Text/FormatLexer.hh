@@ -25,7 +25,7 @@ public:
      * @brief Error safe Factory functions
      */
     [[nodiscard]]
-    static constexpr auto new_from_view(StringView source_view) -> FormatLexer {
+    static constexpr auto from_view(StringView source_view) -> FormatLexer {
         return FormatLexer{ source_view };
     }
 

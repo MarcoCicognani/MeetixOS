@@ -61,7 +61,7 @@
         constexpr auto is_signed() const -> bool { return true; }                                                                                              \
                                                                                                                                                                \
         template<typename TInteger>                                                                                                                            \
-        constexpr auto as() -> TInteger {                                                                                                                      \
+        constexpr auto as() const -> TInteger {                                                                                                                \
             return TInteger{ static_cast<typename TInteger::CCIntegerType>(m_value) };                                                                         \
         }                                                                                                                                                      \
                                                                                                                                                                \

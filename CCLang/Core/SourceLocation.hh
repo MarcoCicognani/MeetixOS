@@ -23,9 +23,9 @@ public:
      * @brief Error safe factory function
      */
     [[nodiscard]]
-    static auto new_from_here(char const* file_path = __builtin_FILE(),
-                                    char const* function  = __builtin_FUNCTION(),
-                                    u32         line      = __builtin_LINE()) -> SourceLocation;
+    static auto new_from_here(char const* = __builtin_FILE(),
+                              char const* = __builtin_FUNCTION(),
+                              u32         = __builtin_LINE()) -> SourceLocation;
 
     /**
      * @brief Getters
@@ -38,7 +38,7 @@ public:
     auto line() const -> u32;
 
 private:
-    explicit SourceLocation(char const* file_path, char const* function, u32 line);
+    explicit SourceLocation(char const*, char const*, u32);
 
 private:
     StringView m_file_path;

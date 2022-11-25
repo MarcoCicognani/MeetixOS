@@ -17,12 +17,12 @@
 #include <CCLang/Lang/StringView.hh>
 #include <CCLang/Lang/Try.hh>
 
-auto StringStorage::try_new_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>> {
+auto StringStorage::try_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>> {
     if ( string_view.is_null() )
-        return Error::new_from_code(ErrorCode::EmptyData);
+        return Error::from_code(ErrorCode::EmptyData);
 
-    auto storage_box = try$(Box<char[]>::try_new_from_len(string_view.len()));
-    return NonNullRef<StringStorage>::try_new_from_adopt(new (nothrow) StringStorage(Cxx::move(storage_box), string_view));
+    auto storage_box = try$(Box<char[]>::try_from_len(string_view.len()));
+    return NonNullRef<StringStorage>::try_from_adopt(new (nothrow) StringStorage(Cxx::move(storage_box), string_view));
 }
 
 auto StringStorage::storage_ptr() const -> char const* {

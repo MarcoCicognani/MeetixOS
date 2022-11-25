@@ -28,23 +28,23 @@ public:
      * @brief Non-Error safe factory functions
      */
     [[nodiscard]]
-    static auto new_empty() -> StringBuilder;
+    static auto empty() -> StringBuilder;
     [[nodiscard]]
-    static auto new_with_capacity(usize capacity) -> StringBuilder;
+    static auto with_capacity(usize) -> StringBuilder;
     [[nodiscard]]
-    static auto new_from_other(StringBuilder const& rhs) -> StringBuilder;
+    static auto from_other(StringBuilder const&) -> StringBuilder;
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_new_with_capacity(usize capacity) -> ErrorOr<StringBuilder>;
-    static auto try_new_from_other(StringBuilder const& rhs) -> ErrorOr<StringBuilder>;
+    static auto try_with_capacity(usize) -> ErrorOr<StringBuilder>;
+    static auto try_from_other(StringBuilder const&) -> ErrorOr<StringBuilder>;
 
     /**
      * @brief Move constructor and move assignment
      */
-    StringBuilder(StringBuilder&& rhs);
-    auto operator=(StringBuilder&& rhs) -> StringBuilder&;
+    StringBuilder(StringBuilder&&);
+    auto operator=(StringBuilder&&) -> StringBuilder&;
 
     ~StringBuilder() = default;
 
@@ -75,14 +75,14 @@ public:
     /**
      * @brief Appends a string to the builder
      */
-    auto append(StringView string_view) -> void;
-    auto try_append(StringView string_view) -> ErrorOr<void>;
+    auto append(StringView) -> void;
+    auto try_append(StringView) -> ErrorOr<void>;
 
     /**
      * @brief Ensures that this StringBuilder could store at least <capacity>
      */
-    auto ensure_capacity(usize capacity);
-    auto try_ensure_capacity(usize capacity) -> ErrorOr<void>;
+    auto ensure_capacity(usize);
+    auto try_ensure_capacity(usize) -> ErrorOr<void>;
 
     /**
      * @brief Converts this StringBuilder to a String WITHOUT calling clear

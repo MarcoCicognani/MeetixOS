@@ -31,5 +31,5 @@ auto SourceLocation::line() const -> u32 {
 SourceLocation::SourceLocation(const char* file_path, const char* function, u32 line)
     : m_file_path{ StringView::new_from_cstr(file_path) }
     , m_function{ StringView::new_from_cstr(function) }
-    , m_line{ line } {
+    , m_line{ Cxx::move(line) } {
 }

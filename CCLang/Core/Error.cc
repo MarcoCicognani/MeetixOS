@@ -14,11 +14,11 @@
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/StringView.hh>
 
-auto Error::new_from_code(ErrorCode code, FromSyscall from_syscall, SourceLocation error_location) -> Error {
+auto Error::from_code(ErrorCode, FromSyscall, SourceLocation) -> Error {
     return Error{ code, ""sv, from_syscall, Cxx::move(error_location) };
 }
 
-auto Error::new_from_literal(StringView string_literal, FromSyscall from_syscall, SourceLocation error_location) -> Error {
+auto Error::from_literal(StringView, FromSyscall, SourceLocation) -> Error {
     return Error{ ErrorCode{ 0 }, string_literal, from_syscall, Cxx::move(error_location) };
 }
 

@@ -24,13 +24,13 @@ TEST_CASE(construction) {
     verify$(empty_string_view.is_null_or_empty());
     verify_equal$(empty_string_view, ""sv);
 
-    auto const string                  = String::new_from_view("Testing STC Strings"sv);
+    auto const string                  = String::from_view("Testing STC Strings"sv);
     auto const from_string_string_view = string.as_string_view();
     verify_false$(from_string_string_view.is_null_or_empty());
     verify_equal$(from_string_string_view.len(), 21);
     verify_equal$(from_string_string_view.len(), string.len());
     verify_equal$(from_string_string_view, "Testing STC Strings"sv);
-    verify_equal$(from_string_string_view, String::new_from_view("Testing STC Strings"sv));
+    verify_equal$(from_string_string_view, String::from_view("Testing STC Strings"sv));
 }
 
 TEST_CASE(assignment_operators) {

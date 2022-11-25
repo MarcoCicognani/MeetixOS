@@ -42,7 +42,7 @@ void _fini();
 extern "C++" auto cc_main(Vector<StringView>) -> ErrorOr<void>;
 
 static Function<void(Error const&)> s_runtime_error_catcher = [](Error const& error) {
-    auto string_builder = StringBuilder::new_empty();
+    auto string_builder = StringBuilder::empty();
     must$(format(string_builder, "\e[31mRuntime Error\e[0m in {}"sv, error));
     s_log(string_builder.as_string_view().as_cstr());
 };
@@ -82,7 +82,7 @@ static auto __rt_call_destructors() -> void {
 
 static auto __rt_split_cli_args() -> ErrorOr<Vector<StringView>> {
     auto const fill_string_view_with = [](usize (*syscall)(char*), usize max_len) -> ErrorOr<StringView> {
-        auto buffer_ptr = try$(Box<char[]>::try_new_from_len(max_len)).leak_ptr();
+        auto buffer_ptr = try$(Box<char[]>::try_from_len(max_len)).leak_ptr();
 
         auto const chars_count = syscall(buffer_ptr);
         return StringView::new_from_raw_parts(buffer_ptr, chars_count);

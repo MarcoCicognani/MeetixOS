@@ -18,28 +18,28 @@
 #include <CCLang/Lang/StringView.hh>
 #include <CCLang/Lang/Try.hh>
 
-auto String::new_empty() -> String {
-    return must$(try_new_empty());
+auto String::empty() -> String {
+    return must$(try_empty());
 }
 
-auto String::new_from_other(const String& rhs) -> String {
-    return must$(try_new_from_other(rhs));
+auto String::from_other(const String& rhs) -> String {
+    return must$(try_from_other(rhs));
 }
 
-auto String::new_from_view(StringView string_view) -> String {
-    return must$(try_new_from_view(string_view));
+auto String::from_view(StringView string_view) -> String {
+    return must$(try_from_view(string_view));
 }
 
-auto String::try_new_empty() -> ErrorOr<String> {
-    return try_new_from_view(""sv);
+auto String::try_empty() -> ErrorOr<String> {
+    return try_from_view(""sv);
 }
 
-auto String::try_new_from_other(const String& rhs) -> ErrorOr<String> {
-    return try_new_from_view(rhs.as_string_view());
+auto String::try_from_other(String const& rhs) -> ErrorOr<String> {
+    return try_from_view(rhs.as_string_view());
 }
 
-auto String::try_new_from_view(StringView string_view) -> ErrorOr<String> {
-    return String{ try$(StringStorage::try_new_from_view(string_view)) };
+auto String::try_from_view(StringView string_view) -> ErrorOr<String> {
+    return String{ try$(StringStorage::try_from_view(string_view)) };
 }
 
 auto String::clone() const -> String {
@@ -85,11 +85,11 @@ auto String::sub_string(usize start, usize count) const -> String {
 }
 
 auto String::try_sub_string(usize start) const -> ErrorOr<String> {
-    return try_new_from_view(sub_string_view(start));
+    return try_from_view(sub_string_view(start));
 }
 
 auto String::try_sub_string(usize start, usize count) const -> ErrorOr<String> {
-    return try_new_from_view(sub_string_view(start, count));
+    return try_from_view(sub_string_view(start, count));
 }
 
 auto String::sub_string_view(usize start) const -> StringView {
@@ -105,7 +105,7 @@ auto String::trim(StringView chars, TrimMode trim_mode) const -> String {
 }
 
 auto String::try_trim(StringView chars, TrimMode trim_mode) const -> ErrorOr<String> {
-    return try_new_from_view(trim_view(chars, trim_mode));
+    return try_from_view(trim_view(chars, trim_mode));
 }
 
 auto String::trim_whitespaces(TrimMode trim_mode) const -> String {
@@ -113,7 +113,7 @@ auto String::trim_whitespaces(TrimMode trim_mode) const -> String {
 }
 
 auto String::try_trim_whitespaces(TrimMode trim_mode) const -> ErrorOr<String> {
-    return try_new_from_view(trim_whitespaces_view(trim_mode));
+    return try_from_view(trim_whitespaces_view(trim_mode));
 }
 
 auto String::trim_view(StringView chars, TrimMode trim_mode) const -> StringView {
@@ -185,7 +185,7 @@ auto String::to_lowercase() const -> String {
 }
 
 auto String::try_to_lowercase() const -> ErrorOr<String> {
-    auto string_builder = try$(StringBuilder::try_new_with_capacity(len()));
+    auto string_builder = try$(StringBuilder::try_with_capacity(len()));
     for ( auto const c : *this ) {
         if ( is_ascii_uppercase_alpha(c) )
             try$(string_builder.try_append(to_ascii_lowercase(c)));
@@ -200,7 +200,7 @@ auto String::to_uppercase() const -> String {
 }
 
 auto String::try_to_uppercase() const -> ErrorOr<String> {
-    auto string_builder = try$(StringBuilder::try_new_with_capacity(len()));
+    auto string_builder = try$(StringBuilder::try_with_capacity(len()));
     for ( auto const c : *this ) {
         if ( is_ascii_lowercase_alpha(c) )
             try$(string_builder.try_append(to_ascii_uppercase(c)));
@@ -215,7 +215,7 @@ auto String::to_reverse() const -> String {
 }
 
 auto String::try_to_reverse() const -> ErrorOr<String> {
-    auto string_builder = try$(StringBuilder::try_new_with_capacity(len()));
+    auto string_builder = try$(StringBuilder::try_with_capacity(len()));
     for ( auto const c : reverse_iter() )
         try$(string_builder.try_append(c));
 

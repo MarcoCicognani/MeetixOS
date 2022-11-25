@@ -246,13 +246,13 @@ auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr
 
     /* check for only whitespaces string */
     if ( string_view.is_empty() )
-        return Error::new_from_code(ErrorCode::EmptyData);
+        return Error::from_code(ErrorCode::EmptyData);
 
     /* extract the sign from the beginning of the string */
     T sign = 1;
     if ( is_ascii_int_sign(string_view[0]) ) {
         if ( string_view.len() == 1 )
-            return Error::new_from_code(ErrorCode::BadLength);
+            return Error::from_code(ErrorCode::BadLength);
 
         /* for minus set the sign to negative */
         if ( string_view[0] == '-' )
@@ -269,15 +269,15 @@ auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr
             /* according to the parse all flag we decide here if the parser must return
              * with a code or simply break the cycle returning the value parsed until now */
             if ( parse_mode == ParseMode::BeginToEnd || parse_mode == ParseMode::TrimWhitesAndBeginToEnd )
-                return Error::new_from_code(ErrorCode::BadData);
+                return Error::from_code(ErrorCode::BadData);
             else
                 break;
         }
 
         if ( __builtin_mul_overflow(int_value, static_cast<T>(int_base), &int_value) )
-            return Error::new_from_code(ErrorCode::IntOverflow);
+            return Error::from_code(ErrorCode::IntOverflow);
         if ( __builtin_add_overflow(int_value, digit_value<T>(c), &int_value) )
-            return Error::new_from_code(ErrorCode::IntOverflow);
+            return Error::from_code(ErrorCode::IntOverflow);
     }
 
     /* apply the sign to the final value */
@@ -302,7 +302,7 @@ auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorO
 
     /* check for only whitespaces string */
     if ( string_view.is_empty() )
-        return Error::new_from_code(ErrorCode::EmptyData);
+        return Error::from_code(ErrorCode::EmptyData);
 
     /* convert the string into the integer */
     T int_value = 0;
@@ -311,15 +311,15 @@ auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorO
             /* according to the parse_mode flag we decide here if the parser must return
              * with a code or simply break the cycle returning the value parsed until now */
             if ( parse_mode == ParseMode::BeginToEnd || parse_mode == ParseMode::TrimWhitesAndBeginToEnd )
-                return Error::new_from_code(ErrorCode::BadData);
+                return Error::from_code(ErrorCode::BadData);
             else
                 break;
         }
 
         if ( __builtin_mul_overflow(int_value, static_cast<T>(int_base), &int_value) )
-            return Error::new_from_code(ErrorCode::IntOverflow);
+            return Error::from_code(ErrorCode::IntOverflow);
         if ( __builtin_add_overflow(int_value, digit_value<T>(c), &int_value) )
-            return Error::new_from_code(ErrorCode::IntOverflow);
+            return Error::from_code(ErrorCode::IntOverflow);
     }
     return int_value;
 }

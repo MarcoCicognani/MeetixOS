@@ -32,7 +32,7 @@
 
 namespace Details {
 
-enum class SetBucketState : u8 {
+enum class SetBucketState : unsigned int {
     Free     = 0x00,
     Used     = 0x10,
     Deleted  = 0x01,
@@ -41,11 +41,11 @@ enum class SetBucketState : u8 {
 };
 
 constexpr auto set_bucket_state_is_used(SetBucketState state) -> bool {
-    return (static_cast<u8>(state) & 0xf0) == static_cast<u8>(SetBucketState::Used);
+    return (static_cast<unsigned int>(state) & 0xf0) == static_cast<unsigned int>(SetBucketState::Used);
 }
 
 constexpr auto set_bucket_state_is_free(SetBucketState state) -> bool {
-    return (static_cast<u8>(state) & 0xf0) == static_cast<u8>(SetBucketState::Free);
+    return (static_cast<unsigned int>(state) & 0xf0) == static_cast<unsigned int>(SetBucketState::Free);
 }
 
 template<typename T, typename TBucket>
@@ -55,11 +55,11 @@ public:
      * @brief Error safe factory functions
      */
     [[nodiscard]]
-    static auto new_empty() -> SetIterator<T, TBucket> {
+    static auto empty() -> SetIterator<T, TBucket> {
         return SetIterator<T, TBucket>{ nullptr };
     }
     [[nodiscard]]
-    static auto new_from_bucket(TBucket* bucket) -> SetIterator<T, TBucket> {
+    static auto from_bucket(TBucket* bucket) -> SetIterator<T, TBucket> {
         return SetIterator<T, TBucket>{ bucket };
     }
 
@@ -141,11 +141,11 @@ public:
      * @brief Error safe factory functions
      */
     [[nodiscard]]
-    static auto new_empty() -> OrderedSetIterator<T, TBucket, IsReverse> {
+    static auto empty() -> OrderedSetIterator<T, TBucket, IsReverse> {
         return OrderedSetIterator<T, TBucket, IsReverse>{ nullptr };
     }
     [[nodiscard]]
-    static auto new_from_bucket(TBucket* bucket) -> OrderedSetIterator<T, TBucket, IsReverse> {
+    static auto from_bucket(TBucket* bucket) -> OrderedSetIterator<T, TBucket, IsReverse> {
         return OrderedSetIterator<T, TBucket, IsReverse>{ bucket };
     }
 
@@ -292,32 +292,32 @@ public:
      * @brief Non-Error safe factory functions
      */
     [[nodiscard]]
-    static constexpr auto new_empty() -> Set<T, TTraits, IsOrdered> {
+    static constexpr auto empty() -> Set<T, TTraits, IsOrdered> {
         return Set<T, TTraits, IsOrdered>{};
     }
     [[nodiscard]]
-    static auto new_with_capacity(usize capacity) -> Set<T, TTraits, IsOrdered> {
-        return must$(try_new_with_capacity(capacity));
+    static auto with_capacity(usize capacity) -> Set<T, TTraits, IsOrdered> {
+        return must$(try_with_capacity(capacity));
     }
     [[nodiscard]]
-    static auto new_from_other(Set<T, TTraits, IsOrdered> const& rhs) -> Set<T, TTraits, IsOrdered> {
-        return must$(try_new_from_other(rhs));
+    static auto from_other(Set<T, TTraits, IsOrdered> const& rhs) -> Set<T, TTraits, IsOrdered> {
+        return must$(try_from_other(rhs));
     }
     [[nodiscard]]
-    static auto new_from_list(Cxx::InitializerList<T> initializer_list) -> Set<T, TTraits, IsOrdered> {
-        return must$(try_new_from_list(initializer_list));
+    static auto from_list(Cxx::InitializerList<T> initializer_list) -> Set<T, TTraits, IsOrdered> {
+        return must$(try_from_list(initializer_list));
     }
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_new_with_capacity(usize capacity) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
-        auto set = new_empty();
+    static auto try_with_capacity(usize capacity) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
+        auto set = Set<T, TTraits, IsOrdered>::empty();
         try$(set.try_rehash(capacity));
         return set;
     }
-    static auto try_new_from_other(Set<T, TTraits, IsOrdered> const& rhs) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
-        auto set = try$(try_new_with_capacity(rhs.count()));
+    static auto try_from_other(Set<T, TTraits, IsOrdered> const& rhs) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
+        auto set = try$(try_with_capacity(rhs.count()));
         for ( auto const& e : rhs ) {
             if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
                 try$(set.try_insert(try$(e.try_clone())));
@@ -330,8 +330,8 @@ public:
 
         return set;
     }
-    static auto try_new_from_list(Cxx::InitializerList<T> initializer_list) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
-        auto set = new_empty();
+    static auto try_from_list(Cxx::InitializerList<T> initializer_list) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
+        auto set = try$(try_with_capacity(initializer_list.size()));
         for ( auto const& e : initializer_list ) /* even with auto initializer_list exposes only T const& */
             try$(set.try_insert(Cxx::move(const_cast<T&>(e))));
 
@@ -366,7 +366,7 @@ public:
         return must$(try_clone());
     }
     auto try_clone() const -> ErrorOr<Set<T, TTraits, IsOrdered>> {
-        return Set<T, TTraits, IsOrdered>::try_new_from_other(*this);
+        return Set<T, TTraits, IsOrdered>::try_from_other(*this);
     }
 
     /**
@@ -383,7 +383,7 @@ public:
     }
     auto clear_keep_capacity() -> void {
         if constexpr ( !TTraits::is_trivial() ) {
-            for ( auto const i : Range{ 0u, m_data_capacity } ) {
+            for ( auto const i : Range<usize>{ 0, m_data_capacity } ) {
                 if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) )
                     m_buckets_storage[i].slot()->~T();
             }
@@ -486,7 +486,7 @@ public:
     auto remove_all_matching(Predicate<T const&> auto predicate) -> usize {
         /* iterate all the used buckets and give them to the given call_back */
         usize removed_count = 0;
-        for ( auto const i : Range{ 0u, m_data_capacity } ) {
+        for ( auto const i : Range<usize>{ 0, m_data_capacity } ) {
             auto& bucket = m_buckets_storage[i];
             if ( Details::set_bucket_state_is_used(bucket.m_bucket_state) && predicate(*bucket.slot()) ) {
                 delete_bucket(bucket);
@@ -522,34 +522,34 @@ public:
      */
     auto begin() -> Iterator {
         if constexpr ( IsOrdered )
-            return Iterator::new_from_bucket(m_collection_data.m_head);
+            return Iterator::from_bucket(m_collection_data.m_head);
         else {
             /* find the first used bucket */
-            for ( auto const i : Range{ 0u, m_data_capacity } ) {
+            for ( auto const i : Range<usize>{ 0, m_data_capacity } ) {
                 if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) )
-                    return Iterator::new_from_bucket(&m_buckets_storage[i]);
+                    return Iterator::from_bucket(&m_buckets_storage[i]);
             }
             return end();
         }
     }
     auto end() -> Iterator {
-        return Iterator::new_empty();
+        return Iterator::empty();
     }
 
     auto begin() const -> ConstIterator {
         if constexpr ( IsOrdered )
-            return ConstIterator::new_from_bucket(m_collection_data.m_head);
+            return ConstIterator::from_bucket(m_collection_data.m_head);
         else {
             /* find the first used bucket */
-            for ( auto const i : Range{ 0u, m_data_capacity } ) {
+            for ( auto const i : Range<usize>{ 0, m_data_capacity } ) {
                 if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) )
-                    return ConstIterator::new_from_bucket(&m_buckets_storage[i]);
+                    return ConstIterator::from_bucket(&m_buckets_storage[i]);
             }
             return end();
         }
     }
     auto end() const -> ConstIterator {
-        return ConstIterator::new_empty();
+        return ConstIterator::empty();
     }
 
     /**
@@ -557,18 +557,18 @@ public:
      */
     auto rbegin() -> ReverseIterator {
         static_assert(IsOrdered, "Reverse iterator only available with OrderedSet/OrderedMap");
-        return ReverseIterator::new_from_bucket(m_collection_data.m_tail);
+        return ReverseIterator::from_bucket(m_collection_data.m_tail);
     }
     auto rend() -> ReverseIterator {
-        return ReverseIterator::new_empty();
+        return ReverseIterator::empty();
     }
 
     auto rbegin() const -> ConstReverseIterator {
         static_assert(IsOrdered, "Reverse iterator only available with OrderedSet/OrderedMap");
-        return ConstReverseIterator::new_from_bucket(m_collection_data.m_tail);
+        return ConstReverseIterator::from_bucket(m_collection_data.m_tail);
     }
     auto rend() const -> ConstReverseIterator {
-        return ConstReverseIterator::new_empty();
+        return ConstReverseIterator::empty();
     }
 
     auto reverse_iter() -> ReverseIteratorWrapper {
@@ -705,7 +705,7 @@ private:
     }
 
     void rehash_in_place() {
-        for ( auto const i : Range{ 0u, m_data_capacity } ) {
+        for ( auto const i : Range<usize>{ 0, m_data_capacity } ) {
             auto& bucket = m_buckets_storage[i];
 
             if ( bucket.m_bucket_state == Details::SetBucketState::Rehashed || bucket.m_bucket_state == Details::SetBucketState::End
@@ -816,7 +816,7 @@ private:
         }
 
         m_deleted_count = 0;
-        for ( auto const i : Range{ 0u, m_data_capacity } ) {
+        for ( auto const i : Range<usize>{ 0, m_data_capacity } ) {
             if ( m_buckets_storage[i].m_bucket_state == Details::SetBucketState::Rehashed ) {
                 m_buckets_storage[i].m_bucket_state = Details::SetBucketState::Used;
             }
@@ -892,9 +892,9 @@ private:
     [[nodiscard]]
     static constexpr auto size_in_bytes(usize capacity) -> usize {
         if constexpr ( IsOrdered )
-            return sizeof(Bucket) * capacity;
+            return capacity * sizeof(Bucket);
         else
-            return sizeof(Bucket) * (capacity + 1);
+            return (capacity + 1) * sizeof(Bucket);
     }
 
     auto remove(Bucket& bucket) -> bool {

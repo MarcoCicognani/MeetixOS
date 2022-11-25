@@ -33,15 +33,15 @@ public:
      * @brief Error safe factory functions
      */
     [[nodiscard]]
-    static constexpr auto new_empty() -> ListIterator<TList, T, IsReverse> {
+    static constexpr auto empty() -> ListIterator<TList, T, IsReverse> {
         return ListIterator<TList, T, IsReverse>{};
     }
     [[nodiscard]]
-    static constexpr auto new_from_begin(TList* list) -> ListIterator<TList, T, IsReverse> {
+    static constexpr auto from_begin(TList* list) -> ListIterator<TList, T, IsReverse> {
         return ListIterator<TList, T, IsReverse>{ list, list->m_head_node };
     }
     [[nodiscard]]
-    static constexpr auto new_from_rbegin(TList* list) -> ListIterator<TList, T, IsReverse> {
+    static constexpr auto from_rbegin(TList* list) -> ListIterator<TList, T, IsReverse> {
         return ListIterator<TList, T, IsReverse>{ list, list->m_tail_node };
     }
 
@@ -169,23 +169,23 @@ public:
      * @brief Non-Error safe factory functions
      */
     [[nodiscard]]
-    static constexpr auto new_empty() -> List<T> {
+    static constexpr auto empty() -> List<T> {
         return List<T>{};
     }
     [[nodiscard]]
-    static auto new_from_other(List<T> const& rhs) -> List<T> {
-        return must$(try_new_from_other(rhs));
+    static auto from_other(List<T> const& rhs) -> List<T> {
+        return must$(try_from_other(rhs));
     }
     [[nodiscard]]
-    static auto new_from_list(Cxx::InitializerList<T> initializer_list) -> List<T> {
-        return must$(try_new_from_list(initializer_list));
+    static auto from_list(Cxx::InitializerList<T> initializer_list) -> List<T> {
+        return must$(try_from_list(initializer_list));
     }
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_new_from_other(List<T> const& rhs) -> ErrorOr<List<T>> {
-        auto list = new_empty();
+    static auto try_from_other(List<T> const& rhs) -> ErrorOr<List<T>> {
+        auto list = List<T>::empty();
         for ( auto const& e : rhs ) {
             if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
                 try$(list.try_append(try$(e.try_clone())));
@@ -198,8 +198,8 @@ public:
 
         return list;
     }
-    static auto try_new_from_list(Cxx::InitializerList<T> initializer_list) -> ErrorOr<List<T>> {
-        auto list = new_empty();
+    static auto try_from_list(Cxx::InitializerList<T> initializer_list) -> ErrorOr<List<T>> {
+        auto list = List<T>::empty();
         for ( auto const& e : initializer_list ) /* even with <auto> the <InitializerList> exposes only <T const&> */
             try$(list.try_append(Cxx::move(const_cast<T&>(e))));
 
@@ -232,7 +232,7 @@ public:
         return must$(try_clone());
     }
     auto try_clone() const -> ErrorOr<List<T>> {
-        return List<T>::try_new_from_other(*this);
+        return List<T>::try_from_other(*this);
     }
 
     /**
@@ -267,7 +267,7 @@ public:
     auto try_append(T value) -> ErrorOr<void> {
         auto const new_node = new (nothrow) Node{ Cxx::move(value) };
         if ( new_node == nullptr )
-            return Error::new_from_code(ErrorCode::NoMemory);
+            return Error::from_code(ErrorCode::NoMemory);
 
         if ( m_tail_node != nullptr ) {
             m_tail_node->m_next_node = new_node;
@@ -289,7 +289,7 @@ public:
     auto try_prepend(T value) -> ErrorOr<void> {
         auto const new_node = new (nothrow) Node{ Cxx::move(value) };
         if ( new_node == nullptr )
-            return Error::new_from_code(ErrorCode::NoMemory);
+            return Error::from_code(ErrorCode::NoMemory);
 
         if ( m_head_node != nullptr ) {
             m_head_node->m_prev_node = new_node;
@@ -354,34 +354,34 @@ public:
      * @brief for-each support
      */
     auto begin() -> Iterator {
-        return Iterator::new_from_begin(this);
+        return Iterator::from_begin(this);
     }
     auto end() -> Iterator {
-        return Iterator::new_empty();
+        return Iterator::empty();
     }
 
     auto begin() const -> ConstIterator {
-        return ConstIterator::new_from_begin(this);
+        return ConstIterator::from_begin(this);
     }
     auto end() const -> ConstIterator {
-        return ConstIterator::new_empty();
+        return ConstIterator::empty();
     }
 
     /**
      * @brief reverse for-each support
      */
     auto rbegin() -> ReverseIterator {
-        return ReverseIterator::new_from_rbegin(this);
+        return ReverseIterator::from_rbegin(this);
     }
     auto rend() -> ReverseIterator {
-        return ReverseIterator::new_empty();
+        return ReverseIterator::empty();
     }
 
     auto rbegin() const -> ConstReverseIterator {
-        return ConstReverseIterator::new_from_rbegin(this);
+        return ConstReverseIterator::from_rbegin(this);
     }
     auto rend() const -> ConstReverseIterator {
-        return ConstReverseIterator::new_empty();
+        return ConstReverseIterator::empty();
     }
 
     auto reverse_iter() -> ReverseIteratorWrapper {

@@ -14,26 +14,26 @@
 #include <CCLang/Lang/Must.hh>
 #include <CCLang/Lang/Try.hh>
 
-auto StringBuilder::new_empty() -> StringBuilder {
+auto StringBuilder::empty() -> StringBuilder {
     return StringBuilder{};
 }
 
-auto StringBuilder::new_with_capacity(usize capacity) -> StringBuilder {
-    return must$(try_new_with_capacity(capacity));
+auto StringBuilder::with_capacity(usize capacity) -> StringBuilder {
+    return must$(try_with_capacity(capacity));
 }
 
-auto StringBuilder::new_from_other(const StringBuilder& rhs) -> StringBuilder {
-    return must$(try_new_from_other(rhs));
+auto StringBuilder::from_other(StringBuilder const& rhs) -> StringBuilder {
+    return must$(try_from_other(rhs));
 }
 
-auto StringBuilder::try_new_with_capacity(usize capacity) -> ErrorOr<StringBuilder> {
-    auto string_builder = new_empty();
+auto StringBuilder::try_with_capacity(usize capacity) -> ErrorOr<StringBuilder> {
+    auto string_builder = StringBuilder::empty();
     try$(string_builder.try_ensure_capacity(capacity));
     return string_builder;
 }
 
-auto StringBuilder::try_new_from_other(const StringBuilder& rhs) -> ErrorOr<StringBuilder> {
-    auto string_builder = try$(try_new_with_capacity(rhs.len()));
+auto StringBuilder::try_from_other(StringBuilder const& rhs) -> ErrorOr<StringBuilder> {
+    auto string_builder = try$(try_with_capacity(rhs.len()));
     for ( auto const& c : rhs.as_string_view() )
         try$(string_builder.try_append(c));
 
@@ -59,7 +59,7 @@ auto StringBuilder::clone() const -> StringBuilder {
 }
 
 auto StringBuilder::try_clone() const -> ErrorOr<StringBuilder> {
-    return StringBuilder::try_new_from_other(*this);
+    return StringBuilder::try_from_other(*this);
 }
 
 auto StringBuilder::clear() -> void {
@@ -106,7 +106,7 @@ auto StringBuilder::to_string() const -> String {
 }
 
 auto StringBuilder::try_to_string() const -> ErrorOr<String> {
-    return String::try_new_from_view(as_string_view());
+    return String::try_from_view(as_string_view());
 }
 
 auto StringBuilder::len() const -> usize {

@@ -28,7 +28,7 @@ public:
      * @brief Error safe Factory functions
      */
     [[nodiscard]]
-    static constexpr auto new_from_view(StringView source_view) -> Lexer {
+    static constexpr auto from_view(StringView source_view) -> Lexer {
         return Lexer{ source_view };
     }
 

@@ -81,7 +81,7 @@ public:
     auto operator*() const -> char const& {
         verify_false$(is_end());
         if constexpr ( IsReverse ) {
-            return m_string_view->at(static_cast<usize>(m_index));
+            return m_string_view->at(m_index.template as<usize>());
         } else {
             return m_string_view->at(m_index);
         }
@@ -100,14 +100,14 @@ public:
     [[nodiscard]]
     auto is_end() const -> bool {
         if constexpr ( IsReverse ) {
-            return m_index == new_from_rend(m_string_view).index();
+            return m_index.template as<usize>() == new_from_rend(m_string_view).index();
         } else {
-            return m_index == new_from_end(m_string_view).index();
+            return m_index.template as<usize>() == new_from_end(m_string_view).index();
         }
     }
     [[nodiscard]]
     auto index() const -> usize {
-        return m_index;
+        return m_index.template as<usize>();
     }
 
     /**

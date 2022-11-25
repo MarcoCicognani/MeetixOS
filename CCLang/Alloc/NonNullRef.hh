@@ -32,26 +32,26 @@ public:
      */
     template<typename... TArgs>
     [[nodiscard]]
-    static auto new_from_emplace(TArgs&&... args) -> NonNullRef<T> {
-        return must$(try_new_from_emplace(Cxx::forward<TArgs>(args)...));
+    static auto from_emplace(TArgs&&... args) -> NonNullRef<T> {
+        return must$(try_from_emplace(Cxx::forward<TArgs>(args)...));
     }
 
     /**
      * @brief Error safe Factory functions
      */
     template<typename... TArgs>
-    static auto try_new_from_emplace(TArgs&&... args) -> ErrorOr<NonNullRef<T>> {
+    static auto try_from_emplace(TArgs&&... args) -> ErrorOr<NonNullRef<T>> {
         auto ref_counted_ptr = new (nothrow) T{ Cxx::forward<TArgs>(args)... };
         if ( ref_counted_ptr != nullptr ) [[likely]]
             return NonNullRef<T>{ ref_counted_ptr };
         else
-            return Error::new_from_code(ErrorCode::NoMemory);
+            return Error::from_code(ErrorCode::NoMemory);
     }
-    static auto try_new_from_adopt(T* ref_counted_ptr) -> ErrorOr<NonNullRef<T>> {
+    static auto try_from_adopt(T* ref_counted_ptr) -> ErrorOr<NonNullRef<T>> {
         if ( ref_counted_ptr != nullptr ) [[likely]]
             return NonNullRef<T>{ ref_counted_ptr };
         else
-            return Error::new_from_code(ErrorCode::NullPointer);
+            return Error::from_code(ErrorCode::NullPointer);
     }
 
     /**

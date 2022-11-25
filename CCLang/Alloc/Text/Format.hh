@@ -34,7 +34,7 @@ auto format(StringBuilder& string_builder, StringView literals_view) -> ErrorOr<
  */
 template<typename... Args>
 auto format(StringBuilder& string_builder, StringView format_view, Args&&... variadic_args) -> ErrorOr<void> {
-    auto format_lexer = FormatLexer::new_from_view(format_view);
+    auto format_lexer = FormatLexer::from_view(format_view);
     try$(format(string_builder, format_lexer, Cxx::forward<Args>(variadic_args)...));
     return {};
 }
@@ -51,8 +51,8 @@ auto format(StringBuilder& string_builder, FormatLexer& format_lexer, T const& f
 
     /* format the value at the placeholder */
     if ( format_lexer.next_is('{') ) {
-        auto format_parser = FormatParser::new_from_lexer(format_lexer);
-        auto formatter     = Formatter<T>::new_from_parser_result(string_builder, try$(format_parser.try_parse()));
+        auto format_parser = FormatParser::from_lexer(format_lexer);
+        auto formatter     = Formatter<T>::from_parser_result(string_builder, try$(format_parser.try_parse()));
 
         /* try to format the argument value using the Formatter implementation for the type */
         try$(formatter.format(first_arg));

@@ -29,8 +29,8 @@ public:
      */
     template<typename... TArgs>
     [[nodiscard]]
-    static auto new_from_emplace(TArgs&&... args) -> Box<T> {
-        return must$(try_new_from_emplace(Cxx::forward<TArgs>(args)...));
+    static auto from_emplace(TArgs&&... args) -> Box<T> {
+        return must$(try_from_emplace(Cxx::forward<TArgs>(args)...));
     }
     [[nodiscard]]
     static auto new_from_adopt(T& unboxed_ref) -> Box<T> {
@@ -41,18 +41,18 @@ public:
      * @brief Error safe Factory functions
      */
     template<typename... TArgs>
-    static auto try_new_from_emplace(TArgs&&... args) -> ErrorOr<Box<T>> {
+    static auto try_from_emplace(TArgs&&... args) -> ErrorOr<Box<T>> {
         auto unboxed_ptr = new (nothrow) T{ Cxx::forward<TArgs>(args)... };
         if ( unboxed_ptr != nullptr ) [[likely]]
             return Box<T>{ unboxed_ptr };
         else
-            return Error::new_from_code(ErrorCode::NoMemory);
+            return Error::from_code(ErrorCode::NoMemory);
     }
-    static auto try_new_from_adopt(T* unboxed_ptr) -> ErrorOr<Box<T>> {
+    static auto try_from_adopt(T* unboxed_ptr) -> ErrorOr<Box<T>> {
         if ( unboxed_ptr != nullptr ) [[likely]]
             return Box<T>{ unboxed_ptr };
         else
-            return Error::new_from_code(ErrorCode::NullPointer);
+            return Error::from_code(ErrorCode::NullPointer);
     }
 
     /**
@@ -173,20 +173,20 @@ public:
      * @brief Non-Error safe factory functions
      */
     [[nodiscard]]
-    static auto new_from_len(usize len) -> Box<T[]> {
-        return must$(try_new_from_len(len));
+    static auto from_len(usize len) -> Box<T[]> {
+        return must$(try_from_len(len));
     }
 
     /**
      * @brief Error safe Factory functions
      */
     [[nodiscard]]
-    static auto try_new_from_len(usize len) -> ErrorOr<Box<T[]>> {
+    static auto try_from_len(usize len) -> ErrorOr<Box<T[]>> {
         auto unboxed_array_ptr = new (nothrow) T[len.unwrap()];
         if ( unboxed_array_ptr != nullptr ) [[likely]]
             return Box<T[]>{ unboxed_array_ptr };
         else
-            return Error::new_from_code(ErrorCode::NoMemory);
+            return Error::from_code(ErrorCode::NoMemory);
     }
 
     /**

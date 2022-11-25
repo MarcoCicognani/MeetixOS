@@ -26,7 +26,7 @@ public:
      * @brief Error safe Factory functions
      */
     [[nodiscard]]
-    static auto try_new_from_view(StringView string_view) -> ErrorOr<NonNullRef<StringStorage>>;
+    static auto try_from_view(StringView) -> ErrorOr<NonNullRef<StringStorage>>;
 
     ~StringStorage() = default;
 

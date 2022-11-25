@@ -78,7 +78,7 @@ public:
      * @brief Error safe Factory functions
      */
     [[nodiscard]]
-    static auto new_from_lexer(FormatLexer&) -> FormatParser;
+    static auto from_lexer(FormatLexer& format_lexer) -> FormatParser;
 
     /**
      * @brief Parses the current format string from the given lexer

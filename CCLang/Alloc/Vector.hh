@@ -291,7 +291,7 @@ public:
     }
     auto try_insert_at(usize index, T value) -> ErrorOr<void> {
         if ( index > m_values_count )
-            return Error::new_from_code(ErrorCode::Invalid);
+            return Error::from_code(ErrorCode::Invalid);
 
         try$(try_ensure_capacity(m_values_count + 1));
 
@@ -408,7 +408,7 @@ public:
      */
     auto erase_at(usize index) -> ErrorOr<void> {
         if ( index >= m_values_count )
-            return Error::new_from_code(ErrorCode::Invalid);
+            return Error::from_code(ErrorCode::Invalid);
 
         /* shift all the values one position back */
         if constexpr ( TypeTraits<T>::is_trivial() )
@@ -430,7 +430,7 @@ public:
                 return {};
             }
         }
-        return Error::new_from_code(ErrorCode::NotFound);
+        return Error::from_code(ErrorCode::NotFound);
     }
     auto erase_all_of(T const& value) -> ErrorOr<usize> {
         return erase_all_matches([&value](T const& current) { return TypeTraits<T>::equals(current, value); });
@@ -448,7 +448,7 @@ public:
         if ( erased_count > 0 )
             return erased_count;
         else
-            return Error::new_from_code(ErrorCode::NotFound);
+            return Error::from_code(ErrorCode::NotFound);
     }
 
     /**

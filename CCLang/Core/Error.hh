@@ -31,13 +31,13 @@ public:
      * @brief Error safe factory functions
      */
     [[nodiscard]]
-    static auto new_from_code(ErrorCode,
-                              FromSyscall    = FromSyscall::No,
-                              SourceLocation = SourceLocation::new_from_here()) -> Error;
+    static auto from_code(ErrorCode,
+                          FromSyscall    = FromSyscall::No,
+                          SourceLocation = SourceLocation::new_from_here()) -> Error;
     [[nodiscard]]
-    static auto new_from_literal(StringView,
-                                 FromSyscall    = FromSyscall::No,
-                                 SourceLocation = SourceLocation::new_from_here()) -> Error;
+    static auto from_literal(StringView,
+                             FromSyscall    = FromSyscall::No,
+                             SourceLocation = SourceLocation::new_from_here()) -> Error;
 
     /**
      * @brief Getters

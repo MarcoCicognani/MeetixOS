@@ -18,6 +18,6 @@ String b{ a }; /* here a copy could occur, but is not that clear */
 LibTC enforces you to do:
 
 ```c++
-auto const a = String::new_from_view("Hi Guys"sv);
+auto const a = String::from_view("Hi Guys"sv);
 auto const b = a.clone();
 ```
