@@ -23,9 +23,9 @@ public:
      * @brief Error safe factory function
      */
     [[nodiscard]]
-    static auto new_from_here(char const* = __builtin_FILE(),
-                              char const* = __builtin_FUNCTION(),
-                              u32         = __builtin_LINE()) -> SourceLocation;
+    static auto from_here(char const* = __builtin_FILE(),
+                          char const* = __builtin_FUNCTION(),
+                          u32         = __builtin_LINE()) -> SourceLocation;
 
     /**
      * @brief Getters

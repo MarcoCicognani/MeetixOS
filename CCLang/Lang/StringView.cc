@@ -22,8 +22,8 @@
 #include <CCLang/Lang/StringView.hh>
 #include <CCLang/Lang/Try.hh>
 
-auto StringView::new_from_cstr(const char* c_str) -> StringView {
-    return new_from_raw_parts(c_str, __builtin_strlen(c_str));
+auto StringView::from_cstr(const char* c_str) -> StringView {
+    return from_raw_parts(c_str, Cxx::strlen(c_str));
 }
 
 auto StringView::operator=(StringView const& rhs) -> StringView& {
@@ -36,7 +36,7 @@ auto StringView::operator=(StringView const& rhs) -> StringView& {
 }
 
 auto StringView::operator=(StringView&& rhs) -> StringView& {
-    StringView string_view{ Cxx::move(rhs) };
+    auto string_view = Cxx::move(rhs);
     swap(string_view);
     return *this;
 }
@@ -234,6 +234,10 @@ static constexpr auto digit_value(char c) -> T {
     else
         return 0;
 }
+template<typename T>
+static constexpr auto int_base_as_integer(StringView::IntBase int_base) -> T {
+    return static_cast<typename T::CCIntegerType>(static_cast<UnderlyingType<StringView::IntBase>>(int_base));
+}
 
 template<typename T>
 auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<T> {
@@ -274,10 +278,8 @@ auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr
                 break;
         }
 
-        if ( __builtin_mul_overflow(int_value, static_cast<T>(int_base), &int_value) )
-            return Error::from_code(ErrorCode::IntOverflow);
-        if ( __builtin_add_overflow(int_value, digit_value<T>(c), &int_value) )
-            return Error::from_code(ErrorCode::IntOverflow);
+        try$(int_value.try_mul(int_base_as_integer<T>(int_base)));
+        try$(int_value.try_add(digit_value<T>(c)));
     }
 
     /* apply the sign to the final value */
@@ -285,11 +287,11 @@ auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr
     return int_value;
 }
 
-template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<signed char>;
-template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<signed short>;
-template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<signed int>;
-template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<signed long>;
-template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<signed long long>;
+template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<i8>;
+template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<i16>;
+template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<i32>;
+template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<i64>;
+template auto StringView::as_int(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<isize>;
 
 template<typename T>
 auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<T> {
@@ -316,25 +318,23 @@ auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorO
                 break;
         }
 
-        if ( __builtin_mul_overflow(int_value, static_cast<T>(int_base), &int_value) )
-            return Error::from_code(ErrorCode::IntOverflow);
-        if ( __builtin_add_overflow(int_value, digit_value<T>(c), &int_value) )
-            return Error::from_code(ErrorCode::IntOverflow);
+        try$(int_value.try_mul(int_base_as_integer<T>(int_base)));
+        try$(int_value.try_add(digit_value<T>(c)));
     }
     return int_value;
 }
 
-template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<unsigned char>;
-template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<unsigned short>;
-template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<unsigned int>;
-template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<unsigned long>;
-template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<unsigned long long>;
+template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<u8>;
+template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<u16>;
+template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<u32>;
+template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<u64>;
+template auto StringView::as_uint(IntBase int_base, ParseMode parse_mode) const -> ErrorOr<usize>;
 
 auto StringView::find(char needle, usize start) const -> Option<usize> {
     if ( start >= len() )
         return {};
 
-    for ( auto const i : Range{ start, len() } ) {
+    for ( auto i : Range{ start, len() } ) {
         if ( at(i) == needle )
             return i;
     }
@@ -364,7 +364,7 @@ auto StringView::find_all(StringView needle) const -> Vector<usize> {
 }
 
 auto StringView::try_find_all(StringView needle) const -> ErrorOr<Vector<usize>> {
-    auto positions = Vector<usize>::new_empty();
+    auto positions = Vector<usize>::empty();
 
     usize current_position = 0;
     while ( current_position < len() ) {
@@ -397,9 +397,10 @@ static auto try_split_view_if_helper(StringView string_view,
             try$(predicate(part_with_separator.sub_string_view(0, separator_index)));
 
         /* advance the cursor to the next step */
-        auto const remaining_chars = part_with_separator.as_cstr() + part_with_separator.len();
+        auto const  rem_chars = part_with_separator.as_cstr() + part_with_separator.len();
+        usize const split_len = rem_chars - view_cursor.as_cstr();
 
-        view_cursor   = StringView::new_from_raw_parts(remaining_chars, view_cursor.len() - (remaining_chars - view_cursor.as_cstr()));
+        view_cursor   = StringView::from_raw_parts(rem_chars, view_cursor.len() - split_len);
         index_or_none = view_cursor.find(separator);
     }
 
@@ -423,7 +424,7 @@ auto StringView::try_split_view(char separator, KeepEmpty keep_empty) const -> E
 }
 
 auto StringView::try_split_view(StringView separator, KeepEmpty keep_empty) const -> ErrorOr<Vector<StringView>> {
-    auto vector = Vector<StringView>::new_empty();
+    auto vector = Vector<StringView>::empty();
     try$(try_split_view_if_helper(*this, separator, keep_empty, [&vector](StringView string_view) -> ErrorOr<void> {
         try$(vector.try_append(string_view));
         return {};
@@ -496,19 +497,19 @@ auto StringView::contains(char rhs, CaseSensible case_sensible) const -> bool {
 }
 
 auto StringView::begin() const -> StringView::ConstIterator {
-    return ConstIterator::new_from_begin(this);
+    return ConstIterator::from_begin(this);
 }
 
 auto StringView::end() const -> StringView::ConstIterator {
-    return ConstIterator::new_from_end(this);
+    return ConstIterator::from_end(this);
 }
 
 auto StringView::rbegin() const -> StringView::ConstReverseIterator {
-    return ConstReverseIterator::new_from_rbegin(this);
+    return ConstReverseIterator::from_rbegin(this);
 }
 
 auto StringView::rend() const -> StringView::ConstReverseIterator {
-    return ConstReverseIterator::new_from_rend(this);
+    return ConstReverseIterator::from_rend(this);
 }
 
 auto StringView::reverse_iter() const -> StringView::ConstReverseIteratorWrapper {

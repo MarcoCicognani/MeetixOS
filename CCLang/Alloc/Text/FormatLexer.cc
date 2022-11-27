@@ -14,18 +14,18 @@
 #include <CCLang/Core/CharTypes.hh>
 
 auto FormatLexer::consume_literal() -> StringView {
-    auto begin = index();
+    auto begin_index = index();
     while ( !is_end() ) {
         if ( consume_specific("{{"sv) )
             continue;
         if ( consume_specific("}}"sv) )
             continue;
         if ( next_is(is_any_of("{}"sv)) )
-            return source_view().sub_string_view(begin, index() - begin);
+            return source_view().sub_string_view(begin_index, index() - begin_index);
 
         consume();
     }
-    return source_view().sub_string_view(begin);
+    return source_view().sub_string_view(begin_index);
 }
 
 auto FormatLexer::consume_number(usize& value) -> bool {

@@ -36,22 +36,22 @@ public:
     constexpr explicit(false) Option(OptionNoneTag) {
     }
     constexpr explicit(false) Option(T const& value)
-        : m_is_present{ true } {
-        new (&m_data_storage) T{ value };
+        : m_is_present(true) {
+        new (&m_data_storage) T(value);
     }
-    constexpr explicit(false) Option(T&& value)
-        : m_is_present{ true } {
-        new (&m_data_storage) T{ Cxx::move(value) };
+    constexpr explicit(false) Option(T && value)
+        : m_is_present(true) {
+        new (&m_data_storage) T(Cxx::move(value));
     }
     constexpr explicit(false) Option(Option<T> const& rhs)
-        : m_is_present{ rhs.m_is_present } {
+        : m_is_present(rhs.m_is_present) {
         if ( m_is_present )
-            new (&m_data_storage) T{ rhs.value() };
+            new (&m_data_storage) T(rhs.value());
     }
-    constexpr explicit(false) Option(Option<T>&& rhs)
-        : m_is_present{ rhs.m_is_present } {
+    constexpr explicit(false) Option(Option<T> && rhs)
+        : m_is_present(rhs.m_is_present) {
         if ( m_is_present )
-            new (&m_data_storage) T{ Cxx::move(rhs.unwrap()) };
+            new (&m_data_storage) T(Cxx::move(rhs.unwrap()));
     }
 
     ~Option() {
@@ -59,12 +59,12 @@ public:
     }
 
     constexpr auto operator=(T const& value) -> Option<T>& {
-        Option option{ value };
+        Option<T> option = value;
         swap(option);
         return *this;
     }
     constexpr auto operator=(T&& value) -> Option<T>& {
-        Option option{ Cxx::move(value) };
+        Option<T> option = Cxx::move(value);
         swap(option);
         return *this;
     }
@@ -76,12 +76,12 @@ public:
         if ( this == &rhs )
             return *this;
 
-        Option option{ rhs };
+        auto option = rhs;
         swap(option);
         return *this;
     }
     constexpr auto operator=(Option<T>&& rhs) -> Option<T>& {
-        Option option{ Cxx::move(rhs) };
+        auto option = Cxx::move(rhs);
         swap(option);
         return *this;
     }
@@ -89,7 +89,7 @@ public:
     /**
      * @brief Swaps this Option with another
      */
-    constexpr void swap(Option<T>& rhs) {
+    constexpr void swap(Option<T> & rhs) {
         Cxx::swap(m_is_present, rhs.m_is_present);
         Cxx::swap(storage_as_ref(), rhs.storage_as_ref());
     }
@@ -120,7 +120,7 @@ public:
     }
 
     [[nodiscard]]
-    auto value_or(T& default_value) -> T& {
+    auto value_or(T & default_value) -> T& {
         if ( is_present() )
             return value();
         else
@@ -170,9 +170,9 @@ public:
      */
     [[nodiscard]]
     auto unwrap() -> T {
-        T to_return{ Cxx::move(value()) };
+        auto __value = Cxx::move(value());
         reset();
-        return to_return;
+        return __value;
     }
     [[nodiscard]]
     auto propagate_failure() const -> OptionNoneTag {
@@ -195,8 +195,8 @@ private:
     }
 
 private:
-    bool m_is_present{ false };
-    alignas(T) u8 m_data_storage[sizeof(T)]{ 0 }; /* byte-array to avoid <m_data_storage> constructor call */
+    bool          m_is_present              = false;
+    alignas(T) u8 m_data_storage[sizeof(T)] = { 0 }; /* byte-array to avoid <m_data_storage> constructor call */
 };
 
 template<LValue T>
@@ -208,14 +208,14 @@ public:
     constexpr explicit(false) Option() = default;
     constexpr explicit(false) Option(OptionNoneTag) {
     }
-    constexpr explicit(false) Option(RemoveReference<T>& value)
-        : m_optional_ptr{ &value } {
+    constexpr explicit(false) Option(RemoveReference<T> & value)
+        : m_optional_ptr(&value) {
     }
     constexpr explicit(false) Option(Option<T> const& rhs)
-        : m_optional_ptr{ rhs.m_optional_ptr } {
+        : m_optional_ptr( rhs.m_optional_ptr ) {
     }
-    constexpr explicit(false) Option(Option<T>&& rhs)
-        : m_optional_ptr{ exchange(rhs.m_optional_ptr, nullptr) } {
+    constexpr explicit(false) Option(Option<T> && rhs)
+        : m_optional_ptr( Cxx::exchange(rhs.m_optional_ptr, nullptr) ) {
     }
 
     ~Option() {
@@ -223,7 +223,7 @@ public:
     }
 
     constexpr auto operator=(RemoveReference<T>& value) -> Option<T>& {
-        Option option{ value };
+        Option<T> option = value;
         swap(option);
         return *this;
     }
@@ -235,12 +235,12 @@ public:
         if ( m_optional_ptr == rhs.m_optional_ptr )
             return *this;
 
-        Option option{ rhs };
+        auto option = rhs;
         swap(option);
         return *this;
     }
     constexpr auto operator=(Option<T>&& rhs) -> Option<T>& {
-        Option option{ Cxx::move(rhs) };
+        auto option = Cxx::move(rhs);
         swap(option);
         return *this;
     }
@@ -248,7 +248,7 @@ public:
     /**
      * @brief Swaps this Option with another
      */
-    constexpr void swap(Option<T>& rhs) {
+    constexpr void swap(Option<T> & rhs) {
         Cxx::swap(m_optional_ptr, rhs.m_optional_ptr);
     }
 
@@ -336,7 +336,7 @@ public:
     }
 
 private:
-    RemoveReference<T>* m_optional_ptr{ nullptr };
+    RemoveReference<T>* m_optional_ptr = nullptr;
 };
 
 static_assert(Tryable<Option<i32>>);

@@ -18,9 +18,9 @@
 #define OOCommonIntegerWrapperImpl$(WrapperName)                                                                                                               \
     auto WrapperName::try_left_shift(WrapperName const& rhs) const->ErrorOr<WrapperName> {                                                                     \
         if ( rhs >= bit_count().as<WrapperName>() )                                                                                                            \
-            return Error::new_from_code(ErrorCode::ShiftOverflow);                                                                                             \
+            return Error::from_code(ErrorCode::ShiftOverflow);                                                                                                 \
         else                                                                                                                                                   \
-            return WrapperName{ static_cast<CCIntegerType>(m_value << rhs.m_value) };                                                                          \
+            return WrapperName(static_cast<CCIntegerType>(m_value << rhs.m_value));                                                                            \
     }                                                                                                                                                          \
     auto WrapperName::left_shift(WrapperName const& rhs) const->WrapperName {                                                                                  \
         if constexpr ( cclang_debugging ) {                                                                                                                    \
@@ -31,7 +31,7 @@
     }                                                                                                                                                          \
     auto WrapperName::try_left_shift_assign(WrapperName const& rhs)->ErrorOr<void> {                                                                           \
         if ( rhs >= bit_count().as<WrapperName>() )                                                                                                            \
-            return Error::new_from_code(ErrorCode::ShiftOverflow);                                                                                             \
+            return Error::from_code(ErrorCode::ShiftOverflow);                                                                                                 \
         else {                                                                                                                                                 \
             m_value <<= rhs.m_value;                                                                                                                           \
             return {};                                                                                                                                         \
@@ -46,9 +46,9 @@
     }                                                                                                                                                          \
     auto WrapperName::try_right_shift(WrapperName const& rhs) const->ErrorOr<WrapperName> {                                                                    \
         if ( rhs >= bit_count().as<WrapperName>() )                                                                                                            \
-            return Error::new_from_code(ErrorCode::ShiftOverflow);                                                                                             \
+            return Error::from_code(ErrorCode::ShiftOverflow);                                                                                                 \
         else                                                                                                                                                   \
-            return WrapperName{ static_cast<CCIntegerType>(m_value >> rhs.m_value) };                                                                          \
+            return WrapperName(static_cast<CCIntegerType>(m_value >> rhs.m_value));                                                                            \
     }                                                                                                                                                          \
     auto WrapperName::right_shift(WrapperName const& rhs) const->WrapperName {                                                                                 \
         if constexpr ( cclang_debugging ) {                                                                                                                    \
@@ -59,7 +59,7 @@
     }                                                                                                                                                          \
     auto WrapperName::try_right_shift_assign(WrapperName const& rhs)->ErrorOr<void> {                                                                          \
         if ( rhs >= bit_count().as<WrapperName>() )                                                                                                            \
-            return Error::new_from_code(ErrorCode::ShiftOverflow);                                                                                             \
+            return Error::from_code(ErrorCode::ShiftOverflow);                                                                                                 \
         else {                                                                                                                                                 \
             m_value >>= rhs.m_value;                                                                                                                           \
             return {};                                                                                                                                         \
@@ -75,9 +75,9 @@
     auto WrapperName::try_add(WrapperName const& rhs) const->ErrorOr<WrapperName> {                                                                            \
         WrapperName::CCIntegerType __value;                                                                                                                    \
         if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) )                                                                                          \
-            return Error::new_from_code(ErrorCode::IntOverflow);                                                                                               \
+            return Error::from_code(ErrorCode::IntOverflow);                                                                                                   \
         else                                                                                                                                                   \
-            return WrapperName{ __value };                                                                                                                     \
+            return WrapperName(__value);                                                                                                                       \
     }                                                                                                                                                          \
     auto WrapperName::add(WrapperName const& rhs) const->WrapperName {                                                                                         \
         if constexpr ( cclang_debugging ) {                                                                                                                    \
@@ -100,9 +100,9 @@
     auto WrapperName::try_sub(WrapperName const& rhs) const->ErrorOr<WrapperName> {                                                                            \
         WrapperName::CCIntegerType __value;                                                                                                                    \
         if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) )                                                                                          \
-            return Error::new_from_code(ErrorCode::IntOverflow);                                                                                               \
+            return Error::from_code(ErrorCode::IntOverflow);                                                                                                   \
         else                                                                                                                                                   \
-            return WrapperName{ __value };                                                                                                                     \
+            return WrapperName(__value);                                                                                                                       \
     }                                                                                                                                                          \
     auto WrapperName::sub(WrapperName const& rhs) const->WrapperName {                                                                                         \
         if constexpr ( cclang_debugging ) {                                                                                                                    \
@@ -125,9 +125,9 @@
     auto WrapperName::try_mul(WrapperName const& rhs) const->ErrorOr<WrapperName> {                                                                            \
         WrapperName::CCIntegerType __value;                                                                                                                    \
         if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) )                                                                                          \
-            return Error::new_from_code(ErrorCode::IntOverflow);                                                                                               \
+            return Error::from_code(ErrorCode::IntOverflow);                                                                                                   \
         else                                                                                                                                                   \
-            return WrapperName{ __value };                                                                                                                     \
+            return WrapperName(__value);                                                                                                                       \
     }                                                                                                                                                          \
     auto WrapperName::mul(WrapperName const& rhs) const->WrapperName {                                                                                         \
         if constexpr ( cclang_debugging ) {                                                                                                                    \
@@ -149,9 +149,9 @@
     }                                                                                                                                                          \
     auto WrapperName::try_div(WrapperName const& rhs) const->ErrorOr<WrapperName> {                                                                            \
         if ( rhs == 0 )                                                                                                                                        \
-            return Error::new_from_code(ErrorCode::DivisionByZero);                                                                                            \
+            return Error::from_code(ErrorCode::DivisionByZero);                                                                                                \
         else                                                                                                                                                   \
-            return WrapperName{ static_cast<CCIntegerType>(m_value / rhs.m_value) };                                                                           \
+            return WrapperName(static_cast<CCIntegerType>(m_value / rhs.m_value));                                                                             \
     }                                                                                                                                                          \
     auto WrapperName::div(WrapperName const& rhs) const->WrapperName {                                                                                         \
         if constexpr ( cclang_debugging ) {                                                                                                                    \
@@ -197,14 +197,14 @@
 #define OOUnsignedIntegerWrapperImpl$(WrapperName)                                                                                                             \
     auto WrapperName::try_bit_at(WrapperName index) const->ErrorOr<bool> {                                                                                     \
         if ( index > bit_count().as<WrapperName>() )                                                                                                           \
-            return Error::new_from_code(ErrorCode::IndexOutOfRange);                                                                                           \
+            return Error::from_code(ErrorCode::IndexOutOfRange);                                                                                               \
         else                                                                                                                                                   \
             return (m_value & (1 << index.unwrap())) == (1 << index.unwrap());                                                                                 \
     }                                                                                                                                                          \
     auto WrapperName::bit_at(WrapperName index) const->bool { return must$(try_bit_at(index)); }                                                               \
     auto WrapperName::try_set_bit(WrapperName index, bool value)->ErrorOr<void> {                                                                              \
         if ( index > bit_count().as<WrapperName>() )                                                                                                           \
-            return Error::new_from_code(ErrorCode::IndexOutOfRange);                                                                                           \
+            return Error::from_code(ErrorCode::IndexOutOfRange);                                                                                               \
                                                                                                                                                                \
         if ( value )                                                                                                                                           \
             m_value |= 1 << index.unwrap();                                                                                                                    \

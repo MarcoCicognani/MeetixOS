@@ -26,10 +26,7 @@ enum class align_val_t : __SIZE_TYPE__ {
 template<class T>
 class initializer_list {
 public:
-    constexpr initializer_list()
-        : m_array(nullptr)
-        , m_len(0) {
-    }
+    constexpr initializer_list() = default;
 
     /**
      * @brief Getters
@@ -51,8 +48,8 @@ private:
     }
 
 private:
-    T const*      m_array;
-    __SIZE_TYPE__ m_len;
+    T const*      m_array = nullptr;
+    __SIZE_TYPE__ m_len   = 0;
 };
 
 extern const nothrow_t nothrow;
@@ -77,20 +74,19 @@ constexpr auto move(T&& arg) noexcept -> RemoveReference<T>&& {
 
 template<typename T, typename U = T>
 constexpr void swap(T& lhs, U& rhs) {
-    if ( &lhs == &rhs )
+    if ( &lhs == &rhs ) /* avoid swap the same object */
         return;
 
     U __tmp = std::move(lhs);
-
-    lhs = std::move(rhs);
-    rhs = std::move(__tmp);
+    lhs     = std::move(rhs);
+    rhs     = std::move(__tmp);
 }
 
 template<typename T, typename U = T>
 constexpr T exchange(T& slot, U&& value) {
-    T old_value = std::move(slot);
-    slot        = std::forward<U>(value);
-    return old_value;
+    T __prev = std::move(slot);
+    slot     = std::forward<U>(value);
+    return __prev;
 }
 
 template<typename T>
@@ -114,6 +110,11 @@ template<typename T, typename U>
 constexpr auto bit_cast(U const& from) -> T {
     return __builtin_bit_cast(T, from);
 }
+
+auto memcpy(void*, void const*, usize) -> void*;
+auto memmove(void*, void const*, usize) -> void*;
+auto memset(void*, int, usize) -> void*;
+auto strlen(char const*) -> usize;
 
 } /* namespace Cxx */
 

@@ -12,8 +12,8 @@
 
 #include <CCLang/Core/SourceLocation.hh>
 
-auto SourceLocation::new_from_here(const char* file_path, const char* function, u32 line) -> SourceLocation {
-    return SourceLocation{ file_path, function, line };
+auto SourceLocation::from_here(const char* file_path, const char* function, u32 line) -> SourceLocation {
+    return SourceLocation(file_path, function, line);
 }
 
 auto SourceLocation::file_path() const -> StringView {
@@ -29,7 +29,7 @@ auto SourceLocation::line() const -> u32 {
 }
 
 SourceLocation::SourceLocation(const char* file_path, const char* function, u32 line)
-    : m_file_path{ StringView::new_from_cstr(file_path) }
-    , m_function{ StringView::new_from_cstr(function) }
-    , m_line{ Cxx::move(line) } {
+    : m_file_path(StringView::from_cstr(file_path))
+    , m_function(StringView::from_cstr(function))
+    , m_line(Cxx::move(line)) {
 }

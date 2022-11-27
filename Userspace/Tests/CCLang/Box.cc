@@ -145,7 +145,7 @@ TEST_CASE(leak) {
 }
 
 TEST_CASE(vector_of_boxes) {
-    auto vector_of_boxes = Vector<Box<i32>>::new_with_capacity(4);
+    auto vector_of_boxes = Vector<Box<i32>>::with_capacity(4);
 
     vector_of_boxes.append(Box<i32>::from_emplace(256));
     vector_of_boxes.append(Box<i32>::from_emplace(512));

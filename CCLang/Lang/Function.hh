@@ -31,7 +31,8 @@ template<typename TReturn, typename... TArgs>
 constexpr bool IsFunctionObject<Function<TReturn(TArgs...)>> = true;
 
 template<typename T, typename TReturn, typename... TArgs>
-concept CallableNotFunctor = Callable<T, TReturn, TArgs...> && !IsFunctionObject<T>;
+concept CallableNotFunctor = Callable<T, TReturn, TArgs...> && !
+IsFunctionObject<T>;
 
 } /* namespace Details */
 
@@ -45,7 +46,7 @@ public:
     constexpr explicit(false) Function(TCallable callable) {
         static_assert(sizeof(TCallable) <= sizeof(m_inline_storage), "Function<TCallable> Cannot be stored into inline storage");
 
-        new (m_inline_storage) CallableWrapper<TCallable>{ Cxx::move(callable) };
+        new (m_inline_storage) CallableWrapper<TCallable>(Cxx::move(callable));
     }
     Function(Function<TReturn(TArgs...)>&& rhs) {
         rhs.storage_as_callable()->move_this_to(m_inline_storage);
@@ -55,12 +56,12 @@ public:
 
     template<Details::CallableNotFunctor<TReturn, TArgs...> TCallable>
     auto operator=(TCallable&& callable) -> Function<TReturn(TArgs...)>& {
-        Function function{ callable };
+        Function<TReturn(TArgs...)> function = callable;
         swap(function);
         return *this;
     }
     auto operator=(Function<TReturn(TArgs...)>&& rhs) -> Function<TReturn(TArgs...)>& {
-        Function function{ Cxx::move(rhs) };
+        auto function = Cxx::move(rhs);
         swap(function);
         return *this;
     }
@@ -96,7 +97,7 @@ private:
     class CallableWrapper final : public ICallable {
     public:
         explicit constexpr CallableWrapper(TCallable callable)
-            : m_callable{ Cxx::move(callable) } {
+            : m_callable(Cxx::move(callable)) {
         }
         ~CallableWrapper() override = default;
 
@@ -106,7 +107,7 @@ private:
         }
 
         auto move_this_to(u8* destination) -> void override {
-            new (destination) CallableWrapper{ Cxx::move(m_callable) };
+            new (destination) CallableWrapper(Cxx::move(m_callable));
         }
 
     private:

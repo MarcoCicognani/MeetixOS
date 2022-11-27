@@ -14,16 +14,17 @@
 #include <CCLang/Lang/Try.hh>
 
 auto format(StringBuilder& string_builder, StringView literals_view) -> ErrorOr<void> {
+    auto const is_escaped_placeholder = [](StringView sv) { return sv.starts_with("{{"sv) || sv.starts_with("}}"sv); };
+
     usize i = 0;
     while ( i < literals_view.len() ) {
         try$(string_builder.try_append(literals_view[i]));
 
         /* skip escaped placeholders */
-        auto const sub_string_view = literals_view.sub_string_view(i);
-        if ( sub_string_view.starts_with("{{"sv) || sub_string_view.starts_with("}}"sv) )
+        if ( is_escaped_placeholder(literals_view.sub_string_view(i)) )
             i += 2;
         else
-            ++i;
+            i += 1;
     }
     return {};
 }

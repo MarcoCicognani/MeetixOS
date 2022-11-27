@@ -30,7 +30,9 @@ set(CCLANG_SOURCES
         ../../CCLang/Core/Error.cc
         ../../CCLang/Core/Hashing.cc
         ../../CCLang/Core/SourceLocation.cc
-        ../../CCLang/Lang/StringView.cc ../../CCLang/Lang/IntTypes.cc)
+        ../../CCLang/Lang/Cxx.cc
+        ../../CCLang/Lang/IntTypes.cc
+        ../../CCLang/Lang/StringView.cc)
 
 set(LIBC_SOURCES
         ../../Userspace/Libraries/LibC/errno.cc

@@ -46,5 +46,5 @@ private:
 
 private:
     Box<char[]> m_storage_box;
-    usize       m_char_count{ 0 };
+    usize       m_char_count = 0;
 };

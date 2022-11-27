@@ -32,5 +32,5 @@ protected:
     ~RefCounted();
 
 private:
-    mutable usize m_strong_ref_count{ 1 };
+    mutable usize m_strong_ref_count = 1;
 };

@@ -37,21 +37,21 @@ public:
      * @brief Construction functions
      */
     [[nodiscard]]
-    static auto new_from_begin(TStringView const* string_view) -> StringViewIterator {
-        return StringViewIterator{ string_view, 0 };
+    static auto from_begin(TStringView const* string_view) -> StringViewIterator {
+        return StringViewIterator(string_view, 0);
     }
     [[nodiscard]]
-    static auto new_from_end(TStringView const* string_view) -> StringViewIterator {
-        return StringViewIterator{ string_view, string_view->len() };
+    static auto from_end(TStringView const* string_view) -> StringViewIterator {
+        return StringViewIterator(string_view, string_view->len());
     }
 
     [[nodiscard]]
-    static auto new_from_rbegin(TStringView const* string_view) -> StringViewIterator {
-        return StringViewIterator{ string_view, string_view->len().template as<isize>() - 1 };
+    static auto from_rbegin(TStringView const* string_view) -> StringViewIterator {
+        return StringViewIterator(string_view, string_view->len().template as<isize>() - 1);
     }
     [[nodiscard]]
-    static auto new_from_rend(TStringView const* string_view) -> StringViewIterator {
-        return StringViewIterator{ string_view, -1 };
+    static auto from_rend(TStringView const* string_view) -> StringViewIterator {
+        return StringViewIterator(string_view, -1);
     }
 
     StringViewIterator(StringViewIterator const&)                    = default;
@@ -69,7 +69,7 @@ public:
         return *this;
     }
     auto operator++(int) -> StringViewIterator {
-        StringViewIterator it{ *this };
+        auto it = *this;
 
         operator++();
         return it;
@@ -100,9 +100,9 @@ public:
     [[nodiscard]]
     auto is_end() const -> bool {
         if constexpr ( IsReverse ) {
-            return m_index.template as<usize>() == new_from_rend(m_string_view).index();
+            return m_index.template as<usize>() == from_rend(m_string_view).index();
         } else {
-            return m_index.template as<usize>() == new_from_end(m_string_view).index();
+            return m_index.template as<usize>() == from_end(m_string_view).index();
         }
     }
     [[nodiscard]]
@@ -140,13 +140,13 @@ public:
 
 private:
     explicit constexpr StringViewIterator(TStringView const* string_view, TIndex index)
-        : m_string_view{ string_view }
-        , m_index{ index } {
+        : m_string_view(string_view)
+        , m_index(index) {
     }
 
 private:
     TStringView const* m_string_view;
-    TIndex             m_index{ 0 };
+    TIndex             m_index;
 };
 
 } /* namespace Details */
@@ -192,10 +192,10 @@ public:
      * @brief Error safe factory function
      */
     [[nodiscard]]
-    static auto new_from_cstr(char const*) -> StringView;
+    static auto from_cstr(char const*) -> StringView;
     [[nodiscard]]
-    static constexpr auto new_from_raw_parts(char const* c_str, usize len) -> StringView {
-        return StringView{ c_str, len };
+    static constexpr auto from_raw_parts(char const* c_str, usize len) -> StringView {
+        return StringView(c_str, len);
     }
 
     /**
@@ -203,11 +203,11 @@ public:
      */
     constexpr explicit(false) StringView() = default;
     constexpr explicit(false) StringView(StringView const& rhs)
-        : StringView{ rhs.m_chars_ptr, rhs.m_chars_count } {
+        : StringView(rhs.m_chars_ptr, rhs.m_chars_count) {
     }
     constexpr explicit(false) StringView(StringView&& rhs)
-        : m_chars_ptr{ Cxx::exchange(rhs.m_chars_ptr, nullptr) }
-        , m_chars_count{ Cxx::exchange(rhs.m_chars_count, 0) } {
+        : m_chars_ptr(Cxx::exchange(rhs.m_chars_ptr, nullptr))
+        , m_chars_count(Cxx::exchange(rhs.m_chars_count, 0)) {
     }
     ~StringView() = default;
 
@@ -363,18 +363,18 @@ public:
 
 private:
     constexpr explicit StringView(char const* c_str, usize count)
-        : m_chars_ptr{ c_str }
-        , m_chars_count{ count } {
+        : m_chars_ptr(c_str)
+        , m_chars_count(count) {
     }
 
 private:
-    char const* m_chars_ptr{ nullptr }; /* TODO char8_t */
-    usize       m_chars_count{ 0 };
+    char const* m_chars_ptr;
+    usize       m_chars_count;
 };
 
 [[nodiscard]]
 constexpr auto operator""sv(char const* c_str, __SIZE_TYPE__ len) -> StringView {
-    return StringView::new_from_raw_parts(c_str, len);
+    return StringView::from_raw_parts(c_str, len);
 }
 
 template<>
@@ -394,4 +394,4 @@ constexpr auto swap(StringView& lhs, StringView& rhs) -> void {
     lhs.swap(rhs);
 }
 
-} /* namespace Cxx` */
+} // namespace Cxx

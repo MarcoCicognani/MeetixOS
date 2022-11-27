@@ -22,7 +22,7 @@ auto FormatParser::Result::display_as_is_numeric() const -> bool {
 }
 
 auto FormatParser::from_lexer(FormatLexer& format_lexer) -> FormatParser {
-    return FormatParser{ format_lexer };
+    return FormatParser(format_lexer);
 }
 
 auto FormatParser::try_parse() -> ErrorOr<FormatParser::Result> {
@@ -30,7 +30,7 @@ auto FormatParser::try_parse() -> ErrorOr<FormatParser::Result> {
         return Error::from_code(ErrorCode::Invalid);
 
     /* parse the format specifiers */
-    Result result{};
+    Result result;
     if ( m_format_lexer.consume_specific(':') ) {
         parse_alignment_fill(result);
         parse_alignment(result);

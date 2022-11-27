@@ -34,15 +34,15 @@ public:
      */
     [[nodiscard]]
     static constexpr auto empty() -> ListIterator<TList, T, IsReverse> {
-        return ListIterator<TList, T, IsReverse>{};
+        return ListIterator<TList, T, IsReverse>();
     }
     [[nodiscard]]
     static constexpr auto from_begin(TList* list) -> ListIterator<TList, T, IsReverse> {
-        return ListIterator<TList, T, IsReverse>{ list, list->m_head_node };
+        return ListIterator<TList, T, IsReverse>(list, list->m_head_node);
     }
     [[nodiscard]]
     static constexpr auto from_rbegin(TList* list) -> ListIterator<TList, T, IsReverse> {
-        return ListIterator<TList, T, IsReverse>{ list, list->m_tail_node };
+        return ListIterator<TList, T, IsReverse>(list, list->m_tail_node);
     }
 
     ListIterator(ListIterator const&)                    = default;
@@ -62,7 +62,7 @@ public:
         return *this;
     }
     auto operator++(int) -> ListIterator {
-        ListIterator it{ *this };
+        auto it = *this;
 
         operator++();
         return it;
@@ -94,7 +94,7 @@ public:
      * @brief Removes the node from the list
      */
     auto erase() -> ListIterator {
-        ListIterator it{ *this };
+        auto it = *this;
         ++it;
 
         m_list->erase(*this);
@@ -125,8 +125,8 @@ private:
 
     explicit constexpr ListIterator() = default;
     explicit constexpr ListIterator(TList* list, typename TList::Node* current_node)
-        : m_list{ list }
-        , m_current_node{ current_node } {
+        : m_list(list)
+        , m_current_node(current_node) {
     }
 
     void delete_node() {
@@ -135,16 +135,18 @@ private:
     }
 
 private:
-    TList*                m_list{ nullptr };
-    typename TList::Node* m_current_node{ nullptr };
+    using TNode = typename TList::Node;
+
+    TList* m_list         = nullptr;
+    TNode* m_current_node = nullptr;
 };
 
 template<typename T>
 struct ListNode final {
 public:
     T         m_value;
-    ListNode* m_next_node{ nullptr };
-    ListNode* m_prev_node{ nullptr };
+    ListNode* m_next_node = nullptr;
+    ListNode* m_prev_node = nullptr;
 };
 
 } /* namespace Details */
@@ -170,7 +172,7 @@ public:
      */
     [[nodiscard]]
     static constexpr auto empty() -> List<T> {
-        return List<T>{};
+        return List<T>();
     }
     [[nodiscard]]
     static auto from_other(List<T> const& rhs) -> List<T> {
@@ -210,12 +212,12 @@ public:
      * @brief Move constructor and move assignment
      */
     List(List<T>&& rhs)
-        : m_head_node{ Cxx::exchange(rhs.m_head_node, nullptr) }
-        , m_tail_node{ Cxx::exchange(rhs.m_tail_node, nullptr) }
-        , m_values_count{ Cxx::exchange(rhs.m_values_count, 0) } {
+        : m_head_node(Cxx::exchange(rhs.m_head_node, nullptr))
+        , m_tail_node(Cxx::exchange(rhs.m_tail_node, nullptr))
+        , m_values_count(Cxx::exchange(rhs.m_values_count, 0)) {
     }
     auto operator=(List<T>&& rhs) -> List<T>& {
-        List list{ Cxx::move(rhs) };
+        auto list = Cxx::move(rhs);
         swap(list);
         return *this;
     }
@@ -265,7 +267,7 @@ public:
         must$(try_append(Cxx::move(value)));
     }
     auto try_append(T value) -> ErrorOr<void> {
-        auto const new_node = new (nothrow) Node{ Cxx::move(value) };
+        auto const new_node = new (nothrow) Node(Cxx::move(value));
         if ( new_node == nullptr )
             return Error::from_code(ErrorCode::NoMemory);
 
@@ -287,7 +289,7 @@ public:
         must$(try_prepend(Cxx::move(value)));
     }
     auto try_prepend(T value) -> ErrorOr<void> {
-        auto const new_node = new (nothrow) Node{ Cxx::move(value) };
+        auto const new_node = new (nothrow) Node(Cxx::move(value));
         if ( new_node == nullptr )
             return Error::from_code(ErrorCode::NoMemory);
 
@@ -465,9 +467,9 @@ private:
     }
 
 private:
-    Node* m_head_node{ nullptr };
-    Node* m_tail_node{ nullptr };
-    usize m_values_count{ 0 };
+    Node* m_head_node    = nullptr;
+    Node* m_tail_node    = nullptr;
+    usize m_values_count = 0;
 };
 
 namespace Cxx {

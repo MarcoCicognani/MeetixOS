@@ -16,7 +16,6 @@
 #include <CCLang/Core/Math.hh>
 #include <CCLang/Core/NumericLimits.hh>
 #include <CCLang/Lang/Cxx.hh>
-#include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/Range.hh>
 #include <CCLang/Lang/Try.hh>
 
@@ -25,26 +24,26 @@
 #endif
 
 auto FormatApplier::from_string_builder(StringBuilder& string_builder) -> FormatApplier {
-    return FormatApplier{ string_builder, FormatParser::Result{} };
+    return FormatApplier(string_builder, FormatParser::Result());
 }
 
-auto FormatApplier::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> FormatApplier {
-    return FormatApplier{ string_builder, Cxx::move(result) };
+auto FormatApplier::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> FormatApplier {
+    return FormatApplier(string_builder, Cxx::move(result));
 }
 
 FormatApplier::FormatApplier(FormatApplier&& rhs)
-    : m_string_builder{ rhs.m_string_builder }
-    , m_parser_result{ Cxx::move(rhs.m_parser_result) } {
+    : m_string_builder(rhs.m_string_builder)
+    , m_parser_result(Cxx::move(rhs.m_parser_result)) {
 }
 
 auto FormatApplier::operator=(FormatApplier&& rhs) -> FormatApplier& {
-    FormatApplier format_applier{ Cxx::move(rhs) };
+    FormatApplier format_applier = Cxx::move(rhs);
     swap(format_applier);
     return *this;
 }
 
 auto FormatApplier::clone_format_applier() const -> FormatApplier {
-    return FormatApplier{ m_string_builder, m_parser_result };
+    return FormatApplier(m_string_builder, m_parser_result);
 }
 
 auto FormatApplier::swap(FormatApplier& rhs) -> void {
@@ -53,22 +52,23 @@ auto FormatApplier::swap(FormatApplier& rhs) -> void {
 }
 
 auto FormatApplier::try_put_padding(char fill, usize amount) -> ErrorOr<void> {
-    for ( [[maybe_unused]] usize i : Range{ 0u, amount } )
+    for ( [[maybe_unused]] usize i : Range<usize>{ 0, amount } )
         try$(m_string_builder.try_append(fill));
     return {};
 }
 
 auto FormatApplier::try_put_literal(StringView literals_view) -> ErrorOr<void> {
+    auto const is_escaped_placeholder = [](StringView sv) { return sv.starts_with("{{"sv) || sv.starts_with("}}"sv); };
+
     usize i = 0;
     while ( i < literals_view.len() ) {
         try$(m_string_builder.try_append(literals_view[i]));
 
         /* skip escaped placeholders */
-        auto const sub_string_view = literals_view.sub_string_view(i);
-        if ( sub_string_view.starts_with("{{"sv) || sub_string_view.starts_with("}}"sv) )
+        if ( is_escaped_placeholder(literals_view.sub_string_view(i)) )
             i += 2;
         else
-            ++i;
+            i += 1;
     }
     return {};
 }
@@ -192,7 +192,7 @@ auto FormatApplier::try_put_u64(u64                           value,
         return {};
     };
     auto try_put_digits = [&]() -> ErrorOr<void> {
-        for ( auto const i : Range{ 0u, digits_width } )
+        for ( auto const i : Range<usize>{ 0, digits_width } )
             try$(m_string_builder.try_append(to_char_buffer[i]));
         return {};
     };
@@ -311,7 +311,7 @@ auto FormatApplier::try_put_f64(double                        value,
 
         /* make the epsilon precision value */
         double epsilon = 0.5;
-        for ( [[maybe_unused]] usize i : Range{ 0u, precision } )
+        for ( [[maybe_unused]] usize i : Range<usize>{ 0, precision } )
             epsilon /= 10.0;
 
         /* calculate the visible precision chars */
@@ -392,7 +392,7 @@ auto FormatApplier::try_put_f80(long double                   value,
 
         /* make the epsilon precision value */
         long double epsilon = 0.5L;
-        for ( [[maybe_unused]] usize i : Range{ 0u, precision } )
+        for ( [[maybe_unused]] usize i : Range<usize>{ 0, precision } )
             epsilon /= 10.0L;
 
         /* calculate the visible precision chars */
@@ -491,8 +491,8 @@ auto FormatApplier::set_display_as(FormatParser::DisplayAs display_as) -> void {
 }
 
 FormatApplier::FormatApplier(StringBuilder& string_builder, FormatParser::Result result)
-    : m_string_builder{ string_builder }
-    , m_parser_result{ Cxx::move(result) } {
+    : m_string_builder(string_builder)
+    , m_parser_result(Cxx::move(result)) {
 }
 
 auto FormatApplier::convert_unsigned_to_chars(u64 value, char to_chars_buffer[128], u8 base, bool upper_case) -> usize {
@@ -515,7 +515,7 @@ auto FormatApplier::convert_unsigned_to_chars(u64 value, char to_chars_buffer[12
     }
 
     /* flip the buffer */
-    for ( auto const i : Range{ 0u, used_chars / 2 } )
+    for ( auto const i : Range<usize>{ 0, used_chars / 2 } )
         Cxx::swap(to_chars_buffer[i], to_chars_buffer[used_chars - i - 1]);
 
     return used_chars;
@@ -525,16 +525,12 @@ auto Formatter<nullptr_t>::from_format_applier(FormatApplier format_applier) -> 
     return Formatter<nullptr_t>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<nullptr_t>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<nullptr_t> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<nullptr_t>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<nullptr_t> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<nullptr_t>::format(nullptr_t) -> ErrorOr<void> {
-    try$(try_put_string("nullptr"sv,
-                        width().value_or(NumericLimits<usize>::min()),
-                        precision().value_or(NumericLimits<usize>::max()),
-                        alignment(),
-                        alignment_fill()));
+    try$(try_put_string("nullptr"sv, width().value_or(usize::min()), precision().value_or(usize::max()), alignment(), alignment_fill()));
     return {};
 }
 
@@ -546,8 +542,8 @@ auto Formatter<StringView>::from_format_applier(FormatApplier format_applier) ->
     return Formatter<StringView>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<StringView>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<StringView> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<StringView>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<StringView> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<StringView>::format(StringView value) -> ErrorOr<void> {
@@ -560,11 +556,7 @@ auto Formatter<StringView>::format(StringView value) -> ErrorOr<void> {
     if ( display_as() != FormatParser::DisplayAs::Default && display_as() != FormatParser::DisplayAs::String && display_as() != FormatParser::DisplayAs::Char )
         verify_not_reached$();
 
-    try$(try_put_string(value,
-                        width().value_or(NumericLimits<usize>::min()),
-                        precision().value_or(NumericLimits<usize>::max()),
-                        alignment(),
-                        alignment_fill()));
+    try$(try_put_string(value, width().value_or(usize::min()), precision().value_or(usize::max()), alignment(), alignment_fill()));
     return {};
 }
 
@@ -578,8 +570,8 @@ auto Formatter<T>::from_format_applier(FormatApplier format_applier) -> Formatte
 }
 
 template<Integral T>
-auto Formatter<T>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<T> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<T>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<T> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 template<Integral T>
@@ -593,7 +585,7 @@ auto Formatter<T>::format(T value) -> ErrorOr<void> {
 
         /* forward to the string-view formatter */
         auto sv_formatter = Formatter<StringView>::from_format_applier(clone_format_applier());
-        try$(sv_formatter.format(StringView::new_from_raw_parts(Cxx::bit_cast<char const*>(&value), 1)));
+        try$(sv_formatter.format(StringView::from_raw_parts(Cxx::bit_cast<char const*>(&value), 1)));
 
         return {};
     }
@@ -653,21 +645,13 @@ auto Formatter<T>::format(T value) -> ErrorOr<void> {
                          show_base(),
                          upper_case,
                          zero_pad(),
-                         width().value_or(NumericLimits<usize>::min()),
+                         width().value_or(usize::min()),
                          alignment(),
                          alignment_fill(),
                          show_integer_sign(),
                          false));
     } else {
-        try$(try_put_i64(value,
-                         base,
-                         show_base(),
-                         upper_case,
-                         zero_pad(),
-                         width().value_or(NumericLimits<usize>::min()),
-                         alignment(),
-                         alignment_fill(),
-                         show_integer_sign()));
+        try$(try_put_i64(value, base, show_base(), upper_case, zero_pad(), width().value_or(usize::min()), alignment(), alignment_fill(), show_integer_sign()));
     }
 
     return {};
@@ -692,8 +676,8 @@ auto Formatter<bool>::from_format_applier(FormatApplier format_applier) -> Forma
     return Formatter<bool>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<bool>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<bool> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<bool>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<bool> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<bool>::format(bool value) const -> ErrorOr<void> {
@@ -716,8 +700,8 @@ auto Formatter<char>::from_format_applier(FormatApplier format_applier) -> Forma
     return Formatter<char>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<char>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<char>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<char>::format(char value) const -> ErrorOr<void> {
@@ -726,7 +710,7 @@ auto Formatter<char>::format(char value) const -> ErrorOr<void> {
         try$(i8_formatter.format(value));
     } else {
         auto sv_formatter = Formatter<StringView>::from_format_applier(clone_format_applier());
-        try$(sv_formatter.format(StringView::new_from_raw_parts(&value, 1)));
+        try$(sv_formatter.format(StringView::from_raw_parts(&value, 1)));
     }
 
     return {};
@@ -741,8 +725,8 @@ auto Formatter<f32>::from_format_applier(FormatApplier format_applier) -> Format
     return Formatter<f32>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<f32>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<f32> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<f32>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<f32> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<f32>::format(f32 value) const -> ErrorOr<void> {
@@ -753,15 +737,15 @@ auto Formatter<f32>::format(f32 value) const -> ErrorOr<void> {
 }
 
 Formatter<f32>::Formatter(FormatApplier base_formatter)
-    : FormatApplier{ Cxx::move(base_formatter) } {
+    : FormatApplier(Cxx::move(base_formatter)) {
 }
 
 auto Formatter<f64>::from_format_applier(FormatApplier format_applier) -> Formatter<f64> {
     return Formatter<f64>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<f64>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<f64> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<f64>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<f64> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<f64>::format(f64 value) -> ErrorOr<void> {
@@ -790,7 +774,7 @@ auto Formatter<f64>::format(f64 value) -> ErrorOr<void> {
                      upper_case,
                      zero_pad(),
                      alignment(),
-                     width().value_or(NumericLimits<usize>::min()),
+                     width().value_or(usize::min()),
                      precision().value_or(6),
                      alignment_fill(),
                      show_integer_sign()));
@@ -798,15 +782,15 @@ auto Formatter<f64>::format(f64 value) -> ErrorOr<void> {
 }
 
 Formatter<f64>::Formatter(FormatApplier base_formatter)
-    : FormatApplier{ Cxx::move(base_formatter) } {
+    : FormatApplier(Cxx::move(base_formatter)) {
 }
 
 auto Formatter<f80>::from_format_applier(FormatApplier format_applier) -> Formatter<f80> {
     return Formatter<f80>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<f80>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<f80> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<f80>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<f80> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<f80>::format(f80 value) -> ErrorOr<void> {
@@ -830,19 +814,12 @@ auto Formatter<f80>::format(f80 value) -> ErrorOr<void> {
     }
 
     /* put the double value into the string-builder */
-    try$(try_put_f80(value,
-                     base,
-                     upper_case,
-                     alignment(),
-                     width().value_or(NumericLimits<usize>::min()),
-                     precision().value_or(6),
-                     alignment_fill(),
-                     show_integer_sign()));
+    try$(try_put_f80(value, base, upper_case, alignment(), width().value_or(usize::min()), precision().value_or(6), alignment_fill(), show_integer_sign()));
     return {};
 }
 
 Formatter<f80>::Formatter(FormatApplier base_formatter)
-    : FormatApplier{ Cxx::move(base_formatter) } {
+    : FormatApplier(Cxx::move(base_formatter)) {
 }
 #endif
 
@@ -850,8 +827,8 @@ auto Formatter<char const*>::from_format_applier(FormatApplier format_applier) -
     return Formatter<char const*>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<char const*>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char const*> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<char const*>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<char const*> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<char const*>::format(char const* value) const -> ErrorOr<void> {
@@ -860,22 +837,22 @@ auto Formatter<char const*>::format(char const* value) const -> ErrorOr<void> {
         try$(usize_formatter.format(Cxx::bit_cast<usize>(value)));
     } else {
         auto sv_formatter = Formatter<StringView>::from_format_applier(clone_format_applier());
-        try$(sv_formatter.format(StringView::new_from_cstr(value)));
+        try$(sv_formatter.format(StringView::from_cstr(value)));
     }
 
     return {};
 }
 
 Formatter<char const*>::Formatter(FormatApplier base_formatter)
-    : FormatApplier{ Cxx::move(base_formatter) } {
+    : FormatApplier(Cxx::move(base_formatter)) {
 }
 
 auto Formatter<SourceLocation>::from_format_applier(FormatApplier format_applier) -> Formatter<SourceLocation> {
     return Formatter<SourceLocation>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<SourceLocation>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<SourceLocation> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<SourceLocation>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<SourceLocation> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<SourceLocation>::format(SourceLocation const& source_location) const -> ErrorOr<void> {
@@ -895,50 +872,42 @@ auto Formatter<SourceLocation>::format(SourceLocation const& source_location) co
 }
 
 Formatter<SourceLocation>::Formatter(FormatApplier base_formatter)
-    : FormatApplier{ Cxx::move(base_formatter) } {
+    : FormatApplier(Cxx::move(base_formatter)) {
 }
 
 auto Formatter<ErrorCode>::from_format_applier(FormatApplier format_applier) -> Formatter<ErrorCode> {
     return Formatter<ErrorCode>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<ErrorCode>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<ErrorCode> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<ErrorCode>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<ErrorCode> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<ErrorCode>::format(ErrorCode const& error_code) const -> ErrorOr<void> {
     static StringView const s_error_code_as_string_view[] = {
-        "Denied"sv,
-        "Existing"sv,
-        "Invalid"sv,
-        "NoMemory"sv,
-        "BadFile"sv,
-        "NotFound"sv,
-        "IntOverflow"sv,
-        "EmptyData"sv,
-        "BadLength"sv,
-        "BadData"sv
+        "Denied"sv,    "Existing"sv,  "Invalid"sv, "NoMemory"sv,    "BadFile"sv,         "NotFound"sv,      "IntOverflow"sv,
+        "EmptyData"sv, "BadLength"sv, "BadData"sv, "NullPointer"sv, "IndexOutOfRange"sv, "ShiftOverflow"sv, "DivisionByZero"sv,
     };
 
-    auto const errno_as_u16 = static_cast<UnderlyingType<ErrorCode>>(error_code);
-    auto const errno_as_sv  = s_error_code_as_string_view[errno_as_u16];
+    auto const error_code_as_int = static_cast<UnderlyingType<ErrorCode>>(error_code);
+    auto const error_code_as_sv  = s_error_code_as_string_view[error_code_as_int];
 
     auto sv_formatter = Formatter<StringView>::from_format_applier(clone_format_applier());
-    try$(sv_formatter.format(errno_as_sv));
+    try$(sv_formatter.format(error_code_as_sv));
 
     return {};
 }
 
 Formatter<ErrorCode>::Formatter(FormatApplier base_formatter)
-    : FormatApplier{ Cxx::move(base_formatter) } {
+    : FormatApplier(Cxx::move(base_formatter)) {
 }
 
 auto Formatter<Error>::from_format_applier(FormatApplier format_applier) -> Formatter<Error> {
     return Formatter<Error>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<Error>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Error> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<Error>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Error> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<Error>::format(Error const& error) const -> ErrorOr<void> {
@@ -961,15 +930,15 @@ auto Formatter<Error>::format(Error const& error) const -> ErrorOr<void> {
 }
 
 Formatter<Error>::Formatter(FormatApplier base_formatter)
-    : FormatApplier{ Cxx::move(base_formatter) } {
+    : FormatApplier(Cxx::move(base_formatter)) {
 }
 
 auto Formatter<String>::from_format_applier(FormatApplier format_applier) -> Formatter<String> {
     return Formatter<String>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<String>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<String> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<String>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<String> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<String>::format(String const& string) const -> ErrorOr<void> {
@@ -980,15 +949,15 @@ auto Formatter<String>::format(String const& string) const -> ErrorOr<void> {
 }
 
 Formatter<String>::Formatter(FormatApplier base_formatter)
-    : FormatApplier{ Cxx::move(base_formatter) } {
+    : FormatApplier(Cxx::move(base_formatter)) {
 }
 
 auto Formatter<StringBuilder>::from_format_applier(FormatApplier format_applier) -> Formatter<StringBuilder> {
     return Formatter<StringBuilder>{ Cxx::move(format_applier) };
 }
 
-auto Formatter<StringBuilder>::new_from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<StringBuilder> {
-    return from_format_applier(FormatApplier::new_from_parser_result(string_builder, Cxx::move(result)));
+auto Formatter<StringBuilder>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<StringBuilder> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
 auto Formatter<StringBuilder>::format(StringBuilder const& string_builder) const -> ErrorOr<void> {
@@ -999,5 +968,5 @@ auto Formatter<StringBuilder>::format(StringBuilder const& string_builder) const
 }
 
 Formatter<StringBuilder>::Formatter(FormatApplier base_formatter)
-    : FormatApplier{ Cxx::move(base_formatter) } {
+    : FormatApplier(Cxx::move(base_formatter)) {
 }

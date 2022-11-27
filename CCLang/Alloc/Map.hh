@@ -82,7 +82,7 @@ public:
      */
     [[nodiscard]]
     static constexpr auto empty() -> Map<K, T, KTraits, IsOrdered> {
-        return Map<K, T, KTraits, IsOrdered>{};
+        return Map<K, T, KTraits, IsOrdered>();
     }
     [[nodiscard]]
     static auto with_capacity(usize capacity) -> Map<K, T, KTraits, IsOrdered> {
@@ -124,10 +124,10 @@ public:
      * @brief Move constructor and move assignment
      */
     Map(Map<K, T, KTraits, IsOrdered>&& rhs)
-        : m_hash_set{ Cxx::move(rhs.m_hash_set) } {
+        : m_hash_set(Cxx::move(rhs.m_hash_set)) {
     }
     auto operator=(Map<K, T, KTraits, IsOrdered>&& rhs) -> Map<K, T, KTraits, IsOrdered>& {
-        Map map{ Cxx::move(rhs) };
+        auto map = Cxx::move(rhs);
         swap(map);
         return *this;
     }
@@ -306,7 +306,7 @@ private:
     explicit constexpr Map() = default;
 
 private:
-    Set<KeyValue, KeyValueTraits, IsOrdered> m_hash_set{ Set<KeyValue, KeyValueTraits, IsOrdered>::empty() };
+    Set<KeyValue, KeyValueTraits, IsOrdered> m_hash_set = Set<KeyValue, KeyValueTraits, IsOrdered>::empty();
 };
 
 namespace Cxx {

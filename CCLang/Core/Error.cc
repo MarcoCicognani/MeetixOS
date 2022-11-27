@@ -14,12 +14,12 @@
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/StringView.hh>
 
-auto Error::from_code(ErrorCode, FromSyscall, SourceLocation) -> Error {
-    return Error{ code, ""sv, from_syscall, Cxx::move(error_location) };
+auto Error::from_code(ErrorCode code, FromSyscall from_syscall, SourceLocation error_location) -> Error {
+    return Error(code, {}, from_syscall, Cxx::move(error_location));
 }
 
-auto Error::from_literal(StringView, FromSyscall, SourceLocation) -> Error {
-    return Error{ ErrorCode{ 0 }, string_literal, from_syscall, Cxx::move(error_location) };
+auto Error::from_literal(StringView string_literal, FromSyscall from_syscall, SourceLocation error_location) -> Error {
+    return Error(ErrorCode::None, string_literal, from_syscall, Cxx::move(error_location));
 }
 
 auto Error::code() const -> ErrorCode {
@@ -47,8 +47,8 @@ auto Error::operator==(StringView rhs) const -> bool {
 }
 
 Error::Error(ErrorCode code, StringView string_literal, Error::FromSyscall from_syscall, SourceLocation error_location)
-    : m_error_code{ code }
-    , m_string_literal{ Cxx::move(string_literal) }
-    , m_from_syscall{ from_syscall }
-    , m_error_location{ Cxx::move(error_location) } {
+    : m_error_code(code)
+    , m_string_literal(Cxx::move(string_literal))
+    , m_from_syscall(from_syscall)
+    , m_error_location(Cxx::move(error_location)) {
 }

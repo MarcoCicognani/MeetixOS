@@ -56,11 +56,11 @@ public:
      */
     [[nodiscard]]
     static auto empty() -> SetIterator<T, TBucket> {
-        return SetIterator<T, TBucket>{ nullptr };
+        return SetIterator<T, TBucket>(nullptr);
     }
     [[nodiscard]]
     static auto from_bucket(TBucket* bucket) -> SetIterator<T, TBucket> {
-        return SetIterator<T, TBucket>{ bucket };
+        return SetIterator<T, TBucket>(bucket);
     }
 
     SetIterator(SetIterator const&) = default;
@@ -86,7 +86,7 @@ public:
         return *this;
     }
     auto operator++(int) -> SetIterator {
-        SetIterator it{ *this };
+        auto it = *this;
 
         operator++();
         return it;
@@ -127,11 +127,11 @@ public:
 
 private:
     explicit constexpr SetIterator(TBucket* bucket)
-        : m_current_bucket{ bucket } {
+        : m_current_bucket(bucket) {
     }
 
 private:
-    TBucket* m_current_bucket{ nullptr };
+    TBucket* m_current_bucket;
 };
 
 template<typename T, typename TBucket, bool IsReverse>
@@ -142,11 +142,11 @@ public:
      */
     [[nodiscard]]
     static auto empty() -> OrderedSetIterator<T, TBucket, IsReverse> {
-        return OrderedSetIterator<T, TBucket, IsReverse>{ nullptr };
+        return OrderedSetIterator<T, TBucket, IsReverse>(nullptr);
     }
     [[nodiscard]]
     static auto from_bucket(TBucket* bucket) -> OrderedSetIterator<T, TBucket, IsReverse> {
-        return OrderedSetIterator<T, TBucket, IsReverse>{ bucket };
+        return OrderedSetIterator<T, TBucket, IsReverse>(bucket);
     }
 
     OrderedSetIterator(OrderedSetIterator const&)                    = default;
@@ -167,7 +167,7 @@ public:
         return *this;
     }
     auto operator++(int) -> OrderedSetIterator {
-        OrderedSetIterator it{ *this };
+        auto it = *this;
 
         operator++();
         return it;
@@ -208,11 +208,11 @@ public:
 
 private:
     explicit constexpr OrderedSetIterator(TBucket* bucket)
-        : m_current_bucket{ bucket } {
+        : m_current_bucket(bucket) {
     }
 
 private:
-    TBucket* m_current_bucket{ nullptr };
+    TBucket* m_current_bucket;
 };
 
 template<typename T>
@@ -249,8 +249,8 @@ struct CollectionData {
 
 template<typename BucketType>
 struct OrderedCollectionData {
-    BucketType* m_head{ nullptr };
-    BucketType* m_tail{ nullptr };
+    BucketType* m_head = nullptr;
+    BucketType* m_tail = nullptr;
 };
 
 enum class ReplaceExisting : bool {
@@ -293,7 +293,7 @@ public:
      */
     [[nodiscard]]
     static constexpr auto empty() -> Set<T, TTraits, IsOrdered> {
-        return Set<T, TTraits, IsOrdered>{};
+        return Set<T, TTraits, IsOrdered>();
     }
     [[nodiscard]]
     static auto with_capacity(usize capacity) -> Set<T, TTraits, IsOrdered> {
@@ -342,14 +342,14 @@ public:
      * @brief Move constructor and move assignment
      */
     Set(Set<T, TTraits, IsOrdered>&& rhs)
-        : m_buckets_storage{ Cxx::exchange(rhs.m_buckets_storage, nullptr) }
-        , m_collection_data{ Cxx::exchange(rhs.m_collection_data, DataCollection{}) }
-        , m_data_capacity{ Cxx::exchange(rhs.m_data_capacity, 0) }
-        , m_values_count{ Cxx::exchange(rhs.m_values_count, 0) }
-        , m_deleted_count{ Cxx::exchange(rhs.m_deleted_count, 0) } {
+        : m_buckets_storage(Cxx::exchange(rhs.m_buckets_storage, nullptr))
+        , m_collection_data(Cxx::exchange(rhs.m_collection_data, DataCollection()))
+        , m_data_capacity(Cxx::exchange(rhs.m_data_capacity, 0))
+        , m_values_count(Cxx::exchange(rhs.m_values_count, 0))
+        , m_deleted_count(Cxx::exchange(rhs.m_deleted_count, 0)) {
     }
     auto operator=(Set<T, TTraits, IsOrdered>&& rhs) -> Set<T, TTraits, IsOrdered>& {
-        Set set{ Cxx::move(rhs) };
+        auto set = Cxx::move(rhs);
         swap(set);
         return *this;
     }
@@ -389,7 +389,7 @@ public:
             }
         }
 
-        __builtin_memset(m_buckets_storage, 0, size_in_bytes(capacity()));
+        Cxx::memset(m_buckets_storage, 0, size_in_bytes(capacity()));
         if constexpr ( IsOrdered )
             m_collection_data = Details::OrderedCollectionData<Bucket>{ nullptr, nullptr };
         else
@@ -435,7 +435,7 @@ public:
         /* write the value into the new bucket.
          * NOTE even if the bucket is in the Deleted state, we can overwrite using move constructor
          * because destructor of previous value was already called by remove */
-        new (found_bucket->slot()) T{ Cxx::move(value) };
+        new (found_bucket->slot()) T(Cxx::move(value));
         if ( found_bucket->m_bucket_state == Details::SetBucketState::Deleted )
             --m_deleted_count;
 
@@ -638,7 +638,7 @@ private:
 
         /* fill the selected bucket */
         bucket.m_bucket_state = Details::SetBucketState::Used;
-        new (bucket.slot()) T{ Cxx::move(value) };
+        new (bucket.slot()) T(Cxx::move(value));
 
         /* link to the linked list if the set is ordered */
         if constexpr ( IsOrdered ) {
@@ -924,11 +924,11 @@ private:
         }
     }
 
-    Bucket*        m_buckets_storage{ nullptr };
-    DataCollection m_collection_data{};
-    usize          m_data_capacity{ 0 };
-    usize          m_values_count{ 0 };
-    usize          m_deleted_count{ 0 };
+    Bucket*        m_buckets_storage = nullptr;
+    DataCollection m_collection_data = {};
+    usize          m_data_capacity   = 0;
+    usize          m_values_count    = 0;
+    usize          m_deleted_count   = 0;
 };
 
 namespace Cxx {

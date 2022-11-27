@@ -18,11 +18,10 @@
 #include <CCLang/Lang/DenyMove.hh>
 
 template<CallBack TCallback>
-class ScopeGuard : public DenyCopy,
-                   public DenyMove {
+class ScopeGuard : public DenyCopy, public DenyMove {
 public:
     explicit constexpr ScopeGuard(TCallback callback)
-        : m_callback{ Cxx::move(callback) } {
+        : m_callback(Cxx::move(callback)) {
     }
     ~ScopeGuard() {
         if ( m_is_armed )
@@ -35,5 +34,5 @@ public:
 
 private:
     TCallback m_callback;
-    bool      m_is_armed{ true };
+    bool      m_is_armed = true;
 };

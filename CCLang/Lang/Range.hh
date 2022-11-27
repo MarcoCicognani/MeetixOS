@@ -27,8 +27,8 @@ public:
      * @brief Error safe factory functions
      */
     [[nodiscard]]
-    static auto new_from_current(T current) -> RangeIterator<T, IsReverse> {
-        return RangeIterator<T, IsReverse>{ current };
+    static auto from_current(T current) -> RangeIterator<T, IsReverse> {
+        return RangeIterator<T, IsReverse>(current);
     }
 
     RangeIterator(RangeIterator const&)                    = default;
@@ -48,7 +48,7 @@ public:
     }
     [[gnu::always_inline]]
     auto operator++(int) -> RangeIterator {
-        RangeIterator it{ *this };
+        auto it = *this;
 
         operator++();
         return it;
@@ -65,12 +65,11 @@ public:
     /**
      * @brief Comparison operator
      */
-    [[nodiscard]]
-    inline auto operator<=>(RangeIterator const&) const -> bool = default;
+    [[nodiscard]] inline auto operator<=>(RangeIterator const&) const -> bool = default;
 
 private:
     explicit constexpr RangeIterator(T current)
-        : m_current{ current } {
+        : m_current(current) {
     }
 
 private:
@@ -91,8 +90,8 @@ public:
      * @brief Constructor
      */
     explicit constexpr Range(T first, T end)
-        : m_first{ first }
-        , m_end{ end } {
+        : m_first(first)
+        , m_end(end) {
     }
 
     /**
@@ -100,20 +99,20 @@ public:
      */
     [[gnu::always_inline]]
     auto begin() const -> Iterator {
-        return Iterator::new_from_current(m_first);
+        return Iterator::from_current(m_first);
     }
     [[gnu::always_inline]]
     auto end() const -> Iterator {
-        return Iterator::new_from_current(m_end);
+        return Iterator::from_current(m_end);
     }
 
     [[gnu::always_inline]]
     auto rbegin() const -> Iterator {
-        return ReverseIterator::new_from_current(m_end);
+        return ReverseIterator::from_current(m_end);
     }
     [[gnu::always_inline]]
     auto rend() const -> Iterator {
-        return ReverseIterator::new_from_current(m_first);
+        return ReverseIterator::from_current(m_first);
     }
 
     auto reverse_iter() const -> ReverseIteratorWrapper {
@@ -137,8 +136,8 @@ public:
      * @brief Constructor
      */
     explicit constexpr RangeInclusive(T first, T end)
-        : m_first{ first }
-        , m_end{ end + 1 } {
+        : m_first(first)
+        , m_end(end + 1) {
     }
 
     /**
@@ -146,20 +145,20 @@ public:
      */
     [[gnu::always_inline]]
     auto begin() const -> Iterator {
-        return Iterator::new_from_current(m_first);
+        return Iterator::from_current(m_first);
     }
     [[gnu::always_inline]]
     auto end() const -> Iterator {
-        return Iterator::new_from_current(m_end);
+        return Iterator::from_current(m_end);
     }
 
     [[gnu::always_inline]]
     auto rbegin() const -> Iterator {
-        return ReverseIterator::new_from_current(m_end);
+        return ReverseIterator::from_current(m_end);
     }
     [[gnu::always_inline]]
     auto rend() const -> Iterator {
-        return ReverseIterator::new_from_current(m_first);
+        return ReverseIterator::from_current(m_first);
     }
 
     auto reverse_iter() const -> ReverseIteratorWrapper {
@@ -174,8 +173,7 @@ private:
 template<typename T>
 struct TypeTraits<Range<T>> final : public Details::TypeTraits<Range<T>> {
     static constexpr auto equals(Range<T> const& a, Range<T> const& b) -> bool {
-        return TypeTraits<T>::equals(a.begin().value(), b.begin().value)
-            && TypeTraits<T>::equals(a.end().value(), b.end().value());
+        return TypeTraits<T>::equals(a.begin().value(), b.begin().value) && TypeTraits<T>::equals(a.end().value(), b.end().value());
     }
 
     static constexpr auto is_trivial() -> bool {
@@ -186,8 +184,7 @@ struct TypeTraits<Range<T>> final : public Details::TypeTraits<Range<T>> {
 template<typename T>
 struct TypeTraits<RangeInclusive<T>> final : public Details::TypeTraits<RangeInclusive<T>> {
     static constexpr auto equals(Range<T> const& a, Range<T> const& b) -> bool {
-        return TypeTraits<T>::equals(a.begin().value(), b.begin().value)
-            && TypeTraits<T>::equals(a.end().value(), b.end().value());
+        return TypeTraits<T>::equals(a.begin().value(), b.begin().value) && TypeTraits<T>::equals(a.end().value(), b.end().value());
     }
 
     static constexpr auto is_trivial() -> bool {

@@ -15,30 +15,30 @@
 #include <CCLang/Lang/IntTypes.hh>
 
 template<typename T>
-class [[gnu::packed]] UnsafeArrayPtr {
+class UnsafeArrayPtr {
 public:
     constexpr explicit(false) UnsafeArrayPtr() = default;
     constexpr explicit(false) UnsafeArrayPtr(decltype(nullptr)) {
     }
     constexpr explicit(false) UnsafeArrayPtr(T* array_ptr)
-        : m_array_ptr{ array_ptr } {
+        : m_array_ptr( array_ptr ) {
     }
     constexpr UnsafeArrayPtr(UnsafeArrayPtr<T> const& rhs)
-        : m_array_ptr{ rhs.m_array_ptr } {
+        : m_array_ptr( rhs.m_array_ptr ) {
     }
     constexpr UnsafeArrayPtr(UnsafeArrayPtr<T>&& rhs)
-        : m_array_ptr{ Cxx::exchange(rhs.m_array_ptr, nullptr) } {
+        : m_array_ptr( Cxx::exchange(rhs.m_array_ptr, nullptr) ) {
     }
 
     constexpr ~UnsafeArrayPtr() = default;
 
     auto operator=(UnsafeArrayPtr<T> const& rhs) -> UnsafeArrayPtr<T>& {
-        UnsafeArrayPtr unsafe_array_ptr{ rhs };
+        auto unsafe_array_ptr = rhs;
         swap(unsafe_array_ptr);
         return *this;
     }
     auto operator=(UnsafeArrayPtr<T>&& rhs) -> UnsafeArrayPtr<T>& {
-        UnsafeArrayPtr unsafe_array_ptr{ Cxx::move(rhs) };
+        auto unsafe_array_ptr = Cxx::move(rhs);
         swap(unsafe_array_ptr);
         return *this;
     }
@@ -63,7 +63,7 @@ public:
     }
 
 private:
-    T* m_array_ptr{ nullptr };
+    T* m_array_ptr = nullptr;
 };
 
 template<typename T, unsigned int COUNT>

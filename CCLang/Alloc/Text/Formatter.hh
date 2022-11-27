@@ -26,7 +26,6 @@
 #include <CCLang/Core/ErrorOr.hh>
 #include <CCLang/Core/Meta.hh>
 #include <CCLang/Lang/Cxx.hh>
-#include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/Option.hh>
 #include <CCLang/Lang/Range.hh>
 #include <CCLang/Lang/Result.hh>
@@ -66,7 +65,7 @@ protected:
      * @brief put formatting functions
      */
     auto try_put_padding(char fill, usize amount) -> ErrorOr<void>;
-    auto try_put_literal(StringView literals_view) -> ErrorOr<void>;
+    auto try_put_literal(StringView sv) -> ErrorOr<void>;
     auto try_put_string(StringView value,
                         usize      min_width    = 0,
                         usize      max_width    = 0xffffff,
@@ -155,7 +154,7 @@ private:
 
 private:
     StringBuilder&       m_string_builder;
-    FormatParser::Result m_parser_result{};
+    FormatParser::Result m_parser_result;
 };
 
 template<typename T, typename>
@@ -350,7 +349,7 @@ public:
      */
     [[nodiscard]]
     static auto from_format_applier(FormatApplier format_applier) -> Formatter<T*> {
-        return Formatter<T*>{ Cxx::move(format_applier) };
+        return Formatter<T*>(Cxx::move(format_applier));
     }
     [[nodiscard]]
     static auto from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<T*> {
@@ -475,7 +474,7 @@ public:
      */
     [[nodiscard]]
     static auto from_format_applier(FormatApplier format_applier) -> Formatter<List<T>> {
-        return Formatter<List<T>>{ Cxx::move(format_applier) };
+        return Formatter<List<T>>(Cxx::move(format_applier));
     }
     [[nodiscard]]
     static auto from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<List<T>> {
@@ -518,7 +517,7 @@ public:
      */
     [[nodiscard]]
     static auto from_format_applier(FormatApplier format_applier) -> Formatter<Set<T>> {
-        return Formatter<Set<T>>{ Cxx::move(format_applier) };
+        return Formatter<Set<T>>(Cxx::move(format_applier));
     }
     [[nodiscard]]
     static auto from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Set<T>> {
@@ -561,7 +560,7 @@ public:
      */
     [[nodiscard]]
     static auto from_format_applier(FormatApplier format_applier) -> Formatter<OrderedSet<T>> {
-        return Formatter<OrderedSet<T>>{ Cxx::move(format_applier) };
+        return Formatter<OrderedSet<T>>(Cxx::move(format_applier));
     }
     [[nodiscard]]
     static auto from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<OrderedSet<T>> {
@@ -604,7 +603,7 @@ public:
      */
     [[nodiscard]]
     static auto from_format_applier(FormatApplier format_applier) -> Formatter<Map<K, T>> {
-        return Formatter<Map<K, T>>{ Cxx::move(format_applier) };
+        return Formatter<Map<K, T>>(Cxx::move(format_applier));
     }
     [[nodiscard]]
     static auto from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Map<K, T>> {
@@ -651,7 +650,7 @@ public:
      */
     [[nodiscard]]
     static auto from_format_applier(FormatApplier format_applier) -> Formatter<OrderedMap<K, T>> {
-        return Formatter<OrderedMap<K, T>>{ Cxx::move(format_applier) };
+        return Formatter<OrderedMap<K, T>>(Cxx::move(format_applier));
     }
     [[nodiscard]]
     static auto from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<OrderedMap<K, T>> {
@@ -698,7 +697,7 @@ public:
      */
     [[nodiscard]]
     static auto from_format_applier(FormatApplier format_applier) -> Formatter<Range<T>> {
-        return Formatter<Range<T>>{ Cxx::move(format_applier) };
+        return Formatter<Range<T>>(Cxx::move(format_applier));
     }
     [[nodiscard]]
     static auto from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Range<T>> {
@@ -734,7 +733,7 @@ public:
      */
     [[nodiscard]]
     static auto from_format_applier(FormatApplier format_applier) -> Formatter<RangeInclusive<T>> {
-        return Formatter<RangeInclusive<T>>{ Cxx::move(format_applier) };
+        return Formatter<RangeInclusive<T>>(Cxx::move(format_applier));
     }
     [[nodiscard]]
     static auto from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<RangeInclusive<T>> {
@@ -814,7 +813,7 @@ public:
      */
     [[nodiscard]]
     static auto from_format_applier(FormatApplier format_applier) -> Formatter<Vector<T>> {
-        return Formatter<Vector<T>>{ Cxx::move(format_applier) };
+        return Formatter<Vector<T>>(Cxx::move(format_applier));
     }
     [[nodiscard]]
     static auto from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Vector<T>> {
@@ -864,7 +863,7 @@ public:
      */
     [[nodiscard]]
     static auto from_format_applier(FormatApplier format_applier) -> Formatter<Result<T, E>> {
-        return Formatter<Result<T, E>>{ Cxx::move(format_applier) };
+        return Formatter<Result<T, E>>(Cxx::move(format_applier));
     }
     [[nodiscard]]
     static auto from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Result<T, E>> {
@@ -908,7 +907,7 @@ public:
      */
     [[nodiscard]]
     static auto from_format_applier(FormatApplier format_applier) -> Formatter<Option<T>> {
-        return Formatter<Option<T>>{ Cxx::move(format_applier) };
+        return Formatter<Option<T>>(Cxx::move(format_applier));
     }
     [[nodiscard]]
     static auto from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<Option<T>> {

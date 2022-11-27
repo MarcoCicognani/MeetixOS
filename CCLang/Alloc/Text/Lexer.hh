@@ -21,15 +21,14 @@
 #include <CCLang/Lang/IntTypes.hh>
 #include <CCLang/Lang/StringView.hh>
 
-class Lexer : public DenyCopy,
-              public DenyMove {
+class Lexer : public DenyCopy, public DenyMove {
 public:
     /**
      * @brief Error safe Factory functions
      */
     [[nodiscard]]
     static constexpr auto from_view(StringView source_view) -> Lexer {
-        return Lexer{ source_view };
+        return Lexer(source_view);
     }
 
     /**
@@ -124,15 +123,15 @@ public:
 
 protected:
     explicit constexpr Lexer(StringView source_view)
-        : m_source_view{ Cxx::move(source_view) } {
+        : m_source_view(Cxx::move(source_view)) {
     }
 
     [[nodiscard]]
     auto source_view() const -> StringView;
 
 private:
-    StringView m_source_view{};
-    usize      m_index{ 0 };
+    StringView m_source_view;
+    usize      m_index = 0;
 };
 
 static auto is_any_of(StringView chars) {

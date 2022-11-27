@@ -26,7 +26,7 @@ public:
      */
     [[nodiscard]]
     static constexpr auto from_view(StringView source_view) -> FormatLexer {
-        return FormatLexer{ source_view };
+        return FormatLexer(source_view);
     }
 
     /**
@@ -43,6 +43,6 @@ public:
 
 private:
     explicit constexpr FormatLexer(StringView source_view)
-        : Lexer{ source_view } {
+        : Lexer(source_view) {
     }
 };

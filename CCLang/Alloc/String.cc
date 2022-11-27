@@ -47,11 +47,11 @@ auto String::clone() const -> String {
 }
 
 String::String(String&& rhs)
-    : m_string_storage_ref{ Cxx::move(rhs.m_string_storage_ref) } {
+    : m_string_storage_ref(Cxx::move(rhs.m_string_storage_ref)) {
 }
 
 auto String::operator=(String&& rhs) -> String& {
-    String string{ Cxx::move(rhs) };
+    auto string = Cxx::move(rhs);
     swap(string);
     return *this;
 }
@@ -315,9 +315,9 @@ auto String::is_empty() const -> bool {
 }
 
 auto String::as_string_view() const -> StringView {
-    return StringView::new_from_raw_parts(as_cstr(), len());
+    return StringView::from_raw_parts(as_cstr(), len());
 }
 
 String::String(NonNullRef<StringStorage> string_storage)
-    : m_string_storage_ref{ Cxx::move(string_storage) } {
+    : m_string_storage_ref(Cxx::move(string_storage)) {
 }

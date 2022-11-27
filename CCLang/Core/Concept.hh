@@ -78,7 +78,7 @@ template<typename T>
 concept Pointer = is_pointer<T>;
 
 template<typename T, typename... TArgs>
-concept ConstructibleWith = requires { ::new T{ Cxx::declval<TArgs>()... }; };
+concept ConstructibleWith = requires { ::new T(Cxx::declval<TArgs>()...); };
 
 template<typename T>
 concept CopyConstructible = is_trivially_copyable<T> || ConstructibleWith<T, AddLValueReference<AddConst<T>>>;

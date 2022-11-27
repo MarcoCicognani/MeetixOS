@@ -27,56 +27,56 @@ public:
      */
     Result() = delete;
     constexpr explicit(false) Result(T const& value)
-        : m_value_option{ value } {
+        : m_value_option(value) {
     }
-    constexpr explicit(false) Result(T&& value)
-        : m_value_option{ Cxx::move(value) } {
+    constexpr explicit(false) Result(T && value)
+        : m_value_option(Cxx::move(value)) {
     }
     constexpr explicit(false) Result(E const& error)
-        : m_error_option{ error } {
+        : m_error_option(error) {
     }
-    constexpr explicit(false) Result(E&& error)
-        : m_error_option{ Cxx::move(error) } {
+    constexpr explicit(false) Result(E && error)
+        : m_error_option(Cxx::move(error)) {
     }
     constexpr explicit(false) Result(Result<T, E> const& rhs)
-        : m_value_option{ rhs.m_value_option }
-        , m_error_option{ rhs.m_error_option } {
+        : m_value_option(rhs.m_value_option)
+        , m_error_option(rhs.m_error_option) {
     }
-    constexpr explicit(false) Result(Result<T, E>&& rhs)
-        : m_value_option{ Cxx::move(rhs.m_value_option) }
-        , m_error_option{ Cxx::move(rhs.m_error_option) } {
+    constexpr explicit(false) Result(Result<T, E> && rhs)
+        : m_value_option(Cxx::move(rhs.m_value_option))
+        , m_error_option(Cxx::move(rhs.m_error_option)) {
     }
 
     ~Result() = default;
 
     constexpr auto operator=(T const& value) -> Result<T, E>& {
-        Result result{ value };
+        Result<T, E> result = value;
         swap(result);
         return *this;
     }
     constexpr auto operator=(T&& value) -> Result<T, E>& {
-        Result result{ Cxx::move(value) };
+        Result<T, E> result = Cxx::move(value);
         swap(result);
         return *this;
     }
     constexpr auto operator=(E const& error) -> Result<T, E>& {
-        Result result{ error };
+        Result<T, E> result = error;
         swap(result);
         return *this;
     }
     constexpr auto operator=(E&& error) -> Result<T, E>& {
-        Result result{ Cxx::move(error) };
+        Result<T, E> result = Cxx::move(error);
         swap(result);
         return *this;
     }
 
     constexpr auto operator=(Result<T, E> const& rhs) -> Result<T, E>& {
-        Result result{ rhs };
+        auto result = rhs;
         swap(result);
         return *this;
     }
     constexpr auto operator=(Result<T, E>&& rhs) -> Result<T, E>& {
-        Result result{ Cxx::move(rhs) };
+        auto result = Cxx::move(rhs);
         swap(result);
         return *this;
     }
@@ -84,7 +84,7 @@ public:
     /**
      * @brief Swaps this result with another
      */
-    constexpr auto swap(Result<T, E>& rhs) {
+    constexpr auto swap(Result<T, E> & rhs) {
         Cxx::swap(m_value_option, rhs.m_value_option);
         Cxx::swap(m_error_option, rhs.m_error_option);
     }
@@ -95,7 +95,7 @@ public:
     template<typename U>
     auto map(Mapper<T, U> auto predicate) -> Result<U, E> {
         if ( is_value() )
-          return predicate(unwrap_value());
+            return predicate(unwrap_value());
         else
             return unwrap_error();
     }
@@ -176,8 +176,8 @@ public:
     }
 
 private:
-    Option<T> m_value_option{};
-    Option<E> m_error_option{};
+    Option<T> m_value_option = OptionNone;
+    Option<E> m_error_option = OptionNone;
 };
 
 template<Concrete E>
@@ -188,38 +188,38 @@ public:
      */
     constexpr explicit(false) Result() = default;
     constexpr explicit(false) Result(E const& error)
-        : m_error_option{ error } {
+        : m_error_option(error) {
     }
-    constexpr explicit(false) Result(E&& error)
-        : m_error_option{ Cxx::move(error) } {
+    constexpr explicit(false) Result(E && error)
+        : m_error_option(Cxx::move(error)) {
     }
     constexpr explicit(false) Result(Result<void, E> const& rhs)
-        : m_error_option{ rhs.m_error_option } {
+        : m_error_option(rhs.m_error_option) {
     }
-    constexpr explicit(false) Result(Result<void, E>&& rhs)
-        : m_error_option{ Cxx::move(rhs.m_error_option) } {
+    constexpr explicit(false) Result(Result<void, E> && rhs)
+        : m_error_option(Cxx::move(rhs.m_error_option)) {
     }
 
     ~Result() = default;
 
     constexpr auto operator=(E const& error) -> Result<void, E>& {
-        Result result{ error };
+        Result<void, E> result = error;
         swap(result);
         return *this;
     }
     constexpr auto operator=(E&& error) -> Result<void, E>& {
-        Result result{ Cxx::move(error) };
+        Result<void, E> result = Cxx::move(error);
         swap(result);
         return *this;
     }
 
     constexpr auto operator=(Result<void, E> const& rhs) -> Result<void, E>& {
-        Result result{ rhs };
+        auto result = rhs;
         swap(result);
         return *this;
     }
     constexpr auto operator=(Result<void, E>&& rhs) -> Result<void, E>& {
-        Result result{ Cxx::move(rhs) };
+        auto result = Cxx::move(rhs);
         swap(result);
         return *this;
     }
@@ -227,7 +227,7 @@ public:
     /**
      * @brief Swaps this result with another
      */
-    constexpr auto swap(Result<void, E>& rhs) {
+    constexpr auto swap(Result<void, E> & rhs) {
         Cxx::swap(m_error_option, rhs.m_error_option);
     }
 
@@ -326,49 +326,49 @@ public:
      * @brief Constructors
      */
     Result() = delete;
-    constexpr explicit(false) Result(RemoveReference<T>& value)
-        : m_value_option{ value } {
+    constexpr explicit(false) Result(RemoveReference<T> & value)
+        : m_value_option(value) {
     }
     constexpr explicit(false) Result(E const& error)
-        : m_error_option{ error } {
+        : m_error_option(error) {
     }
-    constexpr explicit(false) Result(E&& error)
-        : m_error_option{ Cxx::move(error) } {
+    constexpr explicit(false) Result(E && error)
+        : m_error_option(Cxx::move(error)) {
     }
     constexpr explicit(false) Result(Result<T, E> const& rhs)
-        : m_value_option{ rhs.m_value_option }
-        , m_error_option{ rhs.m_error_option } {
+        : m_value_option(rhs.m_value_option)
+        , m_error_option(rhs.m_error_option) {
     }
-    constexpr explicit(false) Result(Result<T, E>&& rhs)
-        : m_value_option{ Cxx::move(rhs.m_value_option) }
-        , m_error_option{ Cxx::move(rhs.m_error_option) } {
+    constexpr explicit(false) Result(Result<T, E> && rhs)
+        : m_value_option(Cxx::move(rhs.m_value_option))
+        , m_error_option(Cxx::move(rhs.m_error_option)) {
     }
 
     ~Result() = default;
 
     constexpr auto operator=(RemoveReference<T>& value) -> Result<T, E>& {
-        Result result{ value };
+        Result<T, E> result = value;
         swap(result);
         return *this;
     }
     constexpr auto operator=(E const& error) -> Result<T, E>& {
-        Result result{ error };
+        Result<T, E> result = error;
         swap(result);
         return *this;
     }
     constexpr auto operator=(E&& error) -> Result<T, E>& {
-        Result result{ Cxx::move(error) };
+        Result<T, E> result = Cxx::move(error);
         swap(result);
         return *this;
     }
 
     constexpr auto operator=(Result<T, E> const& rhs) -> Result<T, E>& {
-        Result result{ rhs };
+        auto result = rhs;
         swap(result);
         return *this;
     }
     constexpr auto operator=(Result<T, E>&& rhs) -> Result<T, E>& {
-        Result result{ Cxx::move(rhs) };
+        auto result = Cxx::move(rhs);
         swap(result);
         return *this;
     }
@@ -376,7 +376,7 @@ public:
     /**
      * @brief Swaps this result with another
      */
-    constexpr auto swap(Result<T, E>& rhs) {
+    constexpr auto swap(Result<T, E> & rhs) {
         Cxx::swap(m_value_option, rhs.m_value_option);
         Cxx::swap(m_error_option, rhs.m_error_option);
     }
@@ -468,8 +468,8 @@ public:
     }
 
 private:
-    Option<T> m_value_option{};
-    Option<E> m_error_option{};
+    Option<T> m_value_option = OptionNone;
+    Option<E> m_error_option = OptionNone;
 };
 
 static_assert(Tryable<Result<i32, u64>>);
@@ -479,7 +479,7 @@ static_assert(Tryable<Result<void, u64>>);
 namespace Cxx {
 
 template<typename T, typename E>
-constexpr auto swap(Result<T, E>& lhs, Result<T,E>& rhs) -> void {
+constexpr auto swap(Result<T, E>& lhs, Result<T, E>& rhs) -> void {
     lhs.swap(rhs);
 }
 

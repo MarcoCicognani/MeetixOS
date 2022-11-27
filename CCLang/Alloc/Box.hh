@@ -34,7 +34,7 @@ public:
     }
     [[nodiscard]]
     static auto new_from_adopt(T& unboxed_ref) -> Box<T> {
-        return Box<T>{ &unboxed_ref };
+        return Box<T>(&unboxed_ref);
     }
 
     /**
@@ -42,15 +42,15 @@ public:
      */
     template<typename... TArgs>
     static auto try_from_emplace(TArgs&&... args) -> ErrorOr<Box<T>> {
-        auto unboxed_ptr = new (nothrow) T{ Cxx::forward<TArgs>(args)... };
+        auto unboxed_ptr = new (nothrow) T(Cxx::forward<TArgs>(args)...);
         if ( unboxed_ptr != nullptr ) [[likely]]
-            return Box<T>{ unboxed_ptr };
+            return Box<T>(unboxed_ptr);
         else
             return Error::from_code(ErrorCode::NoMemory);
     }
     static auto try_from_adopt(T* unboxed_ptr) -> ErrorOr<Box<T>> {
         if ( unboxed_ptr != nullptr ) [[likely]]
-            return Box<T>{ unboxed_ptr };
+            return Box<T>(unboxed_ptr);
         else
             return Error::from_code(ErrorCode::NullPointer);
     }
@@ -59,10 +59,10 @@ public:
      * @brief Move constructor and move assignment
      */
     Box(Box<T>&& rhs)
-        : m_boxed_array_ptr{ Cxx::exchange(rhs.m_boxed_array_ptr, nullptr) } {
+        : m_boxed_array_ptr(Cxx::exchange(rhs.m_boxed_array_ptr, nullptr)) {
     }
     auto operator=(Box<T>&& rhs) -> Box<T>& {
-        Box non_null_box{ Cxx::move(rhs) };
+        auto non_null_box = Cxx::move(rhs);
         swap(non_null_box);
         return *this;
     }
@@ -159,11 +159,11 @@ public:
 
 private:
     explicit constexpr Box(T* unboxed_ptr)
-        : m_boxed_array_ptr{ unboxed_ptr } {
+        : m_boxed_array_ptr(unboxed_ptr) {
     }
 
 private:
-    T* m_boxed_array_ptr{ nullptr };
+    T* m_boxed_array_ptr;
 };
 
 template<typename T>
@@ -184,7 +184,7 @@ public:
     static auto try_from_len(usize len) -> ErrorOr<Box<T[]>> {
         auto unboxed_array_ptr = new (nothrow) T[len.unwrap()];
         if ( unboxed_array_ptr != nullptr ) [[likely]]
-            return Box<T[]>{ unboxed_array_ptr };
+            return Box<T[]>(unboxed_array_ptr);
         else
             return Error::from_code(ErrorCode::NoMemory);
     }
@@ -193,10 +193,10 @@ public:
      * @brief Move constructor and move assignment
      */
     Box(Box<T[]>&& rhs)
-        : m_boxed_array_ptr{ Cxx::exchange(rhs.m_boxed_array_ptr, nullptr) } {
+        : m_boxed_array_ptr(Cxx::exchange(rhs.m_boxed_array_ptr, nullptr)) {
     }
     auto operator=(Box<T[]>&& rhs) -> Box<T[]>& {
-        Box non_null_box{ Cxx::move(rhs) };
+        auto non_null_box = Cxx::move(rhs);
         swap(non_null_box);
         return *this;
     }
@@ -263,11 +263,11 @@ public:
 
 private:
     explicit constexpr Box(T* unboxed_array_ptr)
-        : m_boxed_array_ptr{ unboxed_array_ptr } {
+        : m_boxed_array_ptr(unboxed_array_ptr) {
     }
 
 private:
-    T* m_boxed_array_ptr{ nullptr };
+    T* m_boxed_array_ptr;
 };
 
 template<typename T>

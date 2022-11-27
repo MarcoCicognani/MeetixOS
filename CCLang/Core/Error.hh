@@ -33,11 +33,11 @@ public:
     [[nodiscard]]
     static auto from_code(ErrorCode,
                           FromSyscall    = FromSyscall::No,
-                          SourceLocation = SourceLocation::new_from_here()) -> Error;
+                          SourceLocation = SourceLocation::from_here()) -> Error;
     [[nodiscard]]
     static auto from_literal(StringView,
                              FromSyscall    = FromSyscall::No,
-                             SourceLocation = SourceLocation::new_from_here()) -> Error;
+                             SourceLocation = SourceLocation::from_here()) -> Error;
 
     /**
      * @brief Getters

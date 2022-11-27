@@ -106,7 +106,7 @@ private:
     explicit constexpr StringBuilder() = default;
 
 private:
-    Vector<char> m_char_vector{ Vector<char>::new_empty() };
+    Vector<char> m_char_vector = Vector<char>::empty();
 };
 
 

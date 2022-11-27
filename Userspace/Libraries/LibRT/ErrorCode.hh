@@ -13,7 +13,8 @@
 #pragma once
 
 enum class ErrorCode : unsigned short int {
-    Denied = 1,
+    None = 0,
+    Denied,
     Existing,
     Invalid,
     NoMemory,

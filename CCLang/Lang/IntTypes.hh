@@ -20,7 +20,7 @@
 #include <CCLang/Lang/Must.hh>
 
 #define OOSignedIntegerWrapper$(WrapperName, real_integer_type, max_value, min_value)                                                                          \
-    class [[gnu::packed]] WrapperName final {                                                                                                                  \
+    class WrapperName final {                                                                                                                                  \
     public:                                                                                                                                                    \
         using CCIntegerType = real_integer_type;                                                                                                               \
                                                                                                                                                                \
@@ -30,26 +30,26 @@
                                                                                                                                                                \
         constexpr explicit(false) WrapperName() = default;                                                                                                     \
         constexpr explicit(false) WrapperName(real_integer_type value)                                                                                         \
-            : m_value{ value } {}                                                                                                                              \
+            : m_value(value) {}                                                                                                                                \
         constexpr explicit(false) WrapperName(WrapperName const& rhs)                                                                                          \
-            : m_value{ rhs.m_value } {}                                                                                                                        \
+            : m_value(rhs.m_value) {}                                                                                                                          \
         constexpr explicit(false) WrapperName(WrapperName&& rhs)                                                                                               \
-            : m_value{ Cxx::exchange(rhs.m_value, 0) } {}                                                                                                      \
+            : m_value(Cxx::exchange(rhs.m_value, {})) {}                                                                                                       \
                                                                                                                                                                \
         constexpr ~WrapperName() = default;                                                                                                                    \
                                                                                                                                                                \
         constexpr auto operator=(real_integer_type value) -> WrapperName& {                                                                                    \
-            WrapperName integer{ value };                                                                                                                      \
+            WrapperName integer = value;                                                                                                                       \
             swap(integer);                                                                                                                                     \
             return *this;                                                                                                                                      \
         }                                                                                                                                                      \
         constexpr auto operator=(WrapperName const& rhs) -> WrapperName& {                                                                                     \
-            WrapperName integer{ rhs };                                                                                                                        \
+            auto integer = rhs;                                                                                                                                \
             swap(integer);                                                                                                                                     \
             return *this;                                                                                                                                      \
         }                                                                                                                                                      \
         constexpr auto operator=(WrapperName&& rhs) -> WrapperName& {                                                                                          \
-            WrapperName integer{ Cxx::move(rhs) };                                                                                                             \
+            auto integer = Cxx::move(rhs);                                                                                                                     \
             swap(integer);                                                                                                                                     \
             return *this;                                                                                                                                      \
         }                                                                                                                                                      \
@@ -142,7 +142,7 @@
             return *this;                                                                                                                                      \
         }                                                                                                                                                      \
         auto operator++(int) -> WrapperName {                                                                                                                  \
-            WrapperName __prev{ *this };                                                                                                                       \
+            auto __prev = *this;                                                                                                                               \
             add_assign(1);                                                                                                                                     \
             return __prev;                                                                                                                                     \
         }                                                                                                                                                      \
@@ -151,8 +151,8 @@
             sub_assign(1);                                                                                                                                     \
             return *this;                                                                                                                                      \
         }                                                                                                                                                      \
-        auto operator--(int) -> WrapperName& {                                                                                                                 \
-            WrapperName __prev{ *this };                                                                                                                       \
+        auto operator--(int) -> WrapperName {                                                                                                                  \
+            auto __prev = *this;                                                                                                                               \
             sub_assign(1);                                                                                                                                     \
             return __prev;                                                                                                                                     \
         }                                                                                                                                                      \
@@ -225,7 +225,7 @@
         auto atomic_sub_fetch(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                \
                                                                                                                                                                \
     private:                                                                                                                                                   \
-        alignas(real_integer_type) real_integer_type m_value{ 0 };                                                                                             \
+        real_integer_type m_value = 0;                                                                                                                         \
     };                                                                                                                                                         \
     static_assert(sizeof(WrapperName) == sizeof(real_integer_type));                                                                                           \
                                                                                                                                                                \
@@ -234,7 +234,7 @@
     }
 
 #define OOUnsignedIntegerWrapper$(WrapperName, real_integer_type, max_value)                                                                                   \
-    class [[gnu::packed]] WrapperName final {                                                                                                                  \
+    class WrapperName final {                                                                                                                                  \
     public:                                                                                                                                                    \
         using CCIntegerType = real_integer_type;                                                                                                               \
                                                                                                                                                                \
@@ -244,26 +244,26 @@
                                                                                                                                                                \
         constexpr explicit(false) WrapperName() = default;                                                                                                     \
         constexpr explicit(false) WrapperName(real_integer_type value)                                                                                         \
-            : m_value{ value } {}                                                                                                                              \
+            : m_value(value) {}                                                                                                                                \
         constexpr explicit(false) WrapperName(WrapperName const& rhs)                                                                                          \
-            : m_value{ rhs.m_value } {}                                                                                                                        \
+            : m_value(rhs.m_value) {}                                                                                                                          \
         constexpr explicit(false) WrapperName(WrapperName&& rhs)                                                                                               \
-            : m_value{ Cxx::exchange(rhs.m_value, 0) } {}                                                                                                      \
+            : m_value(Cxx::exchange(rhs.m_value, {})) {}                                                                                                       \
                                                                                                                                                                \
         constexpr ~WrapperName() = default;                                                                                                                    \
                                                                                                                                                                \
         constexpr auto operator=(real_integer_type value) -> WrapperName& {                                                                                    \
-            WrapperName integer{ value };                                                                                                                      \
+            WrapperName integer = value;                                                                                                                       \
             swap(integer);                                                                                                                                     \
             return *this;                                                                                                                                      \
         }                                                                                                                                                      \
         constexpr auto operator=(WrapperName const& rhs) -> WrapperName& {                                                                                     \
-            WrapperName integer{ rhs };                                                                                                                        \
+            auto integer = rhs;                                                                                                                                \
             swap(integer);                                                                                                                                     \
             return *this;                                                                                                                                      \
         }                                                                                                                                                      \
         constexpr auto operator=(WrapperName&& rhs) -> WrapperName& {                                                                                          \
-            WrapperName integer{ Cxx::move(rhs) };                                                                                                             \
+            auto integer = Cxx::move(rhs);                                                                                                                     \
             swap(integer);                                                                                                                                     \
             return *this;                                                                                                                                      \
         }                                                                                                                                                      \
@@ -365,7 +365,7 @@
             return *this;                                                                                                                                      \
         }                                                                                                                                                      \
         auto operator++(int) -> WrapperName {                                                                                                                  \
-            WrapperName __prev{ *this };                                                                                                                       \
+            auto __prev = *this;                                                                                                                               \
             add_assign(1);                                                                                                                                     \
             return __prev;                                                                                                                                     \
         }                                                                                                                                                      \
@@ -374,8 +374,8 @@
             sub_assign(1);                                                                                                                                     \
             return *this;                                                                                                                                      \
         }                                                                                                                                                      \
-        auto operator--(int) -> WrapperName& {                                                                                                                 \
-            WrapperName __prev{ *this };                                                                                                                       \
+        auto operator--(int) -> WrapperName {                                                                                                                  \
+            auto __prev = *this;                                                                                                                               \
             sub_assign(1);                                                                                                                                     \
             return __prev;                                                                                                                                     \
         }                                                                                                                                                      \
@@ -448,7 +448,7 @@
         auto atomic_sub_fetch(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                \
                                                                                                                                                                \
     private:                                                                                                                                                   \
-        alignas(real_integer_type) real_integer_type m_value{ 0 };                                                                                             \
+        real_integer_type m_value = 0;                                                                                                                         \
     };                                                                                                                                                         \
     static_assert(sizeof(WrapperName) == sizeof(real_integer_type));                                                                                           \
                                                                                                                                                                \

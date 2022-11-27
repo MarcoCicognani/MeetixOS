@@ -27,7 +27,7 @@
 /**
  * @brief Writes the given literals_view into StringBuilder
  */
-auto format(StringBuilder& string_builder, StringView literals_view) -> ErrorOr<void>;
+auto format(StringBuilder& sv, StringView literals_view) -> ErrorOr<void>;
 
 /**
  * @brief Formats the given StringView and writes out into the given StringBuilder

@@ -41,15 +41,15 @@ public:
      */
     template<typename... TArgs>
     static auto try_from_emplace(TArgs&&... args) -> ErrorOr<NonNullRef<T>> {
-        auto ref_counted_ptr = new (nothrow) T{ Cxx::forward<TArgs>(args)... };
+        auto ref_counted_ptr = new (nothrow) T(Cxx::forward<TArgs>(args)...);
         if ( ref_counted_ptr != nullptr ) [[likely]]
-            return NonNullRef<T>{ ref_counted_ptr };
+            return NonNullRef<T>(ref_counted_ptr);
         else
             return Error::from_code(ErrorCode::NoMemory);
     }
     static auto try_from_adopt(T* ref_counted_ptr) -> ErrorOr<NonNullRef<T>> {
         if ( ref_counted_ptr != nullptr ) [[likely]]
-            return NonNullRef<T>{ ref_counted_ptr };
+            return NonNullRef<T>(ref_counted_ptr);
         else
             return Error::from_code(ErrorCode::NullPointer);
     }
@@ -58,10 +58,10 @@ public:
      * @brief Move constructor and move assignment
      */
     NonNullRef(NonNullRef<T>&& rhs)
-        : m_ref_counted_ptr{ Cxx::exchange(rhs.m_ref_counted_ptr, nullptr) } {
+        : m_ref_counted_ptr(Cxx::exchange(rhs.m_ref_counted_ptr, nullptr)) {
     }
     auto operator=(NonNullRef<T>&& rhs) -> NonNullRef<T>& {
-        NonNullRef non_null_ref{ Cxx::move(rhs) };
+        auto non_null_ref = Cxx::move(rhs);
         swap(non_null_ref);
         return *this;
     }
@@ -77,7 +77,7 @@ public:
     auto clone() const -> NonNullRef<T> {
         verify_not_null$(m_ref_counted_ptr);
         m_ref_counted_ptr->add_strong_ref();
-        return NonNullRef<T>{ m_ref_counted_ptr };
+        return NonNullRef<T>(m_ref_counted_ptr);
     }
 
     /**
@@ -156,7 +156,7 @@ public:
 
 private:
     explicit constexpr NonNullRef(T* ref_counted_ptr)
-        : m_ref_counted_ptr{ ref_counted_ptr } {
+        : m_ref_counted_ptr(ref_counted_ptr) {
     }
 
 private:

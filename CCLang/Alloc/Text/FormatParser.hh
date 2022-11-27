@@ -87,7 +87,7 @@ public:
 
 private:
     explicit constexpr FormatParser(FormatLexer& format_lexer)
-        : m_format_lexer{ format_lexer } {
+        : m_format_lexer(format_lexer) {
     }
 
     auto parse_alignment_fill(Result&) -> void;

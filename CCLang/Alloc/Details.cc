@@ -14,18 +14,19 @@
 
 #ifdef IN_KERNEL
 
+#    include <CCLang/Lang/Cxx.hh>
 #    include <memory/KernelHeap.hpp>
 
 auto Details::__heap_plug_alloc_mem(usize size) -> ErrorOr<void*> {
-    auto start_ptr = KernelHeap::allocate(size);
+    auto start_ptr = KernelHeap::allocate(size.unwrap());
     if ( start_ptr != nullptr ) {
-        __builtin_memset(start_ptr, 0, size);
+        Cxx::memset(start_ptr, 0, size);
         return start_ptr;
     } else
-        return Error::new_from_code(ErrorCode::NoMemory);
+        return Error::from_code(ErrorCode::NoMemory);
 }
 
-auto Details::__heap_plug_dealloc_mem(void* ptr, usize size) -> void {
+auto Details::__heap_plug_dealloc_mem(void* ptr, usize) -> void {
     KernelHeap::free(ptr);
 }
 

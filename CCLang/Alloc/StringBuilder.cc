@@ -118,5 +118,5 @@ auto StringBuilder::is_empty() const -> bool {
 }
 
 auto StringBuilder::as_string_view() const -> StringView {
-    return StringView::new_from_raw_parts(m_char_vector.raw_data(), len());
+    return StringView::from_raw_parts(m_char_vector.raw_data(), len());
 }

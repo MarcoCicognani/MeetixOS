@@ -85,7 +85,7 @@ static auto __rt_split_cli_args() -> ErrorOr<Vector<StringView>> {
         auto buffer_ptr = try$(Box<char[]>::try_from_len(max_len)).leak_ptr();
 
         auto const chars_count = syscall(buffer_ptr);
-        return StringView::new_from_raw_parts(buffer_ptr, chars_count);
+        return StringView::from_raw_parts(buffer_ptr, chars_count);
     };
 
     auto const exec_path_view = try$(fill_string_view_with(s_get_executable_path, PATH_MAX));

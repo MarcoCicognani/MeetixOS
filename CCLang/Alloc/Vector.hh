@@ -39,20 +39,20 @@ public:
      * @brief Construction functions
      */
     [[nodiscard]]
-    static auto new_from_begin(TVector* vector) -> VectorIterator {
+    static auto from_begin(TVector* vector) -> VectorIterator {
         return VectorIterator<TVector, T, IsReverse>{ vector, 0 };
     }
     [[nodiscard]]
-    static auto new_from_end(TVector* vector) -> VectorIterator {
+    static auto from_end(TVector* vector) -> VectorIterator {
         return VectorIterator<TVector, T, IsReverse>{ vector, vector->count() };
     }
 
     [[nodiscard]]
-    static auto new_from_rbegin(TVector* vector) -> VectorIterator {
+    static auto from_rbegin(TVector* vector) -> VectorIterator {
         return VectorIterator<TVector, T, IsReverse>{ vector, vector->count() - 1 };
     }
     [[nodiscard]]
-    static auto new_from_rend(TVector* vector) -> VectorIterator {
+    static auto from_rend(TVector* vector) -> VectorIterator {
         return VectorIterator<TVector, T, IsReverse>{ vector, -1 };
     }
 
@@ -71,7 +71,7 @@ public:
         return *this;
     }
     auto operator++(int) -> VectorIterator {
-        VectorIterator it{ *this };
+        auto it = *this;
 
         operator++();
         return it;
@@ -113,9 +113,9 @@ public:
     [[nodiscard]]
     auto is_end() const -> bool {
         if constexpr ( IsReverse ) {
-            return m_index == new_from_rend(m_collection).index();
+            return m_index == from_rend(m_collection).index();
         } else {
-            return m_index == new_from_end(m_collection).index();
+            return m_index == from_end(m_collection).index();
         }
     }
     [[nodiscard]]
@@ -153,13 +153,13 @@ public:
 
 private:
     explicit constexpr VectorIterator(TVector* vector, TIndex index)
-        : m_collection{ vector }
-        , m_index{ index } {
+        : m_collection(vector)
+        , m_index(index) {
     }
 
 private:
-    TVector* m_collection{ nullptr };
-    TIndex   m_index{ 0 };
+    TVector* m_collection;
+    TIndex   m_index;
 };
 
 } /* namespace Details */
@@ -179,32 +179,32 @@ public:
      * @brief Non-Error safe factory functions
      */
     [[nodiscard]]
-    static constexpr auto new_empty() -> Vector<T> {
-        return Vector<T>{};
+    static constexpr auto empty() -> Vector<T> {
+        return Vector<T>();
     }
     [[nodiscard]]
-    static auto new_with_capacity(usize capacity) -> Vector<T> {
-        return must$(try_new_with_capacity(capacity));
+    static auto with_capacity(usize capacity) -> Vector<T> {
+        return must$(try_with_capacity(capacity));
     }
     [[nodiscard]]
-    static auto new_from_other(Vector<T> const& rhs) -> Vector<T> {
-        return must$(try_new_from_other(rhs));
+    static auto from_other(Vector<T> const& rhs) -> Vector<T> {
+        return must$(try_from_other(rhs));
     }
     [[nodiscard]]
-    static auto new_from_list(Cxx::InitializerList<T> initializer_list) -> Vector<T> {
-        return must$(try_new_from_list(initializer_list));
+    static auto from_list(Cxx::InitializerList<T> initializer_list) -> Vector<T> {
+        return must$(try_from_list(initializer_list));
     }
 
     /**
      * @brief Error safe Factory functions
      */
-    static auto try_new_with_capacity(usize capacity) -> ErrorOr<Vector<T>> {
-        auto vector = new_empty();
+    static auto try_with_capacity(usize capacity) -> ErrorOr<Vector<T>> {
+        auto vector = empty();
         try$(vector.try_ensure_capacity(capacity));
         return vector;
     }
-    static auto try_new_from_other(Vector<T> const& rhs) -> ErrorOr<Vector<T>> {
-        auto vector = try$(try_new_with_capacity(rhs.count()));
+    static auto try_from_other(Vector<T> const& rhs) -> ErrorOr<Vector<T>> {
+        auto vector = try$(try_with_capacity(rhs.count()));
         for ( auto const& e : rhs ) {
             if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
                 try$(vector.try_append(try$(e.try_clone())));
@@ -217,8 +217,8 @@ public:
 
         return vector;
     }
-    static auto try_new_from_list(Cxx::InitializerList<T> initializer_list) -> ErrorOr<Vector<T>> {
-        auto vector = new_empty();
+    static auto try_from_list(Cxx::InitializerList<T> initializer_list) -> ErrorOr<Vector<T>> {
+        auto vector = empty();
         for ( auto const& e : initializer_list ) /* even with auto initializer_list exposes only T const& */
             try$(vector.try_append(Cxx::move(const_cast<T&>(e))));
 
@@ -229,12 +229,12 @@ public:
      * @brief Move constructor and move assignment
      */
     Vector(Vector<T>&& rhs)
-        : m_data_storage{ Cxx::exchange(rhs.m_data_storage, nullptr) }
-        , m_data_capacity{ Cxx::exchange(rhs.m_data_capacity, 0) }
-        , m_values_count{ Cxx::exchange(rhs.m_values_count, 0) } {
+        : m_data_storage(Cxx::exchange(rhs.m_data_storage, nullptr))
+        , m_data_capacity(Cxx::exchange(rhs.m_data_capacity, 0))
+        , m_values_count(Cxx::exchange(rhs.m_values_count, 0)) {
     }
     auto operator=(Vector<T>&& rhs) -> Vector<T>& {
-        Vector vector{ Cxx::move(rhs) };
+        auto vector = Cxx::move(rhs);
         swap(vector);
         return *this;
     }
@@ -251,7 +251,7 @@ public:
         return must$(try_clone());
     }
     auto try_clone() const -> ErrorOr<Vector<T>> {
-        return Vector<T>::try_new_from_other(*this);
+        return Vector<T>::try_from_other(*this);
     }
 
     /**
@@ -297,18 +297,18 @@ public:
 
         /* move the values after the insertion one place forward */
         if ( index < m_values_count ) {
-            if constexpr ( TypeTraits<T>::is_trivial() )
-                __builtin_memmove(data_slot(index + 1), data_slot(index), (m_values_count - index) * sizeof(T));
-            else {
+            if constexpr ( TypeTraits<T>::is_trivial() ) {
+                Cxx::memmove(data_slot(index + 1), data_slot(index), (m_values_count - index) * sizeof(T));
+            } else {
                 for ( auto const i : Range{ m_values_count, index }.reverse_iter() ) {
-                    new (data_slot(i)) T{ Cxx::move(m_data_storage[i - 1]) };
+                    new (data_slot(i)) T(Cxx::move(m_data_storage[i - 1]));
                     at(i - 1).~T();
                 }
             }
         }
 
         /* move the value into the memory */
-        new (data_slot(index)) T{ Cxx::move(value) };
+        new (data_slot(index)) T(Cxx::move(value));
         ++m_values_count;
         return {};
     }
@@ -336,7 +336,7 @@ public:
     }
 
     auto append_unchecked(T value) {
-        new (data_slot(m_values_count)) T{ Cxx::move(value) };
+        new (data_slot(m_values_count)) T(Cxx::move(value));
         ++m_values_count;
     }
 
@@ -352,17 +352,17 @@ public:
         try$(try_ensure_capacity(m_values_count + 1));
 
         /* move the values after the insertion one place forward */
-        if constexpr ( TypeTraits<T>::is_trivial() )
-            __builtin_memmove(data_slot(1), m_data_storage, (m_values_count * sizeof(T)).unwrap());
-        else {
+        if constexpr ( TypeTraits<T>::is_trivial() ) {
+            Cxx::memmove(data_slot(1), m_data_storage, m_values_count * sizeof(T));
+        } else {
             for ( auto const i : Range<usize>{ m_values_count, 0 }.reverse_iter() ) {
-                new (data_slot(i)) T{ Cxx::move(m_data_storage[i - 1]) };
+                new (data_slot(i)) T(Cxx::move(m_data_storage[i - 1]));
                 at(i - 1).~T();
             }
         }
 
         /* move the value into the memory */
-        new (data_slot(0)) T{ Cxx::forward<Args>(args)... };
+        new (data_slot(0)) T(Cxx::forward<Args>(args)...);
         ++m_values_count;
         return {};
     }
@@ -377,7 +377,7 @@ public:
     template<typename... Args>
     auto try_emplace_last(Args&&... args) -> ErrorOr<void> {
         try$(try_ensure_capacity(m_values_count + 1));
-        new (data_slot(m_values_count)) T{ Cxx::forward<Args>(args)... };
+        new (data_slot(m_values_count)) T(Cxx::forward<Args>(args)...);
         ++m_values_count;
         return {};
     }
@@ -411,12 +411,12 @@ public:
             return Error::from_code(ErrorCode::Invalid);
 
         /* shift all the values one position back */
-        if constexpr ( TypeTraits<T>::is_trivial() )
-            __builtin_memmove(data_slot(index), data_slot(index + 1), (m_values_count - index - 1) * sizeof(T));
-        else {
+        if constexpr ( TypeTraits<T>::is_trivial() ) {
+            Cxx::memmove(data_slot(index), data_slot(index + 1), (m_values_count - index - 1) * sizeof(T));
+        } else {
             at(index).~T();
             for ( auto const i : Range{ index + 1, m_values_count } ) {
-                new (data_slot(i - 1)) T{ Cxx::move(m_data_storage[i]) };
+                new (data_slot(i - 1)) T(Cxx::move(m_data_storage[i]));
                 m_data_storage[i].~T();
             }
         }
@@ -487,11 +487,11 @@ public:
                                          .map<UnsafeArrayPtr<T>>([](auto void_ptr) -> UnsafeArrayPtr<T> {
                                              return Cxx::bit_cast<T*>(void_ptr);
                                          }));
-        if constexpr ( TypeTraits<T>::is_trivial() )
-            __builtin_memmove(new_data_storage.unwrap(), m_data_storage.unwrap(), (m_values_count * sizeof(T)).unwrap());
-        else {
+        if constexpr ( TypeTraits<T>::is_trivial() ) {
+            Cxx::memmove(new_data_storage.unwrap(), m_data_storage.unwrap(), m_values_count * sizeof(T));
+        } else {
             for ( auto const i : Range<usize>{ 0, m_values_count } ) {
-                new (&new_data_storage[i]) T{ Cxx::move(at(i)) };
+                new (&new_data_storage[i]) T(Cxx::move(at(i)));
                 at(i).~T();
             }
         }
@@ -509,34 +509,34 @@ public:
      * @brief for-each support
      */
     auto begin() -> Iterator {
-        return Iterator::new_from_begin(this);
+        return Iterator::from_begin(this);
     }
     auto end() -> Iterator {
-        return Iterator::new_from_end(this);
+        return Iterator::from_end(this);
     }
 
     auto begin() const -> ConstIterator {
-        return ConstIterator::new_from_begin(this);
+        return ConstIterator::from_begin(this);
     }
     auto end() const -> ConstIterator {
-        return ConstIterator::new_from_end(this);
+        return ConstIterator::from_end(this);
     }
 
     /**
      * @brief reverse for-each support
      */
     auto rbegin() -> ReverseIterator {
-        return ReverseIterator::new_from_rbegin(this);
+        return ReverseIterator::from_rbegin(this);
     }
     auto rend() -> ReverseIterator {
-        return ReverseIterator::new_from_rend(this);
+        return ReverseIterator::from_rend(this);
     }
 
     auto rbegin() const -> ConstReverseIterator {
-        return ReverseIterator::new_from_rbegin(this);
+        return ReverseIterator::from_rbegin(this);
     }
     auto rend() const -> ConstReverseIterator {
-        return ReverseIterator::new_from_rend(this);
+        return ReverseIterator::from_rend(this);
     }
 
     auto reverse_iter() -> ReverseIteratorWrapper {
@@ -645,9 +645,9 @@ private:
     }
 
 private:
-    UnsafeArrayPtr<T> m_data_storage{ nullptr };
-    usize             m_data_capacity{ 0 };
-    usize             m_values_count{ 0 };
+    UnsafeArrayPtr<T> m_data_storage  = nullptr;
+    usize             m_data_capacity = 0;
+    usize             m_values_count  = 0;
 };
 
 namespace Cxx {
