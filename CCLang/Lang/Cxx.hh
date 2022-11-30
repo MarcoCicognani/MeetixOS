@@ -13,6 +13,7 @@
 #pragma once
 
 #include <CCLang/Core/Meta.hh>
+#include <CCLang/Core/Order.hh>
 
 namespace std {
 
@@ -114,6 +115,7 @@ constexpr auto bit_cast(U const& from) -> T {
 auto memcpy(void*, void const*, usize) -> void*;
 auto memmove(void*, void const*, usize) -> void*;
 auto memset(void*, int, usize) -> void*;
+auto memcmp(void const*, void const*, usize) -> Order;
 auto strlen(char const*) -> usize;
 
 } /* namespace Cxx */

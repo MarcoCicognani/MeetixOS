@@ -18,6 +18,7 @@
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/MemOrder.hh>
 #include <CCLang/Lang/Must.hh>
+#include <CCLang/Lang/Range.hh>
 
 #define OOSignedIntegerWrapper$(WrapperName, real_integer_type, max_value, min_value)                                                                          \
     class WrapperName final {                                                                                                                                  \
@@ -27,6 +28,11 @@
     public:                                                                                                                                                    \
         static constexpr auto max() -> WrapperName { return max_value; }                                                                                       \
         static constexpr auto min() -> WrapperName { return min_value; }                                                                                       \
+                                                                                                                                                               \
+        static constexpr auto range(WrapperName const& begin, WrapperName const& end) -> Range<WrapperName> { return Range<WrapperName>(begin, end); }         \
+        static constexpr auto range_inclusive(WrapperName const& begin, WrapperName const& last) -> RangeInclusive<WrapperName> {                              \
+            return RangeInclusive<WrapperName>(begin, last);                                                                                                   \
+        }                                                                                                                                                      \
                                                                                                                                                                \
         constexpr explicit(false) WrapperName() = default;                                                                                                     \
         constexpr explicit(false) WrapperName(real_integer_type value)                                                                                         \
@@ -207,22 +213,17 @@
             return *this;                                                                                                                                      \
         }                                                                                                                                                      \
                                                                                                                                                                \
-        [[nodiscard]]                                                                                                                                          \
-        auto atomic_load(MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                                  \
-        auto atomic_store(WrapperName, MemOrder = MemOrder::Total) volatile -> void;                                                                           \
+        [[nodiscard]] auto atomic_load(MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                    \
+        auto               atomic_store(WrapperName, MemOrder = MemOrder::Total) volatile -> void;                                                             \
                                                                                                                                                                \
         auto atomic_add(WrapperName, MemOrder = MemOrder::Total) volatile -> void;                                                                             \
         auto atomic_sub(WrapperName, MemOrder = MemOrder::Total) volatile -> void;                                                                             \
                                                                                                                                                                \
-        [[nodiscard]]                                                                                                                                          \
-        auto atomic_fetch_add(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                \
-        [[nodiscard]]                                                                                                                                          \
-        auto atomic_fetch_sub(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                \
+        [[nodiscard]] auto atomic_fetch_add(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                  \
+        [[nodiscard]] auto atomic_fetch_sub(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                  \
                                                                                                                                                                \
-        [[nodiscard]]                                                                                                                                          \
-        auto atomic_add_fetch(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                \
-        [[nodiscard]]                                                                                                                                          \
-        auto atomic_sub_fetch(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                \
+        [[nodiscard]] auto atomic_add_fetch(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                  \
+        [[nodiscard]] auto atomic_sub_fetch(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                  \
                                                                                                                                                                \
     private:                                                                                                                                                   \
         real_integer_type m_value = 0;                                                                                                                         \
@@ -241,6 +242,11 @@
     public:                                                                                                                                                    \
         static constexpr auto max() -> WrapperName { return max_value; }                                                                                       \
         static constexpr auto min() -> WrapperName { return 0; }                                                                                               \
+                                                                                                                                                               \
+        static constexpr auto range(WrapperName const& begin, WrapperName const& end) -> Range<WrapperName> { return Range<WrapperName>(begin, end); }         \
+        static constexpr auto range_inclusive(WrapperName const& begin, WrapperName const& last) -> RangeInclusive<WrapperName> {                              \
+            return RangeInclusive<WrapperName>(begin, last);                                                                                                   \
+        }                                                                                                                                                      \
                                                                                                                                                                \
         constexpr explicit(false) WrapperName() = default;                                                                                                     \
         constexpr explicit(false) WrapperName(real_integer_type value)                                                                                         \
@@ -430,22 +436,17 @@
             return *this;                                                                                                                                      \
         }                                                                                                                                                      \
                                                                                                                                                                \
-        [[nodiscard]]                                                                                                                                          \
-        auto atomic_load(MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                                  \
-        auto atomic_store(WrapperName, MemOrder = MemOrder::Total) volatile -> void;                                                                           \
+        [[nodiscard]] auto atomic_load(MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                    \
+        auto               atomic_store(WrapperName, MemOrder = MemOrder::Total) volatile -> void;                                                             \
                                                                                                                                                                \
         auto atomic_add(WrapperName, MemOrder = MemOrder::Total) volatile -> void;                                                                             \
         auto atomic_sub(WrapperName, MemOrder = MemOrder::Total) volatile -> void;                                                                             \
                                                                                                                                                                \
-        [[nodiscard]]                                                                                                                                          \
-        auto atomic_fetch_add(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                \
-        [[nodiscard]]                                                                                                                                          \
-        auto atomic_fetch_sub(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                \
+        [[nodiscard]] auto atomic_fetch_add(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                  \
+        [[nodiscard]] auto atomic_fetch_sub(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                  \
                                                                                                                                                                \
-        [[nodiscard]]                                                                                                                                          \
-        auto atomic_add_fetch(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                \
-        [[nodiscard]]                                                                                                                                          \
-        auto atomic_sub_fetch(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                                \
+        [[nodiscard]] auto atomic_add_fetch(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                  \
+        [[nodiscard]] auto atomic_sub_fetch(WrapperName, MemOrder = MemOrder::Total) volatile -> WrapperName;                                                  \
                                                                                                                                                                \
     private:                                                                                                                                                   \
         real_integer_type m_value = 0;                                                                                                                         \

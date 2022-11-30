@@ -484,7 +484,7 @@ public:
 
         /* allocate new memory and move the content into it */
         auto new_data_storage = try$(Details::__heap_plug_alloc_mem(new_capacity * sizeof(T))
-                                         .map<UnsafeArrayPtr<T>>([](auto void_ptr) -> UnsafeArrayPtr<T> {
+                                         .map<UnsafeArrayPtr<T>>([](void* void_ptr) -> UnsafeArrayPtr<T> {
                                              return Cxx::bit_cast<T*>(void_ptr);
                                          }));
         if constexpr ( TypeTraits<T>::is_trivial() ) {

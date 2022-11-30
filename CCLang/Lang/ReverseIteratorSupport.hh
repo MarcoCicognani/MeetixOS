@@ -32,8 +32,8 @@ auto end(Wrapper<TContainer> wrapper) -> decltype(wrapper.m_container.rend()) {
 }
 
 template<typename TContainer>
-auto in_reverse(TContainer& container) -> Wrapper<TContainer> {
-    return { container };
+constexpr auto in_reverse(TContainer& container) -> Wrapper<TContainer> {
+    return Wrapper<TContainer>(container);
 }
 
 } /* namespace ReverseIteratorSupport */

@@ -17,6 +17,7 @@
 #include <CCLang/Core/CharTypes.hh>
 #include <CCLang/Core/ErrorOr.hh>
 #include <CCLang/Core/Find.hh>
+#include <CCLang/Lang/Array.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/Must.hh>
 #include <CCLang/Lang/StringView.hh>
@@ -55,11 +56,11 @@ auto StringView::operator[](usize index) const -> char const& {
     return at(index);
 }
 
-static auto char_compare(char const* lhs, char const* rhs, usize len) -> Order {
+static auto char_compare(UnsafeArrayPtr<char const> lhs, UnsafeArrayPtr<char const> rhs, usize len) -> Order {
     for ( auto const i : Range<usize>{ 0, len } ) {
-        if ( lhs[i.unwrap()] > rhs[i.unwrap()] )
+        if ( lhs[i] > rhs[i] )
             return Order::Greater;
-        if ( lhs[i.unwrap()] < rhs[i.unwrap()] )
+        if ( lhs[i] < rhs[i] )
             return Order::Less;
     }
     return Order::Equal;
@@ -345,10 +346,9 @@ auto StringView::find(StringView needle, usize start) const -> Option<usize> {
     if ( start >= len() )
         return {};
 
-    return find_in_memory(as_cstr() + start, len() - start, needle.as_cstr(), needle.len())
-        .map<usize>([this](char const* ptr_pos) -> usize {
-            return ptr_pos - as_cstr();
-        });
+    return find_in_memory(as_cstr() + start, len() - start, needle.as_cstr(), needle.len()).map<usize>([this](char const* ptr_pos) -> usize {
+        return ptr_pos - as_cstr();
+    });
 }
 
 auto StringView::find_last(char needle) const -> Option<usize> {
@@ -368,11 +368,11 @@ auto StringView::try_find_all(StringView needle) const -> ErrorOr<Vector<usize>>
 
     usize current_position = 0;
     while ( current_position < len() ) {
-        auto ptr_pos_or_none = find_in_memory(as_cstr() + current_position, len() - current_position, needle.as_cstr(), needle.len());
-        if ( !ptr_pos_or_none.is_present() )
+        auto ptr_index_or_none = find_in_memory(as_cstr() + current_position, len() - current_position, needle.as_cstr(), needle.len());
+        if ( !ptr_index_or_none.is_present() )
             break;
 
-        auto char_ptr_pos   = ptr_pos_or_none.value();
+        auto char_ptr_pos   = ptr_index_or_none.unwrap();
         auto relative_index = char_ptr_pos - (as_cstr() + current_position);
 
         try$(positions.try_append(current_position + relative_index));
@@ -381,9 +381,9 @@ auto StringView::try_find_all(StringView needle) const -> ErrorOr<Vector<usize>>
     return positions;
 }
 
-static auto try_split_view_if_helper(StringView string_view,
-                                     StringView separator,
-                                     StringView::KeepEmpty keep_empty,
+static auto try_split_view_if_helper(StringView                               string_view,
+                                     StringView                               separator,
+                                     StringView::KeepEmpty                    keep_empty,
                                      Callable<ErrorOr<void>, StringView> auto predicate) -> ErrorOr<void> {
     if ( string_view.is_empty() )
         return {};
