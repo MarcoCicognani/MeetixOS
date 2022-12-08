@@ -44,7 +44,7 @@ auto Hashing::hash_ptr(void const* key) -> usize {
 
 auto Hashing::hash_string(char const* key, usize len) -> usize {
     usize hash = 0;
-    for ( auto const i : Range{ 0u, len } ) {
+    for ( auto const i : usize::range(0, len) ) {
         hash += static_cast<u32>(key[i]);
         hash += (hash << 10);
         hash ^= (hash >> 6);

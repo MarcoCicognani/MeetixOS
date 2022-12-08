@@ -114,7 +114,7 @@ public:
         return ReverseIterator::from_current(m_first);
     }
 
-    constexpr auto reverse_iter() const -> ReverseIteratorWrapper {
+    auto reverse_iter() const -> ReverseIteratorWrapper {
         return ReverseIteratorSupport::in_reverse(*this);
     }
 
@@ -156,7 +156,7 @@ public:
         return ReverseIterator::from_current(m_first);
     }
 
-    constexpr auto reverse_iter() const -> ReverseIteratorWrapper {
+    auto reverse_iter() const -> ReverseIteratorWrapper {
         return ReverseIteratorSupport::in_reverse(*this);
     }
 

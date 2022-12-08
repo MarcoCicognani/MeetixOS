@@ -52,7 +52,7 @@ auto FormatApplier::swap(FormatApplier& rhs) -> void {
 }
 
 auto FormatApplier::try_put_padding(char fill, usize amount) -> ErrorOr<void> {
-    for ( [[maybe_unused]] usize i : Range<usize>{ 0, amount } )
+    for ( [[maybe_unused]] auto const i : usize::range(0, amount) )
         try$(m_string_builder.try_append(fill));
     return {};
 }
@@ -192,7 +192,7 @@ auto FormatApplier::try_put_u64(u64                           value,
         return {};
     };
     auto try_put_digits = [&]() -> ErrorOr<void> {
-        for ( auto const i : Range<usize>{ 0, digits_width } )
+        for ( auto const i : usize::range(0, digits_width) )
             try$(m_string_builder.try_append(to_char_buffer[i]));
         return {};
     };
@@ -311,7 +311,7 @@ auto FormatApplier::try_put_f64(double                        value,
 
         /* make the epsilon precision value */
         double epsilon = 0.5;
-        for ( [[maybe_unused]] usize i : Range<usize>{ 0, precision } )
+        for ( [[maybe_unused]] auto const i : usize::range(0, precision) )
             epsilon /= 10.0;
 
         /* calculate the visible precision chars */
@@ -392,7 +392,7 @@ auto FormatApplier::try_put_f80(long double                   value,
 
         /* make the epsilon precision value */
         long double epsilon = 0.5L;
-        for ( [[maybe_unused]] usize i : Range<usize>{ 0, precision } )
+        for ( [[maybe_unused]] usize i : usize::range(0, precision) )
             epsilon /= 10.0L;
 
         /* calculate the visible precision chars */
@@ -515,7 +515,7 @@ auto FormatApplier::convert_unsigned_to_chars(u64 value, char to_chars_buffer[12
     }
 
     /* flip the buffer */
-    for ( auto const i : Range<usize>{ 0, used_chars / 2 } )
+    for ( auto const i : usize::range(0, used_chars / 2) )
         Cxx::swap(to_chars_buffer[i], to_chars_buffer[used_chars - i - 1]);
 
     return used_chars;

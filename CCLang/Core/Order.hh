@@ -12,8 +12,8 @@
 
 #pragma once
 
-enum class Order {
-    Less,
-    Equal,
-    Greater
+enum class Order : int {
+    Less    = -1,
+    Equal   = 0,
+    Greater = 1
 };

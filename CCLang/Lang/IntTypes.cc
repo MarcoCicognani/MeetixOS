@@ -192,6 +192,16 @@
     }                                                                                                                                                          \
     auto WrapperName::atomic_sub_fetch(WrapperName rhs, MemOrder mem_order) volatile->WrapperName {                                                            \
         return __atomic_sub_fetch(&m_value, rhs.m_value, static_cast<UnderlyingType<MemOrder>>(mem_order));                                                    \
+    }                                                                                                                                                          \
+    auto WrapperName::hash_code() const->usize {                                                                                                               \
+        auto hash_key = as<usize>();                                                                                                                           \
+        hash_key += ~(hash_key << 15);                                                                                                                         \
+        hash_key ^= (hash_key >> 10);                                                                                                                          \
+        hash_key += (hash_key << 3);                                                                                                                           \
+        hash_key ^= (hash_key >> 6);                                                                                                                           \
+        hash_key += ~(hash_key << 11);                                                                                                                         \
+        hash_key ^= (hash_key >> 16);                                                                                                                          \
+        return hash_key;                                                                                                                                       \
     }
 
 #define OOUnsignedIntegerWrapperImpl$(WrapperName)                                                                                                             \

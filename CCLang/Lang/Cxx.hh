@@ -61,7 +61,6 @@ template<typename T>
 constexpr auto forward(RemoveReference<T>& param) noexcept -> T&& {
     return static_cast<T&&>(param);
 }
-
 template<typename T>
 constexpr auto forward(RemoveReference<T>&& param) noexcept -> T&& {
     static_assert(!is_lvalue<T>, "Can't forward an rvalue as an lvalue.");
@@ -69,15 +68,12 @@ constexpr auto forward(RemoveReference<T>&& param) noexcept -> T&& {
 }
 
 template<typename T>
-constexpr auto move(T&& arg) noexcept -> RemoveReference<T>&& {
-    return static_cast<RemoveReference<T>&&>(arg);
+constexpr auto move(T&& arg) noexcept -> T&& {
+    return static_cast<T&&>(arg);
 }
 
 template<typename T, typename U = T>
 constexpr void swap(T& lhs, U& rhs) {
-    if ( &lhs == &rhs ) /* avoid swap the same object */
-        return;
-
     U __tmp = std::move(lhs);
     lhs     = std::move(rhs);
     rhs     = std::move(__tmp);

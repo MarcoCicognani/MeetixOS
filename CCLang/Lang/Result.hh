@@ -14,6 +14,7 @@
 
 #include <CCLang/Forward.hh>
 
+#include <CCLang/Core/Assertions.hh>
 #include <CCLang/Core/Concept.hh>
 #include <CCLang/Core/Meta.hh>
 #include <CCLang/Lang/Cxx.hh>
@@ -26,56 +27,56 @@ public:
      * @brief Constructors
      */
     Result() = delete;
-    constexpr explicit(false) Result(T const& value)
+    explicit(false) Result(T const& value)
         : m_value_option(value) {
     }
-    constexpr explicit(false) Result(T && value)
+    explicit(false) Result(T&& value)
         : m_value_option(Cxx::move(value)) {
     }
-    constexpr explicit(false) Result(E const& error)
+    explicit(false) Result(E const& error)
         : m_error_option(error) {
     }
-    constexpr explicit(false) Result(E && error)
+    explicit(false) Result(E&& error)
         : m_error_option(Cxx::move(error)) {
     }
-    constexpr explicit(false) Result(Result<T, E> const& rhs)
+    explicit(false) Result(Result<T, E> const& rhs)
         : m_value_option(rhs.m_value_option)
         , m_error_option(rhs.m_error_option) {
     }
-    constexpr explicit(false) Result(Result<T, E> && rhs)
+    explicit(false) Result(Result<T, E>&& rhs)
         : m_value_option(Cxx::move(rhs.m_value_option))
         , m_error_option(Cxx::move(rhs.m_error_option)) {
     }
 
     ~Result() = default;
 
-    constexpr auto operator=(T const& value) -> Result<T, E>& {
+    auto operator=(T const& value) -> Result<T, E>& {
         Result<T, E> result = value;
         swap(result);
         return *this;
     }
-    constexpr auto operator=(T&& value) -> Result<T, E>& {
+    auto operator=(T&& value) -> Result<T, E>& {
         Result<T, E> result = Cxx::move(value);
         swap(result);
         return *this;
     }
-    constexpr auto operator=(E const& error) -> Result<T, E>& {
+    auto operator=(E const& error) -> Result<T, E>& {
         Result<T, E> result = error;
         swap(result);
         return *this;
     }
-    constexpr auto operator=(E&& error) -> Result<T, E>& {
+    auto operator=(E&& error) -> Result<T, E>& {
         Result<T, E> result = Cxx::move(error);
         swap(result);
         return *this;
     }
 
-    constexpr auto operator=(Result<T, E> const& rhs) -> Result<T, E>& {
+    auto operator=(Result<T, E> const& rhs) -> Result<T, E>& {
         auto result = rhs;
         swap(result);
         return *this;
     }
-    constexpr auto operator=(Result<T, E>&& rhs) -> Result<T, E>& {
+    auto operator=(Result<T, E>&& rhs) -> Result<T, E>& {
         auto result = Cxx::move(rhs);
         swap(result);
         return *this;
@@ -84,7 +85,7 @@ public:
     /**
      * @brief Swaps this result with another
      */
-    constexpr auto swap(Result<T, E> & rhs) {
+    auto swap(Result<T, E>& rhs) {
         Cxx::swap(m_value_option, rhs.m_value_option);
         Cxx::swap(m_error_option, rhs.m_error_option);
     }
@@ -94,10 +95,11 @@ public:
      */
     template<typename U>
     auto map(Mapper<T, U> auto predicate) -> Result<U, E> {
-        if ( is_value() )
-            return predicate(unwrap_value());
-        else
+        if ( is_value() ) {
+            return predicate(unwrap());
+        } else {
             return unwrap_error();
+        }
     }
 
     /**
@@ -105,46 +107,11 @@ public:
      */
     template<typename U>
     auto map_error(Mapper<E, U> auto predicate) -> Result<T, U> {
-        if ( is_error() )
+        if ( is_error() ) {
             return predicate(unwrap_error());
-        else
-            return unwrap_value();
-    }
-
-    /**
-     * @brief Returns the reference to the result value
-     */
-    [[nodiscard]]
-    auto value() -> T& {
-        return m_value_option.value();
-    }
-    [[nodiscard]]
-    auto value() const -> T const& {
-        return m_value_option.value();
-    }
-
-    /**
-     * @brief Returns the reference to the result code
-     */
-    [[nodiscard]]
-    auto error() -> E& {
-        return m_error_option.value();
-    }
-    [[nodiscard]]
-    auto error() const -> E const& {
-        return m_error_option.value();
-    }
-
-    /**
-     * @brief Unwraps the value or the code if exists
-     */
-    [[nodiscard]]
-    auto unwrap_value() -> T {
-        return m_value_option.unwrap();
-    }
-    [[nodiscard]]
-    auto unwrap_error() -> E {
-        return m_error_option.unwrap();
+        } else {
+            return unwrap();
+        }
     }
 
     /**
@@ -164,14 +131,20 @@ public:
      */
     [[nodiscard]]
     auto unwrap() -> T {
-        return unwrap_value();
+        verify_with_msg$(is_value(), "Tried to unwrap on a `E` variant Result<T, E>");
+        return m_value_option.unwrap();
     }
     [[nodiscard]]
-    auto propagate_failure() -> E {
+    auto unwrap_error() -> E {
+        verify_with_msg$(is_error(), "Tried to unwrap error on a `T` variant Result<T, E>");
+        return m_error_option.unwrap();
+    }
+    [[nodiscard]]
+    auto __propagate_failure() -> E {
         return unwrap_error();
     }
     [[nodiscard]]
-    auto operator!() const -> bool {
+    auto __is_bad_variant() const -> bool {
         return is_error();
     }
 
@@ -186,39 +159,39 @@ public:
     /**
      * @brief Constructors
      */
-    constexpr explicit(false) Result() = default;
-    constexpr explicit(false) Result(E const& error)
+    explicit(false) Result() = default;
+    explicit(false) Result(E const& error)
         : m_error_option(error) {
     }
-    constexpr explicit(false) Result(E && error)
+    explicit(false) Result(E&& error)
         : m_error_option(Cxx::move(error)) {
     }
-    constexpr explicit(false) Result(Result<void, E> const& rhs)
+    explicit(false) Result(Result<void, E> const& rhs)
         : m_error_option(rhs.m_error_option) {
     }
-    constexpr explicit(false) Result(Result<void, E> && rhs)
+    explicit(false) Result(Result<void, E>&& rhs)
         : m_error_option(Cxx::move(rhs.m_error_option)) {
     }
 
     ~Result() = default;
 
-    constexpr auto operator=(E const& error) -> Result<void, E>& {
+    auto operator=(E const& error) -> Result<void, E>& {
         Result<void, E> result = error;
         swap(result);
         return *this;
     }
-    constexpr auto operator=(E&& error) -> Result<void, E>& {
+    auto operator=(E&& error) -> Result<void, E>& {
         Result<void, E> result = Cxx::move(error);
         swap(result);
         return *this;
     }
 
-    constexpr auto operator=(Result<void, E> const& rhs) -> Result<void, E>& {
+    auto operator=(Result<void, E> const& rhs) -> Result<void, E>& {
         auto result = rhs;
         swap(result);
         return *this;
     }
-    constexpr auto operator=(Result<void, E>&& rhs) -> Result<void, E>& {
+    auto operator=(Result<void, E>&& rhs) -> Result<void, E>& {
         auto result = Cxx::move(rhs);
         swap(result);
         return *this;
@@ -227,7 +200,7 @@ public:
     /**
      * @brief Swaps this result with another
      */
-    constexpr auto swap(Result<void, E> & rhs) {
+    auto swap(Result<void, E>& rhs) {
         Cxx::swap(m_error_option, rhs.m_error_option);
     }
 
@@ -236,10 +209,11 @@ public:
      */
     template<typename U>
     auto map(Mapper<void, U> auto predicate) -> Result<U, E> {
-        if ( is_value() )
+        if ( is_value() ) {
             return predicate();
-        else
+        } else {
             return unwrap_error();
+        }
     }
 
     /**
@@ -247,43 +221,11 @@ public:
      */
     template<typename U>
     auto map_error(Mapper<E, U> auto predicate) -> Result<void, U> {
-        if ( is_error() )
+        if ( is_error() ) {
             return predicate(unwrap_error());
-        else
+        } else {
             return {};
-    }
-
-    /**
-     * @brief Returns the reference to the result value
-     */
-    constexpr void value() {
-        /* Only for try$/MUST compatibility */
-    }
-    constexpr void value() const {
-        /* Only for try$/MUST compatibility */
-    }
-
-    /**
-     * @brief Returns the reference to the result code
-     */
-    [[nodiscard]]
-    auto error() -> E& {
-        return m_error_option.value();
-    }
-    [[nodiscard]]
-    auto error() const -> E const& {
-        return m_error_option.value();
-    }
-
-    /**
-     * @brief Unwraps the value or the code if exists
-     */
-    void unwrap_value() const {
-        /* Nothing to return */
-    }
-    [[nodiscard]]
-    auto unwrap_error() -> E {
-        return m_error_option.unwrap();
+        }
     }
 
     /**
@@ -302,14 +244,20 @@ public:
      * @brief Tryable support
      */
     void unwrap() const {
-        /* Nothing to return */
+        verify_with_msg$(is_value(), "Tried to unwrap on a `E` variant Result<T, E>");
     }
     [[nodiscard]]
-    auto propagate_failure() -> E {
+    auto unwrap_error() -> E {
+        verify_with_msg$(is_error(), "Tried to unwrap error on a `T` variant Result<T, E>");
+        return m_error_option.unwrap();
+    }
+
+    [[nodiscard]]
+    auto __propagate_failure() -> E {
         return unwrap_error();
     }
     [[nodiscard]]
-    auto operator!() const -> bool {
+    auto __is_bad_variant() const -> bool {
         return is_error();
     }
 
@@ -326,48 +274,48 @@ public:
      * @brief Constructors
      */
     Result() = delete;
-    constexpr explicit(false) Result(RemoveReference<T> & value)
+    explicit(false) Result(RemoveReference<T>& value)
         : m_value_option(value) {
     }
-    constexpr explicit(false) Result(E const& error)
+    explicit(false) Result(E const& error)
         : m_error_option(error) {
     }
-    constexpr explicit(false) Result(E && error)
+    explicit(false) Result(E&& error)
         : m_error_option(Cxx::move(error)) {
     }
-    constexpr explicit(false) Result(Result<T, E> const& rhs)
+    explicit(false) Result(Result<T, E> const& rhs)
         : m_value_option(rhs.m_value_option)
         , m_error_option(rhs.m_error_option) {
     }
-    constexpr explicit(false) Result(Result<T, E> && rhs)
+    explicit(false) Result(Result<T, E>&& rhs)
         : m_value_option(Cxx::move(rhs.m_value_option))
         , m_error_option(Cxx::move(rhs.m_error_option)) {
     }
 
     ~Result() = default;
 
-    constexpr auto operator=(RemoveReference<T>& value) -> Result<T, E>& {
+    auto operator=(RemoveReference<T>& value) -> Result<T, E>& {
         Result<T, E> result = value;
         swap(result);
         return *this;
     }
-    constexpr auto operator=(E const& error) -> Result<T, E>& {
+    auto operator=(E const& error) -> Result<T, E>& {
         Result<T, E> result = error;
         swap(result);
         return *this;
     }
-    constexpr auto operator=(E&& error) -> Result<T, E>& {
+    auto operator=(E&& error) -> Result<T, E>& {
         Result<T, E> result = Cxx::move(error);
         swap(result);
         return *this;
     }
 
-    constexpr auto operator=(Result<T, E> const& rhs) -> Result<T, E>& {
+    auto operator=(Result<T, E> const& rhs) -> Result<T, E>& {
         auto result = rhs;
         swap(result);
         return *this;
     }
-    constexpr auto operator=(Result<T, E>&& rhs) -> Result<T, E>& {
+    auto operator=(Result<T, E>&& rhs) -> Result<T, E>& {
         auto result = Cxx::move(rhs);
         swap(result);
         return *this;
@@ -376,7 +324,7 @@ public:
     /**
      * @brief Swaps this result with another
      */
-    constexpr auto swap(Result<T, E> & rhs) {
+    auto swap(Result<T, E>& rhs) {
         Cxx::swap(m_value_option, rhs.m_value_option);
         Cxx::swap(m_error_option, rhs.m_error_option);
     }
@@ -386,10 +334,11 @@ public:
      */
     template<typename U>
     auto map(Mapper<T, U> auto predicate) -> Result<U, E> {
-        if ( is_value() )
-            return predicate(unwrap_value());
-        else
+        if ( is_value() ) {
+            return predicate(unwrap());
+        } else {
             return unwrap_error();
+        }
     }
 
     /**
@@ -397,46 +346,11 @@ public:
      */
     template<typename U>
     auto map_error(Mapper<E, U> auto predicate) -> Result<T, U> {
-        if ( is_error() )
+        if ( is_error() ) {
             return predicate(unwrap_error());
-        else
-            return unwrap_value();
-    }
-
-    /**
-     * @brief Returns the reference to the result value
-     */
-    [[nodiscard]]
-    auto value() -> T {
-        return m_value_option.value();
-    }
-    [[nodiscard]]
-    auto value() const -> AddConstToReference<T> {
-        return m_value_option.value();
-    }
-
-    /**
-     * @brief Returns the reference to the result code
-     */
-    [[nodiscard]]
-    auto error() -> E& {
-        return m_error_option.value();
-    }
-    [[nodiscard]]
-    auto error() const -> E const& {
-        return m_error_option.value();
-    }
-
-    /**
-     * @brief Unwraps the value or the code if exists
-     */
-    [[nodiscard]]
-    auto unwrap_value() -> T {
-        return m_value_option.unwrap();
-    }
-    [[nodiscard]]
-    auto unwrap_error() -> E {
-        return m_error_option.unwrap();
+        } else {
+            return unwrap();
+        }
     }
 
     /**
@@ -456,14 +370,21 @@ public:
      */
     [[nodiscard]]
     auto unwrap() -> T {
-        return unwrap_value();
+        verify_with_msg$(is_value(), "Tried to unwrap on a `E` variant Result<T, E>");
+        return m_value_option.unwrap();
     }
     [[nodiscard]]
-    auto propagate_failure() -> E {
+    auto unwrap_error() -> E {
+        verify_with_msg$(is_error(), "Tried to unwrap error on a `T` variant Result<T, E>");
+        return m_error_option.unwrap();
+    }
+
+    [[nodiscard]]
+    auto __propagate_failure() -> E {
         return unwrap_error();
     }
     [[nodiscard]]
-    auto operator!() const -> bool {
+    auto __is_bad_variant() const -> bool {
         return is_error();
     }
 
@@ -479,7 +400,7 @@ static_assert(Tryable<Result<void, u64>>);
 namespace Cxx {
 
 template<typename T, typename E>
-constexpr auto swap(Result<T, E>& lhs, Result<T, E>& rhs) -> void {
+auto swap(Result<T, E>& lhs, Result<T, E>& rhs) -> void {
     lhs.swap(rhs);
 }
 

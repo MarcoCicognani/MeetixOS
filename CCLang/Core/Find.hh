@@ -16,7 +16,6 @@
 
 #include <CCLang/Alloc/Vector.hh>
 #include <CCLang/Core/Assertions.hh>
-#include <CCLang/Lang/Array.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/IntTypes.hh>
 #include <CCLang/Lang/Option.hh>
@@ -25,37 +24,47 @@
 
 namespace Details {
 
-auto bitwise_find_in_memory(UnsafeArrayPtr<u8 const> haystack, usize haystack_len, UnsafeArrayPtr<u8 const> needle, usize needle_len) -> Option<usize> {
-    UnsafeInlineArray<usize, 256> needle_mask;
-    for ( auto const i : usize::range(0, 256) )
-        needle_mask[i] = 0xffffffff;
+auto bitwise_find_in_memory(Slice<u8 const> haystack, Slice<u8 const> needle) -> Option<usize> {
+    usize needle_mask[256];
+    auto needle_mask_slice = Slice<usize>::from_raw_parts(needle_mask, 256);
+    for ( auto const i : usize::range(0, 256) ) {
+        needle_mask_slice[i] = 0xffffffff;
+    }
 
-    for ( auto const i : usize::range(0, needle_len) ) {
-        needle_mask[needle[i].as<usize>()] &= ~(0x00000001 << i);
+    for ( auto const i : usize::range(0, needle.len()) ) {
+        needle_mask_slice[needle[i].as<usize>()] &= ~(0x00000001 << i);
     }
 
     usize lookup = 0xfffffffe;
-    for ( auto const i : usize::range(0, haystack_len) ) {
-        lookup |= needle_mask[haystack[i].as<usize>()];
+    for ( auto const i : usize::range(0, haystack.len()) ) {
+        lookup |= needle_mask_slice[haystack[i].as<usize>()];
         lookup <<= 1;
 
-        if ( (lookup & (0x00000001 << needle_len)) == 0 )
-            return i - needle_len + 1;
+        if ( (lookup & (0x00000001 << needle.len())) == 0 ) {
+            return i - needle.len() + 1;
+        }
     }
     return {};
 }
 
-auto kmp_find_in_memory(UnsafeArrayPtr<u8 const> haystack, usize haystack_len, UnsafeArrayPtr<u8 const> needle, usize needle_len) -> Option<usize> {
+auto kmp_find_in_memory(Slice<u8 const> haystack, Slice<u8 const> needle) -> Option<usize> {
     auto prepare_kmp_partial_table = [&] -> ErrorOr<Vector<i32>> {
-        auto kmp_partial_table = try$(Vector<i32>::try_with_capacity(needle_len));
+        auto kmp_partial_table = // try$(Vector<i32>::try_with_capacity(needle.len()));
+        ({
+            auto __tryable = (Vector<i32>::try_with_capacity(needle.len()));
+            if ( __tryable.__is_bad_variant() ) [[unlikely]] {
+                return __tryable.__propagate_failure();
+            }
+            __tryable.unwrap();
+        });
 
         usize position       = 1;
         i32   candidate      = 0;
         kmp_partial_table[0] = -1;
-        while ( position < needle_len ) {
-            if ( needle[position] == needle[candidate.as<usize>()] )
+        while ( position < needle.len() ) {
+            if ( needle[position] == needle[candidate.as<usize>()] ) {
                 kmp_partial_table[position] = kmp_partial_table[candidate.as<usize>()];
-            else {
+            } else {
                 kmp_partial_table[position] = candidate;
                 do {
                     candidate = kmp_partial_table[candidate.as<usize>()];
@@ -70,8 +79,9 @@ auto kmp_find_in_memory(UnsafeArrayPtr<u8 const> haystack, usize haystack_len, U
 
     /* prepare the KMP partial table */
     auto error_or_partial_table = prepare_kmp_partial_table();
-    if ( error_or_partial_table.is_error() )
+    if ( error_or_partial_table.is_error() ) {
         return {};
+    }
 
     auto const kmp_partial_table = error_or_partial_table.unwrap();
 
@@ -82,10 +92,11 @@ auto kmp_find_in_memory(UnsafeArrayPtr<u8 const> haystack, usize haystack_len, U
         if ( needle[needle_index.as<usize>()] == haystack[current_haystack_index] ) {
             ++needle_index;
             ++current_haystack_index;
-            if ( needle_index.as<usize>() == needle_len )
+            if ( needle_index.as<usize>() == needle_len ) {
                 return current_haystack_index - needle_index.as<usize>();
-            else
+            } else {
                 continue;
+            }
         }
 
         needle_index = kmp_partial_table[needle_index.as<usize>()];
@@ -109,10 +120,11 @@ auto find_in_memory(T const* haystack, usize haystack_len, T const* needle, usiz
         return {};
     }
     if ( haystack_len == needle_len ) {
-        if ( Cxx::memcmp(haystack, needle, haystack_len) == Order::Equal )
+        if ( Cxx::memcmp(haystack, needle, haystack_len) == Order::Equal ) {
             return usize(0);
-        else
+        } else {
             return {};
+        }
     }
 
     if ( needle_len < 32 ) {

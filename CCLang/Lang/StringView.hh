@@ -23,133 +23,9 @@
 #include <CCLang/Lang/Option.hh>
 #include <CCLang/Lang/Range.hh>
 #include <CCLang/Lang/ReverseIteratorSupport.hh>
+#include <CCLang/Lang/Slice.hh>
 
 #define as_string_view$(expression) #expression##sv
-
-namespace Details {
-
-template<typename TStringView, bool IsReverse>
-class StringViewIterator final {
-    using TIndex = ::Conditional<IsReverse, isize, usize>;
-
-public:
-    /**
-     * @brief Construction functions
-     */
-    [[nodiscard]]
-    static auto from_begin(TStringView const* string_view) -> StringViewIterator {
-        return StringViewIterator(string_view, 0);
-    }
-    [[nodiscard]]
-    static auto from_end(TStringView const* string_view) -> StringViewIterator {
-        return StringViewIterator(string_view, string_view->len());
-    }
-
-    [[nodiscard]]
-    static auto from_rbegin(TStringView const* string_view) -> StringViewIterator {
-        return StringViewIterator(string_view, string_view->len().template as<isize>() - 1);
-    }
-    [[nodiscard]]
-    static auto from_rend(TStringView const* string_view) -> StringViewIterator {
-        return StringViewIterator(string_view, -1);
-    }
-
-    StringViewIterator(StringViewIterator const&)                    = default;
-    auto operator=(StringViewIterator const&) -> StringViewIterator& = default;
-
-    /**
-     * @brief Increment operators
-     */
-    auto operator++() -> StringViewIterator& {
-        if constexpr ( IsReverse ) {
-            --m_index;
-        } else {
-            ++m_index;
-        }
-        return *this;
-    }
-    auto operator++(int) -> StringViewIterator {
-        auto it = *this;
-
-        operator++();
-        return it;
-    }
-
-    /**
-     * @brief ValueReference access operators
-     */
-    auto operator*() const -> char const& {
-        verify_false$(is_end());
-        if constexpr ( IsReverse ) {
-            return m_string_view->at(m_index.template as<usize>());
-        } else {
-            return m_string_view->at(m_index);
-        }
-    }
-
-    /**
-     * @brief Pointer access operators
-     */
-    auto operator->() const -> char const* {
-        return &operator*();
-    }
-
-    /**
-     * @brief Getters
-     */
-    [[nodiscard]]
-    auto is_end() const -> bool {
-        if constexpr ( IsReverse ) {
-            return m_index.template as<usize>() == from_rend(m_string_view).index();
-        } else {
-            return m_index.template as<usize>() == from_end(m_string_view).index();
-        }
-    }
-    [[nodiscard]]
-    auto index() const -> usize {
-        return m_index.template as<usize>();
-    }
-
-    /**
-     * @brief Comparison operators
-     */
-    [[nodiscard]]
-    auto operator==(StringViewIterator const& rhs) const -> bool {
-        return m_index == rhs.m_index;
-    }
-    [[nodiscard]]
-    auto operator!=(StringViewIterator const& rhs) const -> bool {
-        return m_index != rhs.m_index;
-    }
-    [[nodiscard]]
-    auto operator<(StringViewIterator const& rhs) const -> bool {
-        return m_index < rhs.m_index;
-    }
-    [[nodiscard]]
-    auto operator>(StringViewIterator const& rhs) const -> bool {
-        return m_index > rhs.m_index;
-    }
-    [[nodiscard]]
-    auto operator<=(StringViewIterator const& rhs) const -> bool {
-        return m_index <= rhs.m_index;
-    }
-    [[nodiscard]]
-    auto operator>=(StringViewIterator const& rhs) const -> bool {
-        return m_index >= rhs.m_index;
-    }
-
-private:
-    explicit constexpr StringViewIterator(TStringView const* string_view, TIndex index)
-        : m_string_view(string_view)
-        , m_index(index) {
-    }
-
-private:
-    TStringView const* m_string_view;
-    TIndex             m_index;
-};
-
-} /* namespace Details */
 
 class StringView final {
 public:
@@ -183,9 +59,9 @@ public:
         Both
     };
 
-    using ConstIterator               = Details::StringViewIterator<StringView, false>;
-    using ConstReverseIterator        = Details::StringViewIterator<StringView, true>;
-    using ConstReverseIteratorWrapper = ReverseIteratorSupport::Wrapper<StringView const>;
+    using ConstIterator               = Slice<char const>::ConstIterator;
+    using ConstReverseIterator        = Slice<char const>::ConstReverseIterator;
+    using ConstReverseIteratorWrapper = Slice<char const>::ConstReverseIteratorWrapper;
 
 public:
     /**
@@ -194,21 +70,15 @@ public:
     [[nodiscard]]
     static auto from_cstr(char const*) -> StringView;
     [[nodiscard]]
-    static constexpr auto from_raw_parts(char const* c_str, usize len) -> StringView {
-        return StringView(c_str, len);
-    }
+    static auto from_raw_parts(char const* c_str, usize len) -> StringView;
 
     /**
      * @brief Constructors
      */
-    constexpr explicit(false) StringView() = default;
-    constexpr explicit(false) StringView(StringView const& rhs)
-        : StringView(rhs.m_chars_ptr, rhs.m_chars_count) {
-    }
-    constexpr explicit(false) StringView(StringView&& rhs)
-        : m_chars_ptr(Cxx::exchange(rhs.m_chars_ptr, nullptr))
-        , m_chars_count(Cxx::exchange(rhs.m_chars_count, 0)) {
-    }
+    explicit(false) StringView() = default;
+    explicit(false) StringView(StringView const& rhs);
+    explicit(false) StringView(StringView&& rhs);
+
     ~StringView() = default;
 
     auto operator=(StringView const&) -> StringView&;
@@ -284,9 +154,10 @@ public:
      */
     auto find_last(char needle) const -> Option<usize>;
     auto find_last_if(Predicate<char> auto predicate) const -> Option<usize> {
-        for ( auto const i : Range<usize>{ len() - 1, 0 }.reverse_iter() ) {
-            if ( predicate(at(i)) )
+        for ( auto const i : usize::range(len() - 1, 0).reverse_iter() ) {
+            if ( predicate(at(i)) ) {
                 return i;
+            }
         }
         return {};
     }
@@ -347,6 +218,12 @@ public:
     auto reverse_iter() const -> ConstReverseIteratorWrapper;
 
     /**
+     * @brief Hashing support
+     */
+    [[nodiscard]]
+    auto hash_code() const -> usize;
+
+    /**
      * @brief Getters
      */
     [[nodiscard]]
@@ -362,25 +239,21 @@ public:
     auto is_null_or_empty() const -> bool;
 
 private:
-    constexpr explicit StringView(char const* c_str, usize count)
-        : m_chars_ptr(c_str)
-        , m_chars_count(count) {
-    }
+    explicit StringView(char const* c_str, usize count);
 
 private:
-    char const* m_chars_ptr;
-    usize       m_chars_count;
+    Slice<char const> m_chars_slice;
 };
 
 [[nodiscard]]
-constexpr auto operator""sv(char const* c_str, __SIZE_TYPE__ len) -> StringView {
+auto operator""sv(char const* c_str, __SIZE_TYPE__ len) -> StringView {
     return StringView::from_raw_parts(c_str, len);
 }
 
 template<>
 struct TypeTraits<StringView> final : public Details::TypeTraits<StringView> {
-    static auto hash(StringView const& value) -> usize {
-        return Hashing::hash_string(value.as_cstr(), value.len());
+    static auto hash(StringView const& string_view) -> usize {
+        return string_view.hash_code();
     }
 
     static constexpr auto is_trivial() -> bool {
@@ -390,8 +263,8 @@ struct TypeTraits<StringView> final : public Details::TypeTraits<StringView> {
 
 namespace Cxx {
 
-constexpr auto swap(StringView& lhs, StringView& rhs) -> void {
+auto swap(StringView& lhs, StringView& rhs) -> void {
     lhs.swap(rhs);
 }
 
-} // namespace Cxx
+} /* namespace Cxx */

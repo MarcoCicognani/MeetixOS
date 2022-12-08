@@ -12,6 +12,10 @@
 
 #include <CCLang/Core/Assertions.hh>
 
+auto panic(char const* msg, char const* file, int line) -> void {
+    Details::__assert_plug_panic(msg, file, line);
+}
+
 #ifdef IN_KERNEL
 
 auto Details::__assert_plug_panic(char const*, char const*, int) -> void {

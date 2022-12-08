@@ -99,21 +99,24 @@ template<typename T> constexpr bool is_volatile             = false;
 template<typename T> constexpr bool is_volatile<T volatile> = true;
 
 template<typename T>
-           constexpr bool is_integral                     = false;
-template<> constexpr bool is_integral<bool>               = true;
-template<> constexpr bool is_integral<unsigned char>      = true;
-template<> constexpr bool is_integral<signed char>        = true;
-template<> constexpr bool is_integral<char8_t>            = true;
-template<> constexpr bool is_integral<char16_t>           = true;
-template<> constexpr bool is_integral<char32_t>           = true;
-template<> constexpr bool is_integral<unsigned short>     = true;
-template<> constexpr bool is_integral<unsigned int>       = true;
-template<> constexpr bool is_integral<unsigned long>      = true;
-template<> constexpr bool is_integral<u8>                 = true;
-template<> constexpr bool is_integral<u16>                = true;
-template<> constexpr bool is_integral<u32>                = true;
-template<> constexpr bool is_integral<u64>                = true;
-template<> constexpr bool is_integral<usize>              = true;
+           constexpr bool is_native_integral                 = false;
+template<> constexpr bool is_native_integral<bool>           = true;
+template<> constexpr bool is_native_integral<unsigned char>  = true;
+template<> constexpr bool is_native_integral<signed char>    = true;
+template<> constexpr bool is_native_integral<char8_t>        = true;
+template<> constexpr bool is_native_integral<char16_t>       = true;
+template<> constexpr bool is_native_integral<char32_t>       = true;
+template<> constexpr bool is_native_integral<unsigned short> = true;
+template<> constexpr bool is_native_integral<unsigned int>   = true;
+template<> constexpr bool is_native_integral<unsigned long>  = true;
+
+template<typename T>
+           constexpr bool is_wrapped_integral        = false;
+template<> constexpr bool is_wrapped_integral<u8>    = true;
+template<> constexpr bool is_wrapped_integral<u16>   = true;
+template<> constexpr bool is_wrapped_integral<u32>   = true;
+template<> constexpr bool is_wrapped_integral<u64>   = true;
+template<> constexpr bool is_wrapped_integral<usize> = true;
 
 template<typename T>
            constexpr bool is_floating_point              = false;
@@ -302,9 +305,11 @@ template<typename T> constexpr bool is_volatile = Details::is_volatile<T>;
 template<typename T, typename U>
 constexpr bool is_same = Details::is_same<T, U>;
 
-template<typename T> constexpr bool is_integral       = Details::is_integral<MakeUnsigned<RemoveConstVolatile<T>>>;
-template<typename T> constexpr bool is_floating_point = Details::is_floating_point<RemoveConstVolatile<T>>;
-template<typename T> constexpr bool is_arithmetic     = is_integral<T> || is_floating_point<T>;
+template<typename T> constexpr bool is_native_integral  = Details::is_native_integral<MakeUnsigned<RemoveConstVolatile<T>>>;
+template<typename T> constexpr bool is_wrapped_integral = Details::is_wrapped_integral<MakeUnsigned<RemoveConstVolatile<T>>>;
+template<typename T> constexpr bool is_floating_point   = Details::is_floating_point<RemoveConstVolatile<T>>;
+template<typename T> constexpr bool is_integral         = is_native_integral<T> || is_wrapped_integral<T>;
+template<typename T> constexpr bool is_arithmetic       = is_integral<T> || is_floating_point<T>;
 
 template<typename T> constexpr bool is_class = __is_class(T);
 template<typename T> constexpr bool is_union = __is_union(T);

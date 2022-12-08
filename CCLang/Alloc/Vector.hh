@@ -19,7 +19,6 @@
 #include <CCLang/Core/ErrorOr.hh>
 #include <CCLang/Core/Meta.hh>
 #include <CCLang/Core/TypeTraits.hh>
-#include <CCLang/Lang/Array.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/DenyCopy.hh>
 #include <CCLang/Lang/IntTypes.hh>
@@ -219,8 +218,9 @@ public:
     }
     static auto try_from_list(Cxx::InitializerList<T> initializer_list) -> ErrorOr<Vector<T>> {
         auto vector = empty();
-        for ( auto const& e : initializer_list ) /* even with auto initializer_list exposes only T const& */
+        for ( auto const& e : initializer_list ) { /* even with auto initializer_list exposes only T const& */
             try$(vector.try_append(Cxx::move(const_cast<T&>(e))));
+        }
 
         return vector;
     }
@@ -268,8 +268,9 @@ public:
     }
     auto clear_keep_capacity() -> void {
         if constexpr ( !TypeTraits<T>::is_trivial() ) {
-            for ( auto const i : Range<usize>{ 0, m_values_count } )
+            for ( auto const i : usize::range(0, m_values_count) ) {
                 m_data_storage[i].~T();
+            }
         }
         m_values_count = 0;
     }
@@ -290,8 +291,9 @@ public:
         must$(try_insert_at(index, Cxx::move(value)));
     }
     auto try_insert_at(usize index, T value) -> ErrorOr<void> {
-        if ( index > m_values_count )
+        if ( index > m_values_count ) {
             return Error::from_code(ErrorCode::Invalid);
+        }
 
         try$(try_ensure_capacity(m_values_count + 1));
 
@@ -300,7 +302,7 @@ public:
             if constexpr ( TypeTraits<T>::is_trivial() ) {
                 Cxx::memmove(data_slot(index + 1), data_slot(index), (m_values_count - index) * sizeof(T));
             } else {
-                for ( auto const i : Range{ m_values_count, index }.reverse_iter() ) {
+                for ( auto const i : usize::range(m_values_count, index).reverse_iter() ) {
                     new (data_slot(i)) T(Cxx::move(m_data_storage[i - 1]));
                     at(i - 1).~T();
                 }
@@ -355,7 +357,7 @@ public:
         if constexpr ( TypeTraits<T>::is_trivial() ) {
             Cxx::memmove(data_slot(1), m_data_storage, m_values_count * sizeof(T));
         } else {
-            for ( auto const i : Range<usize>{ m_values_count, 0 }.reverse_iter() ) {
+            for ( auto const i : usize::range(m_values_count, 0).reverse_iter() ) {
                 new (data_slot(i)) T(Cxx::move(m_data_storage[i - 1]));
                 at(i - 1).~T();
             }
@@ -407,15 +409,16 @@ public:
      * @brief Removes the element(s)
      */
     auto erase_at(usize index) -> ErrorOr<void> {
-        if ( index >= m_values_count )
+        if ( index >= m_values_count ) {
             return Error::from_code(ErrorCode::Invalid);
+        }
 
         /* shift all the values one position back */
         if constexpr ( TypeTraits<T>::is_trivial() ) {
             Cxx::memmove(data_slot(index), data_slot(index + 1), (m_values_count - index - 1) * sizeof(T));
         } else {
             at(index).~T();
-            for ( auto const i : Range{ index + 1, m_values_count } ) {
+            for ( auto const i : usize::range(index + 1, m_values_count) ) {
                 new (data_slot(i - 1)) T(Cxx::move(m_data_storage[i]));
                 m_data_storage[i].~T();
             }
@@ -424,7 +427,7 @@ public:
         return {};
     }
     auto erase_first_of(T const& value) -> ErrorOr<void> {
-        for ( auto const i : Range<usize>{ 0, m_values_count } ) {
+        for ( auto const i : usize::range(0, m_values_count) ) {
             if ( m_data_storage[i] == value ) {
                 try$(erase_at(i));
                 return {};
@@ -441,14 +444,16 @@ public:
             if ( predicate(m_data_storage[i]) ) {
                 try$(erase_at(i));
                 ++erased_count;
-            } else
+            } else {
                 ++i;
+            }
         }
 
-        if ( erased_count > 0 )
+        if ( erased_count > 0 ) {
             return erased_count;
-        else
+        } else {
             return Error::from_code(ErrorCode::NotFound);
+        }
     }
 
     /**
@@ -457,8 +462,9 @@ public:
     auto sort(I32Predicate<T const&, T const&> auto comparator) {
         for ( usize i = 0; i + 1 < m_values_count; ++i ) {
             for ( usize j = i + 1; j < m_values_count; ++j ) {
-                if ( comparator(m_data_storage[i], m_data_storage[j]) > 0 )
+                if ( comparator(m_data_storage[i], m_data_storage[j]) > 0 ) {
                     Cxx::swap(m_data_storage[i], m_data_storage[j]);
+                }
             }
         }
     }
@@ -472,33 +478,36 @@ public:
     auto try_ensure_capacity(usize capacity) -> ErrorOr<void> {
         verify_greater$(capacity, 0);
 
-        if ( m_data_capacity >= capacity )
+        if ( m_data_capacity >= capacity ) {
             return {};
+        }
 
         /* for first time use the given capacity, otherwise increase the capacity logarithmically */
         usize new_capacity;
-        if ( m_data_capacity == 0 )
+        if ( m_data_capacity == 0 ) {
             new_capacity = capacity == 0 ? 16 : capacity;
-        else
+        } else {
             new_capacity = capacity + capacity / 4;
+        }
 
         /* allocate new memory and move the content into it */
         auto new_data_storage = try$(Details::__heap_plug_alloc_mem(new_capacity * sizeof(T))
-                                         .map<UnsafeArrayPtr<T>>([](void* void_ptr) -> UnsafeArrayPtr<T> {
-                                             return Cxx::bit_cast<T*>(void_ptr);
+                                         .map<Slice<T>>([new_capacity](void* void_ptr) -> Slice<T> {
+                                             return Slice<T>::from_raw_parts((T*)void_ptr, new_capacity);
                                          }));
         if constexpr ( TypeTraits<T>::is_trivial() ) {
             Cxx::memmove(new_data_storage.unwrap(), m_data_storage.unwrap(), m_values_count * sizeof(T));
         } else {
-            for ( auto const i : Range<usize>{ 0, m_values_count } ) {
+            for ( auto const i : usize::range(0, m_values_count) ) {
                 new (&new_data_storage[i]) T(Cxx::move(at(i)));
                 at(i).~T();
             }
         }
 
         /* destroy the previous buffer if exists and update the other fields */
-        if ( !m_data_storage.is_null() )
+        if ( !m_data_storage.is_null() ) {
             Details::__heap_plug_dealloc_mem(m_data_storage.unwrap(), m_data_capacity * sizeof(T));
+        }
 
         m_data_storage  = new_data_storage;
         m_data_capacity = new_capacity;
@@ -561,9 +570,10 @@ public:
         return index_if([&value](T const& v) -> bool { return TypeTraits<T>::equals(value, v); });
     }
     auto index_if(Predicate<T const&> auto predicate) const -> Option<usize> {
-        for ( auto const i : Range<usize>{ 0, m_values_count } ) {
-            if ( predicate(m_data_storage[i]) )
+        for ( auto const i : usize::range(0, m_values_count) ) {
+            if ( predicate(m_data_storage[i]) ) {
                 return i;
+            }
         }
         return {};
     }
@@ -645,9 +655,9 @@ private:
     }
 
 private:
-    UnsafeArrayPtr<T> m_data_storage  = nullptr;
-    usize             m_data_capacity = 0;
-    usize             m_values_count  = 0;
+    Slice<T> m_data_storage  = Slice<T>::empty();
+    usize    m_data_capacity = 0;
+    usize    m_values_count  = 0;
 };
 
 namespace Cxx {

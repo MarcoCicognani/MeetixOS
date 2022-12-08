@@ -58,3 +58,4 @@ SortIncludes: CaseInsensitive
 SpaceAfterTemplateKeyword: false
 SpacesInConditionalStatement: true
 BreakConstructorInitializers: BeforeComma
+InsertBraces: true

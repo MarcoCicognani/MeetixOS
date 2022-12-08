@@ -18,7 +18,6 @@
 #include <CCLang/Core/Assertions.hh>
 #include <CCLang/Core/Concept.hh>
 #include <CCLang/Core/Hashing.hh>
-#include <CCLang/Core/Math.hh>
 #include <CCLang/Core/Meta.hh>
 #include <CCLang/Core/TypeTraits.hh>
 #include <CCLang/Lang/Cxx.hh>
@@ -383,7 +382,7 @@ public:
     }
     auto clear_keep_capacity() -> void {
         if constexpr ( !TTraits::is_trivial() ) {
-            for ( auto const i : Range<usize>{ 0, m_data_capacity } ) {
+            for ( auto const i : usize::range(0, m_data_capacity) ) {
                 if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) )
                     m_buckets_storage[i].slot()->~T();
             }
@@ -486,7 +485,7 @@ public:
     auto remove_all_matching(Predicate<T const&> auto predicate) -> usize {
         /* iterate all the used buckets and give them to the given call_back */
         usize removed_count = 0;
-        for ( auto const i : Range<usize>{ 0, m_data_capacity } ) {
+        for ( auto const i : usize::range(0, m_data_capacity) ) {
             auto& bucket = m_buckets_storage[i];
             if ( Details::set_bucket_state_is_used(bucket.m_bucket_state) && predicate(*bucket.slot()) ) {
                 delete_bucket(bucket);
@@ -525,7 +524,7 @@ public:
             return Iterator::from_bucket(m_collection_data.m_head);
         else {
             /* find the first used bucket */
-            for ( auto const i : Range<usize>{ 0, m_data_capacity } ) {
+            for ( auto const i : usize::range(0, m_data_capacity) ) {
                 if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) )
                     return Iterator::from_bucket(&m_buckets_storage[i]);
             }
@@ -541,7 +540,7 @@ public:
             return ConstIterator::from_bucket(m_collection_data.m_head);
         else {
             /* find the first used bucket */
-            for ( auto const i : Range<usize>{ 0, m_data_capacity } ) {
+            for ( auto const i : usize::range(0, m_data_capacity) ) {
                 if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) )
                     return ConstIterator::from_bucket(&m_buckets_storage[i]);
             }
@@ -662,7 +661,7 @@ private:
         }
 
         /* roundup the given new capacity */
-        new_capacity = Math::max(new_capacity, 4u);
+        new_capacity = usize::max(new_capacity, 4);
         new_capacity = new_capacity * sizeof(Bucket) / sizeof(Bucket);
 
         /* keep old references */
@@ -705,7 +704,7 @@ private:
     }
 
     void rehash_in_place() {
-        for ( auto const i : Range<usize>{ 0, m_data_capacity } ) {
+        for ( auto const i : usize::range(0, m_data_capacity) ) {
             auto& bucket = m_buckets_storage[i];
 
             if ( bucket.m_bucket_state == Details::SetBucketState::Rehashed || bucket.m_bucket_state == Details::SetBucketState::End
@@ -816,7 +815,7 @@ private:
         }
 
         m_deleted_count = 0;
-        for ( auto const i : Range<usize>{ 0, m_data_capacity } ) {
+        for ( auto const i : usize::range(0, m_data_capacity) ) {
             if ( m_buckets_storage[i].m_bucket_state == Details::SetBucketState::Rehashed ) {
                 m_buckets_storage[i].m_bucket_state = Details::SetBucketState::Used;
             }
@@ -824,7 +823,7 @@ private:
     }
 
     [[nodiscard]]
-    auto lookup_with_hash(u32 hash, auto predicate) const -> Bucket* {
+    auto lookup_with_hash(usize hash, auto predicate) const -> Bucket* {
         if ( is_empty() )
             return nullptr;
 

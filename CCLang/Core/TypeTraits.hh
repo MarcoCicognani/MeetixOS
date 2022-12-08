@@ -14,10 +14,6 @@
 
 #include <CCLang/Forward.hh>
 
-#include <CCLang/Core/Concept.hh>
-#include <CCLang/Core/Hashing.hh>
-#include <CCLang/Lang/IntTypes.hh>
-
 namespace Details {
 
 template<typename T>
@@ -37,27 +33,3 @@ struct TypeTraits final : public Details::TypeTraits<T> {
     /* Inherit implementation from details */
 };
 
-template<Integral T>
-struct TypeTraits<T> final : public Details::TypeTraits<T> {
-    static constexpr auto hash(T const& value) -> usize {
-        if constexpr ( sizeof(T) < 8 )
-            return Hashing::hash_u32(value);
-        else
-            return Hashing::hash_u64(value);
-    }
-
-    static constexpr auto is_trivial() -> bool {
-        return true;
-    }
-};
-
-template<Pointer T>
-struct TypeTraits<T> final : public Details::TypeTraits<T> {
-    static constexpr auto hash(T value) -> usize {
-        return Hashing::hash_ptr(value);
-    }
-
-    static constexpr auto is_trivial() -> bool {
-        return true;
-    }
-};

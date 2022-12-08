@@ -12,11 +12,11 @@
 
 #pragma once
 
-#define try$(expression)                                 \
-    ({                                                   \
-        auto __tryable_result = (expression);            \
-        if ( !__tryable_result ) [[unlikely]] {          \
-            return __tryable_result.propagate_failure(); \
-        }                                                \
-        __tryable_result.unwrap();                       \
+#define try$(expression)                                   \
+    ({                                                     \
+        auto __tryable = (expression);                     \
+        if ( __tryable.__is_bad_variant() ) [[unlikely]] { \
+            return __tryable.__propagate_failure();        \
+        }                                                  \
+        __tryable.unwrap();                                \
     })

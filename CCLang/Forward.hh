@@ -52,6 +52,8 @@ class Result;
 
 class StringView;
 
+template<typename T>
+class Slice;
 
 /* CCLang.Core */
 

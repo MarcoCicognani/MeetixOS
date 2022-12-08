@@ -12,9 +12,10 @@
 
 #pragma once
 
+#include <CCLang/Forward.hh>
+
 #include <CCLang/Core/Meta.hh>
 #include <CCLang/Lang/Cxx.hh>
-#include <CCLang/Lang/IntTypes.hh>
 
 /* forward declaration here since we cannot include CCLang.Forward */
 template<typename T>
@@ -28,6 +29,12 @@ concept Volatile = is_volatile<T>;
 
 template<typename T, typename U>
 concept SameAs = is_same<T, U>;
+
+template<typename T>
+concept NativeIntegral = is_native_integral<T>;
+
+template<typename T>
+concept WrappedIntegral = is_wrapped_integral<T>;
 
 template<typename T>
 concept Integral = is_integral<T>;
@@ -120,7 +127,7 @@ concept CallBack = Callable<T, void>;
 
 template<typename T>
 concept Tryable = requires(T t) {
-                      { !t } -> SameAs<bool>;
+                      { t.__is_bad_variant() } -> SameAs<bool>;
+                      { t.__propagate_failure() };
                       { t.unwrap() };
-                      { t.propagate_failure() };
                   };
