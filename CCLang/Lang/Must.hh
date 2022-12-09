@@ -14,9 +14,9 @@
 
 #include <CCLang/Core/Assertions.hh>
 
-#define must$(expression)                                                                                                   \
-    ({                                                                                                                      \
-        auto __tryable = (expression);                                                                                      \
-        verify_false_with_msg$(__tryable.__is_bad_variant(), "must$(`" #expression "`) has produced a bad variant result"); \
-        __tryable.unwrap();                                                                                                 \
+#define must$(expression)                                                                                                    \
+    ({                                                                                                                       \
+        auto __tryable = (expression);                                                                                       \
+        verify_false_with_msg$(__tryable.__is_bad_variant(), "must$(`" #expression "`) has produced a bad variant Tryable"); \
+        __tryable.unwrap();                                                                                                  \
     })
