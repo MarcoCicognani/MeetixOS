@@ -68,8 +68,8 @@ constexpr auto forward(RemoveReference<T>&& param) noexcept -> T&& {
 }
 
 template<typename T>
-constexpr auto move(T&& arg) noexcept -> T&& {
-    return static_cast<T&&>(arg);
+constexpr auto move(T&& arg) noexcept -> RemoveReference<T>&& {
+    return static_cast<RemoveReference<T>&&>(arg);
 }
 
 template<typename T, typename U = T>

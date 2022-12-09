@@ -16,7 +16,6 @@
 
 #include <CCLang/Core/Assertions.hh>
 #include <CCLang/Lang/IntTypes.hh>
-#include <CCLang/Lang/Option.hh>
 #include <CCLang/Lang/ReverseIteratorSupport.hh>
 
 namespace Details {
@@ -184,65 +183,51 @@ public:
      * @brief Swap support
      */
     auto swap(Slice<T>& rhs) -> void {
-        Cxx::swap(m_array_ptr, rhs.m_array_ptr);
-        Cxx::swap(m_array_len, rhs.m_array_len);
+        Cxx::swap(m_raw_slice_ptr, rhs.m_raw_slice_ptr);
+        Cxx::swap(m_raw_slice_len, rhs.m_raw_slice_len);
     }
 
     [[nodiscard]]
-    auto at(usize index) -> Option<T&> {
-        if ( index < m_array_len ) {
-            return m_array_ptr[index.unwrap()];
-        } else {
-            return OptionNone;
-        }
+    auto at(usize index) -> T& {
+        verify_less_with_msg$(index, m_raw_slice_len, "Slice<T> - Index out of bounds in at()");
+        return m_raw_slice_ptr[index.unwrap()];
     }
     [[nodiscard]]
-    auto at(usize index) const -> Option<T const&> {
-        if ( index < m_array_len ) {
-            return m_array_ptr[index.unwrap()];
-        } else {
-            return OptionNone;
-        }
+    auto at(usize index) const -> T const& {
+        verify_less_with_msg$(index, m_raw_slice_len, "Slice<T> - Index out of bounds in at()");
+        return m_raw_slice_ptr[index.unwrap()];
     }
 
     [[nodiscard]]
     auto operator[](usize index) -> T& {
-        if ( index < m_array_len ) {
-            return m_array_ptr[index.unwrap()];
-        } else {
-            panic("Slice: Index out of bounds in operator[]");
-        }
+        return at(index);
     }
     [[nodiscard]]
     auto operator[](usize index) const -> T const& {
-        if ( index < m_array_len ) {
-            return m_array_ptr[index.unwrap()];
-        } else {
-            panic("Slice: Index out of bounds in operator[]");
-        }
+        return at(index);
     }
 
     [[nodiscard]]
-    auto first() -> Option<T&> {
+    auto first() -> T& {
         return at(0);
     }
     [[nodiscard]]
-    auto first() const -> Option<T const&> {
+    auto first() const -> T const& {
         return at(0);
     }
 
     [[nodiscard]]
-    auto last() -> Option<T&> {
+    auto last() -> T& {
         return at(len() - 1);
     }
     [[nodiscard]]
-    auto last() const -> Option<T const&> {
+    auto last() const -> T const& {
         return at(len() - 1);
     }
 
     auto fill(T default_value) -> void {
         for ( auto const i : usize::range(0, len()) ) {
-            m_array_ptr[i.unwrap()] = default_value;
+            m_raw_slice_ptr[i.unwrap()] = default_value;
         }
     }
 
@@ -289,13 +274,13 @@ public:
 
     [[nodiscard]]
     auto sub_slice(usize start) const -> Slice<T> {
-        verify_less_with_msg$(start, m_array_len, "Slice: Index out of bounds in sub_slice()");
-        return Slice<T>::from_raw_parts(m_array_ptr + start, len() - start);
+        verify_less_with_msg$(start, m_raw_slice_len, "Slice<T> - Index out of bounds in sub_slice()");
+        return Slice<T>::from_raw_parts(m_raw_slice_ptr + start, len() - start);
     }
     [[nodiscard]]
     auto sub_slice(usize start, usize count) const -> Slice<T> {
-        verify_less_with_msg$(start + count, m_array_len, "Slice: Index out of bounds in sub_slice()");
-        return Slice<T>::from_raw_parts(m_array_ptr + start, count);
+        verify_less_with_msg$(start + count, m_raw_slice_len, "Slice<T> - Index out of bounds in sub_slice()");
+        return Slice<T>::from_raw_parts(m_raw_slice_ptr + start, count);
     }
 
     /**
@@ -303,15 +288,15 @@ public:
      */
     [[nodiscard]]
     auto len() const -> usize {
-        return m_array_len;
+        return m_raw_slice_len;
     }
     [[nodiscard]]
     auto is_null() const -> bool {
-        return m_array_ptr == nullptr;
+        return m_raw_slice_ptr == nullptr;
     }
     [[nodiscard]]
     auto is_empty() const -> bool {
-        return m_array_len == 0;
+        return m_raw_slice_len == 0;
     }
     [[nodiscard]]
     auto is_null_or_empty() const -> bool {
@@ -320,23 +305,23 @@ public:
 
     [[nodiscard]]
     auto data() -> T* {
-        return m_array_ptr;
+        return m_raw_slice_ptr;
     }
     [[nodiscard]]
     auto data() const -> T const* {
-        return m_array_ptr;
+        return m_raw_slice_ptr;
     }
 
 private:
     explicit Slice() = default;
     explicit Slice(T* raw_array_ptr, usize raw_array_len)
-        : m_array_ptr(raw_array_ptr)
-        , m_array_len(raw_array_len) {
+        : m_raw_slice_ptr(raw_array_ptr)
+        , m_raw_slice_len(raw_array_len) {
     }
 
 private:
-    T*    m_array_ptr = nullptr;
-    usize m_array_len = 0;
+    T*    m_raw_slice_ptr = nullptr;
+    usize m_raw_slice_len = 0;
 };
 
 namespace Cxx {

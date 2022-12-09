@@ -66,7 +66,7 @@ auto i8::operator=(i8 const& rhs) -> i8& {
 }
 
 auto i8::operator=(i8&& rhs) -> i8& {
-    auto integer = Cxx::forward<i8>(rhs);
+    auto integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }

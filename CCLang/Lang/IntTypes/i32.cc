@@ -66,7 +66,7 @@ auto i32::operator=(i32 const& rhs) -> i32& {
 }
 
 auto i32::operator=(i32&& rhs) -> i32& {
-    auto integer = Cxx::forward<i32>(rhs);
+    auto integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }

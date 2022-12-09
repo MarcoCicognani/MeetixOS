@@ -65,7 +65,7 @@ auto usize::operator=(usize const& rhs) -> usize& {
 }
 
 auto usize::operator=(usize&& rhs) -> usize& {
-    usize integer = Cxx::forward<usize>(rhs);
+    usize integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }

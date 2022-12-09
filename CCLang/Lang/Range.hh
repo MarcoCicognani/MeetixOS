@@ -27,7 +27,7 @@ public:
      * @brief Error safe factory functions
      */
     [[nodiscard]]
-    static constexpr auto from_current(T current) -> RangeIterator<T, IsReverse> {
+    static auto from_current(T current) -> RangeIterator<T, IsReverse> {
         return RangeIterator<T, IsReverse>(current);
     }
 
@@ -42,7 +42,7 @@ public:
      */
     [[gnu::always_inline]]
     auto operator++() -> RangeIterator& {
-        if constexpr ( IsReverse ) {
+        if ( IsReverse ) {
             --m_current_value;
         } else {
             ++m_current_value;
@@ -68,10 +68,10 @@ public:
     /**
      * @brief Comparison operator
      */
-    constexpr auto operator<=>(RangeIterator const&) const -> bool = default;
+    auto operator<=>(RangeIterator const&) const -> bool = default;
 
 private:
-    explicit constexpr RangeIterator(T current)
+    explicit RangeIterator(T current)
         : m_current_value(current) {
     }
 
@@ -92,7 +92,7 @@ public:
     /**
      * @brief Constructor
      */
-    explicit constexpr Range(T first, T end)
+    explicit Range(T first, T end)
         : m_first(first)
         , m_end(end) {
     }
@@ -100,17 +100,17 @@ public:
     /**
      * @brief IteratorProvider
      */
-    constexpr auto begin() const -> Iterator {
+    auto begin() const -> Iterator {
         return Iterator::from_current(m_first);
     }
-    constexpr auto end() const -> Iterator {
+    auto end() const -> Iterator {
         return Iterator::from_current(m_end);
     }
 
-    constexpr auto rbegin() const -> Iterator {
+    auto rbegin() const -> Iterator {
         return ReverseIterator::from_current(m_end);
     }
-    constexpr auto rend() const -> Iterator {
+    auto rend() const -> Iterator {
         return ReverseIterator::from_current(m_first);
     }
 
@@ -134,7 +134,7 @@ public:
     /**
      * @brief Constructor
      */
-    explicit constexpr RangeInclusive(T first, T end)
+    explicit RangeInclusive(T first, T end)
         : m_first(first)
         , m_end(end + 1) {
     }
@@ -142,17 +142,17 @@ public:
     /**
      * @brief IteratorProvider
      */
-    constexpr auto begin() const -> Iterator {
+    auto begin() const -> Iterator {
         return Iterator::from_current(m_first);
     }
-    constexpr auto end() const -> Iterator {
+    auto end() const -> Iterator {
         return Iterator::from_current(m_end);
     }
 
-    constexpr auto rbegin() const -> Iterator {
+    auto rbegin() const -> Iterator {
         return ReverseIterator::from_current(m_end);
     }
-    constexpr auto rend() const -> Iterator {
+    auto rend() const -> Iterator {
         return ReverseIterator::from_current(m_first);
     }
 
@@ -167,7 +167,7 @@ private:
 
 template<typename T>
 struct TypeTraits<Range<T>> final : public Details::TypeTraits<Range<T>> {
-    static constexpr auto equals(Range<T> const& a, Range<T> const& b) -> bool {
+    static auto equals(Range<T> const& a, Range<T> const& b) -> bool {
         return TypeTraits<T>::equals(*a.begin(), *b.begin())
             && TypeTraits<T>::equals(*a.end(), *b.end());
     }
@@ -179,7 +179,7 @@ struct TypeTraits<Range<T>> final : public Details::TypeTraits<Range<T>> {
 
 template<typename T>
 struct TypeTraits<RangeInclusive<T>> final : public Details::TypeTraits<RangeInclusive<T>> {
-    static constexpr auto equals(Range<T> const& a, Range<T> const& b) -> bool {
+    static auto equals(Range<T> const& a, Range<T> const& b) -> bool {
         return TypeTraits<T>::equals(*a.begin(), *b.begin())
             && TypeTraits<T>::equals(*a.end(), *b.end());
     }

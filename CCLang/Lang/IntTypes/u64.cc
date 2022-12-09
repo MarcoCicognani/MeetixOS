@@ -66,7 +66,7 @@ auto u64::operator=(u64 const& rhs) -> u64& {
 }
 
 auto u64::operator=(u64&& rhs) -> u64& {
-    auto integer = Cxx::forward<u64>(rhs);
+    auto integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }

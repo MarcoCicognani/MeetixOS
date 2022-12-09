@@ -66,7 +66,7 @@ auto isize::operator=(isize const& rhs) -> isize& {
 }
 
 auto isize::operator=(isize&& rhs) -> isize& {
-    auto integer = Cxx::forward<isize>(rhs);
+    auto integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }
