@@ -13,9 +13,9 @@
 #pragma once
 
 #ifndef NDEBUG
-static constexpr bool cclang_debugging = true;
+static constexpr bool CCLangSafeIntegerOperations = true;
 #else
-static constexpr bool cclang_debugging = false;
+static constexpr bool CCLangSafeIntegerOperations = false;
 #endif
 
 /* CCLang.Lang */

@@ -27,11 +27,21 @@ set(CCLANG_SOURCES
         ../../CCLang/Alloc/Text/FormatParser.cc
         ../../CCLang/Alloc/Text/Formatter.cc
         ../../CCLang/Alloc/Text/Lexer.cc
+        ../../CCLang/Core/Assertions.cc
         ../../CCLang/Core/Error.cc
         ../../CCLang/Core/Hashing.cc
         ../../CCLang/Core/SourceLocation.cc
         ../../CCLang/Lang/Cxx.cc
-        ../../CCLang/Lang/IntTypes.cc
+        ../../CCLang/Lang/IntTypes/i8.cc
+        ../../CCLang/Lang/IntTypes/i16.cc
+        ../../CCLang/Lang/IntTypes/i32.cc
+        ../../CCLang/Lang/IntTypes/i64.cc
+        ../../CCLang/Lang/IntTypes/isize.cc
+        ../../CCLang/Lang/IntTypes/u8.cc
+        ../../CCLang/Lang/IntTypes/u16.cc
+        ../../CCLang/Lang/IntTypes/u32.cc
+        ../../CCLang/Lang/IntTypes/u64.cc
+        ../../CCLang/Lang/IntTypes/usize.cc
         ../../CCLang/Lang/StringView.cc)
 
 set(LIBC_SOURCES
