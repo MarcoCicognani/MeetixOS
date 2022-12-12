@@ -42,7 +42,7 @@ set(CCLANG_SOURCES
         ../../CCLang/Lang/IntTypes/u32.cc
         ../../CCLang/Lang/IntTypes/u64.cc
         ../../CCLang/Lang/IntTypes/usize.cc
-        ../../CCLang/Lang/StringView.cc)
+        ../../CCLang/Lang/StringView.cc ../../CCLang/Core/Find.cc)
 
 set(LIBC_SOURCES
         ../../Userspace/Libraries/LibC/errno.cc

@@ -82,7 +82,7 @@ constexpr void swap(T& lhs, U& rhs) {
 template<typename T, typename U = T>
 constexpr T exchange(T& slot, U&& value) {
     T __prev = std::move(slot);
-    slot     = std::forward<U>(value);
+    slot     = std::move(value);
     return __prev;
 }
 

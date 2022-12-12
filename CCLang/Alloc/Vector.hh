@@ -229,7 +229,7 @@ public:
      * @brief Move constructor and move assignment
      */
     Vector(Vector<T>&& rhs)
-        : m_data_storage(Cxx::exchange(rhs.m_data_storage, nullptr))
+        : m_data_storage(Cxx::exchange(rhs.m_data_storage, Slice<T>::empty()))
         , m_data_capacity(Cxx::exchange(rhs.m_data_capacity, 0))
         , m_values_count(Cxx::exchange(rhs.m_values_count, 0)) {
     }
@@ -261,8 +261,8 @@ public:
         clear_keep_capacity();
 
         if ( m_data_capacity > 0 ) {
-            Details::__heap_plug_dealloc_mem(m_data_storage.unwrap(), m_data_capacity * sizeof(T));
-            m_data_storage  = nullptr;
+            Details::__heap_plug_dealloc_mem(m_data_storage.data(), m_data_capacity * sizeof(T));
+            m_data_storage  = Slice<T>::empty();
             m_data_capacity = 0;
         }
     }
@@ -355,7 +355,7 @@ public:
 
         /* move the values after the insertion one place forward */
         if constexpr ( TypeTraits<T>::is_trivial() ) {
-            Cxx::memmove(data_slot(1), m_data_storage, m_values_count * sizeof(T));
+            Cxx::memmove(data_slot(1), m_data_storage.data(), m_values_count * sizeof(T));
         } else {
             for ( auto const i : usize::range(m_values_count, 0).reverse_iter() ) {
                 new (data_slot(i)) T(Cxx::move(m_data_storage[i - 1]));
@@ -428,7 +428,7 @@ public:
     }
     auto erase_first_of(T const& value) -> ErrorOr<void> {
         for ( auto const i : usize::range(0, m_values_count) ) {
-            if ( m_data_storage[i] == value ) {
+            if ( TypeTraits<T>::equals(m_data_storage[i], value) ) {
                 try$(erase_at(i));
                 return {};
             }
@@ -496,7 +496,7 @@ public:
                                              return Slice<T>::from_raw_parts((T*)void_ptr, new_capacity);
                                          }));
         if constexpr ( TypeTraits<T>::is_trivial() ) {
-            Cxx::memmove(new_data_storage.unwrap(), m_data_storage.unwrap(), m_values_count * sizeof(T));
+            Cxx::memmove(new_data_storage.data(), m_data_storage.data(), m_values_count * sizeof(T));
         } else {
             for ( auto const i : usize::range(0, m_values_count) ) {
                 new (&new_data_storage[i]) T(Cxx::move(at(i)));
@@ -506,7 +506,7 @@ public:
 
         /* destroy the previous buffer if exists and update the other fields */
         if ( !m_data_storage.is_null() ) {
-            Details::__heap_plug_dealloc_mem(m_data_storage.unwrap(), m_data_capacity * sizeof(T));
+            Details::__heap_plug_dealloc_mem(m_data_storage.data(), m_data_capacity * sizeof(T));
         }
 
         m_data_storage  = new_data_storage;
@@ -631,11 +631,11 @@ public:
     }
     [[nodiscard]]
     auto raw_data() -> T* {
-        return m_data_storage;
+        return m_data_storage.data();
     }
     [[nodiscard]]
     auto raw_data() const -> T const* {
-        return m_data_storage.unwrap();
+        return m_data_storage.data();
     }
 
     [[nodiscard]]

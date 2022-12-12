@@ -76,8 +76,8 @@ public:
      * @brief Constructors
      */
     explicit(false) StringView() = default;
-    explicit(false) StringView(StringView const& rhs);
-    explicit(false) StringView(StringView&& rhs);
+    explicit(false) StringView(StringView const&) = default;
+    explicit(false) StringView(StringView&&);
 
     ~StringView() = default;
 
@@ -216,6 +216,12 @@ public:
     auto rbegin() const -> ConstReverseIterator;
     auto rend() const -> ConstReverseIterator;
     auto reverse_iter() const -> ConstReverseIteratorWrapper;
+
+    /**
+     * @brief Slice
+     */
+    [[nodiscard]]
+    auto as_slice() const -> Slice<char const>;
 
     /**
      * @brief Hashing support

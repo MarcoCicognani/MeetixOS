@@ -176,8 +176,25 @@ public:
         return Slice<T>(raw_array_ptr, raw_array_len);
     }
 
-    Slice(Slice<T> const&) = default;
-    Slice(Slice<T>&&)      = default;
+    Slice(Slice<T> const& rhs)
+        : m_raw_slice_ptr(rhs.m_raw_slice_ptr)
+        , m_raw_slice_len(rhs.m_raw_slice_len) {
+    }
+    Slice(Slice<T>&& rhs)
+        : m_raw_slice_ptr(Cxx::exchange(rhs.m_raw_slice_ptr, nullptr))
+        , m_raw_slice_len(Cxx::exchange(rhs.m_raw_slice_len, 0)) {
+    }
+
+    auto operator=(Slice<T> const& rhs) -> Slice<T>& {
+        auto __value = rhs;
+        swap(__value);
+        return *this;
+    }
+    auto operator=(Slice<T>&& rhs) -> Slice<T>& {
+        auto __value = Cxx::move(rhs);
+        swap(__value);
+        return *this;
+    }
 
     /**
      * @brief Swap support
@@ -281,6 +298,12 @@ public:
     auto sub_slice(usize start, usize count) const -> Slice<T> {
         verify_less_with_msg$(start + count, m_raw_slice_len, "Slice<T> - Index out of bounds in sub_slice()");
         return Slice<T>::from_raw_parts(m_raw_slice_ptr + start, count);
+    }
+
+    template<typename U>
+    [[nodiscard]]
+    auto as_slice_of() const -> Slice<U> {
+        return Slice<U>::from_raw_parts(Cxx::bit_cast<U*>(m_raw_slice_ptr), m_raw_slice_len);
     }
 
     /**

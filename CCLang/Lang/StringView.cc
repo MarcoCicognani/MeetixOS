@@ -17,7 +17,6 @@
 #include <CCLang/Core/CharTypes.hh>
 #include <CCLang/Core/ErrorOr.hh>
 #include <CCLang/Core/Find.hh>
-#include <CCLang/Lang/Array.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/Must.hh>
 #include <CCLang/Lang/StringView.hh>
@@ -31,13 +30,8 @@ auto StringView::from_raw_parts(char const* c_str, usize len) -> StringView {
     return StringView(c_str, len);
 }
 
-StringView::StringView(StringView const& rhs)
-    : StringView(rhs.m_chars_ptr, rhs.m_chars_count) {
-}
-
 StringView::StringView(StringView&& rhs)
-    : m_chars_ptr(Cxx::exchange(rhs.m_chars_ptr, nullptr))
-    , m_chars_count(Cxx::exchange(rhs.m_chars_count, 0)) {
+    : m_chars_slice(Cxx::move(rhs.m_chars_slice)) {
 }
 
 auto StringView::operator=(StringView const& rhs) -> StringView& {
@@ -57,29 +51,15 @@ auto StringView::operator=(StringView&& rhs) -> StringView& {
 }
 
 auto StringView::swap(StringView& rhs) -> void {
-    Cxx::swap(m_chars_ptr, rhs.m_chars_ptr);
-    Cxx::swap(m_chars_count, rhs.m_chars_count);
+    Cxx::swap(m_chars_slice, rhs.m_chars_slice);
 }
 
 auto StringView::at(usize index) const -> char const& {
-    verify_less$(index, len());
-    return m_chars_ptr[index.unwrap()];
+    return m_chars_slice.at(index);
 }
 
 auto StringView::operator[](usize index) const -> char const& {
     return at(index);
-}
-
-static auto char_compare(UnsafeArrayPtr<char const> lhs, UnsafeArrayPtr<char const> rhs, usize len) -> Order {
-    for ( auto const i : usize::range(0, len) ) {
-        if ( lhs[i] > rhs[i] ) {
-            return Order::Greater;
-        }
-        if ( lhs[i] < rhs[i] ) {
-            return Order::Less;
-        }
-    }
-    return Order::Equal;
 }
 
 auto StringView::compare(StringView rhs) const -> Order {
@@ -92,7 +72,7 @@ auto StringView::compare(StringView rhs) const -> Order {
 
     /* use the optimized mem-cmp for the minimum of the two lengths */
     auto min_len = len() < rhs.len() ? len() : rhs.len();
-    auto order   = char_compare(as_cstr(), rhs.as_cstr(), min_len);
+    auto order   = Cxx::memcmp(as_cstr(), rhs.as_cstr(), min_len);
     if ( order == Order::Equal ) {
         if ( len() < rhs.len() ) {
             return Order::Less;
@@ -176,7 +156,7 @@ auto StringView::starts_with(StringView rhs, CaseSensible case_sensitivity) cons
     }
 
     if ( case_sensitivity == CaseSensible::Yes ) {
-        return char_compare(as_cstr(), rhs.as_cstr(), rhs.len()) == Order::Equal;
+        return Cxx::memcmp(as_cstr(), rhs.as_cstr(), rhs.len()) == Order::Equal;
     } else {
         for ( auto const i : usize::range(0, rhs.len()) ) {
             if ( to_ascii_lowercase(at(i)) != to_ascii_lowercase(rhs.at(i)) ) {
@@ -214,7 +194,7 @@ auto StringView::ends_with(StringView rhs, CaseSensible case_sensitivity) const 
     }
 
     if ( case_sensitivity == CaseSensible::Yes ) {
-        return char_compare(as_cstr() + (len() - rhs.len()), rhs.as_cstr(), rhs.len()) == Order::Equal;
+        return Cxx::memcmp(as_cstr() + (len() - rhs.len()), rhs.as_cstr(), rhs.len()) == Order::Equal;
     } else {
         usize str_i = len() - rhs.len();
         for ( auto const i : usize::range(0, rhs.len()) ) {
@@ -397,8 +377,8 @@ auto StringView::find(StringView needle, usize start) const -> Option<usize> {
         return {};
     }
 
-    return find_in_memory(as_cstr() + start, len() - start, needle.as_cstr(), needle.len())
-       ;
+    return find_in_memory(Slice<char const>::from_raw_parts(as_cstr() + start, len() - start),
+                          Slice<char const>::from_raw_parts(needle.as_cstr(), needle.len()));
 }
 
 auto StringView::find_last(char needle) const -> Option<usize> {
@@ -419,13 +399,13 @@ auto StringView::try_find_all(StringView needle) const -> ErrorOr<Vector<usize>>
 
     usize current_position = 0;
     while ( current_position < len() ) {
-        auto ptr_index_or_none = find_in_memory(as_cstr() + current_position, len() - current_position, needle.as_cstr(), needle.len());
+        auto ptr_index_or_none = find_in_memory(as_slice().sub_slice(current_position), needle.as_slice());
         if ( !ptr_index_or_none.is_present() ) {
             break;
         }
 
-        auto char_ptr_pos   = ptr_index_or_none.unwrap();
-        auto relative_index = char_ptr_pos - (as_cstr() + current_position);
+        auto ptr_index      = ptr_index_or_none.unwrap();
+        auto relative_index = ptr_index - usize(Cxx::bit_cast<unsigned int>(as_cstr() + current_position));
 
         try$(positions.try_append(current_position + relative_index));
         current_position += relative_index + 1;
@@ -484,7 +464,7 @@ auto StringView::try_split_view(char separator, KeepEmpty keep_empty) const -> E
 
 auto StringView::try_split_view(StringView separator, KeepEmpty keep_empty) const -> ErrorOr<Vector<StringView>> {
     auto vector = Vector<StringView>::empty();
-    try$(try_split_view_if_helper(*this, separator, keep_empty, [&vector](StringView string_view) -> ErrorOr<void> {
+    try$(try_split_view_if_helper(*this, separator, keep_empty,[&vector](StringView string_view) -> ErrorOr<void> {
         try$(vector.try_append(string_view));
         return {};
     }));
@@ -521,7 +501,7 @@ auto StringView::contains(StringView rhs, CaseSensible case_sensible) const -> b
     }
 
     if ( case_sensible == CaseSensible::Yes ) {
-        return find_in_memory(as_cstr(), len(), rhs.as_cstr(), rhs.len()).is_present();
+        return find_in_memory(as_slice(), rhs.as_slice()).is_present();
     }
 
     auto needle_first = to_ascii_lowercase(rhs.at(0));
@@ -578,6 +558,10 @@ auto StringView::rend() const -> StringView::ConstReverseIterator {
 
 auto StringView::reverse_iter() const -> StringView::ConstReverseIteratorWrapper {
     return m_chars_slice.reverse_iter();
+}
+
+auto StringView::as_slice() const -> Slice<char const> {
+    return m_chars_slice;
 }
 
 auto StringView::hash_code() const -> usize {

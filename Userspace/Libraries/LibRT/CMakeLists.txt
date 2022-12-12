@@ -23,6 +23,7 @@ set(CCLANG_SOURCES
         ../../../CCLang/Alloc/Text/Lexer.cc
         ../../../CCLang/Core/Assertions.cc
         ../../../CCLang/Core/Error.cc
+        ../../../CCLang/Core/Find.cc
         ../../../CCLang/Core/Hashing.cc
         ../../../CCLang/Core/SourceLocation.cc
         ../../../CCLang/Lang/Cxx.cc
