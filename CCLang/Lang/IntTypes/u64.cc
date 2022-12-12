@@ -10,8 +10,6 @@
  * GNU General Public License version 3
  */
 
-#pragma once
-
 #include <CCLang/Lang/IntTypes/u64.hh>
 
 #include <CCLang/Core/ErrorOr.hh>
@@ -60,13 +58,13 @@ auto u64::operator=(__UINT64_TYPE__ value) -> u64& {
 }
 
 auto u64::operator=(u64 const& rhs) -> u64& {
-    auto integer = rhs;
+    u64 integer = rhs;
     swap(integer);
     return *this;
 }
 
 auto u64::operator=(u64&& rhs) -> u64& {
-    auto integer = Cxx::move(rhs);
+    u64 integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }
@@ -426,7 +424,7 @@ auto u64::try_mul(u64 const& rhs) const -> ErrorOr<u64> {
 
 auto u64::mul(u64 const& rhs) const -> u64 {
     if constexpr ( CCLangSafeIntegerOperations ) {
-        must$(try_mul(rhs));
+        return must$(try_mul(rhs));
     } else {
         return m_value * rhs.m_value;
     }

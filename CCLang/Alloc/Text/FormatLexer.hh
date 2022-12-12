@@ -25,9 +25,7 @@ public:
      * @brief Error safe Factory functions
      */
     [[nodiscard]]
-    static constexpr auto from_view(StringView source_view) -> FormatLexer {
-        return FormatLexer(source_view);
-    }
+    static auto from_view(StringView source_view) -> FormatLexer;
 
     /**
      * @brief Consumes all the non format and escaped characters
@@ -42,7 +40,5 @@ public:
     auto consume_number(usize&) -> bool;
 
 private:
-    explicit constexpr FormatLexer(StringView source_view)
-        : Lexer(source_view) {
-    }
+    explicit FormatLexer(StringView source_view);
 };

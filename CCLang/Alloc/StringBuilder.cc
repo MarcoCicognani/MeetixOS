@@ -93,6 +93,13 @@ auto StringBuilder::try_append(StringView string_view) -> ErrorOr<void> {
     return {};
 }
 
+auto StringBuilder::append(UTF8Rune rune) -> void {
+    must$(try_append(rune));
+}
+auto StringBuilder::try_append(UTF8Rune) -> ErrorOr<void> {
+    return Error::from_code(ErrorCode::Unimplemented);
+}
+
 auto StringBuilder::ensure_capacity(usize capacity) {
     must$(try_ensure_capacity(capacity));
 }

@@ -40,8 +40,7 @@ auto format(StringBuilder& string_builder, StringView format_view, Args&&... var
 }
 
 /**
- * @brief Formats first_arg according to the format_lexer into StringBuilder and forward recurse to itself until
- * variadic_args are > 0
+ * @brief Formats first_arg according to the format_lexer into StringBuilder and forward recurse to itself until variadic_args are > 0
  */
 template<typename T, typename... Args>
 auto format(StringBuilder& string_builder, FormatLexer& format_lexer, T const& first_arg, Args&&... variadic_args) -> ErrorOr<void> {

@@ -10,8 +10,6 @@
 * GNU General Public License version 3
  */
 
-#pragma once
-
 #include <CCLang/Lang/IntTypes/isize.hh>
 
 #include <CCLang/Core/ErrorOr.hh>
@@ -60,13 +58,13 @@ auto isize::operator=(__PTRDIFF_TYPE__ value) -> isize& {
 }
 
 auto isize::operator=(isize const& rhs) -> isize& {
-    auto integer = rhs;
+    isize integer = rhs;
     swap(integer);
     return *this;
 }
 
 auto isize::operator=(isize&& rhs) -> isize& {
-    auto integer = Cxx::move(rhs);
+    isize integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }
@@ -389,7 +387,7 @@ auto isize::try_mul(isize const& rhs) const -> ErrorOr<isize> {
 
 auto isize::mul(isize const& rhs) const -> isize {
     if constexpr ( CCLangSafeIntegerOperations ) {
-        must$(try_mul(rhs));
+        return must$(try_mul(rhs));
     } else {
         return m_value * rhs.m_value;
     }

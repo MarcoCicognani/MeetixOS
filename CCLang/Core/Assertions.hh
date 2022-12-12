@@ -44,7 +44,7 @@
 #define verify_null$(expr)     verify_equal$(expr, nullptr)
 #define verify_not_null$(expr) verify_not_equal$(expr, nullptr)
 
-[[nodiscard]]
+[[noreturn]]
 auto panic(char const* msg, char const* file = __builtin_FILE(), int line = __builtin_LINE()) -> void;
 
 namespace Details {

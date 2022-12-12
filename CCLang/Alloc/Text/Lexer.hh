@@ -21,15 +21,14 @@
 #include <CCLang/Lang/IntTypes.hh>
 #include <CCLang/Lang/StringView.hh>
 
-class Lexer : public DenyCopy, public DenyMove {
+class Lexer : public DenyCopy,
+              public DenyMove {
 public:
     /**
      * @brief Error safe Factory functions
      */
     [[nodiscard]]
-    static constexpr auto from_view(StringView source_view) -> Lexer {
-        return Lexer(source_view);
-    }
+    static auto from_view(StringView source_view) -> Lexer;
 
     /**
      * @brief Consumes the next character and returns it, return terminator when end is reached
@@ -51,25 +50,29 @@ public:
     auto consume_until(StringView) -> StringView;
     auto consume_until(Predicate<char> auto predicate) -> StringView {
         usize start_index = m_index;
-        while ( !is_end() && !predicate(peek()) )
+        while ( !is_end() && !predicate(peek()) ) {
             ++m_index;
+        }
 
         usize len = m_index - start_index;
-        if ( len == 0 )
+        if ( len == 0 ) {
             return {};
-        else
+        } else {
             return m_source_view.sub_string_view(start_index, len);
+        }
     }
     auto consume_while(Predicate<char> auto predicate) -> StringView {
         usize start_index = m_index;
-        while ( !is_end() && predicate(peek()) )
+        while ( !is_end() && predicate(peek()) ) {
             ++m_index;
+        }
 
         usize len = m_index - start_index;
-        if ( len == 0 )
+        if ( len == 0 ) {
             return {};
-        else
+        } else {
             return m_source_view.sub_string_view(start_index, len);
+        }
     }
 
     /**
@@ -80,15 +83,17 @@ public:
     /**
      * @brief Ignores the characters until reached the character/word/callback
      */
-    auto ignore_until(char);
-    auto ignore_until(StringView);
-    auto ignore_until(Predicate<char> auto predicate) {
-        while ( !is_end() && !predicate(peek()) )
+    auto ignore_until(char) -> void;
+    auto ignore_until(StringView) -> void;
+    auto ignore_until(Predicate<char> auto predicate) -> void {
+        while ( !is_end() && !predicate(peek()) ) {
             ++m_index;
+        }
     }
-    auto ignore_while(Predicate<char> auto predicate) {
-        while ( !is_end() && predicate(peek()) )
+    auto ignore_while(Predicate<char> auto predicate) -> void {
+        while ( !is_end() && predicate(peek()) ) {
             ++m_index;
+        }
     }
 
     /**
@@ -122,9 +127,7 @@ public:
     auto is_end() const -> bool;
 
 protected:
-    explicit constexpr Lexer(StringView source_view)
-        : m_source_view(Cxx::move(source_view)) {
-    }
+    explicit Lexer(StringView source_view);
 
     [[nodiscard]]
     auto source_view() const -> StringView;

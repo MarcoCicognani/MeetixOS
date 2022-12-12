@@ -15,7 +15,7 @@
 #include <CCLang/Lang/StringView.hh>
 
 auto Error::from_code(ErrorCode code, FromSyscall from_syscall, SourceLocation error_location) -> Error {
-    return Error(code, {}, from_syscall, Cxx::move(error_location));
+    return Error(code, StringView(), from_syscall, Cxx::move(error_location));
 }
 
 auto Error::from_literal(StringView string_literal, FromSyscall from_syscall, SourceLocation error_location) -> Error {

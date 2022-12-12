@@ -75,7 +75,7 @@ public:
      * @brief Clones the references only increasing the strong reference count
      */
     auto clone() const -> NonNullRef<T> {
-        verify_not_null$(m_ref_counted_ptr);
+        verify_not_null_with_msg$(m_ref_counted_ptr, "Tried to clone a `Null` NonNullRef<T> instance");
         m_ref_counted_ptr->add_strong_ref();
         return NonNullRef<T>(m_ref_counted_ptr);
     }
@@ -83,7 +83,7 @@ public:
     /**
      * @brief Swaps this ref with another
      */
-    constexpr void swap(NonNullRef<T>& rhs) {
+    void swap(NonNullRef<T>& rhs) {
         Cxx::swap(m_ref_counted_ptr, rhs.m_ref_counted_ptr);
     }
 
@@ -130,12 +130,12 @@ public:
      */
     [[nodiscard, gnu::returns_nonnull]]
     auto as_ptr() -> T* {
-        verify_not_null$(m_ref_counted_ptr);
+        verify_not_null_with_msg$(m_ref_counted_ptr, "NonNullRef<T> - Called as_ptr() on `Null` value");
         return m_ref_counted_ptr;
     }
     [[nodiscard, gnu::returns_nonnull]]
     auto as_ptr() const -> T const* {
-        verify_not_null$(m_ref_counted_ptr);
+        verify_not_null_with_msg$(m_ref_counted_ptr, "NonNullRef<T> - Called as_ptr() on `Null` value");
         return m_ref_counted_ptr;
     }
 
@@ -154,8 +154,16 @@ public:
         return m_ref_counted_ptr->strong_ref_count();
     }
 
+    /**
+     * @brief Hash support
+     */
+    [[nodiscard]]
+    auto hash_code() const {
+        return usize(Cxx::bit_cast<usize::CCIntegerType>(m_ref_counted_ptr)).hash_code();
+    }
+
 private:
-    explicit constexpr NonNullRef(T* ref_counted_ptr)
+    explicit NonNullRef(T* ref_counted_ptr)
         : m_ref_counted_ptr(ref_counted_ptr) {
     }
 
@@ -165,23 +173,23 @@ private:
 
 template<typename T>
 struct TypeTraits<NonNullRef<T>> final : public Details::TypeTraits<NonNullRef<T>> {
-    static constexpr auto hash(NonNullRef<T> const& value) -> usize {
-        return Hashing::hash_ptr(value.as_ptr());
+    static auto hash(NonNullRef<T> const& nn_ref) -> usize {
+        return nn_ref.hash_code();
+    }
+
+    static auto equals(NonNullRef<T> const& a, NonNullRef<T> const& b) -> bool {
+        return a.as_ptr() == b.as_ptr();
     }
 
     static constexpr auto is_trivial() -> bool {
         return false;
-    }
-
-    static constexpr auto equals(NonNullRef<T> const& a, NonNullRef<T> const& b) -> bool {
-        return a.as_ptr() == b.as_ptr();
     }
 };
 
 namespace Cxx {
 
 template<typename T>
-constexpr auto swap(NonNullRef<T>& lhs, NonNullRef<T>& rhs) -> void {
+auto swap(NonNullRef<T>& lhs, NonNullRef<T>& rhs) -> void {
     lhs.swap(rhs);
 }
 

@@ -150,7 +150,7 @@ private:
     explicit FormatApplier(StringBuilder&, FormatParser::Result);
 
 private:
-    static auto convert_unsigned_to_chars(u64 value, char to_chars_buffer[128], u8 base, bool upper_case) -> usize;
+    static auto convert_unsigned_to_chars(u64 value, Slice<char> to_chars_buffer, u8 base, bool upper_case) -> usize;
 
 private:
     StringBuilder&       m_string_builder;
@@ -207,7 +207,29 @@ private:
     explicit Formatter(FormatApplier);
 };
 
-template<Integral T>
+template<NativeIntegral T>
+class Formatter<T> final : public FormatApplier {
+public:
+    /**
+     * @brief Error safe factory functions
+     */
+    [[nodiscard]]
+    static auto from_format_applier(FormatApplier) -> Formatter<T>;
+    [[nodiscard]]
+    static auto from_parser_result(StringBuilder&, FormatParser::Result) -> Formatter<T>;
+
+    ~Formatter() override = default;
+
+    /**
+     * @brief Performs the format on the given string-builder
+     */
+    auto format(T) -> ErrorOr<void>;
+
+private:
+    explicit Formatter(FormatApplier);
+};
+
+template<WrappedIntegral T>
 class Formatter<T> final : public FormatApplier {
 public:
     /**

@@ -298,6 +298,10 @@ auto String::reverse_iter() const -> ConstReverseIteratorWrapper {
     return as_string_view().reverse_iter();
 }
 
+auto String::hash_code() const -> usize {
+    return as_string_view().hash_code();
+}
+
 auto String::as_cstr() const -> char const* {
     return m_string_storage_ref->storage_ptr();
 }

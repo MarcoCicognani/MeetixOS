@@ -24,7 +24,6 @@ set(CCLANG_SOURCES
         ../../../CCLang/Core/Assertions.cc
         ../../../CCLang/Core/Error.cc
         ../../../CCLang/Core/Find.cc
-        ../../../CCLang/Core/Hashing.cc
         ../../../CCLang/Core/SourceLocation.cc
         ../../../CCLang/Lang/Cxx.cc
         ../../../CCLang/Lang/IntTypes/i8.cc
@@ -37,7 +36,7 @@ set(CCLANG_SOURCES
         ../../../CCLang/Lang/IntTypes/u32.cc
         ../../../CCLang/Lang/IntTypes/u64.cc
         ../../../CCLang/Lang/IntTypes/usize.cc
-        ../../../CCLang/Lang/StringView.cc)
+        ../../../CCLang/Lang/StringView.cc ../../../CCLang/Core/CharTypes.cc)
 
 # --- crt0.cc ---
 # These two following commands compile the crt0.cc file then install it into toolchain's lib.

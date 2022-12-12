@@ -10,8 +10,6 @@
 * GNU General Public License version 3
  */
 
-#pragma once
-
 #include <CCLang/Lang/IntTypes/i16.hh>
 
 #include <CCLang/Core/ErrorOr.hh>
@@ -60,13 +58,13 @@ auto i16::operator=(__INT16_TYPE__ value) -> i16& {
 }
 
 auto i16::operator=(i16 const& rhs) -> i16& {
-    auto integer = rhs;
+    i16 integer = rhs;
     swap(integer);
     return *this;
 }
 
 auto i16::operator=(i16&& rhs) -> i16& {
-    auto integer = Cxx::move(rhs);
+    i16 integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }
@@ -389,7 +387,7 @@ auto i16::try_mul(i16 const& rhs) const -> ErrorOr<i16> {
 
 auto i16::mul(i16 const& rhs) const -> i16 {
     if constexpr ( CCLangSafeIntegerOperations ) {
-        must$(try_mul(rhs));
+        return must$(try_mul(rhs));
     } else {
         return m_value * rhs.m_value;
     }

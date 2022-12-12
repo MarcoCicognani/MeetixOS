@@ -10,8 +10,6 @@
 * GNU General Public License version 3
  */
 
-#pragma once
-
 #include <CCLang/Lang/IntTypes/i32.hh>
 
 #include <CCLang/Core/ErrorOr.hh>
@@ -60,13 +58,13 @@ auto i32::operator=(__INT32_TYPE__ value) -> i32& {
 }
 
 auto i32::operator=(i32 const& rhs) -> i32& {
-    auto integer = rhs;
+    i32 integer = rhs;
     swap(integer);
     return *this;
 }
 
 auto i32::operator=(i32&& rhs) -> i32& {
-    auto integer = Cxx::move(rhs);
+    i32 integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }
@@ -389,7 +387,7 @@ auto i32::try_mul(i32 const& rhs) const -> ErrorOr<i32> {
 
 auto i32::mul(i32 const& rhs) const -> i32 {
     if constexpr ( CCLangSafeIntegerOperations ) {
-        must$(try_mul(rhs));
+        return must$(try_mul(rhs));
     } else {
         return m_value * rhs.m_value;
     }

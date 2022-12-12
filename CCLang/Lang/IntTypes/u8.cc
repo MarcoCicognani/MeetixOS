@@ -10,8 +10,6 @@
 * GNU General Public License version 3
 */
 
-#pragma once
-
 #include <CCLang/Lang/IntTypes/u8.hh>
 
 #include <CCLang/Core/ErrorOr.hh>
@@ -60,13 +58,13 @@ auto u8::operator=(__UINT8_TYPE__ value) -> u8& {
 }
 
 auto u8::operator=(u8 const& rhs) -> u8& {
-   auto integer = rhs;
+   u8 integer = rhs;
    swap(integer);
    return *this;
 }
 
 auto u8::operator=(u8&& rhs) -> u8& {
-   auto integer = Cxx::move(rhs);
+   u8 integer = Cxx::move(rhs);
    swap(integer);
    return *this;
 }
@@ -426,7 +424,7 @@ auto u8::try_mul(u8 const& rhs) const -> ErrorOr<u8> {
 
 auto u8::mul(u8 const& rhs) const -> u8 {
    if constexpr ( CCLangSafeIntegerOperations ) {
-       must$(try_mul(rhs));
+       return must$(try_mul(rhs));
    } else {
        return m_value * rhs.m_value;
    }

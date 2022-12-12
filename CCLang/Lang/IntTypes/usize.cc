@@ -10,8 +10,6 @@
  * GNU General Public License version 3
  */
 
-#pragma once
-
 #include <CCLang/Lang/IntTypes/usize.hh>
 
 #include <CCLang/Core/ErrorOr.hh>
@@ -59,7 +57,7 @@ auto usize::operator=(__SIZE_TYPE__ value) -> usize& {
 }
 
 auto usize::operator=(usize const& rhs) -> usize& {
-    auto integer = rhs;
+    usize integer = rhs;
     swap(integer);
     return *this;
 }
@@ -425,7 +423,7 @@ auto usize::try_mul(usize const& rhs) const -> ErrorOr<usize> {
 
 auto usize::mul(usize const& rhs) const -> usize {
     if constexpr ( CCLangSafeIntegerOperations ) {
-        must$(try_mul(rhs));
+        return must$(try_mul(rhs));
     } else {
         return m_value * rhs.m_value;
     }

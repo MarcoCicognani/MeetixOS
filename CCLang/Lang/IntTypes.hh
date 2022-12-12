@@ -26,6 +26,7 @@
 #include <CCLang/Lang/IntTypes/u64.hh>
 #include <CCLang/Lang/IntTypes/usize.hh>
 
+#include <CCLang/Core/Concept.hh>
 #include <CCLang/Core/TypeTraits.hh>
 
 #ifndef IN_KERNEL

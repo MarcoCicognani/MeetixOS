@@ -13,8 +13,12 @@
 #include <CCLang/Alloc/Text/FormatLexer.hh>
 #include <CCLang/Core/CharTypes.hh>
 
+auto FormatLexer::from_view(StringView source_view) -> FormatLexer {
+    return FormatLexer(source_view);
+}
+
 auto FormatLexer::consume_literal() -> StringView {
-    auto begin_index = index();
+    auto const begin_index = index();
     while ( !is_end() ) {
         if ( consume_specific("{{"sv) )
             continue;
@@ -38,4 +42,8 @@ auto FormatLexer::consume_number(usize& value) -> bool {
         consumed_at_least_one = true;
     }
     return consumed_at_least_one;
+}
+
+FormatLexer::FormatLexer(StringView source_view)
+    : Lexer(source_view) {
 }

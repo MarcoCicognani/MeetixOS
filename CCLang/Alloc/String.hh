@@ -17,7 +17,6 @@
 #include <CCLang/Alloc/NonNullRef.hh>
 #include <CCLang/Alloc/StringStorage.hh>
 #include <CCLang/Core/ErrorOr.hh>
-#include <CCLang/Core/Hashing.hh>
 #include <CCLang/Core/TypeTraits.hh>
 #include <CCLang/Lang/DenyCopy.hh>
 #include <CCLang/Lang/IntTypes.hh>
@@ -233,6 +232,12 @@ public:
     auto reverse_iter() const -> ConstReverseIteratorWrapper;
 
     /**
+     * @brief Hashing support
+     */
+    [[nodiscard]]
+    auto hash_code() const -> usize;
+
+    /**
      * @brief Getters
      */
     [[nodiscard]]
@@ -257,8 +262,8 @@ private:
 
 template<>
 struct TypeTraits<String> final : public Details::TypeTraits<String> {
-    static auto hash(String const& value) -> usize {
-        return Hashing::hash_string(value.as_cstr(), value.len());
+    static auto hash(String const& string) -> usize {
+        return string.hash_code();
     }
 
     static constexpr auto is_trivial() -> bool {
@@ -268,7 +273,7 @@ struct TypeTraits<String> final : public Details::TypeTraits<String> {
 
 namespace Cxx {
 
-constexpr auto swap(String& lhs, String& rhs) -> void {
+auto swap(String& lhs, String& rhs) -> void {
     lhs.swap(rhs);
 }
 

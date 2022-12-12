@@ -17,7 +17,6 @@
 #include <CCLang/Alloc/Details.hh>
 #include <CCLang/Core/Assertions.hh>
 #include <CCLang/Core/Concept.hh>
-#include <CCLang/Core/Hashing.hh>
 #include <CCLang/Core/Meta.hh>
 #include <CCLang/Core/TypeTraits.hh>
 #include <CCLang/Lang/Cxx.hh>
@@ -70,17 +69,20 @@ public:
      * @brief Increment operators
      */
     auto operator++() -> SetIterator& {
-        if ( m_current_bucket == nullptr )
+        if ( m_current_bucket == nullptr ) {
             return *this;
+        }
 
         do {
             ++m_current_bucket;
-            if ( m_current_bucket->m_bucket_state == SetBucketState::Used )
+            if ( m_current_bucket->m_bucket_state == SetBucketState::Used ) {
                 return *this;
+            }
         } while ( m_current_bucket->m_bucket_state != SetBucketState::End );
 
-        if ( m_current_bucket->m_bucket_state == SetBucketState::End )
+        if ( m_current_bucket->m_bucket_state == SetBucketState::End ) {
             m_current_bucket = nullptr;
+        }
 
         return *this;
     }
@@ -155,8 +157,9 @@ public:
      * @brief Increment operators
      */
     auto operator++() -> OrderedSetIterator& {
-        if ( m_current_bucket == nullptr )
+        if ( m_current_bucket == nullptr ) {
             return *this;
+        }
 
         if constexpr ( IsReverse ) {
             m_current_bucket = m_current_bucket->m_prev_bucket;
@@ -331,8 +334,9 @@ public:
     }
     static auto try_from_list(Cxx::InitializerList<T> initializer_list) -> ErrorOr<Set<T, TTraits, IsOrdered>> {
         auto set = try$(try_with_capacity(initializer_list.size()));
-        for ( auto const& e : initializer_list ) /* even with auto initializer_list exposes only T const& */
+        for ( auto const& e : initializer_list ) { /* even with auto initializer_list exposes only T const& */
             try$(set.try_insert(Cxx::move(const_cast<T&>(e))));
+        }
 
         return set;
     }
@@ -383,16 +387,18 @@ public:
     auto clear_keep_capacity() -> void {
         if constexpr ( !TTraits::is_trivial() ) {
             for ( auto const i : usize::range(0, m_data_capacity) ) {
-                if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) )
+                if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) ) {
                     m_buckets_storage[i].slot()->~T();
+                }
             }
         }
 
         Cxx::memset(m_buckets_storage, 0, size_in_bytes(capacity()));
-        if constexpr ( IsOrdered )
+        if constexpr ( IsOrdered ) {
             m_collection_data = Details::OrderedCollectionData<Bucket>{ nullptr, nullptr };
-        else
+        } else {
             m_buckets_storage[m_data_capacity].m_bucket_state = Details::SetBucketState::End;
+        }
 
         m_values_count  = 0;
         m_deleted_count = 0;
@@ -407,8 +413,9 @@ public:
         Cxx::swap(m_values_count, rhs.m_values_count);
         Cxx::swap(m_deleted_count, rhs.m_deleted_count);
 
-        if constexpr ( IsOrdered )
+        if constexpr ( IsOrdered ) {
             Cxx::swap(m_collection_data, rhs.m_collection_data);
+        }
     }
 
     /**
@@ -423,8 +430,9 @@ public:
         auto found_bucket = try$(try_lookup_for_writing(value));
         if ( Details::set_bucket_state_is_used(found_bucket->m_bucket_state) ) {
             /* keep the existing value and return */
-            if ( replace_existing == SetReplaceExisting::No )
+            if ( replace_existing == SetReplaceExisting::No ) {
                 return SetInsertResult::Kept;
+            }
 
             /* replace the value with the given one */
             (*found_bucket->slot()) = Cxx::move(value); /* use move assignment to let the existing value to be correctly replaced */
@@ -435,8 +443,9 @@ public:
          * NOTE even if the bucket is in the Deleted state, we can overwrite using move constructor
          * because destructor of previous value was already called by remove */
         new (found_bucket->slot()) T(Cxx::move(value));
-        if ( found_bucket->m_bucket_state == Details::SetBucketState::Deleted )
+        if ( found_bucket->m_bucket_state == Details::SetBucketState::Deleted ) {
             --m_deleted_count;
+        }
 
         found_bucket->m_bucket_state = Details::SetBucketState::Used;
 
@@ -461,10 +470,11 @@ public:
     [[nodiscard]]
     auto remove(T const& value) -> bool {
         auto bucket = lookup_with_hash(TTraits::hash(value), [&value](T const& current) -> bool { return TTraits::equals(value, current); });
-        if ( bucket != nullptr )
+        if ( bucket != nullptr ) {
             return remove(*bucket);
-        else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -472,10 +482,11 @@ public:
      */
     [[nodiscard]]
     auto remove(Iterator iterator) -> bool {
-        if ( iterator != end() )
+        if ( iterator != end() ) {
             return remove(*iterator.m_bucket);
-        else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -520,13 +531,14 @@ public:
      * @brief for-each support
      */
     auto begin() -> Iterator {
-        if constexpr ( IsOrdered )
+        if constexpr ( IsOrdered ) {
             return Iterator::from_bucket(m_collection_data.m_head);
-        else {
+        } else {
             /* find the first used bucket */
             for ( auto const i : usize::range(0, m_data_capacity) ) {
-                if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) )
+                if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) ) {
                     return Iterator::from_bucket(&m_buckets_storage[i]);
+                }
             }
             return end();
         }
@@ -536,13 +548,14 @@ public:
     }
 
     auto begin() const -> ConstIterator {
-        if constexpr ( IsOrdered )
+        if constexpr ( IsOrdered ) {
             return ConstIterator::from_bucket(m_collection_data.m_head);
-        else {
+        } else {
             /* find the first used bucket */
             for ( auto const i : usize::range(0, m_data_capacity) ) {
-                if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) )
+                if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) ) {
                     return ConstIterator::from_bucket(&m_buckets_storage[i]);
+                }
             }
             return end();
         }
@@ -600,17 +613,19 @@ public:
      */
     auto find(usize hash, Predicate<T&> auto predicate) -> Option<T&> {
         auto bucket_type = lookup_with_hash(hash, Cxx::move(predicate));
-        if ( bucket_type != nullptr )
+        if ( bucket_type != nullptr ) {
             return *bucket_type->slot();
-        else
+        } else {
             return {};
+        }
     }
     auto find(usize hash, Predicate<T const&> auto predicate) const -> Option<T const&> {
         auto const bucket_type = lookup_with_hash(hash, Cxx::move(predicate));
-        if ( bucket_type != nullptr )
+        if ( bucket_type != nullptr ) {
             return *bucket_type->slot();
-        else
+        } else {
             return {};
+        }
     }
 
     /**
@@ -670,22 +685,23 @@ private:
         auto       old_iter     = begin();
 
         /* allocate the new memory */
-        m_buckets_storage = try$(Details::__heap_plug_alloc_mem(size_in_bytes(new_capacity))
-                                     .map<Bucket*>([](void* void_ptr) -> Bucket* {
-                                         return Cxx::bit_cast<Bucket*>(void_ptr);
-                                     }));
+        m_buckets_storage = try$(Details::__heap_plug_alloc_mem(size_in_bytes(new_capacity)).map<Bucket*>([](void* void_ptr) -> Bucket* {
+            return Cxx::bit_cast<Bucket*>(void_ptr);
+        }));
         m_data_capacity   = new_capacity;
         m_deleted_count   = 0;
 
         /* update the collection */
-        if constexpr ( IsOrdered )
+        if constexpr ( IsOrdered ) {
             m_collection_data = Details::OrderedCollectionData<Bucket>{ nullptr, nullptr };
-        else
+        } else {
             m_buckets_storage[m_data_capacity].m_bucket_state = Details::SetBucketState::End;
+        }
 
         /* return if this set was emtpy */
-        if ( old_buckets == nullptr )
+        if ( old_buckets == nullptr ) {
             return {};
+        }
 
         /* move the values to the new memory */
         for ( auto it = Cxx::move(old_iter); it != end(); ++it ) {
@@ -699,8 +715,9 @@ private:
     }
 
     void rehash_in_place_if_needed() {
-        if ( m_deleted_count >= m_values_count && should_grow() )
+        if ( m_deleted_count >= m_values_count && should_grow() ) {
             rehash_in_place();
+        }
     }
 
     void rehash_in_place() {
@@ -708,8 +725,9 @@ private:
             auto& bucket = m_buckets_storage[i];
 
             if ( bucket.m_bucket_state == Details::SetBucketState::Rehashed || bucket.m_bucket_state == Details::SetBucketState::End
-                 || bucket.m_bucket_state == Details::SetBucketState::Free )
+                 || bucket.m_bucket_state == Details::SetBucketState::Free ) {
                 continue;
+            }
             if ( bucket.m_bucket_state == Details::SetBucketState::Deleted ) {
                 bucket.m_bucket_state = Details::SetBucketState::Free;
                 continue;
@@ -746,18 +764,20 @@ private:
                         Cxx::swap(bucket_to_move->m_prev_bucket, target_bucket->m_prev_bucket);
                         Cxx::swap(bucket_to_move->m_next_bucket, target_bucket->m_next_bucket);
 
-                        if ( target_bucket->m_prev_bucket )
+                        if ( target_bucket->m_prev_bucket ) {
                             target_bucket->m_prev_bucket->m_next_bucket = target_bucket;
-                        else
+                        } else {
                             m_collection_data.m_head = target_bucket;
-                        if ( target_bucket->m_next_bucket )
+                        }
+                        if ( target_bucket->m_next_bucket ) {
                             target_bucket->m_next_bucket->m_prev_bucket = target_bucket;
-                        else
+                        } else {
                             m_collection_data.m_tail = target_bucket;
+                        }
                     }
                 } else if ( target_bucket->m_bucket_state == Details::SetBucketState::Rehashed ) {
                     /* if the target bucket is already re-hashed, we do normal probing */
-                    target_hash   = Hashing::hash_again(target_hash);
+                    target_hash   = hash_again(target_hash);
                     target_bucket = &m_buckets_storage[target_hash % m_data_capacity];
                 } else {
                     verify$(target_bucket->m_bucket_state != Details::SetBucketState::End);
@@ -775,14 +795,16 @@ private:
                         Cxx::swap(bucket_to_move->m_prev_bucket, target_bucket->m_prev_bucket);
                         Cxx::swap(bucket_to_move->m_next_bucket, target_bucket->m_next_bucket);
 
-                        if ( target_bucket->m_prev_bucket )
+                        if ( target_bucket->m_prev_bucket ) {
                             target_bucket->m_prev_bucket->m_next_bucket = target_bucket;
-                        else
+                        } else {
                             m_collection_data.m_head = target_bucket;
-                        if ( target_bucket->m_next_bucket )
+                        }
+                        if ( target_bucket->m_next_bucket ) {
                             target_bucket->m_next_bucket->m_prev_bucket = target_bucket;
-                        else
+                        } else {
                             m_collection_data.m_tail = target_bucket;
+                        }
                     }
 
                     target_hash   = TTraits::hash(*bucket_to_move->slot());
@@ -793,14 +815,16 @@ private:
                         bucket_to_move->m_bucket_state = Details::SetBucketState::Rehashed;
                         if constexpr ( IsOrdered ) {
                             /* update state for the bucket to move as it's not actually moved anymore */
-                            if ( bucket_to_move->m_prev_bucket )
+                            if ( bucket_to_move->m_prev_bucket ) {
                                 bucket_to_move->m_prev_bucket->m_next_bucket = bucket_to_move;
-                            else
+                            } else {
                                 m_collection_data.m_head = bucket_to_move;
-                            if ( bucket_to_move->m_next_bucket )
+                            }
+                            if ( bucket_to_move->m_next_bucket ) {
                                 bucket_to_move->m_next_bucket->m_prev_bucket = bucket_to_move;
-                            else
+                            } else {
                                 m_collection_data.m_tail = bucket_to_move;
+                            }
                         }
                         break;
                     }
@@ -810,8 +834,9 @@ private:
             /* after this, the bucket_to_move either contains data that rehashes to itself,
              * or it contains nothing as we were able to move the last thing
              */
-            if ( bucket_to_move->m_bucket_state == Details::SetBucketState::Deleted )
+            if ( bucket_to_move->m_bucket_state == Details::SetBucketState::Deleted ) {
                 bucket_to_move->m_bucket_state = Details::SetBucketState::Free;
+            }
         }
 
         m_deleted_count = 0;
@@ -824,29 +849,33 @@ private:
 
     [[nodiscard]]
     auto lookup_with_hash(usize hash, auto predicate) const -> Bucket* {
-        if ( is_empty() )
+        if ( is_empty() ) {
             return nullptr;
+        }
 
         /* iterate each bucket */
         for ( ;; ) {
             auto& bucket = m_buckets_storage[hash % m_data_capacity];
 
             /* give to the predicate if it is used */
-            if ( Details::set_bucket_state_is_used(bucket.m_bucket_state) && predicate(*bucket.slot()) )
+            if ( Details::set_bucket_state_is_used(bucket.m_bucket_state) && predicate(*bucket.slot()) ) {
                 return &bucket;
+            }
 
             /* stop on end bucket */
-            if ( bucket.m_bucket_state != Details::SetBucketState::Used && bucket.m_bucket_state != Details::SetBucketState::Deleted )
+            if ( bucket.m_bucket_state != Details::SetBucketState::Used && bucket.m_bucket_state != Details::SetBucketState::Deleted ) {
                 return nullptr;
+            }
 
             /* double the hash and try again */
-            hash = Hashing::hash_again(hash);
+            hash = hash_again(hash);
         }
     }
 
     auto try_lookup_for_writing(T const& value) -> ErrorOr<Bucket*> {
-        if ( should_grow() )
+        if ( should_grow() ) {
             try$(try_rehash(capacity() * 2));
+        }
 
         /* pre-calculate the hash value */
         auto hash = TTraits::hash(value);
@@ -857,20 +886,23 @@ private:
             auto& bucket = m_buckets_storage[hash % m_data_capacity];
 
             /* use the already used bucket if the value matches */
-            if ( Details::set_bucket_state_is_used(bucket.m_bucket_state) && TTraits::equals(*bucket.slot(), value) )
+            if ( Details::set_bucket_state_is_used(bucket.m_bucket_state) && TTraits::equals(*bucket.slot(), value) ) {
                 return &bucket;
+            }
 
             /* use a new and empty bucket */
             if ( !Details::set_bucket_state_is_used(bucket.m_bucket_state) ) {
-                if ( first_empty_bucket == nullptr )
+                if ( first_empty_bucket == nullptr ) {
                     first_empty_bucket = &bucket;
+                }
 
-                if ( bucket.m_bucket_state != Details::SetBucketState::Deleted )
+                if ( bucket.m_bucket_state != Details::SetBucketState::Deleted ) {
                     return first_empty_bucket;
+                }
             }
 
             /* double the hash and try again */
-            hash = Hashing::hash_again(hash);
+            hash = hash_again(hash);
         }
     }
     [[nodiscard]]
@@ -890,10 +922,11 @@ private:
 
     [[nodiscard]]
     static constexpr auto size_in_bytes(usize capacity) -> usize {
-        if constexpr ( IsOrdered )
+        if constexpr ( IsOrdered ) {
             return capacity * sizeof(Bucket);
-        else
+        } else {
             return (capacity + 1) * sizeof(Bucket);
+        }
     }
 
     auto remove(Bucket& bucket) -> bool {
@@ -911,18 +944,36 @@ private:
         bucket.m_bucket_state = Details::SetBucketState::Deleted;
 
         if constexpr ( IsOrdered ) {
-            if ( bucket.m_prev_bucket != nullptr )
+            if ( bucket.m_prev_bucket != nullptr ) {
                 bucket.m_prev_bucket->m_next_bucket = bucket.m_next_bucket;
-            else
+            } else {
                 m_collection_data.m_head = bucket.m_next_bucket;
+            }
 
-            if ( bucket.m_next_bucket != nullptr )
+            if ( bucket.m_next_bucket != nullptr ) {
                 bucket.m_next_bucket->m_prev_bucket = bucket.m_prev_bucket;
-            else
+            } else {
                 m_collection_data.m_tail = bucket.m_prev_bucket;
+            }
         }
     }
 
+    auto hash_again(usize key) -> usize {
+        usize magic = 0xba5edb01;
+        if ( key == magic ) {
+            return 0;
+        }
+        if ( key == 0 ) {
+            key = magic;
+        }
+
+        key ^= key << 13;
+        key ^= key >> 17;
+        key ^= key << 5;
+        return key;
+    }
+
+private:
     Bucket*        m_buckets_storage = nullptr;
     DataCollection m_collection_data = {};
     usize          m_data_capacity   = 0;

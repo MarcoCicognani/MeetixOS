@@ -15,7 +15,6 @@
 #include <CCLang/Forward.hh>
 
 #include <CCLang/Core/Concept.hh>
-#include <CCLang/Core/Hashing.hh>
 #include <CCLang/Core/Order.hh>
 #include <CCLang/Core/TypeTraits.hh>
 #include <CCLang/Lang/Cxx.hh>
@@ -248,7 +247,7 @@ private:
     explicit StringView(char const* c_str, usize count);
 
 private:
-    Slice<char const> m_chars_slice;
+    Slice<char const> m_chars_slice = Slice<char const>::empty();
 };
 
 [[nodiscard]]

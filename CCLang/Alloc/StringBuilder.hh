@@ -16,6 +16,7 @@
 
 #include <CCLang/Alloc/String.hh>
 #include <CCLang/Alloc/Vector.hh>
+#include <CCLang/Core/CharTypes.hh>
 #include <CCLang/Core/ErrorOr.hh>
 #include <CCLang/Lang/DenyCopy.hh>
 #include <CCLang/Lang/DenyMove.hh>
@@ -79,6 +80,12 @@ public:
     auto try_append(StringView) -> ErrorOr<void>;
 
     /**
+     * @brief Appends a rune to the builder
+     */
+    auto append(UTF8Rune) -> void;
+    auto try_append(UTF8Rune) -> ErrorOr<void>;
+
+    /**
      * @brief Ensures that this StringBuilder could store at least <capacity>
      */
     auto ensure_capacity(usize);
@@ -112,7 +119,7 @@ private:
 
 namespace Cxx {
 
-constexpr auto swap(StringBuilder& lhs, StringBuilder& rhs) -> void {
+auto swap(StringBuilder& lhs, StringBuilder& rhs) -> void {
     lhs.swap(rhs);
 }
 

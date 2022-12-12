@@ -43,16 +43,18 @@ public:
     template<typename... TArgs>
     static auto try_from_emplace(TArgs&&... args) -> ErrorOr<Box<T>> {
         auto unboxed_ptr = new (nothrow) T(Cxx::forward<TArgs>(args)...);
-        if ( unboxed_ptr != nullptr ) [[likely]]
+        if ( unboxed_ptr != nullptr ) [[likely]] {
             return Box<T>(unboxed_ptr);
-        else
+        } else {
             return Error::from_code(ErrorCode::NoMemory);
+        }
     }
     static auto try_from_adopt(T* unboxed_ptr) -> ErrorOr<Box<T>> {
-        if ( unboxed_ptr != nullptr ) [[likely]]
+        if ( unboxed_ptr != nullptr ) [[likely]] {
             return Box<T>(unboxed_ptr);
-        else
+        } else {
             return Error::from_code(ErrorCode::NullPointer);
+        }
     }
 
     /**
@@ -68,14 +70,15 @@ public:
     }
 
     ~Box() {
-        if ( !is_null() ) [[likely]]
+        if ( !is_null() ) [[likely]] {
             delete m_boxed_array_ptr;
+        }
     }
 
     /**
      * @brief Swaps this box with another
      */
-    constexpr void swap(Box<T>& rhs) {
+    void swap(Box<T>& rhs) {
         Cxx::swap(m_boxed_array_ptr, rhs.m_boxed_array_ptr);
     }
 
@@ -157,8 +160,16 @@ public:
         return m_boxed_array_ptr == nullptr;
     }
 
+    /**
+     * @brief Hash support
+     */
+    [[nodiscard]]
+    auto hash_code() const {
+        return usize(Cxx::bit_cast<usize::CCIntegerType>(m_boxed_array_ptr)).hash_code();
+    }
+
 private:
-    explicit constexpr Box(T* unboxed_ptr)
+    explicit Box(T* unboxed_ptr)
         : m_boxed_array_ptr(unboxed_ptr) {
     }
 
@@ -183,10 +194,11 @@ public:
     [[nodiscard]]
     static auto try_from_len(usize len) -> ErrorOr<Box<T[]>> {
         auto unboxed_array_ptr = new (nothrow) T[len.unwrap()];
-        if ( unboxed_array_ptr != nullptr ) [[likely]]
+        if ( unboxed_array_ptr != nullptr ) [[likely]] {
             return Box<T[]>(unboxed_array_ptr);
-        else
+        } else {
             return Error::from_code(ErrorCode::NoMemory);
+        }
     }
 
     /**
@@ -202,14 +214,15 @@ public:
     }
 
     ~Box() {
-        if ( !is_null() ) [[likely]]
+        if ( !is_null() ) [[likely]] {
             delete m_boxed_array_ptr;
+        }
     }
 
     /**
      * @brief Swaps this box with another
      */
-    constexpr void swap(Box<T[]>& rhs) {
+    void swap(Box<T[]>& rhs) {
         Cxx::swap(m_boxed_array_ptr, rhs.m_boxed_array_ptr);
     }
 
@@ -261,8 +274,16 @@ public:
         return m_boxed_array_ptr == nullptr;
     }
 
+    /**
+     * @brief Hash support
+     */
+    [[nodiscard]]
+    auto hash_code() const {
+        return usize(Cxx::bit_cast<usize::CCIntegerType>(m_boxed_array_ptr)).hash_code();
+    }
+
 private:
-    explicit constexpr Box(T* unboxed_array_ptr)
+    explicit Box(T* unboxed_array_ptr)
         : m_boxed_array_ptr(unboxed_array_ptr) {
     }
 
@@ -272,23 +293,23 @@ private:
 
 template<typename T>
 struct TypeTraits<Box<T>> : public Details::TypeTraits<Box<T>> {
-    static constexpr auto hash(Box<T> const& value) -> usize {
-        return Hashing::hash_ptr(value.as_ptr());
+    static auto hash(Box<T> const& box) -> usize {
+        return box.hash_code();
+    }
+
+    static auto equals(Box<T> const& a, Box<T> const& b) -> bool {
+        return a.as_ptr() == b.as_ptr();
     }
 
     static constexpr auto is_trivial() -> bool {
         return false;
-    }
-
-    static constexpr auto equals(Box<T> const& a, Box<T> const& b) -> bool {
-        return a.as_ptr() == b.as_ptr();
     }
 };
 
 namespace Cxx {
 
 template<typename T>
-constexpr auto swap(Box<T>& lhs, Box<T>& rhs) -> void {
+auto swap(Box<T>& lhs, Box<T>& rhs) -> void {
     lhs.swap(rhs);
 }
 

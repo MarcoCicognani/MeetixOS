@@ -42,8 +42,8 @@ auto find_in_memory(Slice<T const> haystack, Slice<T const> needle) -> Option<us
     }
 
     if ( needle.len() < 32 ) {
-        return Details::bitwise_find_in_memory(haystack.as_slice_of<u8 const>(), needle.as_slice_of<u8 const>());
+        return Details::bitwise_find_in_memory(haystack.template as_slice_of<u8 const>(), needle.template as_slice_of<u8 const>());
     } else {
-        return Details::kmp_find_in_memory(haystack.as_slice_of<u8 const>(), needle.as_slice_of<u8 const>());
+        return Details::kmp_find_in_memory(haystack.template as_slice_of<u8 const>(), needle.template as_slice_of<u8 const>());
     }
 }

@@ -86,9 +86,7 @@ public:
     auto try_parse() -> ErrorOr<Result>;
 
 private:
-    explicit constexpr FormatParser(FormatLexer& format_lexer)
-        : m_format_lexer(format_lexer) {
-    }
+    explicit FormatParser(FormatLexer& format_lexer);
 
     auto parse_alignment_fill(Result&) -> void;
     auto parse_alignment(Result&) -> void;

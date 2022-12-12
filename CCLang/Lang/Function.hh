@@ -17,22 +17,21 @@
 #include <CCLang/Core/Assertions.hh>
 #include <CCLang/Core/Concept.hh>
 #include <CCLang/Core/Math.hh>
-#include <CCLang/Lang/Array.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/DenyCopy.hh>
 #include <CCLang/Lang/IntTypes.hh>
+#include <CCLang/Lang/Range.hh>
 
 namespace Details {
 
 template<typename T>
-constexpr bool IsFunctionObject = false;
+bool IsFunctionObject = false;
 
 template<typename TReturn, typename... TArgs>
-constexpr bool IsFunctionObject<Function<TReturn(TArgs...)>> = true;
+bool IsFunctionObject<Function<TReturn(TArgs...)>> = true;
 
 template<typename T, typename TReturn, typename... TArgs>
-concept CallableNotFunctor = Callable<T, TReturn, TArgs...> && !
-IsFunctionObject<T>;
+concept CallableNotFunctor = Callable<T, TReturn, TArgs...> && !IsFunctionObject<T>;
 
 } /* namespace Details */
 
@@ -43,7 +42,7 @@ public:
      * @brief Constructors
      */
     template<Details::CallableNotFunctor<TReturn, TArgs...> TCallable>
-    constexpr explicit(false) Function(TCallable callable) {
+    explicit(false) Function(TCallable callable) {
         static_assert(sizeof(TCallable) <= sizeof(m_inline_storage), "Function<TCallable> Cannot be stored into inline storage");
 
         new (m_inline_storage) CallableWrapper<TCallable>(Cxx::move(callable));
@@ -69,8 +68,10 @@ public:
     /**
      * @brief Swaps in O(1) the content of this List with another
      */
-    constexpr auto swap(Function<TReturn(TArgs...)>& rhs) {
-        m_inline_storage.swap(rhs);
+    auto swap(Function<TReturn(TArgs...)>& rhs) {
+        for ( auto const i : usize::range(0, INLINE_STORAGE_SIZE) ) {
+            Cxx::swap(m_inline_storage[i.unwrap()], rhs.m_inline_storage[i.unwrap()]);
+        }
     }
 
     /**
@@ -96,7 +97,7 @@ private:
     template<typename TCallable>
     class CallableWrapper final : public ICallable {
     public:
-        explicit constexpr CallableWrapper(TCallable callable)
+        explicit CallableWrapper(TCallable callable)
             : m_callable(Cxx::move(callable)) {
         }
         ~CallableWrapper() override = default;
@@ -115,17 +116,17 @@ private:
     };
 
     [[nodiscard]]
-    constexpr auto storage_as_callable() const -> ICallable* {
-        return Cxx::bit_cast<ICallable*>(m_inline_storage.unwrap());
+    auto storage_as_callable() const -> ICallable* {
+        return Cxx::bit_cast<ICallable*>(m_inline_storage);
     }
 
-    alignas(alignof(ICallable)) UnsafeInlineArray<u8, INLINE_STORAGE_SIZE> m_inline_storage;
+    alignas(alignof(ICallable)) u8 m_inline_storage[INLINE_STORAGE_SIZE];
 };
 
 namespace Cxx {
 
 template<typename TReturn, typename... TArgs>
-constexpr auto swap(Function<TReturn(TArgs...)>& lhs, Function<TReturn(TArgs...)>& rhs) -> void {
+auto swap(Function<TReturn(TArgs...)>& lhs, Function<TReturn(TArgs...)>& rhs) -> void {
     lhs.swap(rhs);
 }
 

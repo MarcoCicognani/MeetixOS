@@ -57,6 +57,10 @@ auto FormatParser::try_parse() -> ErrorOr<FormatParser::Result> {
         return result;
 }
 
+FormatParser::FormatParser(FormatLexer& format_lexer)
+    : m_format_lexer(format_lexer) {
+}
+
 auto FormatParser::parse_alignment_fill(FormatParser::Result& result) -> void {
     /* eat the fill character for alignment if the after next character is an alignment specifier */
     if ( "<^>"sv.contains(m_format_lexer.peek(1)) )

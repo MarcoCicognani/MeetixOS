@@ -52,8 +52,9 @@ auto FormatApplier::swap(FormatApplier& rhs) -> void {
 }
 
 auto FormatApplier::try_put_padding(char fill, usize amount) -> ErrorOr<void> {
-    for ( [[maybe_unused]] auto const i : usize::range(0, amount) )
+    for ( [[maybe_unused]] auto const i : usize::range(0, amount) ) {
         try$(m_string_builder.try_append(fill));
+    }
     return {};
 }
 
@@ -65,25 +66,28 @@ auto FormatApplier::try_put_literal(StringView literals_view) -> ErrorOr<void> {
         try$(m_string_builder.try_append(literals_view[i]));
 
         /* skip escaped placeholders */
-        if ( is_escaped_placeholder(literals_view.sub_string_view(i)) )
+        if ( is_escaped_placeholder(literals_view.sub_string_view(i)) ) {
             i += 2;
-        else
+        } else {
             i += 1;
+        }
     }
     return {};
 }
 
 auto FormatApplier::try_put_string(StringView value, usize min_width, usize max_width, FormatParser::Alignment alignment, char align_fill) -> ErrorOr<void> {
     /* ensure the alignment */
-    if ( alignment == FormatParser::Alignment::Default )
+    if ( alignment == FormatParser::Alignment::Default ) {
         alignment = FormatParser::Alignment::Left;
+    }
 
     auto value_width   = Math::min(max_width, value.len());
     auto padding_width = Math::max(min_width, value_width) - value_width;
 
     /* truncate the string if the precision is less than his length */
-    if ( value_width < value.len() )
+    if ( value_width < value.len() ) {
         value = value.sub_string_view(0, value_width);
+    }
 
     /* put the value into the output string builder with the padding */
     switch ( alignment ) {
@@ -121,12 +125,13 @@ auto FormatApplier::try_put_u64(u64                           value,
                                 FormatParser::ShowIntegerSign integer_sign,
                                 bool                          is_negative) -> ErrorOr<void> {
     /* ensure the alignment */
-    if ( alignment == FormatParser::Alignment::Default )
+    if ( alignment == FormatParser::Alignment::Default ) {
         alignment = FormatParser::Alignment::Right;
+    }
 
     /* convert the integer value to a string */
     char to_char_buffer[128];
-    auto digits_width = convert_unsigned_to_chars(value, to_char_buffer, base, upper_case);
+    auto digits_width = convert_unsigned_to_chars(value, Slice<char>::from_raw_parts(to_char_buffer, 128), base, upper_case);
 
     /* calculate the width */
     usize prefix_width;
@@ -134,14 +139,15 @@ auto FormatApplier::try_put_u64(u64                           value,
         /* To ensure format("{:#08x}", 32) produces '0x00000020' instead '0x000020' */
         prefix_width = 0;
     } else {
-        if ( is_negative || integer_sign != FormatParser::ShowIntegerSign::IfNegative )
+        if ( is_negative || integer_sign != FormatParser::ShowIntegerSign::IfNegative ) {
             prefix_width = 1;
-        else
+        } else {
             prefix_width = 0;
+        }
 
         /* prepare the width */
         if ( show_base_prefix == FormatParser::ShowBase::Yes ) {
-            switch ( base ) {
+            switch ( base.unwrap() ) {
                 case 2:
                 case 16:
                     prefix_width += 2;
@@ -156,34 +162,37 @@ auto FormatApplier::try_put_u64(u64                           value,
     }
 
     auto field_width   = prefix_width + digits_width;
-    auto padding_width = Math::max(field_width, min_width) - field_width;
+    auto padding_width = usize::max(field_width, min_width) - field_width;
 
     auto try_put_prefix = [&]() -> ErrorOr<void> {
         /* prepend the sign or the space if necessary */
-        if ( is_negative )
+        if ( is_negative ) {
             try$(m_string_builder.try_append('-'));
-        else if ( integer_sign == FormatParser::ShowIntegerSign::Yes )
+        } else if ( integer_sign == FormatParser::ShowIntegerSign::Yes ) {
             try$(m_string_builder.try_append('+'));
-        else if ( integer_sign == FormatParser::ShowIntegerSign::KeepSpace )
+        } else if ( integer_sign == FormatParser::ShowIntegerSign::KeepSpace ) {
             try$(m_string_builder.try_append(' '));
+        }
 
         /* put the base prefix if requested */
         if ( show_base_prefix == FormatParser::ShowBase::Yes ) {
-            switch ( base ) {
+            switch ( base.unwrap() ) {
                 case 2:
-                    if ( upper_case )
+                    if ( upper_case ) {
                         try$(m_string_builder.try_append("0B"sv));
-                    else
+                    } else {
                         try$(m_string_builder.try_append("0b"sv));
+                    }
                     break;
                 case 8:
                     try$(m_string_builder.try_append('0'));
                     break;
                 case 16:
-                    if ( upper_case )
+                    if ( upper_case ) {
                         try$(m_string_builder.try_append("0X"sv));
-                    else
+                    } else {
                         try$(m_string_builder.try_append("0x"sv));
+                    }
                     break;
                 default:
                     verify_not_reached$();
@@ -192,8 +201,9 @@ auto FormatApplier::try_put_u64(u64                           value,
         return {};
     };
     auto try_put_digits = [&]() -> ErrorOr<void> {
-        for ( auto const i : usize::range(0, digits_width) )
-            try$(m_string_builder.try_append(to_char_buffer[i]));
+        for ( auto const i : usize::range(0, digits_width) ) {
+            try$(m_string_builder.try_append(to_char_buffer[i.unwrap()]));
+        }
         return {};
     };
 
@@ -242,17 +252,8 @@ auto FormatApplier::try_put_i64(i64                           value,
                                 char                          alignment_fill,
                                 FormatParser::ShowIntegerSign integer_sign) -> ErrorOr<void> {
     /* module of the value */
-    bool is_negative = value < 0;
-    try$(try_put_u64(static_cast<u64>(is_negative ? -value : value),
-                     base,
-                     show_base_prefix,
-                     upper_case,
-                     zero_pad,
-                     min_width,
-                     alignment,
-                     alignment_fill,
-                     integer_sign,
-                     is_negative));
+    auto const is_negative = value < 0;
+    try$(try_put_u64(value.as<u64>(), base, show_base_prefix, upper_case, zero_pad, min_width, alignment, alignment_fill, integer_sign, is_negative));
 
     return {};
 }
@@ -272,29 +273,32 @@ auto FormatApplier::try_put_f64(double                        value,
 
     /* write-out the NotANumber and Infinite values */
     if ( isnan(value) || isinf(value) ) [[unlikely]] {
-        if ( value < 0.0 )
+        if ( value < 0.0 ) {
             try$(string_builder.try_append('-'));
-        else if ( integer_sign == FormatParser::ShowIntegerSign::Yes )
+        } else if ( integer_sign == FormatParser::ShowIntegerSign::Yes ) {
             try$(string_builder.try_append('+'));
-        else if ( integer_sign == FormatParser::ShowIntegerSign::KeepSpace )
+        } else if ( integer_sign == FormatParser::ShowIntegerSign::KeepSpace ) {
             try$(string_builder.try_append(' '));
+        }
 
-        if ( isnan(value) )
+        if ( isnan(value) ) {
             try$(string_builder.try_append(upper_case ? "NAN"sv : "nan"sv));
-        else
+        } else {
             try$(string_builder.try_append(upper_case ? "INF"sv : "inf"sv));
+        }
 
         try$(try_put_string(string_builder.as_string_view(), min_width, 0xfffffff, alignment, alignment_fill));
         return {};
     }
 
     /* check for negative value and take the module */
-    bool is_negative = value < 0.0;
-    if ( is_negative )
+    auto const is_negative = value < 0.0;
+    if ( is_negative ) {
         value = -value;
+    }
 
     /* put out the integer part */
-    try$(format_applier.try_put_u64(static_cast<u64>(value),
+    try$(format_applier.try_put_u64(u64(value),
                                     base,
                                     FormatParser::ShowBase::No,
                                     upper_case,
@@ -307,28 +311,30 @@ auto FormatApplier::try_put_f64(double                        value,
 
     /* approximate the decimal part */
     if ( precision > 0 ) {
-        value -= static_cast<i64>(value);
+        value -= i64(value).unwrap();
 
         /* make the epsilon precision value */
         double epsilon = 0.5;
-        for ( [[maybe_unused]] auto const i : usize::range(0, precision) )
+        for ( [[maybe_unused]] auto const i : usize::range(0, precision) ) {
             epsilon /= 10.0;
+        }
 
         /* calculate the visible precision chars */
         usize visible_precision = 0;
         for ( ; visible_precision < precision; ++visible_precision ) {
-            if ( value - static_cast<i64>(value) < epsilon )
+            if ( value - i64(value).unwrap() < epsilon ) {
                 break;
+            }
 
             value *= 10.0;
             epsilon *= 10.0;
         }
 
-        if ( zero_pad == FormatParser::ZeroPad::Yes || visible_precision > 0 )
+        if ( zero_pad == FormatParser::ZeroPad::Yes || visible_precision > 0 ) {
             try$(string_builder.try_append('.'));
+        }
         if ( visible_precision > 0 ) {
-            try$(format_applier
-                     .try_put_u64(static_cast<u64>(value), base, FormatParser::ShowBase::No, upper_case, FormatParser::ZeroPad::Yes, visible_precision));
+            try$(format_applier.try_put_u64(u64(value), base, FormatParser::ShowBase::No, upper_case, FormatParser::ZeroPad::Yes, visible_precision));
         }
         if ( zero_pad == FormatParser::ZeroPad::Yes && (precision - visible_precision) > 0 ) {
             try$(format_applier.try_put_u64(0, base, FormatParser::ShowBase::No, false, FormatParser::ZeroPad::Yes, precision - visible_precision));
@@ -353,17 +359,19 @@ auto FormatApplier::try_put_f80(long double                   value,
 
     /* write-out the NotANumber and Infinite values */
     if ( isnan(value) || isinf(value) ) [[unlikely]] {
-        if ( value < 0.0L )
+        if ( value < 0.0L ) {
             try$(string_builder.try_append('-'));
-        else if ( integer_sign == FormatParser::ShowIntegerSign::Yes )
+        } else if ( integer_sign == FormatParser::ShowIntegerSign::Yes ) {
             try$(string_builder.try_append('+'));
-        else if ( integer_sign == FormatParser::ShowIntegerSign::KeepSpace )
+        } else if ( integer_sign == FormatParser::ShowIntegerSign::KeepSpace ) {
             try$(string_builder.try_append(' '));
+        }
 
-        if ( isnan(value) )
+        if ( isnan(value) ) {
             try$(string_builder.try_append(upper_case ? "NAN"sv : "nan"sv));
-        else
+        } else {
             try$(string_builder.try_append(upper_case ? "INF"sv : "inf"sv));
+        }
 
         try$(try_put_string(string_builder.as_string_view(), min_width, 0xfffffff, alignment, alignment_fill));
         return {};
@@ -371,8 +379,9 @@ auto FormatApplier::try_put_f80(long double                   value,
 
     /* check for negative value and take the module */
     bool is_negative = value < 0.0L;
-    if ( is_negative )
+    if ( is_negative ) {
         value = -value;
+    }
 
     /* put out the integer part */
     try$(format_applier.try_put_u64(static_cast<u64>(value),
@@ -388,18 +397,20 @@ auto FormatApplier::try_put_f80(long double                   value,
 
     /* approximate the decimal part */
     if ( precision > 0 ) {
-        value -= static_cast<i64>(value);
+        value -= i64(value).unwrap();
 
         /* make the epsilon precision value */
         long double epsilon = 0.5L;
-        for ( [[maybe_unused]] usize i : usize::range(0, precision) )
+        for ( [[maybe_unused]] usize i : usize::range(0, precision) ) {
             epsilon /= 10.0L;
+        }
 
         /* calculate the visible precision chars */
         usize visible_precision = 0;
         for ( ; visible_precision < precision; ++visible_precision ) {
-            if ( value - static_cast<i64>(value) < epsilon )
+            if ( value - i64(value).unwrap() < epsilon ) {
                 break;
+            }
 
             value *= 10.0L;
             epsilon *= 10.0L;
@@ -407,8 +418,7 @@ auto FormatApplier::try_put_f80(long double                   value,
 
         if ( visible_precision > 0 ) {
             try$(string_builder.try_append('.'));
-            try$(format_applier
-                     .try_put_u64(static_cast<u64>(value), base, FormatParser::ShowBase::No, upper_case, FormatParser::ZeroPad::Yes, visible_precision));
+            try$(format_applier.try_put_u64(u64(value), base, FormatParser::ShowBase::No, upper_case, FormatParser::ZeroPad::Yes, visible_precision));
         }
     }
 
@@ -495,7 +505,7 @@ FormatApplier::FormatApplier(StringBuilder& string_builder, FormatParser::Result
     , m_parser_result(Cxx::move(result)) {
 }
 
-auto FormatApplier::convert_unsigned_to_chars(u64 value, char to_chars_buffer[128], u8 base, bool upper_case) -> usize {
+auto FormatApplier::convert_unsigned_to_chars(u64 value, Slice<char> to_chars_buffer, u8 base, bool upper_case) -> usize {
     verify_greater_equal$(base, 2);
     verify_less_equal$(base, 16);
 
@@ -506,17 +516,18 @@ auto FormatApplier::convert_unsigned_to_chars(u64 value, char to_chars_buffer[12
     }
 
     /* convert the digits */
-    usize       used_chars  = 0;
-    char const* char_digits = upper_case ? "0123456789ABCDEF" : "0123456789abcdef";
+    usize      used_chars        = 0;
+    auto const char_digits_slice = Slice<char const>::from_raw_parts(upper_case ? "0123456789ABCDEF" : "0123456789abcdef", sizeof("0123456789ABCDEF"));
     while ( value > 0 ) {
-        to_chars_buffer[used_chars++] = char_digits[value % base];
+        to_chars_buffer[used_chars++] = char_digits_slice[(value % base.as<u64>()).as<usize>()];
 
-        value /= base;
+        value /= base.as<u64>();
     }
 
     /* flip the buffer */
-    for ( auto const i : usize::range(0, used_chars / 2) )
+    for ( auto const i : usize::range(0, used_chars / 2) ) {
         Cxx::swap(to_chars_buffer[i], to_chars_buffer[used_chars - i - 1]);
+    }
 
     return used_chars;
 }
@@ -530,7 +541,7 @@ auto Formatter<nullptr_t>::from_parser_result(StringBuilder& string_builder, For
 }
 
 auto Formatter<nullptr_t>::format(nullptr_t) -> ErrorOr<void> {
-    try$(try_put_string("nullptr"sv, width().value_or(usize::min()), precision().value_or(usize::max()), alignment(), alignment_fill()));
+    try$(try_put_string("nullptr"sv, width().unwrap_or(usize::min()), precision().unwrap_or(usize::max()), alignment(), alignment_fill()));
     return {};
 }
 
@@ -547,34 +558,39 @@ auto Formatter<StringView>::from_parser_result(StringBuilder& string_builder, Fo
 }
 
 auto Formatter<StringView>::format(StringView value) -> ErrorOr<void> {
-    if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
+    if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative ) {
         verify_not_reached$();
-    if ( show_base() != FormatParser::ShowBase::No )
+    }
+    if ( show_base() != FormatParser::ShowBase::No ) {
         verify_not_reached$();
-    if ( zero_pad() != FormatParser::ZeroPad::No )
+    }
+    if ( zero_pad() != FormatParser::ZeroPad::No ) {
         verify_not_reached$();
-    if ( display_as() != FormatParser::DisplayAs::Default && display_as() != FormatParser::DisplayAs::String && display_as() != FormatParser::DisplayAs::Char )
+    }
+    if ( display_as() != FormatParser::DisplayAs::Default && display_as() != FormatParser::DisplayAs::String
+         && display_as() != FormatParser::DisplayAs::Char ) {
         verify_not_reached$();
+    }
 
-    try$(try_put_string(value, width().value_or(usize::min()), precision().value_or(usize::max()), alignment(), alignment_fill()));
+    try$(try_put_string(value, width().unwrap_or(usize::min()), precision().unwrap_or(usize::max()), alignment(), alignment_fill()));
     return {};
 }
 
 Formatter<StringView>::Formatter(FormatApplier format_applier)
-    : FormatApplier{ Cxx::move(format_applier) } {
+    : FormatApplier(Cxx::move(format_applier)) {
 }
 
-template<Integral T>
+template<NativeIntegral T>
 auto Formatter<T>::from_format_applier(FormatApplier format_applier) -> Formatter<T> {
     return Formatter<T>{ Cxx::move(format_applier) };
 }
 
-template<Integral T>
+template<NativeIntegral T>
 auto Formatter<T>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<T> {
     return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
 }
 
-template<Integral T>
+template<NativeIntegral T>
 auto Formatter<T>::format(T value) -> ErrorOr<void> {
     if ( display_as() == FormatParser::DisplayAs::Char ) {
         verify_greater_equal$(value, 0);
@@ -591,17 +607,21 @@ auto Formatter<T>::format(T value) -> ErrorOr<void> {
     }
 
     /* integral format does not support precision */
-    if ( precision().is_present() )
+    if ( precision().is_present() ) {
         verify_not_reached$();
+    }
 
     /* prepare for showing as pointer */
     if ( display_as() == FormatParser::DisplayAs::Pointer ) {
-        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative )
+        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative ) {
             verify_not_reached$();
-        if ( alignment() != FormatParser::Alignment::Default )
+        }
+        if ( alignment() != FormatParser::Alignment::Default ) {
             verify_not_reached$();
-        if ( width().is_present() )
+        }
+        if ( width().is_present() ) {
             verify_not_reached$();
+        }
 
         /* set specifications for pointer formatting */
         set_display_as(FormatParser::DisplayAs::Hex);
@@ -657,9 +677,111 @@ auto Formatter<T>::format(T value) -> ErrorOr<void> {
     return {};
 }
 
-template<Integral T>
+template<NativeIntegral T>
 Formatter<T>::Formatter(FormatApplier format_applier)
     : FormatApplier{ Cxx::move(format_applier) } {
+}
+
+template<WrappedIntegral T>
+auto Formatter<T>::from_format_applier(FormatApplier format_applier) -> Formatter<T> {
+    return Formatter<T>{ Cxx::move(format_applier) };
+}
+
+template<WrappedIntegral T>
+auto Formatter<T>::from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<T> {
+    return from_format_applier(FormatApplier::from_parser_result(string_builder, Cxx::move(result)));
+}
+
+template<WrappedIntegral T>
+auto Formatter<T>::format(T value) -> ErrorOr<void> {
+    if ( display_as() == FormatParser::DisplayAs::Char ) {
+        verify_greater_equal$(value, 0);
+        verify_less_equal$(value, 127);
+
+        /* display as string */
+        set_display_as(FormatParser::DisplayAs::String);
+
+        /* forward to the string-view formatter */
+        auto sv_formatter = Formatter<StringView>::from_format_applier(clone_format_applier());
+        try$(sv_formatter.format(StringView::from_raw_parts(Cxx::bit_cast<char const*>(&value), 1)));
+
+        return {};
+    }
+
+    /* integral format does not support precision */
+    if ( precision().is_present() ) {
+        verify_not_reached$();
+    }
+
+    /* prepare for showing as pointer */
+    if ( display_as() == FormatParser::DisplayAs::Pointer ) {
+        if ( show_integer_sign() != FormatParser::ShowIntegerSign::IfNegative ) {
+            verify_not_reached$();
+        }
+        if ( alignment() != FormatParser::Alignment::Default ) {
+            verify_not_reached$();
+        }
+        if ( width().is_present() ) {
+            verify_not_reached$();
+        }
+
+        /* set specifications for pointer formatting */
+        set_display_as(FormatParser::DisplayAs::Hex);
+        set_show_base(FormatParser::ShowBase::Yes);
+        set_zero_pad(FormatParser::ZeroPad::Yes);
+        set_width(sizeof(void*) * 2);
+    }
+
+    u8   base       = 0;
+    bool upper_case = false;
+    switch ( display_as() ) {
+        case FormatParser::DisplayAs::Default:
+        case FormatParser::DisplayAs::Decimal:
+            base = 10;
+            break;
+        case FormatParser::DisplayAs::Binary:
+            base = 2;
+            break;
+        case FormatParser::DisplayAs::BinaryUpperCase:
+            base       = 2;
+            upper_case = true;
+            break;
+        case FormatParser::DisplayAs::Octal:
+            base = 8;
+            break;
+        case FormatParser::DisplayAs::Hex:
+            base = 16;
+            break;
+        case FormatParser::DisplayAs::HexUpperCase:
+            base       = 16;
+            upper_case = true;
+            break;
+        default:
+            verify_not_reached$();
+    }
+
+    /* put the number into the string-builder */
+    if constexpr ( is_same<MakeUnsigned<T>, T> ) {
+        try$(try_put_u64(value,
+                         base,
+                         show_base(),
+                         upper_case,
+                         zero_pad(),
+                         width().value_or(usize::min()),
+                         alignment(),
+                         alignment_fill(),
+                         show_integer_sign(),
+                         false));
+    } else {
+        try$(try_put_i64(value, base, show_base(), upper_case, zero_pad(), width().value_or(usize::min()), alignment(), alignment_fill(), show_integer_sign()));
+    }
+
+    return {};
+}
+
+template<WrappedIntegral T>
+Formatter<T>::Formatter(FormatApplier format_applier)
+    : FormatApplier(Cxx::move(format_applier)) {
 }
 
 template class Formatter<u8>;
@@ -914,15 +1036,17 @@ auto Formatter<Error>::format(Error const& error) const -> ErrorOr<void> {
     auto string_builder = StringBuilder::empty();
 
     try$(::format(string_builder, "{}\n"sv, error.source_location()));
-    if ( error.is_from_syscall() == Error::FromSyscall::Yes )
+    if ( error.is_from_syscall() == Error::FromSyscall::Yes ) {
         try$(::format(string_builder, "> System "sv));
-    else
+    } else {
         try$(::format(string_builder, "> User "sv));
+    }
 
-    if ( !error.string_literal().is_null_or_empty() )
+    if ( !error.string_literal().is_null_or_empty() ) {
         try$(::format(string_builder, "{} - {}"sv, error.code(), error.string_literal()));
-    else
+    } else {
         try$(::format(string_builder, "{}"sv, error.code()));
+    }
 
     auto formatter = Formatter<StringView>::from_format_applier(clone_format_applier());
     try$(formatter.format(string_builder.as_string_view()));

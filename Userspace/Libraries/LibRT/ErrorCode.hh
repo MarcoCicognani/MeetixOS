@@ -27,5 +27,6 @@ enum class ErrorCode : unsigned short int {
     NullPointer,
     IndexOutOfRange,
     ShiftOverflow,
-    DivisionByZero
+    DivisionByZero,
+    Unimplemented
 };

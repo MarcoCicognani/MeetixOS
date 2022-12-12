@@ -53,7 +53,7 @@ public:
      * @brief Increment operators
      */
     auto operator++() -> SliceIterator& {
-        if ( IsReverse ) {
+        if constexpr ( IsReverse ) {
             --m_index;
         } else {
             ++m_index;
@@ -62,7 +62,7 @@ public:
     }
     auto operator++(int) -> SliceIterator {
         auto __prev = *this;
-             operator++();
+        operator++();
         return __prev;
     }
 
@@ -72,7 +72,7 @@ public:
     auto operator*() -> T& {
         verify_false_with_msg$(is_end(), "Tried to deref a empty SliceIterator");
 
-        if ( IsReverse ) {
+        if constexpr ( IsReverse ) {
             return m_slice[m_index.template as<usize>()];
         } else {
             return m_slice[m_index];
@@ -81,7 +81,7 @@ public:
     auto operator*() const -> T const& {
         verify_false_with_msg$(is_end(), "Tried to deref a empty SliceIterator");
 
-        if ( IsReverse ) {
+        if constexpr ( IsReverse ) {
             return m_slice[m_index.template as<usize>()];
         } else {
             return m_slice[m_index];
@@ -103,7 +103,7 @@ public:
      */
     [[nodiscard]]
     auto is_end() const -> bool {
-        if ( IsReverse ) {
+        if constexpr ( IsReverse ) {
             return m_index.template as<usize>() == from_rend(m_slice).index();
         } else {
             return m_index.template as<usize>() == from_end(m_slice).index();

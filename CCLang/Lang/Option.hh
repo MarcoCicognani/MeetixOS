@@ -46,7 +46,7 @@ public:
     explicit(false) Option(Option<T> const& rhs)
         : m_is_present(rhs.m_is_present) {
         if ( m_is_present ) {
-            new (&m_data_storage) T(rhs.value());
+            new (&m_data_storage) T(rhs.storage_as_ref());
         }
     }
     explicit(false) Option(Option<T>&& rhs)
@@ -75,12 +75,12 @@ public:
         return *this;
     }
     auto operator=(Option<T> const& rhs) -> Option<T>& {
-        auto option = rhs;
+        Option<T> option = rhs;
         swap(option);
         return *this;
     }
     auto operator=(Option<T>&& rhs) -> Option<T>& {
-        auto option = Cxx::move(rhs);
+        Option<T> option = Cxx::move(rhs);
         swap(option);
         return *this;
     }
@@ -206,12 +206,12 @@ public:
         return *this;
     }
     auto operator=(Option const& rhs) -> Option<T>& {
-        auto option = rhs;
+        Option<T> option = rhs;
         swap(option);
         return *this;
     }
     auto operator=(Option<T>&& rhs) -> Option<T>& {
-        auto option = Cxx::move(rhs);
+        Option<T> option = Cxx::move(rhs);
         swap(option);
         return *this;
     }
