@@ -34,17 +34,10 @@ public:
     static auto range(u32 const&, u32 const&) -> Range<u32>;
     static auto range_inclusive(u32 const&, u32 const&) -> RangeInclusive<u32>;
 
-    explicit(false) u32()           = default;
-    explicit(false) u32(u32 const&) = default;
-
+    explicit(false) u32() = default;
     explicit(false) u32(__UINT32_TYPE__);
-    explicit(false) u32(u32&&);
-
-    ~u32() = default;
 
     auto operator=(__UINT32_TYPE__) -> u32&;
-    auto operator=(u32 const&) -> u32&;
-    auto operator=(u32&&) -> u32&;
 
     auto swap(u32&) -> void;
 

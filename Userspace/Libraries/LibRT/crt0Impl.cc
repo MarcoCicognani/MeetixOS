@@ -89,6 +89,9 @@ static auto __rt_split_cli_args() -> ErrorOr<Vector<StringView>> {
         return StringView::from_raw_parts(buffer_ptr, chars_count);
     };
 
+    usize s_get_executable_path(char*);
+    usize s_cli_args_release(char*);
+
     auto const exec_path_view = try$(fill_string_view_with(s_get_executable_path, PATH_MAX));
     auto const cli_args_view  = try$(fill_string_view_with(s_cli_args_release, CLIARGS_BUFFER_LENGTH));
 

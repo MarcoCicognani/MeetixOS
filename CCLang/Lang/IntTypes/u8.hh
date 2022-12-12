@@ -34,17 +34,10 @@ public:
     static auto range(u8 const&, u8 const&) -> Range<u8>;
     static auto range_inclusive(u8 const&, u8 const&) -> RangeInclusive<u8>;
 
-    explicit(false) u8()           = default;
-    explicit(false) u8(u8 const&) = default;
-
+    explicit(false) u8() = default;
     explicit(false) u8(__UINT8_TYPE__);
-    explicit(false) u8(u8&&);
-
-    ~u8() = default;
 
     auto operator=(__UINT8_TYPE__) -> u8&;
-    auto operator=(u8 const&) -> u8&;
-    auto operator=(u8&&) -> u8&;
 
     auto swap(u8&) -> void;
 

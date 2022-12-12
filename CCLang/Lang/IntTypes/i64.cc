@@ -47,24 +47,8 @@ i64::i64(__INT64_TYPE__ value)
     : m_value(value) {
 }
 
-i64::i64(i64&& rhs)
-    : m_value(Cxx::exchange(rhs.m_value, 0)) {
-}
-
 auto i64::operator=(__INT64_TYPE__ value) -> i64& {
     i64 integer = value;
-    swap(integer);
-    return *this;
-}
-
-auto i64::operator=(i64 const& rhs) -> i64& {
-    i64 integer = rhs;
-    swap(integer);
-    return *this;
-}
-
-auto i64::operator=(i64&& rhs) -> i64& {
-    i64 integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }

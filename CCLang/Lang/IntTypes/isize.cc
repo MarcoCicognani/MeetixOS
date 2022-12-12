@@ -47,24 +47,8 @@ isize::isize(__PTRDIFF_TYPE__ value)
     : m_value(value) {
 }
 
-isize::isize(isize&& rhs)
-    : m_value(Cxx::exchange(rhs.m_value, 0)) {
-}
-
 auto isize::operator=(__PTRDIFF_TYPE__ value) -> isize& {
     isize integer = value;
-    swap(integer);
-    return *this;
-}
-
-auto isize::operator=(isize const& rhs) -> isize& {
-    isize integer = rhs;
-    swap(integer);
-    return *this;
-}
-
-auto isize::operator=(isize&& rhs) -> isize& {
-    isize integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }

@@ -47,24 +47,8 @@ i32::i32(__INT32_TYPE__ value)
     : m_value(value) {
 }
 
-i32::i32(i32&& rhs)
-    : m_value(Cxx::exchange(rhs.m_value, 0)) {
-}
-
 auto i32::operator=(__INT32_TYPE__ value) -> i32& {
     i32 integer = value;
-    swap(integer);
-    return *this;
-}
-
-auto i32::operator=(i32 const& rhs) -> i32& {
-    i32 integer = rhs;
-    swap(integer);
-    return *this;
-}
-
-auto i32::operator=(i32&& rhs) -> i32& {
-    i32 integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }

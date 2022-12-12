@@ -34,17 +34,10 @@ public:
     static auto range(usize const&, usize const&) -> Range<usize>;
     static auto range_inclusive(usize const&, usize const&) -> RangeInclusive<usize>;
 
-    explicit(false) usize()             = default;
-    explicit(false) usize(usize const&) = default;
-
+    explicit(false) usize() = default;
     explicit(false) usize(__SIZE_TYPE__);
-    explicit(false) usize(usize&&);
-
-    ~usize() = default;
 
     auto operator=(__SIZE_TYPE__) -> usize&;
-    auto operator=(usize const&) -> usize&;
-    auto operator=(usize&&) -> usize&;
 
     auto swap(usize&) -> void;
 
@@ -63,7 +56,7 @@ public:
 
     template<typename TInteger>
     auto as() const -> TInteger {
-        return TInteger{ static_cast<typename TInteger::CCIntegerType>(m_value) };
+        return TInteger(static_cast<typename TInteger::CCIntegerType>(m_value));
     }
 
     auto unwrap() const -> __SIZE_TYPE__;

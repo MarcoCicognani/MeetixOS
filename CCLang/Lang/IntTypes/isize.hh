@@ -34,17 +34,10 @@ public:
     static auto range(isize const&, isize const&) -> Range<isize>;
     static auto range_inclusive(isize const&, isize const&) -> RangeInclusive<isize>;
 
-    explicit(false) isize()           = default;
-    explicit(false) isize(isize const&) = default;
-
+    explicit(false) isize() = default;
     explicit(false) isize(__PTRDIFF_TYPE__);
-    explicit(false) isize(isize&&);
-
-    ~isize() = default;
 
     auto operator=(__PTRDIFF_TYPE__) -> isize&;
-    auto operator=(isize const&) -> isize&;
-    auto operator=(isize&&) -> isize&;
 
     auto swap(isize&) -> void;
 

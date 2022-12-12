@@ -46,24 +46,8 @@ usize::usize(__SIZE_TYPE__ value)
     : m_value(value) {
 }
 
-usize::usize(usize&& rhs)
-    : m_value(Cxx::exchange(rhs.m_value, 0)) {
-}
-
 auto usize::operator=(__SIZE_TYPE__ value) -> usize& {
     usize integer = value;
-    swap(integer);
-    return *this;
-}
-
-auto usize::operator=(usize const& rhs) -> usize& {
-    usize integer = rhs;
-    swap(integer);
-    return *this;
-}
-
-auto usize::operator=(usize&& rhs) -> usize& {
-    usize integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }

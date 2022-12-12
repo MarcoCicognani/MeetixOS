@@ -72,12 +72,12 @@ public:
     }
 
     auto operator=(Result<T, E> const& rhs) -> Result<T, E>& {
-        auto result = rhs;
+        Result<T, E> result = rhs;
         swap(result);
         return *this;
     }
     auto operator=(Result<T, E>&& rhs) -> Result<T, E>& {
-        auto result = Cxx::move(rhs);
+        Result<T, E> result = Cxx::move(rhs);
         swap(result);
         return *this;
     }

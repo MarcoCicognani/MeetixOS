@@ -47,24 +47,8 @@ i8::i8(__INT8_TYPE__ value)
     : m_value(value) {
 }
 
-i8::i8(i8&& rhs)
-    : m_value(Cxx::exchange(rhs.m_value, 0)) {
-}
-
 auto i8::operator=(__INT8_TYPE__ value) -> i8& {
     i8 integer = value;
-    swap(integer);
-    return *this;
-}
-
-auto i8::operator=(i8 const& rhs) -> i8& {
-    i8 integer = rhs;
-    swap(integer);
-    return *this;
-}
-
-auto i8::operator=(i8&& rhs) -> i8& {
-    i8 integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }

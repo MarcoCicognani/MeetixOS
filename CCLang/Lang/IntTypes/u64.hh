@@ -34,17 +34,10 @@ public:
    static auto range(u64 const&, u64 const&) -> Range<u64>;
    static auto range_inclusive(u64 const&, u64 const&) -> RangeInclusive<u64>;
 
-   explicit(false) u64()           = default;
-   explicit(false) u64(u64 const&) = default;
-
+   explicit(false) u64() = default;
    explicit(false) u64(__UINT64_TYPE__);
-   explicit(false) u64(u64&&);
-
-   ~u64() = default;
 
    auto operator=(__UINT64_TYPE__) -> u64&;
-   auto operator=(u64 const&) -> u64&;
-   auto operator=(u64&&) -> u64&;
 
    auto swap(u64&) -> void;
 

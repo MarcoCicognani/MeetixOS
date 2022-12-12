@@ -34,17 +34,10 @@ public:
     static auto range(i16 const&, i16 const&) -> Range<i16>;
     static auto range_inclusive(i16 const&, i16 const&) -> RangeInclusive<i16>;
 
-    explicit(false) i16()           = default;
-    explicit(false) i16(i16 const&) = default;
-
+    explicit(false) i16() = default;
     explicit(false) i16(__INT16_TYPE__);
-    explicit(false) i16(i16&&);
-
-    ~i16() = default;
 
     auto operator=(__INT16_TYPE__) -> i16&;
-    auto operator=(i16 const&) -> i16&;
-    auto operator=(i16&&) -> i16&;
 
     auto swap(i16&) -> void;
 

@@ -47,24 +47,8 @@ u64::u64(__UINT64_TYPE__ value)
     : m_value(value) {
 }
 
-u64::u64(u64&& rhs)
-    : m_value(Cxx::exchange(rhs.m_value, 0)) {
-}
-
 auto u64::operator=(__UINT64_TYPE__ value) -> u64& {
     u64 integer = value;
-    swap(integer);
-    return *this;
-}
-
-auto u64::operator=(u64 const& rhs) -> u64& {
-    u64 integer = rhs;
-    swap(integer);
-    return *this;
-}
-
-auto u64::operator=(u64&& rhs) -> u64& {
-    u64 integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }
@@ -319,7 +303,7 @@ auto u64::operator++() -> u64& {
 }
 
 auto u64::operator++(int) -> u64 {
-    auto __prev = *this;
+    u64 __prev = *this;
     add_assign(1);
     return __prev;
 }
@@ -330,7 +314,7 @@ auto u64::operator--() -> u64& {
 }
 
 auto u64::operator--(int) -> u64 {
-    auto __prev = *this;
+    u64 __prev = *this;
     sub_assign(1);
     return __prev;
 }

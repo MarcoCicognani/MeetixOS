@@ -47,24 +47,8 @@ u32::u32(__UINT32_TYPE__ value)
    : m_value(value) {
 }
 
-u32::u32(u32&& rhs)
-   : m_value(Cxx::exchange(rhs.m_value, 0)) {
-}
-
 auto u32::operator=(__UINT32_TYPE__ value) -> u32& {
    u32 integer = value;
-   swap(integer);
-   return *this;
-}
-
-auto u32::operator=(u32 const& rhs) -> u32& {
-   u32 integer = rhs;
-   swap(integer);
-   return *this;
-}
-
-auto u32::operator=(u32&& rhs) -> u32& {
-   u32 integer = Cxx::move(rhs);
    swap(integer);
    return *this;
 }

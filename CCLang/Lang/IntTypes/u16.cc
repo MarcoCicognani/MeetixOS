@@ -47,24 +47,8 @@ u16::u16(__UINT16_TYPE__ value)
     : m_value(value) {
 }
 
-u16::u16(u16&& rhs)
-    : m_value(Cxx::exchange(rhs.m_value, 0)) {
-}
-
 auto u16::operator=(__UINT16_TYPE__ value) -> u16& {
     u16 integer = value;
-    swap(integer);
-    return *this;
-}
-
-auto u16::operator=(u16 const& rhs) -> u16& {
-    u16 integer = rhs;
-    swap(integer);
-    return *this;
-}
-
-auto u16::operator=(u16&& rhs) -> u16& {
-    u16 integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }
@@ -319,7 +303,7 @@ auto u16::operator++() -> u16& {
 }
 
 auto u16::operator++(int) -> u16 {
-    auto __prev = *this;
+    u16 __prev = *this;
     add_assign(1);
     return __prev;
 }
@@ -330,7 +314,7 @@ auto u16::operator--() -> u16& {
 }
 
 auto u16::operator--(int) -> u16 {
-    auto __prev = *this;
+    u16 __prev = *this;
     sub_assign(1);
     return __prev;
 }

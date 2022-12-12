@@ -47,24 +47,8 @@ i16::i16(__INT16_TYPE__ value)
     : m_value(value) {
 }
 
-i16::i16(i16&& rhs)
-    : m_value(Cxx::exchange(rhs.m_value, 0)) {
-}
-
 auto i16::operator=(__INT16_TYPE__ value) -> i16& {
     i16 integer = value;
-    swap(integer);
-    return *this;
-}
-
-auto i16::operator=(i16 const& rhs) -> i16& {
-    i16 integer = rhs;
-    swap(integer);
-    return *this;
-}
-
-auto i16::operator=(i16&& rhs) -> i16& {
-    i16 integer = Cxx::move(rhs);
     swap(integer);
     return *this;
 }

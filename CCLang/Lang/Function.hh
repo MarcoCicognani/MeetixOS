@@ -25,10 +25,10 @@
 namespace Details {
 
 template<typename T>
-bool IsFunctionObject = false;
+constexpr bool IsFunctionObject = false;
 
 template<typename TReturn, typename... TArgs>
-bool IsFunctionObject<Function<TReturn(TArgs...)>> = true;
+constexpr bool IsFunctionObject<Function<TReturn(TArgs...)>> = true;
 
 template<typename T, typename TReturn, typename... TArgs>
 concept CallableNotFunctor = Callable<T, TReturn, TArgs...> && !IsFunctionObject<T>;

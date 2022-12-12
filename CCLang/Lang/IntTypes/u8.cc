@@ -47,24 +47,8 @@ u8::u8(__UINT8_TYPE__ value)
    : m_value(value) {
 }
 
-u8::u8(u8&& rhs)
-   : m_value(Cxx::exchange(rhs.m_value, 0)) {
-}
-
 auto u8::operator=(__UINT8_TYPE__ value) -> u8& {
    u8 integer = value;
-   swap(integer);
-   return *this;
-}
-
-auto u8::operator=(u8 const& rhs) -> u8& {
-   u8 integer = rhs;
-   swap(integer);
-   return *this;
-}
-
-auto u8::operator=(u8&& rhs) -> u8& {
-   u8 integer = Cxx::move(rhs);
    swap(integer);
    return *this;
 }
