@@ -49,7 +49,7 @@ struct TypeTraits<T> final : public Details::TypeTraits<T> {
 template<NativeIntegral T>
 struct TypeTraits<T> final : public Details::TypeTraits<T> {
     static auto hash(T const& value) -> usize {
-        return usize(static_cast<usize::CCIntegerType>(value)).hash_code();
+        return usize((usize::CCIntegerType)value).hash_code();
     }
 
     static constexpr auto is_trivial() -> bool {
@@ -59,8 +59,8 @@ struct TypeTraits<T> final : public Details::TypeTraits<T> {
 
 template<Pointer T>
 struct TypeTraits<T> final : public Details::TypeTraits<T> {
-    static auto hash(T value) -> usize {
-        return usize(static_cast<usize::CCIntegerType>(value)).hash_code();
+    static auto hash(T ptr) -> usize {
+        return usize((usize::CCIntegerType)ptr).hash_code();
     }
 
     static constexpr auto is_trivial() -> bool {

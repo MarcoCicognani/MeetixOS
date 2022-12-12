@@ -93,10 +93,10 @@ auto StringBuilder::try_append(StringView string_view) -> ErrorOr<void> {
     return {};
 }
 
-auto StringBuilder::append(UTF8Rune rune) -> void {
+auto StringBuilder::append(u32 rune) -> void {
     must$(try_append(rune));
 }
-auto StringBuilder::try_append(UTF8Rune) -> ErrorOr<void> {
+auto StringBuilder::try_append(u32) -> ErrorOr<void> {
     return Error::from_code(ErrorCode::Unimplemented);
 }
 

@@ -39,13 +39,13 @@ auto StringView::operator=(StringView const& rhs) -> StringView& {
         return *this;
     }
 
-    StringView string_view{ rhs };
+    StringView string_view = rhs;
     swap(string_view);
     return *this;
 }
 
 auto StringView::operator=(StringView&& rhs) -> StringView& {
-    auto string_view = Cxx::move(rhs);
+    StringView string_view = Cxx::move(rhs);
     swap(string_view);
     return *this;
 }
@@ -529,14 +529,13 @@ auto StringView::contains(char rhs, CaseSensible case_sensible) const -> bool {
     }
 
     return any_of<char>(begin(), end(), [rhs, case_sensible](char const c) {
-        UTF8Rune char_rune = static_cast<unsigned char>(c);
-        UTF8Rune rhs_rune  = static_cast<unsigned char>(rhs);
+        u32 c_as_rune = c;
+        u32 r_as_rune = rhs;
         if ( case_sensible == CaseSensible::Yes ) {
-            char_rune = to_ascii_lowercase(c);
-            rhs_rune  = to_ascii_lowercase(rhs_rune);
+            c_as_rune = to_ascii_lowercase(c);
+            r_as_rune = to_ascii_lowercase(r_as_rune);
         }
-
-        return char_rune == rhs_rune;
+        return c_as_rune == r_as_rune;
     });
 }
 

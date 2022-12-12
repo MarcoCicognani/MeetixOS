@@ -82,8 +82,8 @@ public:
     /**
      * @brief Appends a rune to the builder
      */
-    auto append(UTF8Rune) -> void;
-    auto try_append(UTF8Rune) -> ErrorOr<void>;
+    auto append(u32 rune) -> void;
+    auto try_append(u32 rune) -> ErrorOr<void>;
 
     /**
      * @brief Ensures that this StringBuilder could store at least <capacity>
