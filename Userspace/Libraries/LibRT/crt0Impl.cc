@@ -42,6 +42,8 @@ extern "C++" auto cc_main(Vector<StringView>) -> ErrorOr<void>;
 static Function<void(Error const&)> s_runtime_error_catcher = [](Error const& error) {
     auto string_builder = StringBuilder::empty();
     must$(format(string_builder, "\e[31mRuntime Error\e[0m in {}"sv, error));
+
+    extern void s_log(char const*);
     s_log(string_builder.as_string_view().as_cstr());
 };
 
@@ -92,6 +94,9 @@ static auto __rt_split_cli_args() -> ErrorOr<Vector<StringView>> {
     usize s_get_executable_path(char*);
     usize s_cli_args_release(char*);
 
+    static constexpr auto PATH_MAX = 512;
+    static constexpr auto CLIARGS_BUFFER_LENGTH = PATH_MAX;
+
     auto const exec_path_view = try$(fill_string_view_with(s_get_executable_path, PATH_MAX));
     auto const cli_args_view  = try$(fill_string_view_with(s_cli_args_release, CLIARGS_BUFFER_LENGTH));
 
@@ -108,7 +113,6 @@ static auto __rt_split_cli_args() -> ErrorOr<Vector<StringView>> {
             cli_arg = cli_arg.sub_string_view(0, cli_arg.len() - 2);
         }
     }
-
     return split_cli_args;
 }
 
@@ -127,7 +131,7 @@ auto __rt_run() -> void {
     auto error_or_void = run_user_main();
     __rt_call_destructors();
 
-    ErrorCode exit_code;
+    ErrorCode exit_code = ErrorCode::None;
     if ( error_or_void.is_error() ) {
         auto const error = error_or_void.unwrap_error();
 

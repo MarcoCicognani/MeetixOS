@@ -1,13 +1,13 @@
 /**
-* @brief
-* This file is part of the MeetiX Operating System.
-* Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
-*
-* @developers
-* Marco Cicognani (marco.cicognani@meetixos.org)
-*
-* @license
-* GNU General Public License version 3
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
 
 #include <CCLang/Lang/IntTypes/i32.hh>
@@ -33,6 +33,14 @@ auto i32::min(i32 const& lhs, i32 const& rhs) -> i32 {
     } else {
         return rhs;
     }
+}
+
+auto i32::ceil_div(i32 const& lhs, i32 const& rhs) -> i32 {
+    i32 res = lhs / rhs;
+    if ( (lhs % rhs) != 0 ) {
+        res += 1;
+    }
+    return res;
 }
 
 auto i32::range(i32 const& begin, i32 const& end) -> Range<i32> {
@@ -180,7 +188,7 @@ auto i32::try_left_shift(i32 const& rhs) const -> ErrorOr<i32> {
     if ( rhs >= bit_count().as<i32>() ) {
         return Error::from_code(ErrorCode::ShiftOverflow);
     } else {
-        return i32(static_cast<CCIntegerType>(m_value << rhs.m_value));
+        return i32(static_cast<NativeInt>(m_value << rhs.m_value));
     }
 }
 
@@ -188,7 +196,7 @@ auto i32::left_shift(i32 const& rhs) const -> i32 {
     if constexpr ( CCLangSafeIntegerOperations ) {
         return must$(try_left_shift(rhs));
     } else {
-        return static_cast<CCIntegerType>(m_value << rhs.m_value);
+        return static_cast<NativeInt>(m_value << rhs.m_value);
     }
 }
 
@@ -222,7 +230,7 @@ auto i32::try_right_shift(i32 const& rhs) const -> ErrorOr<i32> {
     if ( rhs >= bit_count().as<i32>() ) {
         return Error::from_code(ErrorCode::ShiftOverflow);
     } else {
-        return i32(static_cast<CCIntegerType>(m_value >> rhs.m_value));
+        return i32(static_cast<NativeInt>(m_value >> rhs.m_value));
     }
 }
 
@@ -230,7 +238,7 @@ auto i32::right_shift(i32 const& rhs) const -> i32 {
     if constexpr ( CCLangSafeIntegerOperations ) {
         return must$(try_right_shift(rhs));
     } else {
-        return static_cast<CCIntegerType>(m_value >> rhs.m_value);
+        return static_cast<NativeInt>(m_value >> rhs.m_value);
     }
 }
 
@@ -283,7 +291,7 @@ auto i32::operator--(int) -> i32 {
 }
 
 auto i32::try_add(i32 const& rhs) const -> ErrorOr<i32> {
-    i32::CCIntegerType __value;
+    i32::NativeInt __value;
     if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -322,7 +330,7 @@ auto i32::operator+=(i32 const& rhs) -> i32& {
 }
 
 auto i32::try_sub(i32 const& rhs) const -> ErrorOr<i32> {
-    i32::CCIntegerType __value;
+    i32::NativeInt __value;
     if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -361,7 +369,7 @@ auto i32::operator-=(i32 const& rhs) -> i32& {
 }
 
 auto i32::try_mul(i32 const& rhs) const -> ErrorOr<i32> {
-    i32::CCIntegerType __value;
+    i32::NativeInt __value;
     if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -403,7 +411,7 @@ auto i32::try_div(i32 const& rhs) const -> ErrorOr<i32> {
     if ( rhs == 0 ) {
         return Error::from_code(ErrorCode::DivisionByZero);
     } else {
-        return i32(static_cast<CCIntegerType>(m_value / rhs.m_value));
+        return i32(static_cast<NativeInt>(m_value / rhs.m_value));
     }
 }
 
@@ -447,7 +455,7 @@ auto i32::operator%=(i32 const& rhs) -> i32& {
 }
 
 auto i32::atomic_load(MemOrder mem_order) volatile -> i32 {
-    CCIntegerType __value;
+    NativeInt __value;
     __atomic_load(&m_value, &__value, static_cast<UnderlyingType<MemOrder>>(mem_order));
     return __value;
 }
@@ -490,3 +498,11 @@ auto i32::hash_code() const -> usize {
     hash_key ^= (hash_key >> 16);
     return hash_key;
 }
+
+namespace Cxx {
+
+auto swap(i32& lhs, i32& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

@@ -220,7 +220,7 @@ auto StringView::ends_with(char rhs, CaseSensible case_sensitivity) const -> boo
     }
 }
 
-static constexpr auto without_base_prefix(StringView::IntBase int_base, StringView string_view) -> StringView {
+static auto without_base_prefix(StringView::IntBase int_base, StringView string_view) -> StringView {
     if ( (int_base == StringView::IntBase::Binary && string_view[0] == 'b') || (int_base == StringView::IntBase::Octal && string_view[0] == '0') ) {
         return string_view.sub_string_view(1);
     } else if ( int_base == StringView::IntBase::Hex && string_view.starts_with("0x"sv, StringView::CaseSensible::No) ) {
@@ -229,7 +229,7 @@ static constexpr auto without_base_prefix(StringView::IntBase int_base, StringVi
         return string_view;
     }
 }
-static constexpr auto is_valid_digit(StringView::IntBase int_base, char c) -> bool {
+static auto is_valid_digit(StringView::IntBase int_base, char c) -> bool {
     switch ( int_base ) {
         case StringView::IntBase::Binary:
             return is_ascii_binary_digit(c);
@@ -244,7 +244,7 @@ static constexpr auto is_valid_digit(StringView::IntBase int_base, char c) -> bo
     }
 }
 template<typename T>
-static constexpr auto digit_value(char c) -> T {
+static auto digit_value(char c) -> T {
     if ( c >= '0' && c <= '9' ) {
         return c - '0';
     } else if ( c >= 'a' && c <= 'z' ) {
@@ -256,8 +256,8 @@ static constexpr auto digit_value(char c) -> T {
     }
 }
 template<typename T>
-static constexpr auto int_base_as_integer(StringView::IntBase int_base) -> T {
-    return static_cast<typename T::CCIntegerType>(static_cast<UnderlyingType<StringView::IntBase>>(int_base));
+static auto int_base_as_integer(StringView::IntBase int_base) -> T {
+    return static_cast<typename T::NativeInt>(static_cast<UnderlyingType<StringView::IntBase>>(int_base));
 }
 
 template<typename T>

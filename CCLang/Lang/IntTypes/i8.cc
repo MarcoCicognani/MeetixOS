@@ -1,13 +1,13 @@
 /**
-* @brief
-* This file is part of the MeetiX Operating System.
-* Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
-*
-* @developers
-* Marco Cicognani (marco.cicognani@meetixos.org)
-*
-* @license
-* GNU General Public License version 3
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
 
 #include <CCLang/Lang/IntTypes/i8.hh>
@@ -33,6 +33,14 @@ auto i8::min(i8 const& lhs, i8 const& rhs) -> i8 {
     } else {
         return rhs;
     }
+}
+
+auto i8::ceil_div(i8 const& lhs, i8 const& rhs) -> i8 {
+    i8 res = lhs / rhs;
+    if ( (lhs % rhs) != 0 ) {
+        res += 1;
+    }
+    return res;
 }
 
 auto i8::range(i8 const& begin, i8 const& end) -> Range<i8> {
@@ -180,7 +188,7 @@ auto i8::try_left_shift(i8 const& rhs) const -> ErrorOr<i8> {
     if ( rhs >= bit_count().as<i8>() ) {
         return Error::from_code(ErrorCode::ShiftOverflow);
     } else {
-        return i8(static_cast<CCIntegerType>(m_value << rhs.m_value));
+        return i8(static_cast<NativeInt>(m_value << rhs.m_value));
     }
 }
 
@@ -188,7 +196,7 @@ auto i8::left_shift(i8 const& rhs) const -> i8 {
     if constexpr ( CCLangSafeIntegerOperations ) {
         return must$(try_left_shift(rhs));
     } else {
-        return static_cast<CCIntegerType>(m_value << rhs.m_value);
+        return static_cast<NativeInt>(m_value << rhs.m_value);
     }
 }
 
@@ -222,7 +230,7 @@ auto i8::try_right_shift(i8 const& rhs) const -> ErrorOr<i8> {
     if ( rhs >= bit_count().as<i8>() ) {
         return Error::from_code(ErrorCode::ShiftOverflow);
     } else {
-        return i8(static_cast<CCIntegerType>(m_value >> rhs.m_value));
+        return i8(static_cast<NativeInt>(m_value >> rhs.m_value));
     }
 }
 
@@ -230,7 +238,7 @@ auto i8::right_shift(i8 const& rhs) const -> i8 {
     if constexpr ( CCLangSafeIntegerOperations ) {
         return must$(try_right_shift(rhs));
     } else {
-        return static_cast<CCIntegerType>(m_value >> rhs.m_value);
+        return static_cast<NativeInt>(m_value >> rhs.m_value);
     }
 }
 
@@ -283,7 +291,7 @@ auto i8::operator--(int) -> i8 {
 }
 
 auto i8::try_add(i8 const& rhs) const -> ErrorOr<i8> {
-    i8::CCIntegerType __value;
+    i8::NativeInt __value;
     if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -322,7 +330,7 @@ auto i8::operator+=(i8 const& rhs) -> i8& {
 }
 
 auto i8::try_sub(i8 const& rhs) const -> ErrorOr<i8> {
-    i8::CCIntegerType __value;
+    i8::NativeInt __value;
     if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -361,7 +369,7 @@ auto i8::operator-=(i8 const& rhs) -> i8& {
 }
 
 auto i8::try_mul(i8 const& rhs) const -> ErrorOr<i8> {
-    i8::CCIntegerType __value;
+    i8::NativeInt __value;
     if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -403,7 +411,7 @@ auto i8::try_div(i8 const& rhs) const -> ErrorOr<i8> {
     if ( rhs == 0 ) {
         return Error::from_code(ErrorCode::DivisionByZero);
     } else {
-        return i8(static_cast<CCIntegerType>(m_value / rhs.m_value));
+        return i8(static_cast<NativeInt>(m_value / rhs.m_value));
     }
 }
 
@@ -447,7 +455,7 @@ auto i8::operator%=(i8 const& rhs) -> i8& {
 }
 
 auto i8::atomic_load(MemOrder mem_order) volatile -> i8 {
-    CCIntegerType __value;
+    NativeInt __value;
     __atomic_load(&m_value, &__value, static_cast<UnderlyingType<MemOrder>>(mem_order));
     return __value;
 }
@@ -490,3 +498,11 @@ auto i8::hash_code() const -> usize {
     hash_key ^= (hash_key >> 16);
     return hash_key;
 }
+
+namespace Cxx {
+
+auto swap(i8& lhs, i8& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

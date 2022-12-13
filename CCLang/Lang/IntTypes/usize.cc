@@ -34,6 +34,14 @@ auto usize::min(usize const& lhs, usize const& rhs) -> usize {
     }
 }
 
+auto usize::ceil_div(usize const& lhs, usize const& rhs) -> usize {
+    usize res = lhs / rhs;
+    if ( (lhs % rhs) != 0 ) {
+        res += 1;
+    }
+    return res;
+}
+
 auto usize::range(usize const& begin, usize const& end) -> Range<usize> {
     return Range<usize>(begin, end);
 }
@@ -72,12 +80,12 @@ auto usize::bit_at(usize index) const -> bool {
     return must$(try_bit_at(index));
 }
 
-auto usize::try_set_bit(usize index, bool value) -> ErrorOr<void> {
+auto usize::try_set_bit(usize index, bool bit_value) -> ErrorOr<void> {
     if ( index > bit_count() ) {
         return Error::from_code(ErrorCode::IndexOutOfRange);
     }
 
-    if ( value ) {
+    if ( bit_value ) {
         m_value |= 1 << index.unwrap();
     } else {
         m_value &= ~(1 << index.unwrap());
@@ -85,8 +93,8 @@ auto usize::try_set_bit(usize index, bool value) -> ErrorOr<void> {
     return {};
 }
 
-auto usize::set_bit(usize index, bool value) -> void {
-    must$(try_set_bit(index, value));
+auto usize::set_bit(usize index, bool bit_value) -> void {
+    must$(try_set_bit(index, bit_value));
 }
 
 auto usize::count_zeroes() const -> usize {
@@ -216,7 +224,7 @@ auto usize::try_left_shift(usize const& rhs) const -> ErrorOr<usize> {
     if ( rhs >= bit_count() ) {
         return Error::from_code(ErrorCode::ShiftOverflow);
     } else {
-        return usize(static_cast<CCIntegerType>(m_value << rhs.m_value));
+        return usize(static_cast<NativeInt>(m_value << rhs.m_value));
     }
 }
 
@@ -224,7 +232,7 @@ auto usize::left_shift(usize const& rhs) const -> usize {
     if constexpr ( CCLangSafeIntegerOperations ) {
         return must$(try_left_shift(rhs));
     } else {
-        return static_cast<CCIntegerType>(m_value << rhs.m_value);
+        return static_cast<NativeInt>(m_value << rhs.m_value);
     }
 }
 
@@ -258,7 +266,7 @@ auto usize::try_right_shift(usize const& rhs) const -> ErrorOr<usize> {
     if ( rhs >= bit_count().as<usize>() ) {
         return Error::from_code(ErrorCode::ShiftOverflow);
     } else {
-        return usize(static_cast<CCIntegerType>(m_value >> rhs.m_value));
+        return usize(static_cast<NativeInt>(m_value >> rhs.m_value));
     }
 }
 
@@ -266,7 +274,7 @@ auto usize::right_shift(usize const& rhs) const -> usize {
     if constexpr ( CCLangSafeIntegerOperations ) {
         return must$(try_right_shift(rhs));
     } else {
-        return static_cast<CCIntegerType>(m_value >> rhs.m_value);
+        return static_cast<NativeInt>(m_value >> rhs.m_value);
     }
 }
 
@@ -319,7 +327,7 @@ auto usize::operator--(int) -> usize {
 }
 
 auto usize::try_add(usize const& rhs) const -> ErrorOr<usize> {
-    usize::CCIntegerType __value;
+    usize::NativeInt __value;
     if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -358,7 +366,7 @@ auto usize::operator+=(usize const& rhs) -> usize& {
 }
 
 auto usize::try_sub(usize const& rhs) const -> ErrorOr<usize> {
-    usize::CCIntegerType __value;
+    usize::NativeInt __value;
     if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -397,7 +405,7 @@ auto usize::operator-=(usize const& rhs) -> usize& {
 }
 
 auto usize::try_mul(usize const& rhs) const -> ErrorOr<usize> {
-    usize::CCIntegerType __value;
+    usize::NativeInt __value;
     if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -439,7 +447,7 @@ auto usize::try_div(usize const& rhs) const -> ErrorOr<usize> {
     if ( rhs == 0 ) {
         return Error::from_code(ErrorCode::DivisionByZero);
     } else {
-        return usize(static_cast<CCIntegerType>(m_value / rhs.m_value));
+        return usize(static_cast<NativeInt>(m_value / rhs.m_value));
     }
 }
 
@@ -483,7 +491,7 @@ auto usize::operator%=(usize const& rhs) -> usize& {
 }
 
 auto usize::atomic_load(MemOrder mem_order) volatile -> usize {
-    CCIntegerType __value;
+    NativeInt __value;
     __atomic_load(&m_value, &__value, static_cast<UnderlyingType<MemOrder>>(mem_order));
     return __value;
 }

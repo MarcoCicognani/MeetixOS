@@ -205,6 +205,26 @@ template<>
 struct MakeSigned<usize> {
     using Type = isize;
 };
+template<>
+struct MakeSigned<i8> {
+    using Type = i8;
+};
+template<>
+struct MakeSigned<i16> {
+    using Type = i16;
+};
+template<>
+struct MakeSigned<i32> {
+    using Type = i32;
+};
+template<>
+struct MakeSigned<i64> {
+    using Type = i64;
+};
+template<>
+struct MakeSigned<isize> {
+    using Type = isize;
+};
 
 template<typename T>
 struct MakeUnsigned {
@@ -276,6 +296,26 @@ struct MakeUnsigned<i64> {
 };
 template<>
 struct MakeUnsigned<isize> {
+    using Type = usize;
+};
+template<>
+struct MakeUnsigned<u8> {
+    using Type = u8;
+};
+template<>
+struct MakeUnsigned<u16> {
+    using Type = u16;
+};
+template<>
+struct MakeUnsigned<u32> {
+    using Type = u32;
+};
+template<>
+struct MakeUnsigned<u64> {
+    using Type = u64;
+};
+template<>
+struct MakeUnsigned<usize> {
     using Type = usize;
 };
 

@@ -26,6 +26,7 @@
 #include <CCLang/Core/ErrorOr.hh>
 #include <CCLang/Core/Meta.hh>
 #include <CCLang/Lang/Cxx.hh>
+#include <CCLang/Lang/IntTypes.hh>
 #include <CCLang/Lang/Option.hh>
 #include <CCLang/Lang/Range.hh>
 #include <CCLang/Lang/Result.hh>
@@ -59,14 +60,14 @@ protected:
      * @brief Cloning
      */
     [[nodiscard]]
-    auto clone_format_applier() const -> FormatApplier;
+    auto clone_base_format_applier() const -> FormatApplier;
 
     /**
      * @brief put formatting functions
      */
     auto try_put_padding(char fill, usize amount) -> ErrorOr<void>;
     auto try_put_literal(StringView sv) -> ErrorOr<void>;
-    auto try_put_string(StringView value,
+    auto try_put_string(StringView sv_value,
                         usize      min_width    = 0,
                         usize      max_width    = 0xffffff,
                         FormatParser::Alignment = FormatParser::Alignment::Left,
@@ -91,7 +92,7 @@ protected:
                      char                          alignment_fill   = ' ',
                      FormatParser::ShowIntegerSign integer_sign     = FormatParser::ShowIntegerSign::IfNegative) -> ErrorOr<void>;
 #ifndef IN_KERNEL
-    auto try_put_f64(double                        value,
+    auto try_put_f64(f64                           value,
                      u8                            base           = 10,
                      bool                          upper_case     = false,
                      FormatParser::ZeroPad         zero_pad       = FormatParser::ZeroPad::No,
@@ -100,7 +101,7 @@ protected:
                      usize                         precision      = 6,
                      char                          alignment_fill = ' ',
                      FormatParser::ShowIntegerSign integer_sign   = FormatParser::ShowIntegerSign::IfNegative) -> ErrorOr<void>;
-    auto try_put_f80(long double                   value,
+    auto try_put_f80(f80                           value,
                      u8                            base           = 10,
                      bool                          upper_case     = false,
                      FormatParser::Alignment       alignment      = FormatParser::Alignment::Right,
@@ -150,7 +151,7 @@ private:
     explicit FormatApplier(StringBuilder&, FormatParser::Result);
 
 private:
-    static auto convert_unsigned_to_chars(u64 value, Slice<char> to_chars_buffer, u8 base, bool upper_case) -> usize;
+    static auto convert_unsigned_to_chars(u64 int_value, Slice<char> to_chars_buffer, u8 base, bool upper_case) -> usize;
 
 private:
     StringBuilder&       m_string_builder;
@@ -207,7 +208,7 @@ private:
     explicit Formatter(FormatApplier);
 };
 
-template<NativeIntegral T>
+template<WrappedIntegral T>
 class Formatter<T> final : public FormatApplier {
 public:
     /**
@@ -229,7 +230,7 @@ private:
     explicit Formatter(FormatApplier);
 };
 
-template<WrappedIntegral T>
+template<NativeIntegral T>
 class Formatter<T> final : public FormatApplier {
 public:
     /**
@@ -363,15 +364,15 @@ private:
 };
 #endif
 
-template<typename T>
-class Formatter<T*> final : public FormatApplier {
+template<Pointer T>
+class Formatter<T> final : public FormatApplier {
 public:
     /**
      * @brief Error safe factory functions
      */
     [[nodiscard]]
-    static auto from_format_applier(FormatApplier format_applier) -> Formatter<T*> {
-        return Formatter<T*>(Cxx::move(format_applier));
+    static auto from_format_applier(FormatApplier format_applier) -> Formatter<T> {
+        return Formatter<T>(Cxx::move(format_applier));
     }
     [[nodiscard]]
     static auto from_parser_result(StringBuilder& string_builder, FormatParser::Result result) -> Formatter<T*> {
@@ -385,18 +386,19 @@ public:
      */
     auto format(T* value) -> ErrorOr<void> {
         /* show as pointer a pointer */
-        if ( display_as() == FormatParser::DisplayAs::Default )
+        if ( display_as() == FormatParser::DisplayAs::Default ) {
             set_display_as(FormatParser::DisplayAs::Pointer);
+        }
 
         /* forward to the integral formatter */
-        auto usize_formatter = Formatter<usize>::from_format_applier(clone_format_applier());
+        auto usize_formatter = Formatter<usize>::from_format_applier(clone_base_format_applier());
         try$(usize_formatter.format(Cxx::bit_cast<usize>(value)));
         return {};
     }
 
 private:
     explicit Formatter(FormatApplier format_applier)
-        : FormatApplier{ Cxx::move(format_applier) } {
+        : FormatApplier(Cxx::move(format_applier)) {
     }
 };
 
@@ -513,11 +515,12 @@ public:
 
         bool is_first = true;
         for ( auto const& e : list ) {
-            auto e_formatter = Formatter<T>::from_format_applier(clone_format_applier());
-            if ( !is_first )
+            auto e_formatter = Formatter<T>::from_format_applier(clone_base_format_applier());
+            if ( !is_first ) {
                 try$(try_put_literal(", "sv));
-            else
+            } else {
                 is_first = false;
+            }
 
             try$(e_formatter.format(e));
         }
@@ -527,7 +530,7 @@ public:
 
 private:
     explicit Formatter(FormatApplier format_applier)
-        : FormatApplier{ Cxx::move(format_applier) } {
+        : FormatApplier(Cxx::move(format_applier)) {
     }
 };
 
@@ -552,25 +555,26 @@ public:
      * @brief Performs the format on the given string-builder
      */
     auto format(Set<T> const& set) -> ErrorOr<void> {
-        try$(try_put_literal("[ "sv));
+        try$(try_put_literal("{ "sv));
 
         bool is_first = true;
         for ( auto const& e : set ) {
-            auto e_formatter = Formatter<T>::from_format_applier(clone_format_applier());
-            if ( !is_first )
+            auto e_formatter = Formatter<T>::from_format_applier(clone_base_format_applier());
+            if ( !is_first ) {
                 try$(try_put_literal(", "sv));
-            else
+            } else {
                 is_first = false;
+            }
 
             try$(e_formatter.format(e));
         }
-        try$(try_put_literal(" ]"sv));
+        try$(try_put_literal(" }"sv));
         return {};
     }
 
 private:
     explicit Formatter(FormatApplier format_applier)
-        : FormatApplier{ Cxx::move(format_applier) } {
+        : FormatApplier(Cxx::move(format_applier)) {
     }
 };
 
@@ -595,25 +599,26 @@ public:
      * @brief Performs the format on the given string-builder
      */
     auto format(OrderedSet<T> const& ordered_set) -> ErrorOr<void> {
-        try$(try_put_literal("[ "sv));
+        try$(try_put_literal("{ "sv));
 
         bool is_first = true;
         for ( auto const& e : ordered_set ) {
-            auto e_formatter = Formatter<T>::from_format_applier(clone_format_applier());
-            if ( !is_first )
+            auto e_formatter = Formatter<T>::from_format_applier(clone_base_format_applier());
+            if ( !is_first ) {
                 try$(try_put_literal(", "sv));
-            else
+            } else {
                 is_first = false;
+            }
 
             try$(e_formatter.format(e));
         }
-        try$(try_put_literal(" ]"sv));
+        try$(try_put_literal(" }"sv));
         return {};
     }
 
 private:
     explicit Formatter(FormatApplier format_applier)
-        : FormatApplier{ Cxx::move(format_applier) } {
+        : FormatApplier(Cxx::move(format_applier)) {
     }
 };
 
@@ -642,13 +647,14 @@ public:
 
         bool is_first = true;
         for ( auto const& pair : ordered_map ) {
-            auto k_formatter = Formatter<K>::from_format_applier(clone_format_applier());
-            auto v_formatter = Formatter<T>::from_format_applier(clone_format_applier());
+            auto k_formatter = Formatter<K>::from_format_applier(clone_base_format_applier());
+            auto v_formatter = Formatter<T>::from_format_applier(clone_base_format_applier());
 
-            if ( !is_first )
+            if ( !is_first ) {
                 try$(try_put_literal(", "sv));
-            else
+            } else {
                 is_first = false;
+            }
 
             try$(k_formatter.format(pair.m_key));
             try$(try_put_literal(": "sv));
@@ -660,7 +666,7 @@ public:
 
 private:
     explicit Formatter(FormatApplier format_applier)
-        : FormatApplier{ Cxx::move(format_applier) } {
+        : FormatApplier(Cxx::move(format_applier)) {
     }
 };
 
@@ -689,13 +695,14 @@ public:
 
         bool is_first = true;
         for ( auto const& pair : ordered_map ) {
-            auto k_formatter = Formatter<K>::from_format_applier(clone_format_applier());
-            auto v_formatter = Formatter<T>::from_format_applier(clone_format_applier());
+            auto k_formatter = Formatter<K>::from_format_applier(clone_base_format_applier());
+            auto v_formatter = Formatter<T>::from_format_applier(clone_base_format_applier());
 
-            if ( !is_first )
+            if ( !is_first ) {
                 try$(try_put_literal(", "sv));
-            else
+            } else {
                 is_first = false;
+            }
 
             try$(k_formatter.format(pair.m_key));
             try$(try_put_literal(": "sv));
@@ -707,7 +714,7 @@ public:
 
 private:
     explicit Formatter(FormatApplier format_applier)
-        : FormatApplier{ Cxx::move(format_applier) } {
+        : FormatApplier(Cxx::move(format_applier)) {
     }
 };
 
@@ -732,7 +739,7 @@ public:
      * @brief Performs the format on the given string-builder
      */
     auto format(Range<T> const& range) -> ErrorOr<void> {
-        auto formatter = Formatter<T>::from_format_applier(clone_format_applier());
+        auto formatter = Formatter<T>::from_format_applier(clone_base_format_applier());
 
         try$(formatter.format(*range.begin()));
         try$(try_put_literal(".."sv));
@@ -743,7 +750,7 @@ public:
 
 private:
     explicit Formatter(FormatApplier format_applier)
-        : FormatApplier{ Cxx::move(format_applier) } {
+        : FormatApplier(Cxx::move(format_applier)) {
     }
 };
 
@@ -768,7 +775,7 @@ public:
      * @brief Performs the format on the given string-builder
      */
     auto format(RangeInclusive<T> const& range_inclusive) -> ErrorOr<void> {
-        auto formatter = Formatter<T>::from_format_applier(clone_format_applier());
+        auto formatter = Formatter<T>::from_format_applier(clone_base_format_applier());
 
         try$(formatter.format(*range_inclusive.begin()));
         try$(try_put_literal("..="sv));
@@ -779,7 +786,7 @@ public:
 
 private:
     explicit Formatter(FormatApplier format_applier)
-        : FormatApplier{ Cxx::move(format_applier) } {
+        : FormatApplier(Cxx::move(format_applier)) {
     }
 };
 
@@ -859,11 +866,12 @@ public:
 
         bool is_first = true;
         for ( auto const& e : vector ) {
-            auto e_formatter = Formatter<T>::from_format_applier(clone_format_applier());
-            if ( !is_first )
+            auto e_formatter = Formatter<T>::from_format_applier(clone_base_format_applier());
+            if ( !is_first ) {
                 try$(try_put_literal(", "sv));
-            else
+            } else {
                 is_first = false;
+            }
 
             try$(e_formatter.format(e));
         }
@@ -873,7 +881,7 @@ public:
 
 private:
     explicit Formatter(FormatApplier format_applier)
-        : FormatApplier{ Cxx::move(format_applier) } {
+        : FormatApplier(Cxx::move(format_applier)) {
     }
 };
 
@@ -899,25 +907,22 @@ public:
      */
     auto format(Result<T, E> const& result) -> ErrorOr<void> {
         if ( result.is_value() ) {
-            auto v_formatter = Formatter<T>::from_format_applier(clone_format_applier());
-
+            auto t_formatter = Formatter<T>::from_format_applier(clone_base_format_applier());
             try$(try_put_literal("Value("sv));
-            try$(v_formatter.format(result.value()));
+            try$(t_formatter.format(result.unwrap()));
             try$(try_put_literal(")"sv));
         } else {
-            auto e_formatter = Formatter<E>::from_format_applier(clone_format_applier());
-
+            auto e_formatter = Formatter<E>::from_format_applier(clone_base_format_applier());
             try$(try_put_literal("Error("sv));
             try$(e_formatter.format(result.error()));
             try$(try_put_literal(")"sv));
         }
-
         return {};
     }
 
 private:
     explicit Formatter(FormatApplier format_applier)
-        : FormatApplier{ Cxx::move(format_applier) } {
+        : FormatApplier(Cxx::move(format_applier)) {
     }
 };
 
@@ -943,14 +948,13 @@ public:
      */
     auto format(Option<T> const& option) -> ErrorOr<void> {
         if ( option.is_present() ) {
-            auto v_formatter = Formatter<T>::from_format_applier(clone_format_applier());
-
+            auto v_formatter = Formatter<T>::from_format_applier(clone_base_format_applier());
             try$(try_put_literal("Some("sv));
-            try$(v_formatter.format(option.value()));
+            try$(v_formatter.format(option.unwrap()));
             try$(try_put_literal(")"sv));
-        } else
+        } else {
             try$(try_put_literal("OptionNone"sv));
-
+        }
         return {};
     }
 };

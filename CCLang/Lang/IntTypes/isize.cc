@@ -1,13 +1,13 @@
 /**
-* @brief
-* This file is part of the MeetiX Operating System.
-* Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
-*
-* @developers
-* Marco Cicognani (marco.cicognani@meetixos.org)
-*
-* @license
-* GNU General Public License version 3
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
 
 #include <CCLang/Lang/IntTypes/isize.hh>
@@ -33,6 +33,14 @@ auto isize::min(isize const& lhs, isize const& rhs) -> isize {
     } else {
         return rhs;
     }
+}
+
+auto isize::ceil_div(isize const& lhs, isize const& rhs) -> isize {
+    isize res = lhs / rhs;
+    if ( (lhs % rhs) != 0 ) {
+        res += 1;
+    }
+    return res;
 }
 
 auto isize::range(isize const& begin, isize const& end) -> Range<isize> {
@@ -180,7 +188,7 @@ auto isize::try_left_shift(isize const& rhs) const -> ErrorOr<isize> {
     if ( rhs >= bit_count().as<isize>() ) {
         return Error::from_code(ErrorCode::ShiftOverflow);
     } else {
-        return isize(static_cast<CCIntegerType>(m_value << rhs.m_value));
+        return isize(static_cast<NativeInt>(m_value << rhs.m_value));
     }
 }
 
@@ -188,7 +196,7 @@ auto isize::left_shift(isize const& rhs) const -> isize {
     if constexpr ( CCLangSafeIntegerOperations ) {
         return must$(try_left_shift(rhs));
     } else {
-        return static_cast<CCIntegerType>(m_value << rhs.m_value);
+        return static_cast<NativeInt>(m_value << rhs.m_value);
     }
 }
 
@@ -222,7 +230,7 @@ auto isize::try_right_shift(isize const& rhs) const -> ErrorOr<isize> {
     if ( rhs >= bit_count().as<isize>() ) {
         return Error::from_code(ErrorCode::ShiftOverflow);
     } else {
-        return isize(static_cast<CCIntegerType>(m_value >> rhs.m_value));
+        return isize(static_cast<NativeInt>(m_value >> rhs.m_value));
     }
 }
 
@@ -230,7 +238,7 @@ auto isize::right_shift(isize const& rhs) const -> isize {
     if constexpr ( CCLangSafeIntegerOperations ) {
         return must$(try_right_shift(rhs));
     } else {
-        return static_cast<CCIntegerType>(m_value >> rhs.m_value);
+        return static_cast<NativeInt>(m_value >> rhs.m_value);
     }
 }
 
@@ -283,7 +291,7 @@ auto isize::operator--(int) -> isize {
 }
 
 auto isize::try_add(isize const& rhs) const -> ErrorOr<isize> {
-    isize::CCIntegerType __value;
+    isize::NativeInt __value;
     if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -322,7 +330,7 @@ auto isize::operator+=(isize const& rhs) -> isize& {
 }
 
 auto isize::try_sub(isize const& rhs) const -> ErrorOr<isize> {
-    isize::CCIntegerType __value;
+    isize::NativeInt __value;
     if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -361,7 +369,7 @@ auto isize::operator-=(isize const& rhs) -> isize& {
 }
 
 auto isize::try_mul(isize const& rhs) const -> ErrorOr<isize> {
-    isize::CCIntegerType __value;
+    isize::NativeInt __value;
     if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -403,7 +411,7 @@ auto isize::try_div(isize const& rhs) const -> ErrorOr<isize> {
     if ( rhs == 0 ) {
         return Error::from_code(ErrorCode::DivisionByZero);
     } else {
-        return isize(static_cast<CCIntegerType>(m_value / rhs.m_value));
+        return isize(static_cast<NativeInt>(m_value / rhs.m_value));
     }
 }
 
@@ -447,7 +455,7 @@ auto isize::operator%=(isize const& rhs) -> isize& {
 }
 
 auto isize::atomic_load(MemOrder mem_order) volatile -> isize {
-    CCIntegerType __value;
+    NativeInt __value;
     __atomic_load(&m_value, &__value, static_cast<UnderlyingType<MemOrder>>(mem_order));
     return __value;
 }
@@ -490,3 +498,11 @@ auto isize::hash_code() const -> usize {
     hash_key ^= (hash_key >> 16);
     return hash_key;
 }
+
+namespace Cxx {
+
+auto swap(isize& lhs, isize& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

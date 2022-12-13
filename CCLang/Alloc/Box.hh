@@ -165,7 +165,7 @@ public:
      */
     [[nodiscard]]
     auto hash_code() const {
-        return usize(Cxx::bit_cast<usize::CCIntegerType>(m_boxed_array_ptr)).hash_code();
+        return usize(Cxx::bit_cast<usize::NativeInt>(m_boxed_array_ptr)).hash_code();
     }
 
 private:
@@ -279,7 +279,7 @@ public:
      */
     [[nodiscard]]
     auto hash_code() const {
-        return usize(Cxx::bit_cast<usize::CCIntegerType>(m_boxed_array_ptr)).hash_code();
+        return usize(Cxx::bit_cast<usize::NativeInt>(m_boxed_array_ptr)).hash_code();
     }
 
 private:

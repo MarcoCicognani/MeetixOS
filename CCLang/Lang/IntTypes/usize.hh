@@ -18,7 +18,7 @@
 
 class usize final {
 public:
-    using CCIntegerType = __SIZE_TYPE__;
+    using NativeInt = __SIZE_TYPE__;
 
 public:
     static auto max() -> usize {
@@ -28,93 +28,95 @@ public:
         return 0;
     }
 
-    static auto max(usize const&, usize const&) -> usize;
-    static auto min(usize const&, usize const&) -> usize;
+    static auto max(usize const& lhs, usize const& rhs) -> usize;
+    static auto min(usize const& lhs, usize const& rhs) -> usize;
 
-    static auto range(usize const&, usize const&) -> Range<usize>;
-    static auto range_inclusive(usize const&, usize const&) -> RangeInclusive<usize>;
+    static auto ceil_div(usize const& lhs, usize const& rhs) -> usize;
+
+    static auto range(usize const& begin, usize const& end) -> Range<usize>;
+    static auto range_inclusive(usize const& begin, usize const& last) -> RangeInclusive<usize>;
 
     explicit(false) usize() = default;
-    explicit(false) usize(__SIZE_TYPE__);
+    explicit(false) usize(__SIZE_TYPE__ value);
 
-    auto operator=(__SIZE_TYPE__) -> usize&;
+    auto operator=(__SIZE_TYPE__ value) -> usize&;
 
-    auto swap(usize&) -> void;
+    auto swap(usize& rhs) -> void;
 
     auto is_signed() const -> bool;
 
-    auto try_bit_at(usize) const -> ErrorOr<bool>;
-    auto bit_at(usize) const -> bool;
+    auto try_bit_at(usize index) const -> ErrorOr<bool>;
+    auto bit_at(usize index) const -> bool;
 
-    auto try_set_bit(usize, bool) -> ErrorOr<void>;
-    auto set_bit(usize, bool) -> void;
+    auto try_set_bit(usize index, bool bit_value) -> ErrorOr<void>;
+    auto set_bit(usize index, bool bit_value) -> void;
 
     auto count_zeroes() const -> usize;
     auto count_ones() const -> usize;
 
     auto bit_count() const -> usize;
 
-    template<typename TInteger>
-    auto as() const -> TInteger {
-        return TInteger(static_cast<typename TInteger::CCIntegerType>(m_value));
+    template<typename TIntWrapper>
+    auto as() const -> TIntWrapper {
+        return TIntWrapper(static_cast<typename TIntWrapper::NativeInt>(m_value));
     }
 
     auto unwrap() const -> __SIZE_TYPE__;
 
-    auto equal(usize const&) const -> bool;
-    auto operator==(usize const&) const -> bool;
+    auto equal(usize const& rhs) const -> bool;
+    auto operator==(usize const& rhs) const -> bool;
 
-    auto not_equal(usize const&) const -> bool;
-    auto operator!=(usize const&) const -> bool;
+    auto not_equal(usize const& rhs) const -> bool;
+    auto operator!=(usize const& rhs) const -> bool;
 
-    auto greater(usize const&) const -> bool;
-    auto operator>(usize const&) const -> bool;
+    auto greater(usize const& rhs) const -> bool;
+    auto operator>(usize const& rhs) const -> bool;
 
-    auto greater_equal(usize const&) const -> bool;
-    auto operator>=(usize const&) const -> bool;
+    auto greater_equal(usize const& rhs) const -> bool;
+    auto operator>=(usize const& rhs) const -> bool;
 
-    auto less(usize const&) const -> bool;
-    auto operator<(usize const&) const -> bool;
+    auto less(usize const& rhs) const -> bool;
+    auto operator<(usize const& rhs) const -> bool;
 
-    auto less_equal(usize const&) const -> bool;
-    auto operator<=(usize const&) const -> bool;
+    auto less_equal(usize const& rhs) const -> bool;
+    auto operator<=(usize const& rhs) const -> bool;
 
     auto bit_one_complement() const -> usize;
     auto operator~() const -> usize;
 
-    auto bit_and(usize const&) const -> usize;
-    auto operator&(usize const&) const -> usize;
+    auto bit_and(usize const& rhs) const -> usize;
+    auto operator&(usize const& rhs) const -> usize;
 
-    auto bit_and_assign(usize const&) -> void;
-    auto operator&=(usize const&) -> usize&;
+    auto bit_and_assign(usize const& rhs) -> void;
+    auto operator&=(usize const& rhs) -> usize&;
 
-    auto bit_or(usize const&) const -> usize;
-    auto operator|(usize const&) const -> usize;
+    auto bit_or(usize const& rhs) const -> usize;
+    auto operator|(usize const& rhs) const -> usize;
 
-    auto bit_or_assign(usize const&) -> void;
-    auto operator|=(usize const&) -> usize&;
+    auto bit_or_assign(usize const& rhs) -> void;
+    auto operator|=(usize const& rhs) -> usize&;
 
-    auto bit_xor(usize const&) const -> usize;
-    auto operator^(usize const&) const -> usize;
+    auto bit_xor(usize const& rhs) const -> usize;
+    auto operator^(usize const& rhs) const -> usize;
 
-    auto bit_xor_assign(usize const&) -> void;
-    auto operator^=(usize const&) -> usize&;
+    auto bit_xor_assign(usize const& rhs) -> void;
+    auto operator^=(usize const& rhs) -> usize&;
 
-    auto try_left_shift(usize const&) const -> ErrorOr<usize>;
-    auto left_shift(usize const&) const -> usize;
-    auto operator<<(usize const&) const -> usize;
+    auto try_left_shift(usize const& rhs) const -> ErrorOr<usize>;
+    auto left_shift(usize const& rhs) const -> usize;
+    auto operator<<(usize const& rhs) const -> usize;
 
-    auto try_left_shift_assign(usize const&) -> ErrorOr<void>;
-    auto left_shift_assign(usize const&) -> void;
-    auto operator<<=(usize const&) -> usize&;
+    auto try_left_shift_assign(usize const& rhs) -> ErrorOr<void>;
+    auto left_shift_assign(usize const& rhs) -> void;
+    auto operator<<=(usize const& rhs) -> usize&;
 
-    auto try_right_shift(usize const&) const -> ErrorOr<usize>;
-    auto right_shift(usize const&) const -> usize;
-    auto operator>>(usize const&) const -> usize;
+    auto try_right_shift(usize const& rhs) const -> ErrorOr<usize>;
+    auto right_shift(usize const& rhs) const -> usize;
+    auto operator>>(usize const& rhs) const -> usize;
 
-    auto try_right_shift_assign(usize const&) -> ErrorOr<void>;
-    auto right_shift_assign(usize const&) -> void;
-    auto operator>>=(usize const&) -> usize&;
+    auto try_right_shift_assign(usize const& rhs) -> ErrorOr<void>;
+    auto right_shift_assign(usize const& rhs) -> void;
+    auto operator>>=(usize const& rhs) -> usize&;
 
     auto operator++() -> usize&;
     auto operator++(int) -> usize;
@@ -122,40 +124,40 @@ public:
     auto operator--() -> usize&;
     auto operator--(int) -> usize;
 
-    auto try_add(usize const&) const -> ErrorOr<usize>;
-    auto add(usize const&) const -> usize;
-    auto operator+(usize const&) const -> usize;
+    auto try_add(usize const& rhs) const -> ErrorOr<usize>;
+    auto add(usize const& rhs) const -> usize;
+    auto operator+(usize const& rhs) const -> usize;
 
-    auto try_add_assign(usize const&) -> ErrorOr<void>;
-    auto add_assign(usize const&) -> void;
-    auto operator+=(usize const&) -> usize&;
+    auto try_add_assign(usize const& rhs) -> ErrorOr<void>;
+    auto add_assign(usize const& rhs) -> void;
+    auto operator+=(usize const& rhs) -> usize&;
 
-    auto try_sub(usize const&) const -> ErrorOr<usize>;
-    auto sub(usize const&) const -> usize;
-    auto operator-(usize const&) const -> usize;
+    auto try_sub(usize const& rhs) const -> ErrorOr<usize>;
+    auto sub(usize const& rhs) const -> usize;
+    auto operator-(usize const& rhs) const -> usize;
 
-    auto try_sub_assign(usize const&) -> ErrorOr<void>;
-    auto sub_assign(usize const&) -> void;
-    auto operator-=(usize const&) -> usize&;
+    auto try_sub_assign(usize const& rhs) -> ErrorOr<void>;
+    auto sub_assign(usize const& rhs) -> void;
+    auto operator-=(usize const& rhs) -> usize&;
 
-    auto try_mul(usize const&) const -> ErrorOr<usize>;
-    auto mul(usize const&) const -> usize;
-    auto operator*(usize const&) const -> usize;
+    auto try_mul(usize const& rhs) const -> ErrorOr<usize>;
+    auto mul(usize const& rhs) const -> usize;
+    auto operator*(usize const& rhs) const -> usize;
 
-    auto try_mul_assign(usize const&) -> ErrorOr<void>;
-    auto mul_assign(usize const&) -> void;
-    auto operator*=(usize const&) -> usize&;
+    auto try_mul_assign(usize const& rhs) -> ErrorOr<void>;
+    auto mul_assign(usize const& rhs) -> void;
+    auto operator*=(usize const& rhs) -> usize&;
 
-    auto try_div(usize const&) const -> ErrorOr<usize>;
-    auto div(usize const&) const -> usize;
-    auto operator/(usize const&) const -> usize;
+    auto try_div(usize const& rhs) const -> ErrorOr<usize>;
+    auto div(usize const& rhs) const -> usize;
+    auto operator/(usize const& rhs) const -> usize;
 
-    auto try_div_assign(usize const&) -> ErrorOr<void>;
-    auto div_assign(usize const&) -> void;
-    auto operator/=(usize const&) -> usize&;
+    auto try_div_assign(usize const& rhs) -> ErrorOr<void>;
+    auto div_assign(usize const& rhs) -> void;
+    auto operator/=(usize const& rhs) -> usize&;
 
-    auto operator%(usize const&) const -> usize;
-    auto operator%=(usize const&) -> usize&;
+    auto operator%(usize const& rhs) const -> usize;
+    auto operator%=(usize const& rhs) -> usize&;
 
     [[nodiscard]]
     auto atomic_load(MemOrder = MemOrder::Total) volatile -> usize;

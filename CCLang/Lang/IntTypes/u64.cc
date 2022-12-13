@@ -35,6 +35,14 @@ auto u64::min(u64 const& lhs, u64 const& rhs) -> u64 {
     }
 }
 
+auto u64::ceil_div(u64 const& lhs, u64 const& rhs) -> u64 {
+    u64 res = lhs / rhs;
+    if ( (lhs % rhs) != 0 ) {
+        res += 1;
+    }
+    return res;
+}
+
 auto u64::range(u64 const& begin, u64 const& end) -> Range<u64> {
     return Range<u64>(begin, end);
 }
@@ -73,12 +81,12 @@ auto u64::bit_at(usize index) const -> bool {
     return must$(try_bit_at(index));
 }
 
-auto u64::try_set_bit(usize index, bool value) -> ErrorOr<void> {
+auto u64::try_set_bit(usize index, bool bit_value) -> ErrorOr<void> {
     if ( index > bit_count() ) {
         return Error::from_code(ErrorCode::IndexOutOfRange);
     }
 
-    if ( value ) {
+    if ( bit_value ) {
         m_value |= 1 << index.unwrap();
     } else {
         m_value &= ~(1 << index.unwrap());
@@ -86,8 +94,8 @@ auto u64::try_set_bit(usize index, bool value) -> ErrorOr<void> {
     return {};
 }
 
-auto u64::set_bit(usize index, bool value) -> void {
-    must$(try_set_bit(index, value));
+auto u64::set_bit(usize index, bool bit_value) -> void {
+    must$(try_set_bit(index, bit_value));
 }
 
 auto u64::count_zeroes() const -> usize {
@@ -217,7 +225,7 @@ auto u64::try_left_shift(u64 const& rhs) const -> ErrorOr<u64> {
     if ( rhs >= bit_count().as<u64>() ) {
         return Error::from_code(ErrorCode::ShiftOverflow);
     } else {
-        return u64(static_cast<CCIntegerType>(m_value << rhs.m_value));
+        return u64(static_cast<NativeInt>(m_value << rhs.m_value));
     }
 }
 
@@ -225,7 +233,7 @@ auto u64::left_shift(u64 const& rhs) const -> u64 {
     if constexpr ( CCLangSafeIntegerOperations ) {
         return must$(try_left_shift(rhs));
     } else {
-        return static_cast<CCIntegerType>(m_value << rhs.m_value);
+        return static_cast<NativeInt>(m_value << rhs.m_value);
     }
 }
 
@@ -259,7 +267,7 @@ auto u64::try_right_shift(u64 const& rhs) const -> ErrorOr<u64> {
     if ( rhs >= bit_count().as<u64>() ) {
         return Error::from_code(ErrorCode::ShiftOverflow);
     } else {
-        return u64(static_cast<CCIntegerType>(m_value >> rhs.m_value));
+        return u64(static_cast<NativeInt>(m_value >> rhs.m_value));
     }
 }
 
@@ -267,7 +275,7 @@ auto u64::right_shift(u64 const& rhs) const -> u64 {
     if constexpr ( CCLangSafeIntegerOperations ) {
         return must$(try_right_shift(rhs));
     } else {
-        return static_cast<CCIntegerType>(m_value >> rhs.m_value);
+        return static_cast<NativeInt>(m_value >> rhs.m_value);
     }
 }
 
@@ -320,7 +328,7 @@ auto u64::operator--(int) -> u64 {
 }
 
 auto u64::try_add(u64 const& rhs) const -> ErrorOr<u64> {
-    u64::CCIntegerType __value;
+    u64::NativeInt __value;
     if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -359,7 +367,7 @@ auto u64::operator+=(u64 const& rhs) -> u64& {
 }
 
 auto u64::try_sub(u64 const& rhs) const -> ErrorOr<u64> {
-    u64::CCIntegerType __value;
+    u64::NativeInt __value;
     if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -398,7 +406,7 @@ auto u64::operator-=(u64 const& rhs) -> u64& {
 }
 
 auto u64::try_mul(u64 const& rhs) const -> ErrorOr<u64> {
-    u64::CCIntegerType __value;
+    u64::NativeInt __value;
     if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -440,7 +448,7 @@ auto u64::try_div(u64 const& rhs) const -> ErrorOr<u64> {
     if ( rhs == 0 ) {
         return Error::from_code(ErrorCode::DivisionByZero);
     } else {
-        return u64(static_cast<CCIntegerType>(m_value / rhs.m_value));
+        return u64(static_cast<NativeInt>(m_value / rhs.m_value));
     }
 }
 
@@ -484,7 +492,7 @@ auto u64::operator%=(u64 const& rhs) -> u64& {
 }
 
 auto u64::atomic_load(MemOrder mem_order) volatile -> u64 {
-    CCIntegerType __value;
+    NativeInt __value;
     __atomic_load(&m_value, &__value, static_cast<UnderlyingType<MemOrder>>(mem_order));
     return __value;
 }
@@ -535,3 +543,11 @@ auto operator<<(__UINT64_TYPE__ lhs, u64 rhs) -> u64 {
 auto operator>>(__UINT64_TYPE__ lhs, u64 rhs) -> u64 {
     return u64(lhs) >> rhs;
 }
+
+namespace Cxx {
+
+auto swap(u64& lhs, u64& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

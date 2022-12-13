@@ -117,7 +117,7 @@ private:
 
     [[nodiscard]]
     auto storage_as_callable() const -> ICallable* {
-        return Cxx::bit_cast<ICallable*>(m_inline_storage);
+        return Cxx::bit_cast<ICallable*>(&m_inline_storage);
     }
 
     alignas(alignof(ICallable)) u8 m_inline_storage[INLINE_STORAGE_SIZE];

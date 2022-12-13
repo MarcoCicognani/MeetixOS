@@ -1,13 +1,13 @@
 /**
-* @brief
-* This file is part of the MeetiX Operating System.
-* Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
-*
-* @developers
-* Marco Cicognani (marco.cicognani@meetixos.org)
-*
-* @license
-* GNU General Public License version 3
+ * @brief
+ * This file is part of the MeetiX Operating System.
+ * Copyright (c) 2017-2022, Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @developers
+ * Marco Cicognani (marco.cicognani@meetixos.org)
+ *
+ * @license
+ * GNU General Public License version 3
  */
 
 #include <CCLang/Lang/IntTypes/u16.hh>
@@ -33,6 +33,14 @@ auto u16::min(u16 const& lhs, u16 const& rhs) -> u16 {
     } else {
         return rhs;
     }
+}
+
+auto u16::ceil_div(u16 const& lhs, u16 const& rhs) -> u16 {
+    u16 res = lhs / rhs;
+    if ( (lhs % rhs) != 0 ) {
+        res += 1;
+    }
+    return res;
 }
 
 auto u16::range(u16 const& begin, u16 const& end) -> Range<u16> {
@@ -73,12 +81,12 @@ auto u16::bit_at(usize index) const -> bool {
     return must$(try_bit_at(index));
 }
 
-auto u16::try_set_bit(usize index, bool value) -> ErrorOr<void> {
+auto u16::try_set_bit(usize index, bool bit_value) -> ErrorOr<void> {
     if ( index > bit_count() ) {
         return Error::from_code(ErrorCode::IndexOutOfRange);
     }
 
-    if ( value ) {
+    if ( bit_value ) {
         m_value |= 1 << index.unwrap();
     } else {
         m_value &= ~(1 << index.unwrap());
@@ -86,8 +94,8 @@ auto u16::try_set_bit(usize index, bool value) -> ErrorOr<void> {
     return {};
 }
 
-auto u16::set_bit(usize index, bool value) -> void {
-    must$(try_set_bit(index, value));
+auto u16::set_bit(usize index, bool bit_value) -> void {
+    must$(try_set_bit(index, bit_value));
 }
 
 auto u16::count_zeroes() const -> usize {
@@ -217,7 +225,7 @@ auto u16::try_left_shift(u16 const& rhs) const -> ErrorOr<u16> {
     if ( rhs >= bit_count().as<u16>() ) {
         return Error::from_code(ErrorCode::ShiftOverflow);
     } else {
-        return u16(static_cast<CCIntegerType>(m_value << rhs.m_value));
+        return u16(static_cast<NativeInt>(m_value << rhs.m_value));
     }
 }
 
@@ -225,7 +233,7 @@ auto u16::left_shift(u16 const& rhs) const -> u16 {
     if constexpr ( CCLangSafeIntegerOperations ) {
         return must$(try_left_shift(rhs));
     } else {
-        return static_cast<CCIntegerType>(m_value << rhs.m_value);
+        return static_cast<NativeInt>(m_value << rhs.m_value);
     }
 }
 
@@ -259,7 +267,7 @@ auto u16::try_right_shift(u16 const& rhs) const -> ErrorOr<u16> {
     if ( rhs >= bit_count().as<u16>() ) {
         return Error::from_code(ErrorCode::ShiftOverflow);
     } else {
-        return u16(static_cast<CCIntegerType>(m_value >> rhs.m_value));
+        return u16(static_cast<NativeInt>(m_value >> rhs.m_value));
     }
 }
 
@@ -267,7 +275,7 @@ auto u16::right_shift(u16 const& rhs) const -> u16 {
     if constexpr ( CCLangSafeIntegerOperations ) {
         return must$(try_right_shift(rhs));
     } else {
-        return static_cast<CCIntegerType>(m_value >> rhs.m_value);
+        return static_cast<NativeInt>(m_value >> rhs.m_value);
     }
 }
 
@@ -320,7 +328,7 @@ auto u16::operator--(int) -> u16 {
 }
 
 auto u16::try_add(u16 const& rhs) const -> ErrorOr<u16> {
-    u16::CCIntegerType __value;
+    NativeInt __value;
     if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -359,7 +367,7 @@ auto u16::operator+=(u16 const& rhs) -> u16& {
 }
 
 auto u16::try_sub(u16 const& rhs) const -> ErrorOr<u16> {
-    u16::CCIntegerType __value;
+    NativeInt __value;
     if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -398,7 +406,7 @@ auto u16::operator-=(u16 const& rhs) -> u16& {
 }
 
 auto u16::try_mul(u16 const& rhs) const -> ErrorOr<u16> {
-    u16::CCIntegerType __value;
+    NativeInt __value;
     if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -440,7 +448,7 @@ auto u16::try_div(u16 const& rhs) const -> ErrorOr<u16> {
     if ( rhs == 0 ) {
         return Error::from_code(ErrorCode::DivisionByZero);
     } else {
-        return u16(static_cast<CCIntegerType>(m_value / rhs.m_value));
+        return u16(static_cast<NativeInt>(m_value / rhs.m_value));
     }
 }
 
@@ -484,7 +492,7 @@ auto u16::operator%=(u16 const& rhs) -> u16& {
 }
 
 auto u16::atomic_load(MemOrder mem_order) volatile -> u16 {
-    CCIntegerType __value;
+    NativeInt __value;
     __atomic_load(&m_value, &__value, static_cast<UnderlyingType<MemOrder>>(mem_order));
     return __value;
 }
@@ -535,3 +543,11 @@ auto operator<<(__UINT16_TYPE__ lhs, u16 rhs) -> u16 {
 auto operator>>(__UINT16_TYPE__ lhs, u16 rhs) -> u16 {
     return u16(lhs) >> rhs;
 }
+
+namespace Cxx {
+
+auto swap(u16& lhs, u16& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */
