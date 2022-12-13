@@ -56,8 +56,8 @@ u8::u8(__UINT8_TYPE__ value)
 }
 
 auto u8::operator=(__UINT8_TYPE__ value) -> u8& {
-    u8 integer = value;
-    swap(integer);
+    u8 u = value;
+    swap(u);
     return *this;
 }
 
@@ -311,7 +311,7 @@ auto u8::operator++() -> u8& {
 }
 
 auto u8::operator++(int) -> u8 {
-    auto __prev = *this;
+    u8 __prev = *this;
     add_assign(1);
     return __prev;
 }
@@ -322,13 +322,13 @@ auto u8::operator--() -> u8& {
 }
 
 auto u8::operator--(int) -> u8 {
-    auto __prev = *this;
+    u8 __prev = *this;
     sub_assign(1);
     return __prev;
 }
 
 auto u8::try_add(u8 const& rhs) const -> ErrorOr<u8> {
-    u8::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -367,7 +367,7 @@ auto u8::operator+=(u8 const& rhs) -> u8& {
 }
 
 auto u8::try_sub(u8 const& rhs) const -> ErrorOr<u8> {
-    u8::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -406,7 +406,7 @@ auto u8::operator-=(u8 const& rhs) -> u8& {
 }
 
 auto u8::try_mul(u8 const& rhs) const -> ErrorOr<u8> {
-    u8::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {

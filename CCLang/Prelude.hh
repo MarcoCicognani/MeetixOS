@@ -34,10 +34,7 @@
 #include <CCLang/Core/Error.hh>
 #include <CCLang/Core/ErrorOr.hh>
 #include <CCLang/Core/Find.hh>
-#include <CCLang/Core/Hashing.hh>
-#include <CCLang/Core/Math.hh>
 #include <CCLang/Core/Meta.hh>
-#include <CCLang/Core/NumericLimits.hh>
 #include <CCLang/Core/ScopeGuard.hh>
 #include <CCLang/Core/SourceLocation.hh>
 #include <CCLang/Core/TypeTraits.hh>

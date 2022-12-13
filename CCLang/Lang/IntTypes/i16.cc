@@ -56,8 +56,8 @@ i16::i16(__INT16_TYPE__ value)
 }
 
 auto i16::operator=(__INT16_TYPE__ value) -> i16& {
-    i16 integer = value;
-    swap(integer);
+    i16 i = value;
+    swap(i);
     return *this;
 }
 
@@ -274,7 +274,7 @@ auto i16::operator++() -> i16& {
 }
 
 auto i16::operator++(int) -> i16 {
-    auto __prev = *this;
+    i16 __prev = *this;
     add_assign(1);
     return __prev;
 }
@@ -285,13 +285,13 @@ auto i16::operator--() -> i16& {
 }
 
 auto i16::operator--(int) -> i16 {
-    auto __prev = *this;
+    i16 __prev = *this;
     sub_assign(1);
     return __prev;
 }
 
 auto i16::try_add(i16 const& rhs) const -> ErrorOr<i16> {
-    i16::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -330,7 +330,7 @@ auto i16::operator+=(i16 const& rhs) -> i16& {
 }
 
 auto i16::try_sub(i16 const& rhs) const -> ErrorOr<i16> {
-    i16::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -369,7 +369,7 @@ auto i16::operator-=(i16 const& rhs) -> i16& {
 }
 
 auto i16::try_mul(i16 const& rhs) const -> ErrorOr<i16> {
-    i16::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {

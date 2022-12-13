@@ -59,9 +59,6 @@ class Slice;
 
 class Error;
 
-template<typename T>
-struct NumericLimits;
-
 class SourceLocation;
 
 template<typename T>

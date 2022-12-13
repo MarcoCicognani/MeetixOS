@@ -30,7 +30,7 @@
 
 namespace Details {
 
-enum class SetBucketState : unsigned int {
+enum class SetBucketState : u32::NativeInt {
     Free     = 0x00,
     Used     = 0x10,
     Deleted  = 0x01,
@@ -39,11 +39,11 @@ enum class SetBucketState : unsigned int {
 };
 
 constexpr auto set_bucket_state_is_used(SetBucketState state) -> bool {
-    return (static_cast<unsigned int>(state) & 0xf0) == static_cast<unsigned int>(SetBucketState::Used);
+    return ((u32::NativeInt)state & 0xf0) == (u32::NativeInt)SetBucketState::Used;
 }
 
 constexpr auto set_bucket_state_is_free(SetBucketState state) -> bool {
-    return (static_cast<unsigned int>(state) & 0xf0) == static_cast<unsigned int>(SetBucketState::Free);
+    return ((u32::NativeInt)state & 0xf0) == (u32::NativeInt)SetBucketState::Free;
 }
 
 template<typename T, typename TBucket>
@@ -52,11 +52,9 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]]
     static auto empty() -> SetIterator<T, TBucket> {
         return SetIterator<T, TBucket>(nullptr);
     }
-    [[nodiscard]]
     static auto from_bucket(TBucket* bucket) -> SetIterator<T, TBucket> {
         return SetIterator<T, TBucket>(bucket);
     }
@@ -107,11 +105,11 @@ public:
      * @brief Pointer access operators
      */
     auto operator->() -> T* {
-        verify_not_null$(m_current_bucket);
+        verify_not_null_with_msg$(m_current_bucket, "SetIterator<T> - Tried to dereference a `Null` iterator");
         return m_current_bucket->slot();
     }
     auto operator->() const -> T const* {
-        verify_not_null$(m_current_bucket);
+        verify_not_null_with_msg$(m_current_bucket, "SetIterator<T> - Tried to dereference a `Null` iterator");
         return m_current_bucket->slot();
     }
 
@@ -141,11 +139,9 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]]
     static auto empty() -> OrderedSetIterator<T, TBucket, IsReverse> {
         return OrderedSetIterator<T, TBucket, IsReverse>(nullptr);
     }
-    [[nodiscard]]
     static auto from_bucket(TBucket* bucket) -> OrderedSetIterator<T, TBucket, IsReverse> {
         return OrderedSetIterator<T, TBucket, IsReverse>(bucket);
     }
@@ -189,11 +185,11 @@ public:
      * @brief Pointer access operators
      */
     auto operator->() -> T* {
-        verify_not_null$(m_current_bucket);
+        verify_not_null_with_msg$(m_current_bucket, "OrderedSetIterator<T> - Tried to dereference a `Null` iterator");
         return m_current_bucket->slot();
     }
     auto operator->() const -> T const* {
-        verify_not_null$(m_current_bucket);
+        verify_not_null_with_msg$(m_current_bucket, "OrderedSetIterator<T> - Tried to dereference a `Null` iterator");
         return m_current_bucket->slot();
     }
 
@@ -293,19 +289,15 @@ public:
     /**
      * @brief Non-Error safe factory functions
      */
-    [[nodiscard]]
     static constexpr auto empty() -> Set<T, TTraits, IsOrdered> {
         return Set<T, TTraits, IsOrdered>();
     }
-    [[nodiscard]]
     static auto with_capacity(usize capacity) -> Set<T, TTraits, IsOrdered> {
         return must$(try_with_capacity(capacity));
     }
-    [[nodiscard]]
     static auto from_other(Set<T, TTraits, IsOrdered> const& rhs) -> Set<T, TTraits, IsOrdered> {
         return must$(try_from_other(rhs));
     }
-    [[nodiscard]]
     static auto from_list(Cxx::InitializerList<T> initializer_list) -> Set<T, TTraits, IsOrdered> {
         return must$(try_from_list(initializer_list));
     }
@@ -364,7 +356,6 @@ public:
     /**
      * @brief Deep cloning
      */
-    [[nodiscard]]
     auto clone() const -> Set<T, TTraits, IsOrdered> {
         return must$(try_clone());
     }
@@ -467,7 +458,6 @@ public:
     /**
      * @brief Removes the given value from this set and returns whether it was existing
      */
-    [[nodiscard]]
     auto remove(T const& value) -> bool {
         auto bucket = lookup_with_hash(TTraits::hash(value), [&value](T const& current) -> bool { return TTraits::equals(value, current); });
         if ( bucket != nullptr ) {
@@ -480,7 +470,6 @@ public:
     /**
      * @brief Removes the element referenced by the given iterator
      */
-    [[nodiscard]]
     auto remove(Iterator iterator) -> bool {
         if ( iterator != end() ) {
             return remove(*iterator.m_bucket);
@@ -492,7 +481,6 @@ public:
     /**
      * @brief Removes all the elements for which the given call_back returns true
      */
-    [[nodiscard]]
     auto remove_all_matching(Predicate<T const&> auto predicate) -> usize {
         /* iterate all the used buckets and give them to the given call_back */
         usize removed_count = 0;
@@ -593,7 +581,6 @@ public:
     /**
      * @brief Returns whether this vector contains the given value
      */
-    [[nodiscard]]
     auto contains(T const& value) const -> bool {
         return find(value).is_present();
     }
@@ -631,15 +618,12 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]]
     auto count() const -> usize {
         return m_values_count;
     }
-    [[nodiscard]]
     auto capacity() const -> usize {
         return m_data_capacity;
     }
-    [[nodiscard]]
     auto is_empty() const -> bool {
         return m_values_count == 0;
     }
@@ -847,7 +831,6 @@ private:
         }
     }
 
-    [[nodiscard]]
     auto lookup_with_hash(usize hash, auto predicate) const -> Bucket* {
         if ( is_empty() ) {
             return nullptr;
@@ -905,22 +888,18 @@ private:
             hash = hash_again(hash);
         }
     }
-    [[nodiscard]]
     auto lookup_for_writing(T const& value) -> Bucket& {
         return *must$(try_lookup_for_writing(value));
     }
 
-    [[nodiscard]]
     auto used_bucket_count() const -> usize {
         return m_values_count + m_deleted_count;
     }
 
-    [[nodiscard]]
     auto should_grow() const -> bool {
         return ((used_bucket_count() + 1) * 100) >= (m_data_capacity * LoadFactorPercent);
     }
 
-    [[nodiscard]]
     static constexpr auto size_in_bytes(usize capacity) -> usize {
         if constexpr ( IsOrdered ) {
             return capacity * sizeof(Bucket);

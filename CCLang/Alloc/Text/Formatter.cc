@@ -13,7 +13,6 @@
 #include <CCLang/Alloc/Text/Format.hh>
 #include <CCLang/Alloc/Text/Formatter.hh>
 #include <CCLang/Core/Assertions.hh>
-#include <CCLang/Core/Math.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/Range.hh>
 #include <CCLang/Lang/Try.hh>

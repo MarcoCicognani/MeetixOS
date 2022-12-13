@@ -28,11 +28,9 @@ public:
      * @brief Non-Error safe factory functions
      */
     template<typename... TArgs>
-    [[nodiscard]]
     static auto from_emplace(TArgs&&... args) -> Box<T> {
         return must$(try_from_emplace(Cxx::forward<TArgs>(args)...));
     }
-    [[nodiscard]]
     static auto new_from_adopt(T& unboxed_ref) -> Box<T> {
         return Box<T>(&unboxed_ref);
     }
@@ -61,17 +59,17 @@ public:
      * @brief Move constructor and move assignment
      */
     Box(Box<T>&& rhs)
-        : m_boxed_array_ptr(Cxx::exchange(rhs.m_boxed_array_ptr, nullptr)) {
+        : m_boxed_ptr(Cxx::exchange(rhs.m_boxed_ptr, nullptr)) {
     }
     auto operator=(Box<T>&& rhs) -> Box<T>& {
-        auto non_null_box = Cxx::move(rhs);
-        swap(non_null_box);
+        Box<T> box = Cxx::move(rhs);
+        swap(box);
         return *this;
     }
 
     ~Box() {
         if ( !is_null() ) [[likely]] {
-            delete m_boxed_array_ptr;
+            delete m_boxed_ptr;
         }
     }
 
@@ -79,7 +77,7 @@ public:
      * @brief Swaps this box with another
      */
     void swap(Box<T>& rhs) {
-        Cxx::swap(m_boxed_array_ptr, rhs.m_boxed_array_ptr);
+        Cxx::swap(m_boxed_ptr, rhs.m_boxed_ptr);
     }
 
     /**
@@ -123,58 +121,52 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard, gnu::returns_nonnull]]
+    [[gnu::returns_nonnull]]
     auto as_ptr() -> T* {
-        verify_not_null$(m_boxed_array_ptr);
-        return m_boxed_array_ptr;
+        verify_not_null_with_msg$(m_boxed_ptr, "Box<T> - Tried to call as_ptr() from `Null` value");
+        return m_boxed_ptr;
     }
-    [[nodiscard, gnu::returns_nonnull]]
+    [[gnu::returns_nonnull]]
     auto as_ptr() const -> T const* {
-        verify_not_null$(m_boxed_array_ptr);
-        return m_boxed_array_ptr;
+        verify_not_null_with_msg$(m_boxed_ptr, "Box<T> - Tried to call as_ptr() from `Null` value");
+        return m_boxed_ptr;
     }
 
-    [[nodiscard]]
     auto as_ref() -> T& {
         return *as_ptr();
     }
-    [[nodiscard]]
     auto as_ref() const -> T const& {
         return *as_ptr();
     }
 
-    [[nodiscard]]
     auto leak_ptr() -> T* {
-        auto boxed_object_ptr = m_boxed_array_ptr;
-        m_boxed_array_ptr     = nullptr;
+        auto boxed_object_ptr = m_boxed_ptr;
+        m_boxed_ptr     = nullptr;
         return boxed_object_ptr;
     }
-    [[nodiscard]]
     auto leak_ref() -> T& {
-        verify_not_null$(m_boxed_array_ptr);
+        verify_not_null_with_msg$(m_boxed_ptr, "Box<T> - Tried to leak_ref() from `Null` value");
         return *leak_ptr();
     }
 
-    [[nodiscard]]
     auto is_null() -> bool {
-        return m_boxed_array_ptr == nullptr;
+        return m_boxed_ptr == nullptr;
     }
 
     /**
      * @brief Hash support
      */
-    [[nodiscard]]
     auto hash_code() const {
-        return usize(Cxx::bit_cast<usize::NativeInt>(m_boxed_array_ptr)).hash_code();
+        return usize((usize::NativeInt)m_boxed_ptr).hash_code();
     }
 
 private:
     explicit Box(T* unboxed_ptr)
-        : m_boxed_array_ptr(unboxed_ptr) {
+        : m_boxed_ptr(unboxed_ptr) {
     }
 
 private:
-    T* m_boxed_array_ptr;
+    T* m_boxed_ptr;
 };
 
 template<typename T>
@@ -183,7 +175,6 @@ public:
     /**
      * @brief Non-Error safe factory functions
      */
-    [[nodiscard]]
     static auto from_len(usize len) -> Box<T[]> {
         return must$(try_from_len(len));
     }
@@ -191,7 +182,6 @@ public:
     /**
      * @brief Error safe Factory functions
      */
-    [[nodiscard]]
     static auto try_from_len(usize len) -> ErrorOr<Box<T[]>> {
         auto unboxed_array_ptr = new (nothrow) T[len.unwrap()];
         if ( unboxed_array_ptr != nullptr ) [[likely]] {
@@ -208,8 +198,8 @@ public:
         : m_boxed_array_ptr(Cxx::exchange(rhs.m_boxed_array_ptr, nullptr)) {
     }
     auto operator=(Box<T[]>&& rhs) -> Box<T[]>& {
-        auto non_null_box = Cxx::move(rhs);
-        swap(non_null_box);
+        Box<T> box = Cxx::move(rhs);
+        swap(box);
         return *this;
     }
 
@@ -251,25 +241,23 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard, gnu::returns_nonnull]]
+    [[gnu::returns_nonnull]]
     auto as_ptr() -> T* {
-        verify_not_null$(m_boxed_array_ptr);
+        verify_not_null_with_msg$(m_boxed_array_ptr, "Box<T[]> - Tried to call as_ptr() from `Null` value");
         return m_boxed_array_ptr;
     }
-    [[nodiscard, gnu::returns_nonnull]]
+    [[gnu::returns_nonnull]]
     auto as_ptr() const -> T const* {
-        verify_not_null$(m_boxed_array_ptr);
+        verify_not_null_with_msg$(m_boxed_array_ptr, "Box<T[]> - Tried to call as_ptr() from `Null` value");
         return m_boxed_array_ptr;
     }
 
-    [[nodiscard]]
     auto leak_ptr() -> T* {
         auto boxed_array_ptr = m_boxed_array_ptr;
         m_boxed_array_ptr    = nullptr;
         return boxed_array_ptr;
     }
 
-    [[nodiscard]]
     auto is_null() -> bool {
         return m_boxed_array_ptr == nullptr;
     }
@@ -277,9 +265,8 @@ public:
     /**
      * @brief Hash support
      */
-    [[nodiscard]]
     auto hash_code() const {
-        return usize(Cxx::bit_cast<usize::NativeInt>(m_boxed_array_ptr)).hash_code();
+        return usize((usize::NativeInt)m_boxed_array_ptr).hash_code();
     }
 
 private:

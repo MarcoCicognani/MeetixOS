@@ -37,20 +37,16 @@ public:
     /**
      * @brief Construction functions
      */
-    [[nodiscard]]
     static auto from_begin(TVector* vector) -> VectorIterator {
         return VectorIterator<TVector, T, IsReverse>{ vector, 0 };
     }
-    [[nodiscard]]
     static auto from_end(TVector* vector) -> VectorIterator {
         return VectorIterator<TVector, T, IsReverse>{ vector, vector->count() };
     }
 
-    [[nodiscard]]
     static auto from_rbegin(TVector* vector) -> VectorIterator {
         return VectorIterator<TVector, T, IsReverse>{ vector, vector->count() - 1 };
     }
-    [[nodiscard]]
     static auto from_rend(TVector* vector) -> VectorIterator {
         return VectorIterator<TVector, T, IsReverse>{ vector, -1 };
     }
@@ -109,7 +105,6 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]]
     auto is_end() const -> bool {
         if constexpr ( IsReverse ) {
             return m_index == from_rend(m_collection).index();
@@ -117,7 +112,6 @@ public:
             return m_index == from_end(m_collection).index();
         }
     }
-    [[nodiscard]]
     auto index() const -> usize {
         return m_index;
     }
@@ -125,27 +119,21 @@ public:
     /**
      * @brief Comparison operators
      */
-    [[nodiscard]]
     auto operator==(VectorIterator const& rhs) const -> bool {
         return m_index == rhs.m_index;
     }
-    [[nodiscard]]
     auto operator!=(VectorIterator const& rhs) const -> bool {
         return m_index != rhs.m_index;
     }
-    [[nodiscard]]
     auto operator<(VectorIterator const& rhs) const -> bool {
         return m_index < rhs.m_index;
     }
-    [[nodiscard]]
     auto operator>(VectorIterator const& rhs) const -> bool {
         return m_index > rhs.m_index;
     }
-    [[nodiscard]]
     auto operator<=(VectorIterator const& rhs) const -> bool {
         return m_index <= rhs.m_index;
     }
-    [[nodiscard]]
     auto operator>=(VectorIterator const& rhs) const -> bool {
         return m_index >= rhs.m_index;
     }
@@ -177,19 +165,15 @@ public:
     /**
      * @brief Non-Error safe factory functions
      */
-    [[nodiscard]]
     static constexpr auto empty() -> Vector<T> {
         return Vector<T>();
     }
-    [[nodiscard]]
     static auto with_capacity(usize capacity) -> Vector<T> {
         return must$(try_with_capacity(capacity));
     }
-    [[nodiscard]]
     static auto from_other(Vector<T> const& rhs) -> Vector<T> {
         return must$(try_from_other(rhs));
     }
-    [[nodiscard]]
     static auto from_list(Cxx::InitializerList<T> initializer_list) -> Vector<T> {
         return must$(try_from_list(initializer_list));
     }
@@ -246,7 +230,6 @@ public:
     /**
      * @brief Deep cloning
      */
-    [[nodiscard]]
     auto clone() const -> Vector<T> {
         return must$(try_clone());
     }
@@ -483,12 +466,11 @@ public:
         }
 
         /* for first time use the given capacity, otherwise increase the capacity logarithmically */
-        usize new_capacity;
-        if ( m_data_capacity == 0 ) {
-            new_capacity = capacity == 0 ? 16 : capacity;
-        } else {
-            new_capacity = capacity + capacity / 4;
-        }
+        usize new_capacity = ({
+            m_data_capacity == 0 && capacity == 0
+                ? 16
+                : capacity * 2 / 4;
+        });
 
         /* allocate new memory and move the content into it */
         auto new_data_storage = try$(Details::__heap_plug_alloc_mem(new_capacity * sizeof(T))
@@ -558,7 +540,6 @@ public:
     /**
      * @brief Returns whether this vector contains the given value
      */
-    [[nodiscard]]
     auto contains(T const& value) const -> bool {
         return index_of(value).is_present();
     }
@@ -601,48 +582,38 @@ public:
     /**
      * @brief Vector data access
      */
-    [[nodiscard]]
     auto at(usize index) -> T& {
         verify_less$(index, m_values_count);
         return m_data_storage[index];
     }
-    [[nodiscard]]
     auto at(usize index) const -> T const& {
         verify_less$(index, m_values_count);
         return m_data_storage[index];
     }
 
-    [[nodiscard]]
     auto operator[](usize index) -> T& {
         return at(index);
     }
-    [[nodiscard]]
     auto operator[](usize index) const -> T const& {
         return at(index);
     }
 
-    [[nodiscard]]
     auto count() const -> usize {
         return m_values_count;
     }
-    [[nodiscard]]
     auto capacity() const -> usize {
         return m_data_capacity;
     }
-    [[nodiscard]]
     auto raw_data() -> T* {
         return m_data_storage.data();
     }
-    [[nodiscard]]
     auto raw_data() const -> T const* {
         return m_data_storage.data();
     }
 
-    [[nodiscard]]
     auto is_empty() const -> bool {
         return m_values_count == 0;
     }
-    [[nodiscard]]
     auto any() const -> bool {
         return !is_empty();
     }

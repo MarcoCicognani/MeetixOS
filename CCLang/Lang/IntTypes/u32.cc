@@ -56,8 +56,8 @@ u32::u32(__UINT32_TYPE__ value)
 }
 
 auto u32::operator=(__UINT32_TYPE__ value) -> u32& {
-    u32 integer = value;
-    swap(integer);
+    u32 u = value;
+    swap(u);
     return *this;
 }
 
@@ -311,7 +311,7 @@ auto u32::operator++() -> u32& {
 }
 
 auto u32::operator++(int) -> u32 {
-    auto __prev = *this;
+    u32 __prev = *this;
     add_assign(1);
     return __prev;
 }
@@ -322,13 +322,13 @@ auto u32::operator--() -> u32& {
 }
 
 auto u32::operator--(int) -> u32 {
-    auto __prev = *this;
+    u32 __prev = *this;
     sub_assign(1);
     return __prev;
 }
 
 auto u32::try_add(u32 const& rhs) const -> ErrorOr<u32> {
-    u32::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -367,7 +367,7 @@ auto u32::operator+=(u32 const& rhs) -> u32& {
 }
 
 auto u32::try_sub(u32 const& rhs) const -> ErrorOr<u32> {
-    u32::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -406,7 +406,7 @@ auto u32::operator-=(u32 const& rhs) -> u32& {
 }
 
 auto u32::try_mul(u32 const& rhs) const -> ErrorOr<u32> {
-    u32::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {

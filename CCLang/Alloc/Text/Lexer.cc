@@ -12,7 +12,6 @@
 
 #include <CCLang/Alloc/Text/Lexer.hh>
 #include <CCLang/Core/Assertions.hh>
-#include <CCLang/Core/Math.hh>
 
 auto Lexer::from_view(StringView source_view) -> Lexer {
     return Lexer(source_view);
@@ -58,7 +57,7 @@ auto Lexer::consume_line() -> StringView {
         ++m_index;
     }
 
-    usize len = m_index - start_index;
+    usize const len = m_index - start_index;
     consume_specific('\r');
     consume_specific('\n');
     if ( len == 0 ) {

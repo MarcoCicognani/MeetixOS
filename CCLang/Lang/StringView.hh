@@ -66,81 +66,67 @@ public:
     /**
      * @brief Error safe factory function
      */
-    [[nodiscard]]
-    static auto from_cstr(char const*) -> StringView;
-    [[nodiscard]]
+    static auto from_cstr(char const* c_str) -> StringView;
     static auto from_raw_parts(char const* c_str, usize len) -> StringView;
 
     /**
      * @brief Constructors
      */
-    explicit(false) StringView() = default;
-    explicit(false) StringView(StringView const&) = default;
-    explicit(false) StringView(StringView&&);
+    explicit(false) StringView()                      = default;
+    explicit(false) StringView(StringView const& rhs) = default;
+    explicit(false) StringView(StringView&& rhs);
 
     ~StringView() = default;
 
-    auto operator=(StringView const&) -> StringView&;
-    auto operator=(StringView&&) -> StringView&;
+    auto operator=(StringView const& rhs) -> StringView&;
+    auto operator=(StringView&& rhs) -> StringView&;
 
     /**
      * @brief Swaps this string view with another
      */
-    auto swap(StringView&) -> void;
+    auto swap(StringView& rhs) -> void;
 
     /**
      * @brief Access operators
      */
-    [[nodiscard]]
     auto at(usize index) const -> char const&;
-    [[nodiscard]]
     auto operator[](usize index) const -> char const&;
 
     /**
      * @brief Compares this string view with another
      */
-    [[nodiscard]]
-    auto compare(StringView) const -> Order;
-    [[nodiscard]]
-    auto equals_ignore_case(StringView) const -> bool;
+    auto compare(StringView rhs) const -> Order;
+    auto equals_ignore_case(StringView rhs) const -> bool;
 
     /**
      * @brief Returns a sub_string_view of this string view
      */
-    [[nodiscard]]
     auto sub_string_view(usize start) const -> StringView;
-    [[nodiscard]]
     auto sub_string_view(usize start, usize count) const -> StringView;
 
     /**
      * @brief Returns a sub-StringView of this trimmed out of chars
      */
-    [[nodiscard]]
-    auto trim(StringView chars, TrimMode = TrimMode::Both) const -> StringView;
-    [[nodiscard]]
-    auto trim_whitespaces(TrimMode = TrimMode::Both) const -> StringView;
+    auto trim(StringView chars, TrimMode trim_mode = TrimMode::Both) const -> StringView;
+    auto trim_whitespaces(TrimMode trim_mode = TrimMode::Both) const -> StringView;
 
     /**
      * @brief Returns whether the given rhs is at the start of this string view
      */
-    [[nodiscard]]
-    auto starts_with(StringView rhs, CaseSensible = CaseSensible::Yes) const -> bool;
-    [[nodiscard]]
-    auto starts_with(char rhs, CaseSensible = CaseSensible::Yes) const -> bool;
+    auto starts_with(StringView rhs, CaseSensible case_sensible = CaseSensible::Yes) const -> bool;
+    auto starts_with(char rhs, CaseSensible case_sensible = CaseSensible::Yes) const -> bool;
 
-    [[nodiscard]]
-    auto ends_with(StringView rhs, CaseSensible = CaseSensible::Yes) const -> bool;
-    [[nodiscard]]
-    auto ends_with(char rhs, CaseSensible = CaseSensible::Yes) const -> bool;
+    auto ends_with(StringView rhs, CaseSensible case_sensible = CaseSensible::Yes) const -> bool;
+    auto ends_with(char rhs, CaseSensible case_sensible = CaseSensible::Yes) const -> bool;
 
     /**
      * @brief Converts this StringView into an integer
      */
     template<typename T = i32>
-    auto as_int(IntBase = IntBase::Decimal, ParseMode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
+    auto as_int(IntBase int_base = IntBase::Decimal, ParseMode parse_mode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
 
     template<typename T = u32>
-    auto as_uint(IntBase = IntBase::Decimal, ParseMode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
+    auto as_uint(IntBase int_base = IntBase::Decimal, ParseMode parse_mode = ParseMode::TrimWhitesAndBeginToEnd) const -> ErrorOr<T>;
 
     /**
      * @brief Returns the index of the given needle into the src StringView
@@ -164,44 +150,33 @@ public:
     /**
      * @brief Returns all the indexes of needle inside the src StringView
      */
-    [[nodiscard]]
-    auto find_all(StringView) const -> Vector<usize>;
-    auto try_find_all(StringView) const -> ErrorOr<Vector<usize>>;
+    auto find_all(StringView needle) const -> Vector<usize>;
+    auto try_find_all(StringView needle) const -> ErrorOr<Vector<usize>>;
 
     /**
      * @brief Splits this StringView and puts the split_view values into a vector or pass them to a predicate
      */
-    [[nodiscard]]
-    auto split_view(char separator, KeepEmpty = KeepEmpty::No) const -> Vector<StringView>;
-    [[nodiscard]]
-    auto split_view(StringView separator, KeepEmpty = KeepEmpty::No) const -> Vector<StringView>;
+    auto split_view(char separator, KeepEmpty keep_empty = KeepEmpty::No) const -> Vector<StringView>;
+    auto split_view(StringView separator, KeepEmpty keep_empty = KeepEmpty::No) const -> Vector<StringView>;
 
-    auto try_split_view(char separator, KeepEmpty = KeepEmpty::No) const -> ErrorOr<Vector<StringView>>;
-    auto try_split_view(StringView separator, KeepEmpty = KeepEmpty::No) const -> ErrorOr<Vector<StringView>>;
+    auto try_split_view(char separator, KeepEmpty keep_empty = KeepEmpty::No) const -> ErrorOr<Vector<StringView>>;
+    auto try_split_view(StringView separator, KeepEmpty keep_empty = KeepEmpty::No) const -> ErrorOr<Vector<StringView>>;
 
     /**
      * @brief Comparison operators
      */
-    [[nodiscard]]
-    auto operator==(StringView const&) const -> bool;
-    [[nodiscard]]
-    auto operator!=(StringView const&) const -> bool;
-    [[nodiscard]]
-    auto operator<(StringView const&) const -> bool;
-    [[nodiscard]]
-    auto operator<=(StringView const&) const -> bool;
-    [[nodiscard]]
-    auto operator>(StringView const&) const -> bool;
-    [[nodiscard]]
-    auto operator>=(StringView const&) const -> bool;
+    auto operator==(StringView const& rhs) const -> bool;
+    auto operator!=(StringView const& rhs) const -> bool;
+    auto operator<(StringView const& rhs) const -> bool;
+    auto operator<=(StringView const& rhs) const -> bool;
+    auto operator>(StringView const& rhs) const -> bool;
+    auto operator>=(StringView const& rhs) const -> bool;
 
     /**
      * @brief Returns whether the given rhs is contained into this StringView
      */
-    [[nodiscard]]
-    auto contains(StringView rhs, CaseSensible = CaseSensible::Yes) const -> bool;
-    [[nodiscard]]
-    auto contains(char rhs, CaseSensible = CaseSensible::Yes) const -> bool;
+    auto contains(StringView rhs, CaseSensible case_sensible = CaseSensible::Yes) const -> bool;
+    auto contains(char rhs, CaseSensible case_sensible = CaseSensible::Yes) const -> bool;
 
     /**
      * @brief For-each support
@@ -219,28 +194,21 @@ public:
     /**
      * @brief Slice
      */
-    [[nodiscard]]
     auto as_slice() const -> Slice<char const>;
 
     /**
      * @brief Hashing support
      */
-    [[nodiscard]]
     auto hash_code() const -> usize;
 
     /**
      * @brief Getters
      */
-    [[nodiscard]]
     auto as_cstr() const -> char const*;
-    [[nodiscard]]
     auto len() const -> usize;
 
-    [[nodiscard]]
     auto is_empty() const -> bool;
-    [[nodiscard]]
     auto is_null() const -> bool;
-    [[nodiscard]]
     auto is_null_or_empty() const -> bool;
 
 private:
@@ -250,7 +218,6 @@ private:
     Slice<char const> m_chars_slice = Slice<char const>::empty();
 };
 
-[[nodiscard]]
 auto operator""sv(char const* c_str, __SIZE_TYPE__ len) -> StringView {
     return StringView::from_raw_parts(c_str, len);
 }

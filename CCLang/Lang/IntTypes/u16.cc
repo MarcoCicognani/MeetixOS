@@ -56,8 +56,8 @@ u16::u16(__UINT16_TYPE__ value)
 }
 
 auto u16::operator=(__UINT16_TYPE__ value) -> u16& {
-    u16 integer = value;
-    swap(integer);
+    u16 u = value;
+    swap(u);
     return *this;
 }
 

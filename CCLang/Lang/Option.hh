@@ -108,7 +108,6 @@ public:
     /**
      * @brief Returns the value of this option
      */
-    [[nodiscard]]
     auto unwrap_or(T const& default_value) -> T {
         if ( is_present() ) {
             return unwrap();
@@ -132,7 +131,6 @@ public:
     /**
      * @brief Returns whether the value is present
      */
-    [[nodiscard]]
     auto is_present() const -> bool {
         return m_is_present;
     }
@@ -140,7 +138,6 @@ public:
     /**
      * @brief Tryable support
      */
-    [[nodiscard]]
     auto unwrap(char const* msg = "Tried to unwrap a `None` Option<T>") -> T {
         verify_false_with_msg$(is_present(), msg);
 
@@ -148,22 +145,18 @@ public:
         reset();
         return __value;
     }
-    [[nodiscard]]
     auto __propagate_failure() const -> OptionNoneTag {
         verify_false_with_msg$(is_present(), "Tried to propagate failure from a `Some` Option<T>");
         return OptionNone;
     }
-    [[nodiscard]]
     auto __is_bad_variant() const -> bool {
         return !m_is_present;
     }
 
 private:
-    [[nodiscard]]
     auto storage_as_ref() -> T& {
         return *Cxx::bit_cast<T*>(&m_data_storage);
     }
-    [[nodiscard]]
     auto storage_as_ref() const -> T const& {
         return *Cxx::bit_cast<T const*>(&m_data_storage);
     }
@@ -238,7 +231,6 @@ public:
     /**
      * @brief Returns the value of this option
      */
-    [[nodiscard]]
     auto unwrap_or(T default_value) -> T {
         if ( is_present() ) {
             return unwrap();
@@ -257,7 +249,6 @@ public:
     /**
      * @brief Returns whether the value is present
      */
-    [[nodiscard]]
     auto is_present() const -> bool {
         return m_optional_ptr != nullptr;
     }
@@ -265,17 +256,14 @@ public:
     /**
      * @brief Tryable support
      */
-    [[nodiscard]]
     auto unwrap(char const* msg = "Tried to unwrap a `None` Option<T>") -> T {
         verify_with_msg$(is_present(), msg);
         return *Cxx::exchange(m_optional_ptr, nullptr);
     }
-    [[nodiscard]]
     auto __propagate_failure() const -> OptionNoneTag {
         verify_false_with_msg$(is_present(), "Tried to propagate failure from a `Some` Option<T>");
         return OptionNone;
     }
-    [[nodiscard]]
     auto __is_bad_variant() const -> bool {
         return !is_present();
     }

@@ -103,7 +103,6 @@ template<typename T>
 using InitializerList = std::initializer_list<T>;
 
 template<typename T, typename U>
-[[nodiscard]]
 constexpr auto bit_cast(U const& from) -> T {
     return __builtin_bit_cast(T, from);
 }

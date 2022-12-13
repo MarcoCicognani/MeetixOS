@@ -55,8 +55,8 @@ usize::usize(__SIZE_TYPE__ value)
 }
 
 auto usize::operator=(__SIZE_TYPE__ value) -> usize& {
-    usize integer = value;
-    swap(integer);
+    usize u = value;
+    swap(u);
     return *this;
 }
 
@@ -310,7 +310,7 @@ auto usize::operator++() -> usize& {
 }
 
 auto usize::operator++(int) -> usize {
-    auto __prev = *this;
+    usize __prev = *this;
     add_assign(1);
     return __prev;
 }
@@ -321,13 +321,13 @@ auto usize::operator--() -> usize& {
 }
 
 auto usize::operator--(int) -> usize {
-    auto __prev = *this;
+    usize __prev = *this;
     sub_assign(1);
     return __prev;
 }
 
 auto usize::try_add(usize const& rhs) const -> ErrorOr<usize> {
-    usize::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -366,7 +366,7 @@ auto usize::operator+=(usize const& rhs) -> usize& {
 }
 
 auto usize::try_sub(usize const& rhs) const -> ErrorOr<usize> {
-    usize::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -405,7 +405,7 @@ auto usize::operator-=(usize const& rhs) -> usize& {
 }
 
 auto usize::try_mul(usize const& rhs) const -> ErrorOr<usize> {
-    usize::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {

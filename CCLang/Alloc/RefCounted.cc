@@ -15,11 +15,11 @@
 
 auto RefCounted::add_strong_ref() const -> void {
     auto const old_strong_count = m_strong_ref_count.atomic_fetch_add(1, MemOrder::Relaxed);
-    verify_greater_equal$(old_strong_count, 1);
+    verify_greater_equal_with_msg$(old_strong_count, 1, "RefCounted - Tried to add_strong_ref() to a dead reference");
 }
 auto RefCounted::remove_strong_ref() const -> void {
     auto const old_strong_count = m_strong_ref_count.atomic_fetch_sub(1, MemOrder::Total);
-    verify_greater_equal$(old_strong_count, 1);
+    verify_greater_equal_with_msg$(old_strong_count, 1, "RefCounted - Tried to remove_strong_ref() from a dead reference");
 
     /* time to free the referenced object */
     if ( old_strong_count - 1 == 0 )

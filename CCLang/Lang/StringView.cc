@@ -464,7 +464,7 @@ auto StringView::try_split_view(char separator, KeepEmpty keep_empty) const -> E
 
 auto StringView::try_split_view(StringView separator, KeepEmpty keep_empty) const -> ErrorOr<Vector<StringView>> {
     auto vector = Vector<StringView>::empty();
-    try$(try_split_view_if_helper(*this, separator, keep_empty,[&vector](StringView string_view) -> ErrorOr<void> {
+    try$(try_split_view_if_helper(*this, separator, keep_empty, [&vector](StringView string_view) -> ErrorOr<void> {
         try$(vector.try_append(string_view));
         return {};
     }));
@@ -484,7 +484,12 @@ auto StringView::operator<(StringView const& rhs) const -> bool {
 }
 
 auto StringView::operator<=(StringView const& rhs) const -> bool {
-    return len() <= rhs.len() || compare(rhs) == Order::Less || compare(rhs) == Order::Equal; /* FIXME not the best solution for the efficiency */
+    if ( len() <= rhs.len() ) {
+        return true;
+    } else {
+        auto const res = compare(rhs);
+        return res == Order::Equal || res == Order::Less;
+    }
 }
 
 auto StringView::operator>(StringView const& rhs) const -> bool {
@@ -492,7 +497,12 @@ auto StringView::operator>(StringView const& rhs) const -> bool {
 }
 
 auto StringView::operator>=(StringView const& rhs) const -> bool {
-    return len() >= rhs.len() || compare(rhs) == Order::Greater || compare(rhs) == Order::Equal; /* FIXME not the best solution for the efficiency */
+    if ( len() >= rhs.len() ) {
+        return true;
+    } else {
+        auto const res = compare(rhs);
+        return res == Order::Equal || res == Order::Greater;
+    }
 }
 
 auto StringView::contains(StringView rhs, CaseSensible case_sensible) const -> bool {

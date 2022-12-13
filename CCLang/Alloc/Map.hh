@@ -55,11 +55,11 @@ private:
     };
 
     struct KeyValueTraits final {
-        static constexpr auto equals(KeyValue const& a, KeyValue const& b) -> bool {
+        static auto equals(KeyValue const& a, KeyValue const& b) -> bool {
             return KTraits::equals(a.m_key, b.m_key);
         }
 
-        static constexpr auto hash(KeyValue const& pair) -> usize {
+        static auto hash(KeyValue const& pair) -> usize {
             return KTraits::hash(pair.m_key);
         }
 
@@ -80,19 +80,15 @@ public:
     /**
      * @brief Non-Error safe factory functions
      */
-    [[nodiscard]]
-    static constexpr auto empty() -> Map<K, T, KTraits, IsOrdered> {
+    static auto empty() -> Map<K, T, KTraits, IsOrdered> {
         return Map<K, T, KTraits, IsOrdered>();
     }
-    [[nodiscard]]
     static auto with_capacity(usize capacity) -> Map<K, T, KTraits, IsOrdered> {
         return must$(try_with_capacity(capacity));
     }
-    [[nodiscard]]
     static auto from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> Map<K, T, KTraits, IsOrdered> {
         return must$(try_from_other(rhs));
     }
-    [[nodiscard]]
     static auto from_list(Cxx::InitializerList<KeyValue> initializer_list) -> Map<K, T, KTraits, IsOrdered> {
         return must$(try_from_list(initializer_list));
     }
@@ -107,15 +103,17 @@ public:
     }
     static auto try_from_other(Map<K, T, KTraits, IsOrdered> const& rhs) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
         auto map = try$(try_with_capacity(rhs.count()));
-        for ( auto const& key_value : rhs )
+        for ( auto const& key_value : rhs ) {
             try$(map.try_insert(try$(key_value.try_clone())));
+        }
 
         return map;
     }
     static auto try_from_list(Cxx::InitializerList<KeyValue> initializer_list) -> ErrorOr<Map<K, T, KTraits, IsOrdered>> {
         auto map = try$(try_with_capacity(initializer_list.size()));
-        for ( auto const& key_value : initializer_list ) /* even with auto initializer_list exposes only T const& */
+        for ( auto const& key_value : initializer_list ) { /* even with auto initializer_list exposes only T const& */
             try$(map.try_insert(Cxx::move(const_cast<KeyValue&>(key_value))));
+        }
 
         return map;
     }
@@ -127,7 +125,7 @@ public:
         : m_hash_set(Cxx::move(rhs.m_hash_set)) {
     }
     auto operator=(Map<K, T, KTraits, IsOrdered>&& rhs) -> Map<K, T, KTraits, IsOrdered>& {
-        auto map = Cxx::move(rhs);
+        Map<K, T, KTraits, IsOrdered> map = Cxx::move(rhs);
         swap(map);
         return *this;
     }
@@ -137,7 +135,6 @@ public:
     /**
      * @brief Deep cloning
      */
-    [[nodiscard]]
     auto clone() const -> Map<K, T, KTraits, IsOrdered> {
         return must$(try_clone());
     }
@@ -209,11 +206,9 @@ public:
     /**
      * @brief Returns whether this map has the given key or the given value
      */
-    [[nodiscard]]
     auto has_key(K const& key) const -> bool {
         return find(key).is_present();
     }
-    [[nodiscard]]
     auto has_value(T const& value) const -> bool {
         return any_of<KeyValue>(begin(), end(), [&value](auto const& pair) { return TypeTraits<T>::equals(pair.m_value, value); });
     }
@@ -221,7 +216,6 @@ public:
     /**
      * @brief Erases from this map the given key or alle the keys related to the given value
      */
-    [[nodiscard]]
     auto remove(K const& key) -> bool {
         return find(key)
             .template map<bool>([this](KeyValue const& pair) {
@@ -230,7 +224,6 @@ public:
             })
             .unwrap_or(false);
     }
-    [[nodiscard]]
     auto remove_all_matching(Predicate<KeyValue const&> auto predicate) -> usize {
         return m_hash_set.remove_all_matching([&predicate](auto const& pair) -> bool { return predicate(pair); });
     }
@@ -289,15 +282,12 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]]
     auto count() const -> usize {
         return m_hash_set.count();
     }
-    [[nodiscard]]
     auto capacity() const -> usize {
         return m_hash_set.capacity();
     }
-    [[nodiscard]]
     auto is_empty() const -> bool {
         return m_hash_set.is_empty();
     }

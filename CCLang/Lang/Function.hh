@@ -16,7 +16,6 @@
 
 #include <CCLang/Core/Assertions.hh>
 #include <CCLang/Core/Concept.hh>
-#include <CCLang/Core/Math.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/DenyCopy.hh>
 #include <CCLang/Lang/IntTypes.hh>
@@ -115,7 +114,6 @@ private:
         TCallable m_callable;
     };
 
-    [[nodiscard]]
     auto storage_as_callable() const -> ICallable* {
         return Cxx::bit_cast<ICallable*>(&m_inline_storage);
     }

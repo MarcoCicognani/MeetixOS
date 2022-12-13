@@ -66,7 +66,7 @@ auto kmp_find_in_memory(Slice<u8 const> haystack, Slice<u8 const> needle) -> Opt
     /* prepare the KMP partial table */
     auto error_or_partial_table = prepare_kmp_partial_table();
     if ( error_or_partial_table.is_error() ) {
-        return {};
+        return OptionNone;
     }
 
     auto const kmp_partial_table = error_or_partial_table.unwrap();

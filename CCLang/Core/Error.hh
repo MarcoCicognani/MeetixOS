@@ -30,34 +30,26 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]]
-    static auto from_code(ErrorCode,
-                          FromSyscall    = FromSyscall::No,
-                          SourceLocation = SourceLocation::from_here()) -> Error;
-    [[nodiscard]]
-    static auto from_literal(StringView,
-                             FromSyscall    = FromSyscall::No,
-                             SourceLocation = SourceLocation::from_here()) -> Error;
+    static auto from_code(ErrorCode      error_code,
+                          FromSyscall    from_syscall    = FromSyscall::No,
+                          SourceLocation source_location = SourceLocation::from_here()) -> Error;
+    static auto from_literal(StringView     string_literals,
+                             FromSyscall    from_syscall    = FromSyscall::No,
+                             SourceLocation source_location = SourceLocation::from_here()) -> Error;
 
     /**
      * @brief Getters
      */
-    [[nodiscard]]
     auto code() const -> ErrorCode;
-    [[nodiscard]]
     auto string_literal() const -> StringView;
-    [[nodiscard]]
     auto is_from_syscall() const -> FromSyscall;
-    [[nodiscard]]
     auto source_location() const -> SourceLocation;
 
-    [[nodiscard]]
-    auto operator==(ErrorCode const&) const -> bool;
-    [[nodiscard]]
-    auto operator==(StringView) const -> bool;
+    auto operator==(ErrorCode const& rhs) const -> bool;
+    auto operator==(StringView rhs) const -> bool;
 
 private:
-    explicit Error(ErrorCode, StringView, FromSyscall, SourceLocation);
+    explicit Error(ErrorCode error_code, StringView string_literals, FromSyscall from_syscall, SourceLocation source_location);
 
 private:
     ErrorCode      m_error_code;

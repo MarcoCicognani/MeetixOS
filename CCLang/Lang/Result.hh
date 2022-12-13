@@ -117,11 +117,9 @@ public:
     /**
      * @brief Returns whether this result contains a value or an error
      */
-    [[nodiscard]]
     auto is_value() const -> bool {
         return m_value_option.is_present();
     }
-    [[nodiscard]]
     auto is_error() const -> bool {
         return m_error_option.is_present();
     }
@@ -129,21 +127,17 @@ public:
     /**
      * @brief Tryable support
      */
-    [[nodiscard]]
     auto unwrap() -> T {
         verify_with_msg$(is_value(), "Tried to unwrap on a `E` variant Result<T, E>");
         return m_value_option.unwrap();
     }
-    [[nodiscard]]
     auto unwrap_error() -> E {
         verify_with_msg$(is_error(), "Tried to unwrap error on a `T` variant Result<T, E>");
         return m_error_option.unwrap();
     }
-    [[nodiscard]]
     auto __propagate_failure() -> E {
         return unwrap_error();
     }
-    [[nodiscard]]
     auto __is_bad_variant() const -> bool {
         return is_error();
     }
@@ -231,11 +225,9 @@ public:
     /**
      * @brief Returns whether this result contains a value or an code
      */
-    [[nodiscard]]
     auto is_value() const -> bool {
         return !is_error();
     }
-    [[nodiscard]]
     auto is_error() const -> bool {
         return m_error_option.is_present();
     }
@@ -246,17 +238,14 @@ public:
     void unwrap() const {
         verify_with_msg$(is_value(), "Tried to unwrap on a `E` variant Result<T, E>");
     }
-    [[nodiscard]]
     auto unwrap_error() -> E {
         verify_with_msg$(is_error(), "Tried to unwrap error on a `T` variant Result<T, E>");
         return m_error_option.unwrap();
     }
 
-    [[nodiscard]]
     auto __propagate_failure() -> E {
         return unwrap_error();
     }
-    [[nodiscard]]
     auto __is_bad_variant() const -> bool {
         return is_error();
     }
@@ -356,11 +345,9 @@ public:
     /**
      * @brief Returns whether this result contains a value or an code
      */
-    [[nodiscard]]
     auto is_value() const -> bool {
         return m_value_option.is_present();
     }
-    [[nodiscard]]
     auto is_error() const -> bool {
         return m_error_option.is_present();
     }
@@ -368,22 +355,18 @@ public:
     /**
      * @brief Tryable support
      */
-    [[nodiscard]]
     auto unwrap() -> T {
         verify_with_msg$(is_value(), "Tried to unwrap on a `E` variant Result<T, E>");
         return m_value_option.unwrap();
     }
-    [[nodiscard]]
     auto unwrap_error() -> E {
         verify_with_msg$(is_error(), "Tried to unwrap error on a `T` variant Result<T, E>");
         return m_error_option.unwrap();
     }
 
-    [[nodiscard]]
     auto __propagate_failure() -> E {
         return unwrap_error();
     }
-    [[nodiscard]]
     auto __is_bad_variant() const -> bool {
         return is_error();
     }

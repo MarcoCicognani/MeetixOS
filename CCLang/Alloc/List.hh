@@ -32,16 +32,13 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]]
-    static constexpr auto empty() -> ListIterator<TList, T, IsReverse> {
+    static auto empty() -> ListIterator<TList, T, IsReverse> {
         return ListIterator<TList, T, IsReverse>();
     }
-    [[nodiscard]]
-    static constexpr auto from_begin(TList* list) -> ListIterator<TList, T, IsReverse> {
+    static auto from_begin(TList* list) -> ListIterator<TList, T, IsReverse> {
         return ListIterator<TList, T, IsReverse>(list, list->m_head_node);
     }
-    [[nodiscard]]
-    static constexpr auto from_rbegin(TList* list) -> ListIterator<TList, T, IsReverse> {
+    static auto from_rbegin(TList* list) -> ListIterator<TList, T, IsReverse> {
         return ListIterator<TList, T, IsReverse>(list, list->m_tail_node);
     }
 
@@ -53,7 +50,7 @@ public:
      */
     auto operator++() -> ListIterator& {
         if ( m_current_node != nullptr ) {
-            if constexpr ( IsReverse ) {
+            if ( IsReverse ) {
                 m_current_node = m_current_node->m_prev_node;
             } else {
                 m_current_node = m_current_node->m_next_node;
@@ -104,7 +101,6 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]]
     auto is_end() const -> bool {
         return m_current_node == nullptr;
     }
@@ -123,8 +119,8 @@ public:
 private:
     friend TList;
 
-    explicit constexpr ListIterator() = default;
-    explicit constexpr ListIterator(TList* list, typename TList::Node* current_node)
+    explicit ListIterator() = default;
+    explicit ListIterator(TList* list, typename TList::Node* current_node)
         : m_list(list)
         , m_current_node(current_node) {
     }
@@ -170,15 +166,12 @@ public:
     /**
      * @brief Non-Error safe factory functions
      */
-    [[nodiscard]]
-    static constexpr auto empty() -> List<T> {
+    static auto empty() -> List<T> {
         return List<T>();
     }
-    [[nodiscard]]
     static auto from_other(List<T> const& rhs) -> List<T> {
         return must$(try_from_other(rhs));
     }
-    [[nodiscard]]
     static auto from_list(Cxx::InitializerList<T> initializer_list) -> List<T> {
         return must$(try_from_list(initializer_list));
     }
@@ -189,11 +182,11 @@ public:
     static auto try_from_other(List<T> const& rhs) -> ErrorOr<List<T>> {
         auto list = List<T>::empty();
         for ( auto const& e : rhs ) {
-            if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
+            if ( TryCloneable<T, ErrorOr<T>> ) {
                 try$(list.try_append(try$(e.try_clone())));
-            } else if constexpr ( Cloneable<T> ) {
+            } else if ( Cloneable<T> ) {
                 try$(list.try_append(e.clone()));
-            } else if constexpr ( CopyConstructible<T> ) {
+            } else if ( CopyConstructible<T> ) {
                 try$(list.try_append(e));
             }
         }
@@ -202,8 +195,9 @@ public:
     }
     static auto try_from_list(Cxx::InitializerList<T> initializer_list) -> ErrorOr<List<T>> {
         auto list = List<T>::empty();
-        for ( auto const& e : initializer_list ) /* even with <auto> the <InitializerList> exposes only <T const&> */
+        for ( auto const& e : initializer_list ) { /* even with <auto> the <InitializerList> exposes only <T const&> */
             try$(list.try_append(Cxx::move(const_cast<T&>(e))));
+        }
 
         return list;
     }
@@ -217,7 +211,7 @@ public:
         , m_values_count(Cxx::exchange(rhs.m_values_count, 0)) {
     }
     auto operator=(List<T>&& rhs) -> List<T>& {
-        auto list = Cxx::move(rhs);
+        List<T> list = Cxx::move(rhs);
         swap(list);
         return *this;
     }
@@ -229,7 +223,6 @@ public:
     /**
      * @brief Deep cloning
      */
-    [[nodiscard]]
     auto clone() const -> List<T> {
         return must$(try_clone());
     }
@@ -254,7 +247,7 @@ public:
     /**
      * @brief Swaps in O(1) the content of this List with another
      */
-    constexpr auto swap(List<T>& rhs) {
+    auto swap(List<T>& rhs) {
         Cxx::swap(m_head_node, rhs.m_head_node);
         Cxx::swap(m_tail_node, rhs.m_tail_node);
         Cxx::swap(m_values_count, rhs.m_values_count);
@@ -268,14 +261,16 @@ public:
     }
     auto try_append(T value) -> ErrorOr<void> {
         auto const new_node = new (nothrow) Node(Cxx::move(value));
-        if ( new_node == nullptr )
+        if ( new_node == nullptr ) [[unlikely]] {
             return Error::from_code(ErrorCode::NoMemory);
+        }
 
         if ( m_tail_node != nullptr ) {
             m_tail_node->m_next_node = new_node;
             new_node->m_prev_node    = m_tail_node;
-        } else
+        } else {
             m_head_node = new_node;
+        }
 
         m_tail_node = new_node;
         ++m_values_count;
@@ -290,14 +285,16 @@ public:
     }
     auto try_prepend(T value) -> ErrorOr<void> {
         auto const new_node = new (nothrow) Node(Cxx::move(value));
-        if ( new_node == nullptr )
+        if ( new_node == nullptr ) [[unlikely]] {
             return Error::from_code(ErrorCode::NoMemory);
+        }
 
         if ( m_head_node != nullptr ) {
             m_head_node->m_prev_node = new_node;
             new_node->m_next_node    = m_head_node;
-        } else
+        } else {
             m_tail_node = new_node;
+        }
 
         m_head_node = new_node;
         ++m_values_count;
@@ -310,10 +307,11 @@ public:
     auto erase_if(Predicate<T const&> auto predicate) {
         auto it = begin();
         while ( it != end() ) {
-            if ( predicate(*it) )
+            if ( predicate(*it) ) {
                 it = it.erase();
-            else
+            } else {
                 ++it;
+            }
         }
     }
 
@@ -332,15 +330,17 @@ public:
      */
     auto find_if(Predicate<T&> auto predicate) -> Option<T&> {
         for ( auto& node : *this ) {
-            if ( predicate(node) )
+            if ( predicate(node) ) {
                 return node;
+            }
         }
         return {};
     }
     auto find_if(Predicate<T const&> auto predicate) const -> Option<T const&> {
         for ( auto const& node : *this ) {
-            if ( predicate(node) )
+            if ( predicate(node) ) {
                 return node;
+            }
         }
         return {};
     }
@@ -396,71 +396,65 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]]
     auto count() const -> usize {
         return m_values_count;
     }
-    [[nodiscard]]
     auto is_empty() const -> bool {
         return count() == 0;
     }
 
-    [[nodiscard]]
     auto head() -> Node* {
         return m_head_node;
     }
-    [[nodiscard]]
     auto head() const -> Node const* {
         return m_head_node;
     }
 
-    [[nodiscard]]
     auto tail() -> Node* {
         return m_tail_node;
     }
-    [[nodiscard]]
     auto tail() const -> Node const* {
         return m_tail_node;
     }
 
-    [[nodiscard]]
     auto first() -> T& {
         verify_not_null$(m_head_node);
         return m_head_node->m_value;
     }
-    [[nodiscard]]
     auto first() const -> T const& {
         verify_not_null$(m_head_node);
         return m_head_node->m_value;
     }
 
-    [[nodiscard]]
     auto last() -> T& {
         verify_not_null$(m_tail_node);
         return m_tail_node->m_value;
     }
-    [[nodiscard]]
     auto last() const -> T const& {
         verify_not_null$(m_tail_node);
         return m_tail_node->m_value;
     }
 
 private:
-    explicit constexpr List() = default;
+    explicit List() = default;
 
     template<typename TIterator>
     auto erase(TIterator& iterator) {
         verify_false$(iterator.is_end());
 
         auto const node_to_erase = iterator.m_current_node;
-        if ( m_head_node == node_to_erase )
+        if ( m_head_node == node_to_erase ) {
             m_head_node = node_to_erase->m_next_node;
-        if ( m_tail_node == node_to_erase )
+        }
+        if ( m_tail_node == node_to_erase ) {
             m_tail_node = node_to_erase->m_prev_node;
-        if ( node_to_erase->m_prev_node != nullptr )
+        }
+        if ( node_to_erase->m_prev_node != nullptr ) {
             node_to_erase->m_prev_node->m_next_node = node_to_erase->m_next_node;
-        if ( node_to_erase->m_next_node != nullptr )
+        }
+        if ( node_to_erase->m_next_node != nullptr ) {
             node_to_erase->m_next_node->m_prev_node = node_to_erase->m_prev_node;
+        }
 
         iterator.delete_node();
         --m_values_count;
@@ -475,7 +469,7 @@ private:
 namespace Cxx {
 
 template<typename T>
-constexpr auto swap(List<T>& lhs, List<T>& rhs) -> void {
+auto swap(List<T>& lhs, List<T>& rhs) -> void {
     lhs.swap(rhs);
 }
 

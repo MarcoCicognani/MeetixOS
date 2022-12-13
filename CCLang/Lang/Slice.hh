@@ -28,20 +28,16 @@ public:
     /**
      * @brief Construction functions
      */
-    [[nodiscard]]
     static auto from_begin(TSlice& slice) -> SliceIterator {
         return SliceIterator(slice, 0);
     }
-    [[nodiscard]]
     static auto from_end(TSlice& slice) -> SliceIterator {
         return SliceIterator(slice, slice.len());
     }
 
-    [[nodiscard]]
     static auto from_rbegin(TSlice& slice) -> SliceIterator {
         return SliceIterator(slice, slice.len().template as<TIndex>() - 1);
     }
-    [[nodiscard]]
     static auto from_rend(TSlice& slice) -> SliceIterator {
         return SliceIterator(slice, -1);
     }
@@ -101,7 +97,6 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]]
     auto is_end() const -> bool {
         if constexpr ( IsReverse ) {
             return m_index.template as<usize>() == from_rend(m_slice).index();
@@ -109,7 +104,6 @@ public:
             return m_index.template as<usize>() == from_end(m_slice).index();
         }
     }
-    [[nodiscard]]
     auto index() const -> usize {
         return m_index.template as<usize>();
     }
@@ -117,27 +111,21 @@ public:
     /**
      * @brief Comparison operators
      */
-    [[nodiscard]]
     auto operator==(SliceIterator<TSlice, T, IsReverse> const& rhs) const -> bool {
         return m_index == rhs.m_index;
     }
-    [[nodiscard]]
     auto operator!=(SliceIterator<TSlice, T, IsReverse> const& rhs) const -> bool {
         return m_index != rhs.m_index;
     }
-    [[nodiscard]]
     auto operator<(SliceIterator<TSlice, T, IsReverse> const& rhs) const -> bool {
         return m_index < rhs.m_index;
     }
-    [[nodiscard]]
     auto operator>(SliceIterator<TSlice, T, IsReverse> const& rhs) const -> bool {
         return m_index > rhs.m_index;
     }
-    [[nodiscard]]
     auto operator<=(SliceIterator<TSlice, T, IsReverse> const& rhs) const -> bool {
         return m_index <= rhs.m_index;
     }
-    [[nodiscard]]
     auto operator>=(SliceIterator<TSlice, T, IsReverse> const& rhs) const -> bool {
         return m_index >= rhs.m_index;
     }
@@ -167,11 +155,9 @@ public:
     using ConstReverseIteratorWrapper = ReverseIteratorSupport::Wrapper<Slice<T> const>;
 
 public:
-    [[nodiscard]]
     static auto empty() -> Slice<T> {
         return Slice<T>();
     }
-    [[nodiscard]]
     static auto from_raw_parts(T* raw_array_ptr, usize raw_array_len) -> Slice<T> {
         return Slice<T>(raw_array_ptr, raw_array_len);
     }
@@ -204,40 +190,32 @@ public:
         Cxx::swap(m_raw_slice_len, rhs.m_raw_slice_len);
     }
 
-    [[nodiscard]]
     auto at(usize index) -> T& {
         verify_less_with_msg$(index, m_raw_slice_len, "Slice<T> - Index out of bounds in at()");
         return m_raw_slice_ptr[index.unwrap()];
     }
-    [[nodiscard]]
     auto at(usize index) const -> T const& {
         verify_less_with_msg$(index, m_raw_slice_len, "Slice<T> - Index out of bounds in at()");
         return m_raw_slice_ptr[index.unwrap()];
     }
 
-    [[nodiscard]]
     auto operator[](usize index) -> T& {
         return at(index);
     }
-    [[nodiscard]]
     auto operator[](usize index) const -> T const& {
         return at(index);
     }
 
-    [[nodiscard]]
     auto first() -> T& {
         return at(0);
     }
-    [[nodiscard]]
     auto first() const -> T const& {
         return at(0);
     }
 
-    [[nodiscard]]
     auto last() -> T& {
         return at(len() - 1);
     }
-    [[nodiscard]]
     auto last() const -> T const& {
         return at(len() - 1);
     }
@@ -289,19 +267,16 @@ public:
         return ReverseIteratorSupport::in_reverse(*this);
     }
 
-    [[nodiscard]]
     auto sub_slice(usize start) const -> Slice<T> {
         verify_less_with_msg$(start, m_raw_slice_len, "Slice<T> - Index out of bounds in sub_slice()");
         return Slice<T>::from_raw_parts(m_raw_slice_ptr + start, len() - start);
     }
-    [[nodiscard]]
     auto sub_slice(usize start, usize count) const -> Slice<T> {
         verify_less_with_msg$(start + count, m_raw_slice_len, "Slice<T> - Index out of bounds in sub_slice()");
         return Slice<T>::from_raw_parts(m_raw_slice_ptr + start, count);
     }
 
     template<typename U>
-    [[nodiscard]]
     auto as_slice_of() const -> Slice<U> {
         return Slice<U>::from_raw_parts(Cxx::bit_cast<U*>(m_raw_slice_ptr), m_raw_slice_len);
     }
@@ -309,28 +284,22 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]]
     auto len() const -> usize {
         return m_raw_slice_len;
     }
-    [[nodiscard]]
     auto is_null() const -> bool {
         return m_raw_slice_ptr == nullptr;
     }
-    [[nodiscard]]
     auto is_empty() const -> bool {
         return m_raw_slice_len == 0;
     }
-    [[nodiscard]]
     auto is_null_or_empty() const -> bool {
         return is_null() || is_empty();
     }
 
-    [[nodiscard]]
     auto data() -> T* {
         return m_raw_slice_ptr;
     }
-    [[nodiscard]]
     auto data() const -> T const* {
         return m_raw_slice_ptr;
     }

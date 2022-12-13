@@ -31,7 +31,6 @@ public:
      * @brief Non-Error safe factory functions
      */
     template<typename... TArgs>
-    [[nodiscard]]
     static auto from_emplace(TArgs&&... args) -> NonNullRef<T> {
         return must$(try_from_emplace(Cxx::forward<TArgs>(args)...));
     }
@@ -61,7 +60,7 @@ public:
         : m_ref_counted_ptr(Cxx::exchange(rhs.m_ref_counted_ptr, nullptr)) {
     }
     auto operator=(NonNullRef<T>&& rhs) -> NonNullRef<T>& {
-        auto non_null_ref = Cxx::move(rhs);
+        NonNullRef<T> non_null_ref = Cxx::move(rhs);
         swap(non_null_ref);
         return *this;
     }
@@ -75,7 +74,8 @@ public:
      * @brief Clones the references only increasing the strong reference count
      */
     auto clone() const -> NonNullRef<T> {
-        verify_not_null_with_msg$(m_ref_counted_ptr, "Tried to clone a `Null` NonNullRef<T> instance");
+        verify_not_null_with_msg$(m_ref_counted_ptr, "NonNullRef<T> - Tried to clone a `Null` NonNullRef<T> instance");
+
         m_ref_counted_ptr->add_strong_ref();
         return NonNullRef<T>(m_ref_counted_ptr);
     }
@@ -128,27 +128,24 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard, gnu::returns_nonnull]]
+    [[gnu::returns_nonnull]]
     auto as_ptr() -> T* {
-        verify_not_null_with_msg$(m_ref_counted_ptr, "NonNullRef<T> - Called as_ptr() on `Null` value");
+        verify_not_null_with_msg$(m_ref_counted_ptr, "NonNullRef<T> - Tried to call as_ptr() from `Null` value");
         return m_ref_counted_ptr;
     }
-    [[nodiscard, gnu::returns_nonnull]]
+    [[gnu::returns_nonnull]]
     auto as_ptr() const -> T const* {
-        verify_not_null_with_msg$(m_ref_counted_ptr, "NonNullRef<T> - Called as_ptr() on `Null` value");
+        verify_not_null_with_msg$(m_ref_counted_ptr, "NonNullRef<T> - Tried to call as_ptr() from `Null` value");
         return m_ref_counted_ptr;
     }
 
-    [[nodiscard]]
     auto as_ref() -> T& {
         return *as_ptr();
     }
-    [[nodiscard]]
     auto as_ref() const -> T const& {
         return *as_ptr();
     }
 
-    [[nodiscard]]
     auto strong_ref_count() const -> usize {
         verify_not_null$(m_ref_counted_ptr);
         return m_ref_counted_ptr->strong_ref_count();
@@ -157,9 +154,8 @@ public:
     /**
      * @brief Hash support
      */
-    [[nodiscard]]
     auto hash_code() const {
-        return usize(Cxx::bit_cast<usize::NativeInt>(m_ref_counted_ptr)).hash_code();
+        return usize((usize::NativeInt)m_ref_counted_ptr).hash_code();
     }
 
 private:

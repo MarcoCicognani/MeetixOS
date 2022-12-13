@@ -26,7 +26,6 @@ public:
     /**
      * @brief Error safe factory functions
      */
-    [[nodiscard]]
     static auto from_current(T current) -> RangeIterator<T, IsReverse> {
         return RangeIterator<T, IsReverse>(current);
     }

@@ -22,23 +22,17 @@ public:
     /**
      * @brief Error safe factory function
      */
-    [[nodiscard]]
-    static auto from_here(char const* = __builtin_FILE(),
-                          char const* = __builtin_FUNCTION(),
-                          u32         = __builtin_LINE()) -> SourceLocation;
+    static auto from_here(char const* file_path = __builtin_FILE(), char const* function = __builtin_FUNCTION(), u32 line = __builtin_LINE()) -> SourceLocation;
 
     /**
      * @brief Getters
      */
-    [[nodiscard]]
     auto file_path() const -> StringView;
-    [[nodiscard]]
     auto function() const -> StringView;
-    [[nodiscard]]
     auto line() const -> u32;
 
 private:
-    explicit SourceLocation(char const*, char const*, u32);
+    explicit SourceLocation(char const* file_path, char const* function, u32 line);
 
 private:
     StringView m_file_path;

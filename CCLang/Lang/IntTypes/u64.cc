@@ -56,8 +56,8 @@ u64::u64(__UINT64_TYPE__ value)
 }
 
 auto u64::operator=(__UINT64_TYPE__ value) -> u64& {
-    u64 integer = value;
-    swap(integer);
+    u64 u = value;
+    swap(u);
     return *this;
 }
 
@@ -328,7 +328,7 @@ auto u64::operator--(int) -> u64 {
 }
 
 auto u64::try_add(u64 const& rhs) const -> ErrorOr<u64> {
-    u64::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -367,7 +367,7 @@ auto u64::operator+=(u64 const& rhs) -> u64& {
 }
 
 auto u64::try_sub(u64 const& rhs) const -> ErrorOr<u64> {
-    u64::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -406,7 +406,7 @@ auto u64::operator-=(u64 const& rhs) -> u64& {
 }
 
 auto u64::try_mul(u64 const& rhs) const -> ErrorOr<u64> {
-    u64::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {

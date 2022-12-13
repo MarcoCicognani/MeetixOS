@@ -12,7 +12,7 @@
 
 #pragma once
 
-enum class Order : int {
+enum class Order : i32::NativeInt {
     Less    = -1,
     Equal   = 0,
     Greater = 1

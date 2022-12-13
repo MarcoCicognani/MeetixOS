@@ -25,7 +25,6 @@ public:
     /**
      * @brief Error safe Factory functions
      */
-    [[nodiscard]]
     static auto try_from_view(StringView) -> ErrorOr<NonNullRef<StringStorage>>;
 
     ~StringStorage() = default;
@@ -33,12 +32,9 @@ public:
     /**
      * @brief Getters
      */
-    [[nodiscard]]
     auto storage_ptr() const -> char const*;
-    [[nodiscard]]
     auto len() const -> usize;
 
-    [[nodiscard]]
     auto is_empty() const -> bool;
 
 private:

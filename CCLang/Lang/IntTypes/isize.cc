@@ -56,8 +56,8 @@ isize::isize(__PTRDIFF_TYPE__ value)
 }
 
 auto isize::operator=(__PTRDIFF_TYPE__ value) -> isize& {
-    isize integer = value;
-    swap(integer);
+    isize i = value;
+    swap(i);
     return *this;
 }
 
@@ -274,7 +274,7 @@ auto isize::operator++() -> isize& {
 }
 
 auto isize::operator++(int) -> isize {
-    auto __prev = *this;
+    isize __prev = *this;
     add_assign(1);
     return __prev;
 }
@@ -285,13 +285,13 @@ auto isize::operator--() -> isize& {
 }
 
 auto isize::operator--(int) -> isize {
-    auto __prev = *this;
+    isize __prev = *this;
     sub_assign(1);
     return __prev;
 }
 
 auto isize::try_add(isize const& rhs) const -> ErrorOr<isize> {
-    isize::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_add_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -330,7 +330,7 @@ auto isize::operator+=(isize const& rhs) -> isize& {
 }
 
 auto isize::try_sub(isize const& rhs) const -> ErrorOr<isize> {
-    isize::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_sub_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
@@ -369,7 +369,7 @@ auto isize::operator-=(isize const& rhs) -> isize& {
 }
 
 auto isize::try_mul(isize const& rhs) const -> ErrorOr<isize> {
-    isize::NativeInt __value;
+    NativeInt __value;
     if ( __builtin_mul_overflow(m_value, rhs.m_value, &__value) ) {
         return Error::from_code(ErrorCode::IntOverflow);
     } else {
