@@ -56,11 +56,11 @@ TEST_CASE(clone_other) {
 TEST_CASE(insert) {
     auto set = Set<i32>::with_capacity(3);
 
-    VERIFY_IS_VALUE_EQUAL(set.try_insert(10), SetInsertResult::New);
-    VERIFY_IS_VALUE_EQUAL(set.try_insert(100), SetInsertResult::New);
-    VERIFY_IS_VALUE_EQUAL(set.try_insert(1000), SetInsertResult::New);
-    VERIFY_IS_VALUE_EQUAL(set.try_insert(100), SetInsertResult::Replaced);
-    VERIFY_IS_VALUE_EQUAL(set.try_insert(1000, SetReplaceExisting::No), SetInsertResult::Kept);
+    verify_is_value_equal$(set.try_insert(10), SetInsertResult::New);
+    verify_is_value_equal$(set.try_insert(100), SetInsertResult::New);
+    verify_is_value_equal$(set.try_insert(1000), SetInsertResult::New);
+    verify_is_value_equal$(set.try_insert(100), SetInsertResult::Replaced);
+    verify_is_value_equal$(set.try_insert(1000, SetReplaceExisting::No), SetInsertResult::Kept);
 
     verify_false$(set.is_empty());
     verify_equal$(set.count(), 3);
@@ -100,10 +100,10 @@ TEST_CASE(ordered_set_reverse_iterator) {
 TEST_CASE(find) {
     auto const set = Set<StringView>::from_list({ "aa"sv, "bb"sv, "cc"sv, "dd"sv });
 
-    VERIFY_IS_PRESENT_EQUAL(set.find("aa"sv), "aa"sv);
-    VERIFY_IS_PRESENT_EQUAL(set.find("cc"sv), "cc"sv);
-    VERIFY_IS_PRESENT_EQUAL(set.find("bb"sv), "bb"sv);
-    VERIFY_IS_NONE(set.find("xx"sv));
+    verify_is_present_equal$(set.find("aa"sv), "aa"sv);
+    verify_is_present_equal$(set.find("cc"sv), "cc"sv);
+    verify_is_present_equal$(set.find("bb"sv), "bb"sv);
+    verify_is_none$(set.find("xx"sv));
 }
 
 TEST_CASE(remove) {
@@ -115,7 +115,7 @@ TEST_CASE(remove) {
     verify$(ordered_set.remove("Hi"sv));
     verify_equal$(ordered_set.count(), 1);
 
-    VERIFY_IS_VALUE_EQUAL(ordered_set.try_insert("Hello"sv), SetInsertResult::New);
+    verify_is_value_equal$(ordered_set.try_insert("Hello"sv), SetInsertResult::New);
 
     verify_false$(ordered_set.remove("Eee"sv));
     verify_equal$(ordered_set.count(), 2);
@@ -131,7 +131,7 @@ TEST_CASE(ensure_capacity) {
     auto set = Set<i32>::empty();
     verify_equal$(set.capacity(), 0);
 
-    VERIFY_IS_VALUE(set.try_ensure_capacity(10'000));
+    verify_is_value$(set.try_ensure_capacity(10'000));
     verify_greater_equal$(set.capacity(), 10'000);
     verify_equal$(set.count(), 0);
     verify$(set.is_empty());

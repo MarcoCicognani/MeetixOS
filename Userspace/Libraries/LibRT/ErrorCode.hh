@@ -14,19 +14,20 @@
 
 enum class ErrorCode : unsigned short int {
     None = 0,
+    BadData,
+    BadFile,
+    BadLength,
+    BadParameter,
     Denied,
+    DivisionByZero,
+    EmptyData,
     Existing,
+    IndexOutOfRange,
+    IntOverflow,
     Invalid,
     NoMemory,
-    BadFile,
     NotFound,
-    IntOverflow,
-    EmptyData,
-    BadLength,
-    BadData,
     NullPointer,
-    IndexOutOfRange,
     ShiftOverflow,
-    DivisionByZero,
-    Unimplemented
+    Unimplemented,
 };

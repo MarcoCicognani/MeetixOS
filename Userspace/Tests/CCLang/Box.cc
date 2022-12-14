@@ -18,144 +18,126 @@
 #include <LibUnitTest/Case.hh>
 
 TEST_CASE(construct) {
-    auto const boxed_u64 = Box<u64>::from_emplace(0xcafebabe);
-    verify_equal$(boxed_u64.as_ref(), 0xcafebabe);
+    verify_equal$(Box<u64>::from_emplace(0xcafebabe).as_ref(), 0xcafebabe);
 }
 
 TEST_CASE(new_object) {
     static bool s_destructor_called = false;
 
-    struct USize {
+    struct Wrapper {
     public:
-        usize m_value{ 0 };
+        usize m_value = 0;
 
-        static auto try_new_from_value(usize value) -> ErrorOr<Box<USize>> {
-            return Box<USize>::try_from_adopt(new (nothrow) USize{ value });
+        static auto from_value(usize value) -> Box<Wrapper> {
+            auto error_or_wrapper_box = Box<Wrapper>::try_from_adopt(new (nothrow) Wrapper(value));
+            verify$(error_or_wrapper_box.is_value());
+            return error_or_wrapper_box.unwrap();
         }
 
-        ~USize() {
+        ~Wrapper() {
             s_destructor_called = true;
         }
 
     private:
-        explicit constexpr USize() = default;
-        explicit USize(usize value) : m_value{value} {
-
+        explicit Wrapper() = default;
+        explicit Wrapper(usize value)
+            : m_value(value) {
         }
     };
 
-    {
-        auto const boxed_usize = USize::try_new_from_value(512u);
-        verify_equal$(boxed_usize->m_value, 512u);
-    }
+    verify_equal$(Wrapper::from_value(512)->m_value, 512u);
     verify$(s_destructor_called);
 }
 
-static bool s_destructor_private_called = false;
-
-struct USizePrivate : public Boxable {
-    TCBoxConstructible$(USizePrivate);
-
+template<usize::NativeInt SIZE>
+class Array {
 public:
-    usize m_value{ 0 };
-
-    ~USizePrivate() {
-        s_destructor_private_called = true;
-    }
-
-private:
-    explicit constexpr USizePrivate(usize value)
-        : m_value{ value } {
-    }
-};
-
-TEST_CASE(new_object_with_private_constructor) {
-    {
-        auto const boxed_usize = Box<USizePrivate>::from_emplace(512u);
-        verify_equal$(boxed_usize->m_value, 512u);
-    }
-    verify$(s_destructor_private_called);
-}
-
-template<usize SIZE>
-struct Array {
-public:
-    u64 m_values[SIZE]{ 0 };
-
     Array() {
         m_values[0] = 0xcafebabe;
         m_values[1] = 0xdeadbeef;
     }
+
+    auto at(usize index) const -> u64 const& {
+        return m_values[index.unwrap()];
+    }
+
+private:
+    u64 m_values[SIZE] = { 0 };
 };
 
 TEST_CASE(try_new_from_args) {
-    auto error_or_boxed_array = Box<Array<0x1000>>::try_from_emplace();
-    verify$(error_or_boxed_array.is_value());
+    auto error_or_array_box = Box<Array<0x1000>>::try_from_emplace();
+    verify$(error_or_array_box.is_value());
 
-    auto object_box = error_or_boxed_array.unwrap_value();
-    verify_equal$(object_box->m_values[0], 0xcafebabe);
-    verify_equal$(object_box->m_values[1], 0xdeadbeef);
+    auto array_box = error_or_array_box.unwrap();
+    verify_equal$(array_box->at(0), 0xcafebabe);
+    verify_equal$(array_box->at(1), 0xdeadbeef);
 
-    VERIFY_IS_ERROR_EQUAL(Box<Array<0xfffffff>>::try_from_emplace(), ENOMEM);
+    verify_is_error_equal$(Box<Array<0xfffffff>>::try_from_emplace(), ErrorCode::NoMemory);
 }
 
 TEST_CASE(swap) {
-    auto boxed_i32_64 = Box<i32>::from_emplace(64);
-    verify_equal$(boxed_i32_64.as_ref(), 64);
+    auto i32_box_v64 = Box<i32>::from_emplace(64);
+    verify_equal$(i32_box_v64.as_ref(), 64);
 
-    auto boxed_i32_128 = Box<i32>::from_emplace(128);
-    verify_equal$(boxed_i32_128.as_ref(), 128);
+    auto i32_box_v128 = Box<i32>::from_emplace(128);
+    verify_equal$(i32_box_v128.as_ref(), 128);
 
-    boxed_i32_64.swap(boxed_i32_128);
-    verify_equal$(boxed_i32_64.as_ref(), 128);
-    verify_equal$(boxed_i32_128.as_ref(), 64);
+    i32_box_v64.swap(i32_box_v128);
+    verify_equal$(i32_box_v64.as_ref(), 128);
+    verify_equal$(i32_box_v128.as_ref(), 64);
 }
 
 TEST_CASE(move) {
-    struct USizePair {
+    struct Pair {
     public:
-        usize m_first_value{ 0 };
-        usize m_second_value{ 0 };
+        usize m_first_value  = 0;
+        usize m_second_value = 0;
+
+        explicit Pair(usize first, usize second)
+            : m_first_value(first)
+            , m_second_value(second) {
+        }
     };
 
-    auto boxed_usize_pair = Box<USizePair>::from_emplace(512u, 1024u);
-    verify_equal$(boxed_usize_pair->m_first_value, 512u);
-    verify_equal$(boxed_usize_pair->m_second_value, 1024u);
+    auto pair_box = Box<Pair>::from_emplace(512, 1024);
+    verify_equal$(pair_box->m_first_value, 512);
+    verify_equal$(pair_box->m_second_value, 1024);
 
-    auto boxed_usize_pair_2 = Cxx::move(boxed_usize_pair);
-    verify_equal$(boxed_usize_pair_2->m_first_value, 512uL);
-    verify_equal$(boxed_usize_pair_2->m_second_value, 1024uL);
+    auto pair_box_2 = Cxx::move(pair_box);
+    verify_equal$(pair_box_2->m_first_value, 512);
+    verify_equal$(pair_box_2->m_second_value, 1024);
 
-    auto boxed_usize_pair_3 = Box<USizePair>::from_emplace(0xab, 0xcd);
-    verify_equal$(boxed_usize_pair_3->m_first_value, 0xab);
-    verify_equal$(boxed_usize_pair_3->m_second_value, 0xcd);
+    auto pair_box_3 = Box<Pair>::from_emplace(0xab, 0xcd);
+    verify_equal$(pair_box_3->m_first_value, 0xab);
+    verify_equal$(pair_box_3->m_second_value, 0xcd);
 
-    boxed_usize_pair = Cxx::move(boxed_usize_pair_3);
-    verify_equal$(boxed_usize_pair->m_first_value, 0xab);
-    verify_equal$(boxed_usize_pair->m_second_value, 0xcd);
+    pair_box = Cxx::move(pair_box_3);
+    verify_equal$(pair_box->m_first_value, 0xab);
+    verify_equal$(pair_box->m_second_value, 0xcd);
 }
 
 TEST_CASE(leak) {
-    auto boxed_i32 = Box<i32>::from_emplace(512);
+    auto i32_box = Box<i32>::from_emplace(512);
 
-    auto const& unmanaged_i32_ref = boxed_i32.leak_ref();
-    verify$(boxed_i32.is_null());
+    auto& i32_ref_unboxed = i32_box.leak_ref();
+    verify$(i32_box.is_null());
 
-    delete &unmanaged_i32_ref;
+    delete &i32_ref_unboxed;
 }
 
 TEST_CASE(vector_of_boxes) {
     auto vector_of_boxes = Vector<Box<i32>>::with_capacity(4);
 
-    vector_of_boxes.append(Box<i32>::from_emplace(256));
-    vector_of_boxes.append(Box<i32>::from_emplace(512));
-    vector_of_boxes.append(Box<i32>::from_emplace(1024));
+    vector_of_boxes.append(Box<i32>::from_emplace(0x123));
+    vector_of_boxes.append(Box<i32>::from_emplace(0x456));
+    vector_of_boxes.append(Box<i32>::from_emplace(0xabc));
 
-    auto boxed_i32 = Box<i32>::from_emplace(4096);
-    vector_of_boxes.append(Cxx::move(boxed_i32));
+    auto i32_box = Box<i32>::from_emplace(0xdef);
+    vector_of_boxes.append(Cxx::move(i32_box));
 
-    verify_equal$(vector_of_boxes[0].as_ref(), 256);
-    verify_equal$(vector_of_boxes[1].as_ref(), 512);
-    verify_equal$(vector_of_boxes[2].as_ref(), 1024);
-    verify_equal$(vector_of_boxes[3].as_ref(), 4096);
+    verify_equal$(vector_of_boxes[0].as_ref(), 0x123);
+    verify_equal$(vector_of_boxes[1].as_ref(), 0x456);
+    verify_equal$(vector_of_boxes[2].as_ref(), 0xabc);
+    verify_equal$(vector_of_boxes[3].as_ref(), 0xdef);
 }

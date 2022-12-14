@@ -15,13 +15,13 @@
 #include <LibUnitTest/Case.hh>
 
 TEST_CASE(construct) {
-    Function<i32()> function = []() -> i32 { return 0; };
+    Function<i32()> const function = []() -> i32 { return 0; };
 
     verify_equal$(function(), 0);
 }
 
 TEST_CASE(construct_complex_function) {
-    Function<i32(i32, i32, i32)> sum_function = [](i32 a, i32 b, i32 c) { return a + b + c; };
+    Function<i32(i32, i32, i32)> const sum_function = [](i32 a, i32 b, i32 c) { return a + b + c; };
 
     verify_equal$(sum_function(1, 2, 3), 6);
     verify_equal$(sum_function(10, 10, 10), 30);
@@ -55,21 +55,22 @@ TEST_CASE(move) {
 TEST_CASE(reference_capturing_lambda) {
     int i = 0;
 
-    Function<void()> inc_function = [&i]() { i = 100; };
+    Function<void()> const inc_function = [&i]() { i = 100; };
     inc_function();
 
     verify_equal$(i, 100);
 }
 
 TEST_CASE(copy_capturing_lambda) {
-    i32 a = 1;
-    i32 b = 2;
+    i32 const a = 1;
+    i32 const b = 2;
+    i32 const e = 5;
+    i32 const f = 6;
+
     i32 c = 3;
     i32 d = 4;
-    i32 e = 5;
-    i32 f = 6;
 
-    Function<i32()> calc_function = [=]() mutable {
+    Function<i32()> const calc_function = [=]() mutable {
         c = a + b;    /* 3 */
         d = e + f;    /* 11 */
         c *= 2;       /* 6 */
@@ -82,7 +83,7 @@ TEST_CASE(copy_capturing_lambda) {
 }
 
 void ensure_call_equals_with_functor(Function<usize()> function) {
-    for ( auto const i : Range{ 0u, 1'000'000u } ) {
+    for ( auto const i : usize::range(0, 1'000'000) ) {
         verify_equal$(function(), i);
     }
 }
@@ -94,7 +95,7 @@ BENCHMARK_CASE(call_one_hundred_thousand_times) {
 }
 
 void ensure_call_equals_with_template(Callable<usize> auto function) {
-    for ( auto const i : Range<usize>{ 0, 1'000'000u } ) {
+    for ( auto const i : usize::range(0, 1'000'000) ) {
         verify_equal$(function(), i);
     }
 }

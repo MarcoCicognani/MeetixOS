@@ -182,11 +182,11 @@ public:
     static auto try_from_other(List<T> const& rhs) -> ErrorOr<List<T>> {
         auto list = List<T>::empty();
         for ( auto const& e : rhs ) {
-            if ( TryCloneable<T, ErrorOr<T>> ) {
+            if constexpr ( TryCloneable<T, ErrorOr<T>> ) {
                 try$(list.try_append(try$(e.try_clone())));
-            } else if ( Cloneable<T> ) {
+            } else if constexpr ( Cloneable<T> ) {
                 try$(list.try_append(e.clone()));
-            } else if ( CopyConstructible<T> ) {
+            } else if constexpr ( CopyConstructible<T> ) {
                 try$(list.try_append(e));
             }
         }
@@ -260,7 +260,7 @@ public:
         must$(try_append(Cxx::move(value)));
     }
     auto try_append(T value) -> ErrorOr<void> {
-        auto const new_node = new (nothrow) Node(Cxx::move(value));
+        auto const new_node = new (nothrow) Node{ Cxx::move(value) };
         if ( new_node == nullptr ) [[unlikely]] {
             return Error::from_code(ErrorCode::NoMemory);
         }
@@ -284,7 +284,7 @@ public:
         must$(try_prepend(Cxx::move(value)));
     }
     auto try_prepend(T value) -> ErrorOr<void> {
-        auto const new_node = new (nothrow) Node(Cxx::move(value));
+        auto const new_node = new (nothrow) Node{ Cxx::move(value) };
         if ( new_node == nullptr ) [[unlikely]] {
             return Error::from_code(ErrorCode::NoMemory);
         }

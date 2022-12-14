@@ -10,18 +10,18 @@
  * GNU General Public License version 3
  */
 
-#include <LibMath/math.h>
 #include <CCLang/Alloc/List.hh>
-#include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Alloc/Text/Format.hh>
+#include <CCLang/Lang/Cxx.hh>
+#include <LibMath/math.h>
 #include <LibUnitTest/Assertions.hh>
 #include <LibUnitTest/Case.hh>
 
 template<typename... Args>
 void ensure_formatted(StringView expected_result, StringView format_view, Args... args) {
-    auto string_builder = StringBuilder::construct_empty();
+    auto string_builder = StringBuilder::empty();
 
-    VERIFY_IS_VALUE(format(string_builder, format_view, Cxx::forward<Args>(args)...));
+    verify_is_value$(format(string_builder, format_view, Cxx::forward<Args>(args)...));
     verify_equal$(string_builder.as_string_view(), expected_result);
 }
 
@@ -50,10 +50,10 @@ TEST_CASE(mixed_formatting) {
 }
 
 TEST_CASE(appended_formatting) {
-    auto string_builder = StringBuilder::construct_empty();
+    auto string_builder = StringBuilder::empty();
 
-    VERIFY_IS_VALUE(format(string_builder, "Hi {}"sv, "john"sv));
-    VERIFY_IS_VALUE(format(string_builder, " I'm your {} friend"sv, "best"sv));
+    verify_is_value$(format(string_builder, "Hi {}"sv, "john"sv));
+    verify_is_value$(format(string_builder, " I'm your {} friend"sv, "best"sv));
 
     verify_equal$(string_builder.as_string_view(), "Hi john I'm your best friend"sv);
 }
@@ -113,18 +113,17 @@ TEST_CASE(boolean_values) {
 }
 
 TEST_CASE(pointers) {
-    auto ptr = reinterpret_cast<void*>(0x4000);
+    auto ptr = Cxx::bit_cast<void*>(0x4000);
 
-    if ( sizeof(void*) == 4 ) {
+    if ( sizeof(usize) == 4 ) {
         ensure_formatted("0x00000020"sv, "{:p}"sv, 32);
         ensure_formatted("0x00004000"sv, "{:p}"sv, ptr);
         ensure_formatted("0x00004000"sv, "{}"sv, ptr);
-    } else if ( sizeof(void*) == 8 ) {
+    } else if ( sizeof(usize) == 8 ) {
         ensure_formatted("0x0000000000000020"sv, "{:p}"sv, 32);
         ensure_formatted("0x0000000000004000"sv, "{:p}"sv, ptr);
         ensure_formatted("0x0000000000004000"sv, "{}"sv, ptr);
-    } else
-        verify_not_reached$();
+    }
 }
 
 TEST_CASE(floating_format) {
@@ -160,16 +159,16 @@ TEST_CASE(magnitude_less_than_zero) {
 }
 
 TEST_CASE(list_format) {
-    auto const list = List<i32>::construct_from_list({ 1, 2, 3, 4, 5, 6 });
+    auto const list = List<i32>::from_list({ 1, 2, 3, 4, 5, 6 });
     ensure_formatted("[ 1, 2, 3, 4, 5, 6 ]"sv, "{}"sv, list.clone());
 }
 
 TEST_CASE(range_format) {
-    ensure_formatted("0..25"sv, "{}"sv, Range{ 0, 25 });
-    ensure_formatted("0..=25"sv, "{}"sv, RangeInclusive{ 0, 25 });
+    ensure_formatted("0..25"sv, "{}"sv, usize::range(0, 25));
+    ensure_formatted("0..=25"sv, "{}"sv, usize::range_inclusive(0, 25));
 }
 
 TEST_CASE(map_format) {
-    auto const unordered_map = OrderedMap<StringView, usize>::construct_from_list({ { "z"sv, 1uL }, { "y"sv, 2uL }, { "x"sv, 3uL } });
+    auto const unordered_map = OrderedMap<StringView, usize>::from_list({ { "z"sv, 1 }, { "y"sv, 2 }, { "x"sv, 3 } });
     ensure_formatted("{ z: 1, y: 2, x: 3 }"sv, "{}"sv, unordered_map.clone());
 }

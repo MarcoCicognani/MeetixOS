@@ -18,7 +18,7 @@
 #include <LibUnitTest/Case.hh>
 
 TEST_CASE(construction) {
-    StringView empty_string_view{};
+    auto const empty_string_view = ""sv;
     verify$(empty_string_view.is_empty());
     verify$(empty_string_view.is_null());
     verify$(empty_string_view.is_null_or_empty());
@@ -34,21 +34,21 @@ TEST_CASE(construction) {
 }
 
 TEST_CASE(assignment_operators) {
-    StringView string_view{};
+    auto string_view = ""sv;
     verify$(string_view.is_null_or_empty());
 
     string_view = "Hello World"sv;
     verify_equal$(string_view.len(), 11);
     verify_equal$(string_view, "Hello World"sv);
 
-    StringView string_view2{};
+    auto string_view2 = ""sv;
     string_view2 = string_view;
     verify_false$(string_view.is_null_or_empty());
     verify_false$(string_view2.is_null_or_empty());
     verify_equal$(string_view, "Hello World"sv);
     verify_equal$(string_view2, "Hello World"sv);
 
-    StringView string_view3{};
+    auto string_view3 = ""sv;
     string_view3 = Cxx::move(string_view);
     verify$(string_view.is_null_or_empty());
     verify_equal$(string_view3.len(), 11);
@@ -162,45 +162,45 @@ TEST_CASE(ends_with) {
 }
 
 TEST_CASE(as_int) {
-    VERIFY_IS_VALUE_EQUAL("127"sv.as_int<i8>(), 127);
-    VERIFY_IS_VALUE_EQUAL("-32"sv.as_int<i8>(), -32);
-    VERIFY_IS_VALUE_EQUAL("450\n"sv.as_int(), 450);
-    VERIFY_IS_VALUE_EQUAL("-65536"sv.as_int(), -65536);
-    VERIFY_IS_VALUE_EQUAL("  \t64begin"sv.as_int(StringView::IntBase::Decimal, StringView::ParseMode::TrimWhitesAndBegin), 64);
+    verify_is_value_equal$("127"sv.as_int<i8>(), 127);
+    verify_is_value_equal$("-32"sv.as_int<i8>(), -32);
+    verify_is_value_equal$("450\n"sv.as_int(), 450);
+    verify_is_value_equal$("-65536"sv.as_int(), -65536);
+    verify_is_value_equal$("  \t64begin"sv.as_int(StringView::IntBase::Decimal, StringView::ParseMode::TrimWhitesAndBegin), 64);
 
-    VERIFY_IS_VALUE_EQUAL("0xabc45"sv.as_int<i32>(StringView::IntBase::Hex), 0xabc45);
-    VERIFY_IS_VALUE_EQUAL("-1ff24bc"sv.as_int<i32>(StringView::IntBase::Hex), -0x1ff24bc);
+    verify_is_value_equal$("0xabc45"sv.as_int<i32>(StringView::IntBase::Hex), 0xabc45);
+    verify_is_value_equal$("-1ff24bc"sv.as_int<i32>(StringView::IntBase::Hex), -0x1ff24bc);
 
-    VERIFY_IS_ERROR_EQUAL("\n 75"sv.as_int<i8>(StringView::IntBase::Decimal, StringView::ParseMode::BeginToEnd), EINVAL);
-    VERIFY_IS_ERROR_EQUAL("7p5"sv.as_int<i8>(StringView::IntBase::Decimal), EINVAL);
-    VERIFY_IS_ERROR_EQUAL("512"sv.as_int<i8>(StringView::IntBase::Decimal), EOVERFLOW);
+    verify_is_error_equal$("\n 75"sv.as_int<i8>(StringView::IntBase::Decimal, StringView::ParseMode::BeginToEnd), ErrorCode::BadData);
+    verify_is_error_equal$("7p5"sv.as_int<i8>(StringView::IntBase::Decimal), ErrorCode::BadData);
+    verify_is_error_equal$("512"sv.as_int<i8>(StringView::IntBase::Decimal), ErrorCode::IntOverflow);
 }
 
 TEST_CASE(as_uint) {
-    VERIFY_IS_VALUE_EQUAL("9753"sv.as_uint<u16>(), 9753);
-    VERIFY_IS_VALUE_EQUAL("6542037"sv.as_uint<u64>(), 6542037);
-    VERIFY_IS_VALUE_EQUAL("000917"sv.as_uint<u64>(), 917);
+    verify_is_value_equal$("9753"sv.as_uint<u16>(), 9753);
+    verify_is_value_equal$("6542037"sv.as_uint<u64>(), 6542037);
+    verify_is_value_equal$("000917"sv.as_uint<u64>(), 917);
 
-    VERIFY_IS_ERROR_EQUAL("-64"sv.as_uint<u16>(), EINVAL);
-    VERIFY_IS_ERROR_EQUAL("56AC"sv.as_uint<u64>(), EINVAL);
+    verify_is_error_equal$("-64"sv.as_uint<u16>(), ErrorCode::BadData);
+    verify_is_error_equal$("56AC"sv.as_uint<u64>(), ErrorCode::BadData);
 }
 
 TEST_CASE(find) {
     auto const string_view = "Hi everyone, this is a string_view"sv;
 
-    VERIFY_IS_PRESENT_EQUAL(string_view.find('i'), 1);
-    VERIFY_IS_PRESENT_EQUAL(string_view.find('a'), 21);
-    VERIFY_IS_PRESENT_EQUAL(string_view.find("this"sv), 13);
-    VERIFY_IS_PRESENT_EQUAL(string_view.find("tr"sv), 24);
-    VERIFY_IS_NONE(string_view.find('a', 35));
+    verify_is_present_equal$(string_view.find('i'), 1);
+    verify_is_present_equal$(string_view.find('a'), 21);
+    verify_is_present_equal$(string_view.find("this"sv), 13);
+    verify_is_present_equal$(string_view.find("tr"sv), 24);
+    verify_is_none$(string_view.find('a', 35));
 }
 
 TEST_CASE(find_last) {
     auto const string_view = "Hi everyone, this is a string_view"sv;
 
-    VERIFY_IS_PRESENT_EQUAL(string_view.find_last('i'), 31);
-    VERIFY_IS_PRESENT_EQUAL(string_view.find_last('a'), 21);
-    VERIFY_IS_NONE(string_view.find_last('z'));
+    verify_is_present_equal$(string_view.find_last('i'), 31);
+    verify_is_present_equal$(string_view.find_last('a'), 21);
+    verify_is_none$(string_view.find_last('z'));
 }
 
 TEST_CASE(find_all) {
@@ -218,7 +218,7 @@ TEST_CASE(find_all) {
     auto error_or_positions = string_view.try_find_all("ly"sv);
     verify$(error_or_positions.is_value());
 
-    positions = error_or_positions.unwrap_value();
+    positions = error_or_positions.unwrap();
     verify_equal$(positions.count(), 2);
     verify_equal$(positions.first(), 11);
     verify_equal$(positions.last(), 23);

@@ -24,148 +24,23 @@
 #include <CCLang/Lang/IntTypes.hh>
 #include <CCLang/Lang/Must.hh>
 #include <CCLang/Lang/Range.hh>
-#include <CCLang/Lang/ReverseIteratorSupport.hh>
 #include <CCLang/Lang/Try.hh>
-
-namespace Details {
-
-template<typename TVector, typename T, bool IsReverse>
-class VectorIterator final {
-    using TIndex = ::Conditional<IsReverse, isize, usize>;
-
-public:
-    /**
-     * @brief Construction functions
-     */
-    static auto from_begin(TVector* vector) -> VectorIterator {
-        return VectorIterator<TVector, T, IsReverse>{ vector, 0 };
-    }
-    static auto from_end(TVector* vector) -> VectorIterator {
-        return VectorIterator<TVector, T, IsReverse>{ vector, vector->count() };
-    }
-
-    static auto from_rbegin(TVector* vector) -> VectorIterator {
-        return VectorIterator<TVector, T, IsReverse>{ vector, vector->count() - 1 };
-    }
-    static auto from_rend(TVector* vector) -> VectorIterator {
-        return VectorIterator<TVector, T, IsReverse>{ vector, -1 };
-    }
-
-    VectorIterator(VectorIterator const&)                    = default;
-    auto operator=(VectorIterator const&) -> VectorIterator& = default;
-
-    /**
-     * @brief Increment operators
-     */
-    auto operator++() -> VectorIterator& {
-        if constexpr ( IsReverse ) {
-            --m_index;
-        } else {
-            ++m_index;
-        }
-        return *this;
-    }
-    auto operator++(int) -> VectorIterator {
-        auto it = *this;
-
-        operator++();
-        return it;
-    }
-
-    /**
-     * @brief ValueReference access operators
-     */
-    auto operator*() -> T& {
-        verify_false$(is_end());
-        if constexpr ( IsReverse ) {
-            return m_collection->at(static_cast<usize>(m_index));
-        } else {
-            return m_collection->at(m_index);
-        }
-    }
-    auto operator*() const -> T const& {
-        verify_false$(is_end());
-        if constexpr ( IsReverse ) {
-            return m_collection->at(static_cast<usize>(m_index));
-        } else {
-            return m_collection->at(m_index);
-        }
-    }
-
-    /**
-     * @brief Pointer access operators
-     */
-    auto operator->() -> T* {
-        return &operator*();
-    }
-    auto operator->() const -> T const* {
-        return &operator*();
-    }
-
-    /**
-     * @brief Getters
-     */
-    auto is_end() const -> bool {
-        if constexpr ( IsReverse ) {
-            return m_index == from_rend(m_collection).index();
-        } else {
-            return m_index == from_end(m_collection).index();
-        }
-    }
-    auto index() const -> usize {
-        return m_index;
-    }
-
-    /**
-     * @brief Comparison operators
-     */
-    auto operator==(VectorIterator const& rhs) const -> bool {
-        return m_index == rhs.m_index;
-    }
-    auto operator!=(VectorIterator const& rhs) const -> bool {
-        return m_index != rhs.m_index;
-    }
-    auto operator<(VectorIterator const& rhs) const -> bool {
-        return m_index < rhs.m_index;
-    }
-    auto operator>(VectorIterator const& rhs) const -> bool {
-        return m_index > rhs.m_index;
-    }
-    auto operator<=(VectorIterator const& rhs) const -> bool {
-        return m_index <= rhs.m_index;
-    }
-    auto operator>=(VectorIterator const& rhs) const -> bool {
-        return m_index >= rhs.m_index;
-    }
-
-private:
-    explicit constexpr VectorIterator(TVector* vector, TIndex index)
-        : m_collection(vector)
-        , m_index(index) {
-    }
-
-private:
-    TVector* m_collection;
-    TIndex   m_index;
-};
-
-} /* namespace Details */
 
 template<typename T>
 class Vector final : public DenyCopy {
 public:
-    using Iterator                    = Details::VectorIterator<Vector, T, false>;
-    using ConstIterator               = Details::VectorIterator<Vector const, T const, false>;
-    using ReverseIterator             = Details::VectorIterator<Vector, T, true>;
-    using ConstReverseIterator        = Details::VectorIterator<Vector const, T const, true>;
-    using ReverseIteratorWrapper      = ReverseIteratorSupport::Wrapper<Vector<T>>;
-    using ConstReverseIteratorWrapper = ReverseIteratorSupport::Wrapper<Vector<T> const>;
+    using Iterator                    = Slice<T>::Iterator;
+    using ConstIterator               = Slice<T>::ConstIterator;
+    using ReverseIterator             = Slice<T>::ReverseIterator;
+    using ConstReverseIterator        = Slice<T>::ConstReverseIterator;
+    using ReverseIteratorWrapper      = Slice<T>::ReverseIteratorWrapper;
+    using ConstReverseIteratorWrapper = Slice<T>::ConstReverseIteratorWrapper;
 
 public:
     /**
      * @brief Non-Error safe factory functions
      */
-    static constexpr auto empty() -> Vector<T> {
+    static auto empty() -> Vector<T> {
         return Vector<T>();
     }
     static auto with_capacity(usize capacity) -> Vector<T> {
@@ -202,7 +77,7 @@ public:
     }
     static auto try_from_list(Cxx::InitializerList<T> initializer_list) -> ErrorOr<Vector<T>> {
         auto vector = empty();
-        for ( auto const& e : initializer_list ) { /* even with auto initializer_list exposes only T const& */
+        for ( auto const& e : initializer_list ) { /* even with auto initializer_list exposes only 'T const&' */
             try$(vector.try_append(Cxx::move(const_cast<T&>(e))));
         }
 
@@ -218,7 +93,7 @@ public:
         , m_values_count(Cxx::exchange(rhs.m_values_count, 0)) {
     }
     auto operator=(Vector<T>&& rhs) -> Vector<T>& {
-        auto vector = Cxx::move(rhs);
+        Vector<T> vector = Cxx::move(rhs);
         swap(vector);
         return *this;
     }
@@ -243,7 +118,7 @@ public:
     auto clear() -> void {
         clear_keep_capacity();
 
-        if ( m_data_capacity > 0 ) {
+        if ( !m_data_storage.is_null() ) {
             Details::__heap_plug_dealloc_mem(m_data_storage.data(), m_data_capacity * sizeof(T));
             m_data_storage  = Slice<T>::empty();
             m_data_capacity = 0;
@@ -261,7 +136,7 @@ public:
     /**
      * @brief Swaps in O(1) the content of this Vector with another
      */
-    auto swap(Vector& rhs) {
+    auto swap(Vector<T>& rhs) {
         Cxx::swap(m_data_storage, rhs.m_data_storage);
         Cxx::swap(m_data_capacity, rhs.m_data_capacity);
         Cxx::swap(m_values_count, rhs.m_values_count);
@@ -278,18 +153,10 @@ public:
             return Error::from_code(ErrorCode::Invalid);
         }
 
+        /* shift the values one place forward to create the hole for this one */
         try$(try_ensure_capacity(m_values_count + 1));
-
-        /* move the values after the insertion one place forward */
         if ( index < m_values_count ) {
-            if constexpr ( TypeTraits<T>::is_trivial() ) {
-                Cxx::memmove(data_slot(index + 1), data_slot(index), (m_values_count - index) * sizeof(T));
-            } else {
-                for ( auto const i : usize::range(m_values_count, index).reverse_iter() ) {
-                    new (data_slot(i)) T(Cxx::move(m_data_storage[i - 1]));
-                    at(i - 1).~T();
-                }
-            }
+            shift_forward_storage_values(index);
         }
 
         /* move the value into the memory */
@@ -337,14 +204,7 @@ public:
         try$(try_ensure_capacity(m_values_count + 1));
 
         /* move the values after the insertion one place forward */
-        if constexpr ( TypeTraits<T>::is_trivial() ) {
-            Cxx::memmove(data_slot(1), m_data_storage.data(), m_values_count * sizeof(T));
-        } else {
-            for ( auto const i : usize::range(m_values_count, 0).reverse_iter() ) {
-                new (data_slot(i)) T(Cxx::move(m_data_storage[i - 1]));
-                at(i - 1).~T();
-            }
-        }
+        shift_forward_storage_values(0);
 
         /* move the value into the memory */
         new (data_slot(0)) T(Cxx::forward<Args>(args)...);
@@ -466,11 +326,7 @@ public:
         }
 
         /* for first time use the given capacity, otherwise increase the capacity logarithmically */
-        usize new_capacity = ({
-            m_data_capacity == 0 && capacity == 0
-                ? 16
-                : capacity * 2 / 4;
-        });
+        usize new_capacity = ({ m_data_capacity == 0 && capacity == 0 ? 16 : capacity * 2 / 4; });
 
         /* allocate new memory and move the content into it */
         auto new_data_storage = try$(Details::__heap_plug_alloc_mem(new_capacity * sizeof(T))
@@ -500,41 +356,45 @@ public:
      * @brief for-each support
      */
     auto begin() -> Iterator {
-        return Iterator::from_begin(this);
+        return as_slice().begin();
     }
     auto end() -> Iterator {
-        return Iterator::from_end(this);
+        return as_slice().begin();
     }
 
     auto begin() const -> ConstIterator {
-        return ConstIterator::from_begin(this);
+        auto const slice = as_slice();
+        return slice.begin();
     }
     auto end() const -> ConstIterator {
-        return ConstIterator::from_end(this);
+        auto const slice = as_slice();
+        return slice.end();
     }
 
     /**
      * @brief reverse for-each support
      */
     auto rbegin() -> ReverseIterator {
-        return ReverseIterator::from_rbegin(this);
+        return as_slice().rbegin();
     }
     auto rend() -> ReverseIterator {
-        return ReverseIterator::from_rend(this);
+        return as_slice().rend();
     }
 
     auto rbegin() const -> ConstReverseIterator {
-        return ReverseIterator::from_rbegin(this);
+        auto const slice = as_slice();
+        return slice.rbegin();
     }
     auto rend() const -> ConstReverseIterator {
-        return ReverseIterator::from_rend(this);
+        auto const slice = as_slice();
+        return slice.rend();
     }
 
     auto reverse_iter() -> ReverseIteratorWrapper {
-        return ReverseIteratorSupport::in_reverse(*this);
+        return as_slice().reverse_iter();
     }
     auto reverse_iter() const -> ConstReverseIteratorWrapper {
-        return ReverseIteratorSupport::in_reverse(*this);
+        return as_slice().reverse_iter();
     }
 
     /**
@@ -598,6 +458,10 @@ public:
         return at(index);
     }
 
+    auto as_slice() const -> Slice<T> {
+        return m_data_storage.sub_slice(0, m_values_count);
+    }
+
     auto count() const -> usize {
         return m_values_count;
     }
@@ -625,6 +489,17 @@ private:
         return &m_data_storage[index];
     }
 
+    auto shift_forward_storage_values(usize start_index) -> void {
+        if constexpr ( TypeTraits<T>::is_trivial() ) {
+            Cxx::memmove(data_slot(start_index + 1), data_slot(start_index), (m_values_count - start_index) * sizeof(T));
+        } else {
+            for ( auto const i : usize::range(m_values_count, start_index).reverse_iter() ) {
+                new (data_slot(i)) T(Cxx::move(m_data_storage[i - 1]));
+                at(i - 1).~T();
+            }
+        }
+    }
+
 private:
     Slice<T> m_data_storage  = Slice<T>::empty();
     usize    m_data_capacity = 0;
@@ -634,7 +509,7 @@ private:
 namespace Cxx {
 
 template<typename T>
-constexpr auto swap(Vector<T>& lhs, Vector<T>& rhs) -> void {
+auto swap(Vector<T>& lhs, Vector<T>& rhs) -> void {
     lhs.swap(rhs);
 }
 

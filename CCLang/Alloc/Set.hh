@@ -378,8 +378,8 @@ public:
     auto clear_keep_capacity() -> void {
         if constexpr ( !TTraits::is_trivial() ) {
             for ( auto const i : usize::range(0, m_data_capacity) ) {
-                if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) ) {
-                    m_buckets_storage[i].slot()->~T();
+                if ( Details::set_bucket_state_is_used(m_buckets_storage[i.unwrap()].m_bucket_state) ) {
+                    m_buckets_storage[i.unwrap()].slot()->~T();
                 }
             }
         }
@@ -388,7 +388,7 @@ public:
         if constexpr ( IsOrdered ) {
             m_collection_data = Details::OrderedCollectionData<Bucket>{ nullptr, nullptr };
         } else {
-            m_buckets_storage[m_data_capacity].m_bucket_state = Details::SetBucketState::End;
+            m_buckets_storage[m_data_capacity.unwrap()].m_bucket_state = Details::SetBucketState::End;
         }
 
         m_values_count  = 0;
@@ -485,7 +485,7 @@ public:
         /* iterate all the used buckets and give them to the given call_back */
         usize removed_count = 0;
         for ( auto const i : usize::range(0, m_data_capacity) ) {
-            auto& bucket = m_buckets_storage[i];
+            auto& bucket = m_buckets_storage[i.unwrap()];
             if ( Details::set_bucket_state_is_used(bucket.m_bucket_state) && predicate(*bucket.slot()) ) {
                 delete_bucket(bucket);
                 ++removed_count;
@@ -524,8 +524,8 @@ public:
         } else {
             /* find the first used bucket */
             for ( auto const i : usize::range(0, m_data_capacity) ) {
-                if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) ) {
-                    return Iterator::from_bucket(&m_buckets_storage[i]);
+                if ( Details::set_bucket_state_is_used(m_buckets_storage[i.unwrap()].m_bucket_state) ) {
+                    return Iterator::from_bucket(&m_buckets_storage[i.unwrap()]);
                 }
             }
             return end();
@@ -541,8 +541,8 @@ public:
         } else {
             /* find the first used bucket */
             for ( auto const i : usize::range(0, m_data_capacity) ) {
-                if ( Details::set_bucket_state_is_used(m_buckets_storage[i].m_bucket_state) ) {
-                    return ConstIterator::from_bucket(&m_buckets_storage[i]);
+                if ( Details::set_bucket_state_is_used(m_buckets_storage[i.unwrap()].m_bucket_state) ) {
+                    return ConstIterator::from_bucket(&m_buckets_storage[i.unwrap()]);
                 }
             }
             return end();
@@ -679,7 +679,7 @@ private:
         if constexpr ( IsOrdered ) {
             m_collection_data = Details::OrderedCollectionData<Bucket>{ nullptr, nullptr };
         } else {
-            m_buckets_storage[m_data_capacity].m_bucket_state = Details::SetBucketState::End;
+            m_buckets_storage[m_data_capacity.unwrap()].m_bucket_state = Details::SetBucketState::End;
         }
 
         /* return if this set was emtpy */
@@ -706,7 +706,7 @@ private:
 
     void rehash_in_place() {
         for ( auto const i : usize::range(0, m_data_capacity) ) {
-            auto& bucket = m_buckets_storage[i];
+            auto& bucket = m_buckets_storage[i.unwrap()];
 
             if ( bucket.m_bucket_state == Details::SetBucketState::Rehashed || bucket.m_bucket_state == Details::SetBucketState::End
                  || bucket.m_bucket_state == Details::SetBucketState::Free ) {
@@ -725,8 +725,8 @@ private:
 
             auto const to_move_hash   = i;
             auto       target_hash    = new_hash;
-            auto       target_bucket  = &m_buckets_storage[target_hash % m_data_capacity];
-            auto       bucket_to_move = &m_buckets_storage[i];
+            auto       target_bucket  = &m_buckets_storage[(target_hash % m_data_capacity).unwrap()];
+            auto       bucket_to_move = &m_buckets_storage[i.unwrap()];
 
             /* Try to move the bucket to move into its correct spot.
              * During the procedure, we might re-hash or actually change the bucket to move
@@ -740,7 +740,7 @@ private:
 
                 if ( Details::set_bucket_state_is_free(target_bucket->m_bucket_state) ) {
                     /* we can just overwrite the target bucket and bail out */
-                    new (target_bucket->slot()) T{ Cxx::move(*bucket_to_move->slot()) };
+                    new (target_bucket->slot()) T( Cxx::move(*bucket_to_move->slot()) );
                     target_bucket->m_bucket_state  = Details::SetBucketState::Rehashed;
                     bucket_to_move->m_bucket_state = Details::SetBucketState::Free;
 
@@ -762,7 +762,7 @@ private:
                 } else if ( target_bucket->m_bucket_state == Details::SetBucketState::Rehashed ) {
                     /* if the target bucket is already re-hashed, we do normal probing */
                     target_hash   = hash_again(target_hash);
-                    target_bucket = &m_buckets_storage[target_hash % m_data_capacity];
+                    target_bucket = &m_buckets_storage[(target_hash % m_data_capacity).unwrap()];
                 } else {
                     verify$(target_bucket->m_bucket_state != Details::SetBucketState::End);
 
@@ -792,7 +792,7 @@ private:
                     }
 
                     target_hash   = TTraits::hash(*bucket_to_move->slot());
-                    target_bucket = &m_buckets_storage[target_hash % m_data_capacity];
+                    target_bucket = &m_buckets_storage[(target_hash % m_data_capacity).unwrap()];
 
                     /* the data is already in the correct location: Adjust the pointers */
                     if ( target_hash % m_data_capacity == to_move_hash ) {
@@ -825,8 +825,8 @@ private:
 
         m_deleted_count = 0;
         for ( auto const i : usize::range(0, m_data_capacity) ) {
-            if ( m_buckets_storage[i].m_bucket_state == Details::SetBucketState::Rehashed ) {
-                m_buckets_storage[i].m_bucket_state = Details::SetBucketState::Used;
+            if ( m_buckets_storage[i.unwrap()].m_bucket_state == Details::SetBucketState::Rehashed ) {
+                m_buckets_storage[i.unwrap()].m_bucket_state = Details::SetBucketState::Used;
             }
         }
     }
@@ -838,7 +838,7 @@ private:
 
         /* iterate each bucket */
         for ( ;; ) {
-            auto& bucket = m_buckets_storage[hash % m_data_capacity];
+            auto& bucket = m_buckets_storage[(hash % m_data_capacity).unwrap()];
 
             /* give to the predicate if it is used */
             if ( Details::set_bucket_state_is_used(bucket.m_bucket_state) && predicate(*bucket.slot()) ) {
@@ -866,7 +866,7 @@ private:
         /* iterate each bucket to find the first usable */
         Bucket* first_empty_bucket = nullptr;
         for ( ;; ) {
-            auto& bucket = m_buckets_storage[hash % m_data_capacity];
+            auto& bucket = m_buckets_storage[(hash % m_data_capacity).unwrap()];
 
             /* use the already used bucket if the value matches */
             if ( Details::set_bucket_state_is_used(bucket.m_bucket_state) && TTraits::equals(*bucket.slot(), value) ) {
@@ -937,7 +937,7 @@ private:
         }
     }
 
-    auto hash_again(usize key) -> usize {
+    auto hash_again(usize key) const -> usize {
         usize magic = 0xba5edb01;
         if ( key == magic ) {
             return 0;

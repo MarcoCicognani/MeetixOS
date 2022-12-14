@@ -15,7 +15,7 @@
 #include <LibUnitTest/Case.hh>
 
 TEST_CASE(append_char) {
-    auto string_builder = StringBuilder::construct_empty();
+    auto string_builder = StringBuilder::empty();
     verify$(string_builder.is_empty());
 
     string_builder.append('H');
@@ -30,14 +30,14 @@ TEST_CASE(append_char) {
 }
 
 TEST_CASE(try_append_char) {
-    auto string_builder = StringBuilder::construct_empty();
+    auto string_builder = StringBuilder::empty();
     verify$(string_builder.is_empty());
 
-    VERIFY_IS_VALUE(string_builder.try_append('H'));
-    VERIFY_IS_VALUE(string_builder.try_append('e'));
-    VERIFY_IS_VALUE(string_builder.try_append('l'));
-    VERIFY_IS_VALUE(string_builder.try_append('l'));
-    VERIFY_IS_VALUE(string_builder.try_append('o'));
+    verify_is_value$(string_builder.try_append('H'));
+    verify_is_value$(string_builder.try_append('e'));
+    verify_is_value$(string_builder.try_append('l'));
+    verify_is_value$(string_builder.try_append('l'));
+    verify_is_value$(string_builder.try_append('o'));
 
     verify_false$(string_builder.is_empty());
     verify_equal$(string_builder.as_string_view(), "Hello"sv);
@@ -45,7 +45,7 @@ TEST_CASE(try_append_char) {
 }
 
 TEST_CASE(append_string) {
-    auto string_builder = StringBuilder::construct_empty();
+    auto string_builder = StringBuilder::empty();
     verify$(string_builder.is_empty());
 
     string_builder.append("Hi"sv);
@@ -62,15 +62,15 @@ TEST_CASE(append_string) {
 }
 
 TEST_CASE(try_append_string) {
-    auto string_builder = StringBuilder::construct_empty();
+    auto string_builder = StringBuilder::empty();
     verify$(string_builder.is_empty());
 
-    VERIFY_IS_VALUE(string_builder.try_append("Hi"sv));
-    VERIFY_IS_VALUE(string_builder.try_append(" my "sv));
-    VERIFY_IS_VALUE(string_builder.try_append("little"sv));
-    VERIFY_IS_VALUE(string_builder.try_append(" "sv));
-    VERIFY_IS_VALUE(string_builder.try_append("friend"sv));
-    VERIFY_IS_VALUE(string_builder.try_append(" I'm happy"sv));
+    verify_is_value$(string_builder.try_append("Hi"sv));
+    verify_is_value$(string_builder.try_append(" my "sv));
+    verify_is_value$(string_builder.try_append("little"sv));
+    verify_is_value$(string_builder.try_append(" "sv));
+    verify_is_value$(string_builder.try_append("friend"sv));
+    verify_is_value$(string_builder.try_append(" I'm happy"sv));
 
     verify_false$(string_builder.is_empty());
     verify_equal$(string_builder.as_string_view(), "Hi my little friend I'm happy"sv);
