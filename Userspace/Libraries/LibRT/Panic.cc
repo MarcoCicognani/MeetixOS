@@ -10,19 +10,13 @@
  * GNU General Public License version 3
  */
 
-#include <CCLang/Lang/Panic.hh>
-
 #include <CCLang/Lang/IntTypes.hh>
 #include <CCLang/Lang/StringView.hh>
 
-extern "C++" {
+/* CCLang.Lang.Panic plugin support */
 
 [[noreturn]]
-auto __rt_panic_plugin(StringView msg, StringView file, usize line) -> void;
-
-} /* extern "C++" */
-
-[[noreturn]]
-auto panic(StringView msg, StringView file, usize line) -> void {
-    __rt_panic_plugin(msg, file, line);
+auto __rt_panic_plugin(StringView, StringView, usize) -> void {
+    /* TODO call s_task_exit(...) */
+    __builtin_unreachable();
 }

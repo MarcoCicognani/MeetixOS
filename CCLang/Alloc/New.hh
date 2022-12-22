@@ -12,7 +12,11 @@
 
 #pragma once
 
+#include <CCLang/Forward.hh>
+
+#include <CCLang/Core/ErrorOr.hh>
 #include <CCLang/Lang/Cxx.hh>
+#include <CCLang/Lang/IntTypes.hh>
 
 auto operator new(__SIZE_TYPE__ size, nothrow_t const&) noexcept -> void*;
 void operator delete(void* ptr, __SIZE_TYPE__ size) noexcept;
@@ -33,3 +37,12 @@ auto operator delete(void*, align_val_t) noexcept -> void __attribute__((error("
 
 auto operator new[](__SIZE_TYPE__) -> void* __attribute__((error("MeetixC++ deny the usage of throwable new operators")));
 auto operator delete[](void*) noexcept -> void __attribute__((error("MeetixC++ deny the usage of no known size delete operator")));
+
+namespace Details {
+
+/* Visible on the header only because they are used by the CCLang.Alloc containers */
+
+auto internal_heap_alloc(usize size) -> ErrorOr<void*>;
+auto internal_heap_dealloc(void* ptr, usize size) -> void;
+
+} /* namespace Details */

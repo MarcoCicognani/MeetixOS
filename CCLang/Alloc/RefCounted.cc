@@ -11,6 +11,7 @@
  */
 
 #include <CCLang/Alloc/RefCounted.hh>
+
 #include <CCLang/Core/Assertions.hh>
 
 auto RefCounted::add_strong_ref() const -> void {

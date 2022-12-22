@@ -10,9 +10,10 @@
  * GNU General Public License version 3
  */
 
-#include <CCLang/Alloc/Details.hh>
-#include <CCLang/Alloc/NonNullRef.hh>
 #include <CCLang/Alloc/StringStorage.hh>
+
+#include <CCLang/Alloc/New.hh>
+#include <CCLang/Alloc/NonNullRef.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/StringView.hh>
 #include <CCLang/Lang/Try.hh>

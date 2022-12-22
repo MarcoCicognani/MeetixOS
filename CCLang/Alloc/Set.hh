@@ -14,7 +14,7 @@
 
 #include <CCLang/Forward.hh>
 
-#include <CCLang/Alloc/Details.hh>
+#include <CCLang/Alloc/New.hh>
 #include <CCLang/Core/Assertions.hh>
 #include <CCLang/Core/Concept.hh>
 #include <CCLang/Core/Meta.hh>
@@ -370,7 +370,7 @@ public:
         clear_keep_capacity();
 
         if ( m_data_capacity > 0 ) {
-            Details::__rt_heap_plugin_dealloc_mem(m_buckets_storage, size_in_bytes(capacity()));
+            Details::internal_heap_dealloc(m_buckets_storage, size_in_bytes(capacity()));
             m_buckets_storage = nullptr;
             m_data_capacity   = 0;
         }
@@ -669,7 +669,7 @@ private:
         auto       old_iter     = begin();
 
         /* allocate the new memory */
-        m_buckets_storage = try$(Details::__rt_heap_plugin_alloc_mem(size_in_bytes(new_capacity)).map<Bucket*>([](void* void_ptr) -> Bucket* {
+        m_buckets_storage = try$(Details::internal_heap_alloc(size_in_bytes(new_capacity)).map<Bucket*>([](void* void_ptr) -> Bucket* {
             return Cxx::bit_cast<Bucket*>(void_ptr);
         }));
         m_data_capacity   = new_capacity;
@@ -694,7 +694,7 @@ private:
         }
 
         /* free the old memory */
-        Details::__rt_heap_plugin_dealloc_mem(m_buckets_storage, size_in_bytes(old_capacity));
+        Details::internal_heap_dealloc(m_buckets_storage, size_in_bytes(old_capacity));
         return {};
     }
 

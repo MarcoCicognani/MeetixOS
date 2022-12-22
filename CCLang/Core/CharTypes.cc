@@ -11,6 +11,7 @@
  */
 
 #include <CCLang/Core/CharTypes.hh>
+
 #include <CCLang/Core/Assertions.hh>
 
 auto is_ascii(u32 code_point) -> bool {

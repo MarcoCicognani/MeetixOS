@@ -24,9 +24,9 @@ enum class CleanMem : bool {
 
 auto rt_alloc(usize size, CleanMem clean_mem) -> ErrorOr<void*>;
 auto rt_realloc(void* ptr, usize new_size) -> ErrorOr<void*>;
-auto rt_dealloc(void* ptr, usize size) -> void;
+auto rt_dealloc(void* ptr, usize size) -> ErrorOr<void>;
 
 auto rt_alloc_aligned(usize size, usize alignment, CleanMem clean_mem) -> ErrorOr<void*>;
-auto rt_dealloc_aligned(void* ptr, usize size, usize alignment) -> void;
+auto rt_dealloc_aligned(void* ptr, usize size, usize alignment) -> ErrorOr<void>;
 
 } /* namespace Heap */

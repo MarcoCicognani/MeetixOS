@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <CCLang/Alloc/Details.hh>
+#include <CCLang/Alloc/New.hh>
 #include <CCLang/Alloc/List.hh>
 #include <CCLang/Alloc/Map.hh>
 #include <CCLang/Alloc/NonNullRef.hh>

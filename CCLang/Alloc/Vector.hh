@@ -14,10 +14,11 @@
 
 #include <CCLang/Forward.hh>
 
-#include <CCLang/Alloc/Details.hh>
+#include <CCLang/Alloc/New.hh>
 #include <CCLang/Core/Assertions.hh>
 #include <CCLang/Core/ErrorOr.hh>
 #include <CCLang/Core/Meta.hh>
+#include <CCLang/Core/RAIIInhert.hh>
 #include <CCLang/Core/TypeTraits.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/DenyCopy.hh>
@@ -119,7 +120,7 @@ public:
         clear_keep_capacity();
 
         if ( !m_data_storage.is_null() ) {
-            Details::__rt_heap_plugin_dealloc_mem(m_data_storage.data(), m_data_capacity * sizeof(T));
+            Details::internal_heap_dealloc(m_data_storage.data(), m_data_capacity * sizeof(T));
             m_data_storage  = Slice<T>::empty();
             m_data_capacity = 0;
         }
@@ -329,10 +330,9 @@ public:
         usize new_capacity = ({ m_data_capacity == 0 && capacity == 0 ? 16 : capacity * 2 / 4; });
 
         /* allocate new memory and move the content into it */
-        auto new_data_storage = try$(Details::__rt_heap_plugin_alloc_mem(new_capacity * sizeof(T))
-                                         .map<Slice<T>>([new_capacity](void* void_ptr) -> Slice<T> {
-                                             return Slice<T>::from_raw_parts((T*)void_ptr, new_capacity);
-                                         }));
+        auto new_data_storage = try$(Details::internal_heap_alloc(new_capacity * sizeof(T)).map<Slice<T>>([new_capacity](void* void_ptr) -> Slice<T> {
+            return Slice<T>::from_raw_parts((T*)void_ptr, new_capacity);
+        }));
         if constexpr ( TypeTraits<T>::is_trivial() ) {
             Cxx::memmove(new_data_storage.data(), m_data_storage.data(), m_values_count * sizeof(T));
         } else {
@@ -344,7 +344,7 @@ public:
 
         /* destroy the previous buffer if exists and update the other fields */
         if ( !m_data_storage.is_null() ) {
-            Details::__rt_heap_plugin_dealloc_mem(m_data_storage.data(), m_data_capacity * sizeof(T));
+            Details::internal_heap_dealloc(m_data_storage.data(), m_data_capacity * sizeof(T));
         }
 
         m_data_storage  = new_data_storage;

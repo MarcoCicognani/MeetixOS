@@ -11,6 +11,7 @@
  */
 
 #include <CCLang/Alloc/String.hh>
+
 #include <CCLang/Alloc/StringBuilder.hh>
 #include <CCLang/Core/CharTypes.hh>
 #include <CCLang/Lang/Cxx.hh>

@@ -35,9 +35,6 @@ class isize;
 template<typename>
 class Function;
 
-template<typename TReturn, typename... TArgs>
-class Function<TReturn(TArgs...)>;
-
 template<typename T>
 class Option;
 

@@ -11,6 +11,7 @@
  */
 
 #include <CCLang/Core/Assertions.hh>
+
 #include <CCLang/Lang/IntTypes.hh>
 #include <CCLang/Lang/Panic.hh>
 #include <CCLang/Lang/StringView.hh>

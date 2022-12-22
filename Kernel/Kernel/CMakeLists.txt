@@ -17,7 +17,7 @@ set(ASM_SOURCES
 set_source_files_properties(${ASM_SOURCES} PROPERTIES LANGUAGE ASM_NASM)
 
 set(CCLANG_SOURCES
-        ../../CCLang/Alloc/Details.cc
+        ../../CCLang/Alloc/New.cc
         ../../CCLang/Alloc/RefCounted.cc
         ../../CCLang/Alloc/String.cc
         ../../CCLang/Alloc/StringBuilder.cc
@@ -27,6 +27,7 @@ set(CCLANG_SOURCES
         ../../CCLang/Alloc/Text/FormatParser.cc
         ../../CCLang/Alloc/Text/Formatter.cc
         ../../CCLang/Alloc/Text/Lexer.cc
+        ../../CCLang/Core/Assertions.cc
         ../../CCLang/Core/CharTypes.cc
         ../../CCLang/Core/Error.cc
         ../../CCLang/Core/Find.cc
@@ -43,7 +44,7 @@ set(CCLANG_SOURCES
         ../../CCLang/Lang/IntTypes/u64.cc
         ../../CCLang/Lang/IntTypes/usize.cc
         ../../CCLang/Lang/Panic.cc
-        ../../CCLang/Lang/StringView.cc ../../CCLang/Core/Assertions.cc)
+        ../../CCLang/Lang/StringView.cc)
 
 set(LIBC_SOURCES
         ../../Userspace/Libraries/LibC/errno.cc

@@ -11,7 +11,7 @@
 #
 
 set(CCLANG_SOURCES
-        ../../../CCLang/Alloc/Details.cc
+        ../../../CCLang/Alloc/New.cc
         ../../../CCLang/Alloc/RefCounted.cc
         ../../../CCLang/Alloc/String.cc
         ../../../CCLang/Alloc/StringBuilder.cc
@@ -21,6 +21,7 @@ set(CCLANG_SOURCES
         ../../../CCLang/Alloc/Text/FormatParser.cc
         ../../../CCLang/Alloc/Text/Formatter.cc
         ../../../CCLang/Alloc/Text/Lexer.cc
+        ../../../CCLang/Core/Assertions.cc
         ../../../CCLang/Core/CharTypes.cc
         ../../../CCLang/Core/Error.cc
         ../../../CCLang/Core/Find.cc
@@ -37,7 +38,7 @@ set(CCLANG_SOURCES
         ../../../CCLang/Lang/IntTypes/u64.cc
         ../../../CCLang/Lang/IntTypes/usize.cc
         ../../../CCLang/Lang/Panic.cc
-        ../../../CCLang/Lang/StringView.cc ../../../CCLang/Core/Assertions.cc)
+        ../../../CCLang/Lang/StringView.cc)
 
 # --- crt0.cc ---
 # These two following commands compile the crt0.cc file then install it into toolchain's lib directory.
@@ -55,8 +56,7 @@ add_library(LibRT
         CxxABI.cc
         crt0Impl.cc
         Heap.cc
-        New.cc
-        ${CCLANG_SOURCES})
+        ${CCLANG_SOURCES} Panic.cc)
 add_custom_command(
         TARGET LibRT
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibRT> ${TOOLCHAIN_LIB}/librt.a

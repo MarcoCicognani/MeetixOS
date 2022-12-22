@@ -10,6 +10,8 @@
  * GNU General Public License version 3
  */
 
+#include <CCLang/Lang/StringView.hh>
+
 #include <CCLang/Alloc/Vector.hh>
 #include <CCLang/Core/AllOf.hh>
 #include <CCLang/Core/AnyOf.hh>
@@ -19,7 +21,6 @@
 #include <CCLang/Core/Find.hh>
 #include <CCLang/Lang/Cxx.hh>
 #include <CCLang/Lang/Must.hh>
-#include <CCLang/Lang/StringView.hh>
 #include <CCLang/Lang/Try.hh>
 
 auto StringView::from_cstr(const char* c_str) -> StringView {

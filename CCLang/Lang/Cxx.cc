@@ -11,6 +11,7 @@
  */
 
 #include <CCLang/Lang/Cxx.hh>
+
 #include <CCLang/Lang/IntTypes.hh>
 
 #pragma clang diagnostic push
