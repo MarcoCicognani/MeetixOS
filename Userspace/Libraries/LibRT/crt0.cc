@@ -15,7 +15,7 @@
 
 /* The runtime core is implemented into the crt0Impl.cc
  * In order to keep this object, once compiled, lightweight as possibile.
- * This code produces a call to an external symbol (__rt_run()) */
+ * This code produces only a call to the external symbol '__rt_run' */
 [[noreturn]]
 auto __rt_run() -> void;
 
