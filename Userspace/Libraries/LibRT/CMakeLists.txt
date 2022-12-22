@@ -21,7 +21,7 @@ set(CCLANG_SOURCES
         ../../../CCLang/Alloc/Text/FormatParser.cc
         ../../../CCLang/Alloc/Text/Formatter.cc
         ../../../CCLang/Alloc/Text/Lexer.cc
-        ../../../CCLang/Core/Assertions.cc
+        ../../../CCLang/Core/CharTypes.cc
         ../../../CCLang/Core/Error.cc
         ../../../CCLang/Core/Find.cc
         ../../../CCLang/Core/SourceLocation.cc
@@ -36,10 +36,11 @@ set(CCLANG_SOURCES
         ../../../CCLang/Lang/IntTypes/u32.cc
         ../../../CCLang/Lang/IntTypes/u64.cc
         ../../../CCLang/Lang/IntTypes/usize.cc
-        ../../../CCLang/Lang/StringView.cc ../../../CCLang/Core/CharTypes.cc)
+        ../../../CCLang/Lang/Panic.cc
+        ../../../CCLang/Lang/StringView.cc ../../../CCLang/Core/Assertions.cc)
 
 # --- crt0.cc ---
-# These two following commands compile the crt0.cc file then install it into toolchain's lib.
+# These two following commands compile the crt0.cc file then install it into toolchain's lib directory.
 # crt0.o is a special object file which the linker needs to create executables, it must contains the _start() entry point
 #
 add_library(LibCRT0 STATIC crt0.cc)
@@ -51,7 +52,7 @@ add_custom_command(
 
 add_library(LibRT
         STATIC
-        ABISupport.cc
+        CxxABI.cc
         crt0Impl.cc
         Heap.cc
         New.cc

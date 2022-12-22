@@ -13,8 +13,8 @@
 #pragma once
 
 #include <CCLang/Alloc/Vector.hh>
-#include <CCLang/Collection/StringView.hh>
 #include <CCLang/Core/ErrorOr.hh>
+#include <CCLang/Lang/StringView.hh>
 
 /**
  * @brief Custom MeetixOS entry point for userspace applications

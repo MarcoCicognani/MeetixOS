@@ -34,7 +34,7 @@ char* dirname(char* path) {
         len--;
     }
 
-    auto path_sv = StringView::construct_from_raw_parts(path, len);
+    auto path_sv = StringView::from_raw_parts(path, len);
 
     /* find the last slash */
     auto last_slash_index_or_none = path_sv.find_last('/');
@@ -46,7 +46,7 @@ char* dirname(char* path) {
         return s_slash;
 
     /* null terminate the path buffer given at the last slash */
-    path[last_slash_index] = '\0';
+    path[last_slash_index.unwrap()] = '\0';
     return path;
 }
 
@@ -61,7 +61,7 @@ char* basename(char* path) {
         len--;
     }
 
-    auto path_sv = StringView::construct_from_raw_parts(path, len);
+    auto path_sv = StringView::from_raw_parts(path, len);
 
     /* find the last slash */
     auto last_slash_index_or_none = path_sv.find_last('/');

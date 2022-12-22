@@ -438,7 +438,7 @@ REALLOC_ZERO_BYTES_FREES    default: not defined
   This should be set if a call to realloc with zero bytes should
   be the same as a call to free. Some people think it should. Otherwise,
   since this malloc returns a unique pointer for malloc(0), so does
-  realloc(p, 0).
+  rt_realloc(p, 0).
 
 LACKS_UNISTD_H, LACKS_FCNTL_H, LACKS_SYS_PARAM_H, LACKS_SYS_MMAN_H
 LACKS_STRINGS_H, LACKS_STRING_H, LACKS_SYS_TYPES_H,  LACKS_ERRNO_H
@@ -859,7 +859,7 @@ DLMALLOC_EXPORT void* dlmalloc(size_t);
 /*
   free(void* p)
   Releases the chunk of memory pointed to by p, that had been previously
-  allocated using malloc or a related routine such as realloc.
+  allocated using malloc or a related routine such as rt_realloc.
   It has no effect if p is null. If p was not malloced or already
   freed, free(p) will by default cause the current program to abort.
 */
@@ -891,7 +891,7 @@ DLMALLOC_EXPORT void* dlcalloc(size_t, size_t);
   space is lopped off and freed if possible.  realloc with a size
   argument of zero (re)allocates a minimum-sized chunk.
 
-  The old unix realloc convention of allowing the last-free'd chunk
+  The old unix rt_realloc convention of allowing the last-free'd chunk
   to be used as an argument to realloc is not supported.
 */
 DLMALLOC_EXPORT void* dlrealloc(void*, size_t);
@@ -902,7 +902,7 @@ DLMALLOC_EXPORT void* dlrealloc(void*, size_t);
   done without moving p (i.e., only if there is adjacent space
   available if n is greater than p's current allocated size, or n is
   less than or equal to p's size). This may be used instead of plain
-  realloc if an alternative allocation strategy is needed upon failure
+  rt_realloc if an alternative allocation strategy is needed upon failure
   to expand space; for example, reallocation of a buffer that must be
   memory-aligned or cleared. You can use realloc_in_place to trigger
   these alternatives only when needed.
@@ -969,7 +969,7 @@ DLMALLOC_EXPORT int dlmallopt(int, int);
 /*
   malloc_footprint();
   Returns the number of bytes obtained from the system.  The total
-  number of bytes allocated by malloc, realloc etc., is less than this
+  number of bytes allocated by malloc, rt_realloc etc., is less than this
   value. Unlike mallinfo, this function returns only a precomputed
   result, so can be called frequently to monitor memory consumption.
   Even if locks are otherwise defined, this function does not use them,
@@ -982,7 +982,7 @@ DLMALLOC_EXPORT size_t dlmalloc_footprint(void);
   Returns the maximum number of bytes obtained from the system. This
   value will be greater than current footprint if deallocated space
   has been reclaimed by the system. The peak number of bytes allocated
-  by malloc, realloc etc., is less than this value. Unlike mallinfo,
+  by malloc, rt_realloc etc., is less than this value. Unlike mallinfo,
   this function returns only a precomputed result, so can be called
   frequently to monitor memory consumption.  Even if locks are
   otherwise defined, this function does not use them, so results might
@@ -1081,7 +1081,7 @@ DLMALLOC_EXPORT struct mallinfo dlmallinfo(void);
   single cleared space, it returns an array of pointers to n_elements
   independent elements that can hold contents of size elem_size, each
   of which starts out cleared, and can be independently freed,
-  realloc'ed etc. The elements are guaranteed to be adjacently
+  rt_realloc'ed etc. The elements are guaranteed to be adjacently
   allocated (this is not guaranteed to occur with multiple callocs or
   mallocs), which may also improve cache locality in some
   applications.
@@ -1131,7 +1131,7 @@ DLMALLOC_EXPORT void** dlindependent_calloc(size_t, size_t, void**);
   independent_comalloc allocates, all at once, a set of n_elements
   chunks with sizes indicated in the "sizes" array.    It returns
   an array of pointers to these elements, each of which can be
-  independently freed, realloc'ed etc. The elements are guaranteed to
+  independently freed, rt_realloc'ed etc. The elements are guaranteed to
   be adjacently allocated (this is not guaranteed to occur with
   multiple callocs or mallocs), which may also improve cache locality
   in some applications.
@@ -1229,7 +1229,7 @@ DLMALLOC_EXPORT int dlmalloc_trim(size_t);
   Prints on stderr the amount of space obtained from the system (both
   via sbrk and mmap), the maximum amount (which may be more than
   current if malloc_trim and/or munmap got called), and the current
-  number of bytes allocated via malloc (or realloc, etc) but not yet
+  number of bytes allocated via malloc (or rt_realloc, etc) but not yet
   freed. Note that this is the number of bytes allocated, not the
   number requested. It will be larger than the number requested
   because of alignment and bookkeeping overhead. Because it includes
@@ -1337,7 +1337,7 @@ DLMALLOC_EXPORT void mspace_free(mspace msp, void* mem);
   the given space.
 
   If compiled with FOOTERS==1, mspace_realloc is not actually
-  needed.  realloc may be called instead of mspace_realloc because
+  needed.  rt_realloc may be called instead of mspace_realloc because
   realloced chunks from any space are handled by their originating
   spaces.
 */
@@ -2138,7 +2138,7 @@ static int pthread_init_lock(MLOCK_T* lk) {
   The C (CINUSE_BIT) bit, stored in the unused second-lowest bit of
   the chunk size redundantly records whether the current chunk is
   inuse (unless the chunk is mmapped). This redundancy enables usage
-  checks within free and realloc, and reduces indirection when freeing
+  checks within free and rt_realloc, and reduces indirection when freeing
   and consolidating chunks.
 
   Each freshly allocated chunk must have both cinuse and pinuse set.
@@ -2627,7 +2627,7 @@ static struct malloc_state _gm_;
 
 #define is_initialized(M) ((M)->top != 0)
 
-/* -------------------------- system alloc setup ------------------------- */
+/* -------------------------- system rt_alloc setup ------------------------- */
 
 /* Operators on mflags */
 
@@ -2982,7 +2982,7 @@ static size_t traverse_and_check(mstate m);
   et al in "Run-time Detection of Heap-based Overflows" LISA'03
   http://www.usenix.org/events/lisa03/tech/robertson.html The footer
   of an inuse chunk holds the xor of its mstate and a random seed,
-  that is checked upon calls to free() and realloc().  This is
+  that is checked upon calls to free() and rt_realloc().  This is
   (probabalistically) unguessable from outside the program, but can be
   computed by any code successfully malloc'ing any chunk, so does not
   itself provide protection against code that has already broken
@@ -3760,7 +3760,7 @@ static void internal_malloc_stats(mstate m) {
             unlink_large_chunk(M, TP);                                                             \
         }
 
-/* Relays to internal calls to malloc/free from realloc, memalign etc */
+/* Relays to internal calls to malloc/free from rt_realloc, memalign etc */
 
 #if ONLY_MSPACES
 #    define internal_malloc(m, b) mspace_malloc(m, b)
@@ -4566,7 +4566,7 @@ void* dlmalloc(size_t bytes) {
                 }
             }
         } else if ( bytes >= MAX_REQUEST )
-            nb = MAX_SIZE_T; /* Too big to allocate. Force failure (in sys alloc) */
+            nb = MAX_SIZE_T; /* Too big to allocate. Force failure (in sys rt_alloc) */
         else {
             nb = pad_request(bytes);
             if ( gm->treemap != 0 && (mem = tmalloc_large(gm, nb)) != 0 ) {
@@ -4736,9 +4736,9 @@ void* dlcalloc(size_t n_elements, size_t elem_size) {
 
 #endif /* !ONLY_MSPACES */
 
-/* ------------ Internal support for realloc, memalign, etc -------------- */
+/* ------------ Internal support for rt_realloc, memalign, etc -------------- */
 
-/* Try to realloc; only in-place unless can_move true */
+/* Try to rt_realloc; only in-place unless can_move true */
 static mchunkptr try_realloc_chunk(mstate m, mchunkptr p, size_t nb, int can_move) {
     mchunkptr newp    = 0;
     size_t    oldsize = chunksize(p);
@@ -4931,7 +4931,7 @@ static void** ialloc(mstate m, size_t n_elements, size_t* sizes, int opts, void*
     /*
        Allocate the aggregate chunk.  First disable direct-mmapping so
        malloc won't use it, since we would not be able to later
-       free/realloc space internal to a segregated mmap region.
+       free/rt_realloc space internal to a segregated mmap region.
     */
     was_enabled = use_mmap(m);
     disable_mmap(m);
@@ -5083,7 +5083,7 @@ internal_inspect_all(mstate m,
 }
 #endif /* MALLOC_INSPECT_ALL */
 
-/* ------------------ Exported realloc, memalign, etc -------------------- */
+/* ------------------ Exported rt_realloc, memalign, etc -------------------- */
 
 #if !ONLY_MSPACES
 
@@ -5454,7 +5454,7 @@ void* mspace_malloc(mspace msp, size_t bytes) {
                 }
             }
         } else if ( bytes >= MAX_REQUEST )
-            nb = MAX_SIZE_T; /* Too big to allocate. Force failure (in sys alloc) */
+            nb = MAX_SIZE_T; /* Too big to allocate. Force failure (in sys rt_alloc) */
         else {
             nb = pad_request(bytes);
             if ( ms->treemap != 0 && (mem = tmalloc_large(ms, nb)) != 0 ) {
@@ -6037,7 +6037,7 @@ History:
       * Allow override of MALLOC_ALIGNMENT (Thanks to Ruud Waij for
         helping test this.)
       * memalign: check alignment arg
-      * realloc: don't try to shift chunks backwards, since this
+      * rt_realloc: don't try to shift chunks backwards, since this
         leads to  more fragmentation in some programs and doesn't
         seem to help in any others.
       * Collect all cases in malloc requiring system memory into sysmalloc

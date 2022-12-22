@@ -58,7 +58,7 @@ static AddressStack messageMemoryPool8192;
 void refill(AddressStack* pool, size_t size) {
     // fill each queue bucket
     for ( int i = 0; i < MESSAGE_QUEUE_SIZE; i++ ) {
-        // alloc the memory on the kernel heap
+        // rt_alloc the memory on the kernel heap
         Address addr = (Address) new uint8_t[size];
 
         // check validity

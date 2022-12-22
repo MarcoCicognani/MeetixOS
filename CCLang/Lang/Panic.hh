@@ -9,3 +9,10 @@
  * @license
  * GNU General Public License version 3
  */
+
+#pragma once
+
+#include <CCLang/Lang/StringView.hh>
+
+[[noreturn]]
+auto panic(StringView msg, StringView file = StringView::from_cstr(__builtin_FILE()), usize line = __builtin_LINE()) -> void;

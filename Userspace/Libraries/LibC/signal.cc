@@ -35,8 +35,8 @@ sig_handler_t signal(int sig, sig_handler_t sig_handler) {
     } else if ( sig_handler == SIG_IGN )
         sig_handler = sig_handler_SIG_IGN;
 
-    auto const prev_sig_handler = s_register_signal_handler(sig, bit_cast<void*>(&sig_handler));
-    return bit_cast<sig_handler_t>(prev_sig_handler);
+    auto const prev_sig_handler = s_register_signal_handler(sig, Cxx::bit_cast<void*>(&sig_handler));
+    return Cxx::bit_cast<sig_handler_t>(prev_sig_handler);
 }
 
 int raise(int signal) {

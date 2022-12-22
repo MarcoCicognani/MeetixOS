@@ -23,7 +23,7 @@ extern "C" {
 /**
  * @brief Message transaction identifier
  */
-typedef usize MessageTransaction;
+typedef unsigned int MessageTransaction;
 #define MESSAGE_TRANSACTION_NONE  ((MessageTransaction)0)
 #define MESSAGE_TRANSACTION_FIRST ((MessageTransaction)1)
 
@@ -33,7 +33,7 @@ typedef usize MessageTransaction;
 typedef struct MessageHeader {
     Tid                   m_sender_tid;
     MessageTransaction    m_transaction;
-    usize                 m_message_len;
+    unsigned int          m_message_len;
     struct MessageHeader* m_previous;
     struct MessageHeader* m_next;
 } A_PACKED MessageHeader;

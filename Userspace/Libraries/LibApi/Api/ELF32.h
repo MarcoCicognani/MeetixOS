@@ -71,20 +71,20 @@ extern "C" {
  * @brief ELF header
  */
 typedef struct {
-    u8  e_ident[EI_NIDENT]; /* Ident structure */
-    u16 e_type;             /* Type */
-    u16 e_machine;          /* Target architecture */
-    u32 e_version;          /* EV_CURRENT for standard ELF files */
-    u32 e_entry;            /* Entry's virtual address */
-    u32 e_phoff;            /* Offset to program header table */
-    u32 e_shoff;            /* Offset to section header table */
-    u32 e_flags;            /* Architecture-specific flags */
-    u16 e_ehsize;           /* Size of ELF header in bytes */
-    u16 e_phentsize;        /* Size of one entry in program header table */
-    u16 e_phnum;            /* Number of entries in program header table */
-    u16 e_shentsize;        /* Size of one entry in section header table */
-    u16 e_shnum;            /* Number of entries in section header table */
-    u16 e_shstrndx;         /* Section header table index of section name string table */
+    unsigned char  e_ident[EI_NIDENT]; /* Ident structure */
+    unsigned short e_type;             /* Type */
+    unsigned short e_machine;          /* Target architecture */
+    unsigned int   e_version;          /* EV_CURRENT for standard ELF files */
+    unsigned int   e_entry;            /* Entry's virtual address */
+    unsigned int   e_phoff;            /* Offset to program header table */
+    unsigned int   e_shoff;            /* Offset to section header table */
+    unsigned int   e_flags;            /* Architecture-specific flags */
+    unsigned short e_ehsize;           /* Size of ELF header in bytes */
+    unsigned short e_phentsize;        /* Size of one entry in program header table */
+    unsigned short e_phnum;            /* Number of entries in program header table */
+    unsigned short e_shentsize;        /* Size of one entry in section header table */
+    unsigned short e_shnum;            /* Number of entries in section header table */
+    unsigned short e_shstrndx;         /* Section header table index of section name string table */
 } A_PACKED Elf32Ehdr;
 
 /**
@@ -111,14 +111,14 @@ typedef struct {
 #define PF_MASKPROC 0xF0000000
 
 typedef struct {
-    u32 p_type;   /* Type of the segment */
-    u32 p_offset; /* Offset of the segment in the binary file */
-    u32 p_vaddr;  /* Virtual address */
-    u32 p_paddr;  /* Not relevant for System V */
-    u32 p_filesz; /* Size of the segment in the binary file */
-    u32 p_memsz;  /* Size of the segment in memory */
-    u32 p_flags;  /* Segment flags */
-    u32 p_align;  /* Alignment information */
+    unsigned int p_type;   /* Type of the segment */
+    unsigned int p_offset; /* Offset of the segment in the binary file */
+    unsigned int p_vaddr;  /* Virtual address */
+    unsigned int p_paddr;  /* Not relevant for System V */
+    unsigned int p_filesz; /* Size of the segment in the binary file */
+    unsigned int p_memsz;  /* Size of the segment in memory */
+    unsigned int p_flags;  /* Segment flags */
+    unsigned int p_align;  /* Alignment information */
 } A_PACKED Elf32Phdr;
 
 #ifdef __cplusplus

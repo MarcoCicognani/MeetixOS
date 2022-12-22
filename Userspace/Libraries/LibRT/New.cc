@@ -41,7 +41,7 @@ void operator delete[](void*) noexcept {
 }
 
 auto operator new(__SIZE_TYPE__ size, nothrow_t const&) noexcept -> void* {
-    auto error_or_ptr = Heap::alloc(size, Heap::Clean::No);
+    auto error_or_ptr = Heap::rt_alloc(size, Heap::CleanMem::No);
    if ( error_or_ptr.is_value() )
        return error_or_ptr.unwrap();
    else
@@ -49,7 +49,7 @@ auto operator new(__SIZE_TYPE__ size, nothrow_t const&) noexcept -> void* {
 }
 
 auto operator new(__SIZE_TYPE__ size, align_val_t align, nothrow_t const&) noexcept -> void* {
-   auto error_or_ptr = Heap::alloc_aligned(size, static_cast<UnderlyingType<align_val_t>>(align), Heap::Clean::No);
+   auto error_or_ptr = Heap::rt_alloc_aligned(size, static_cast<UnderlyingType<align_val_t>>(align), Heap::CleanMem::No);
    if ( error_or_ptr.is_value() )
        return error_or_ptr.unwrap();
    else
@@ -57,7 +57,7 @@ auto operator new(__SIZE_TYPE__ size, align_val_t align, nothrow_t const&) noexc
 }
 
 auto operator new[](__SIZE_TYPE__ size, nothrow_t const&) noexcept -> void* {
-   auto error_or_ptr  = Heap::alloc(size, Heap::Clean::No);
+   auto error_or_ptr  = Heap::rt_alloc(size, Heap::CleanMem::No);
    if ( error_or_ptr.is_value() )
        return error_or_ptr.unwrap();
    else
@@ -65,13 +65,13 @@ auto operator new[](__SIZE_TYPE__ size, nothrow_t const&) noexcept -> void* {
 }
 
 void operator delete(void* ptr, __SIZE_TYPE__ size) noexcept {
-    Heap::dealloc(ptr, size);
+   Heap::rt_dealloc(ptr, size);
 }
 
 void operator delete(void* ptr, __SIZE_TYPE__ size, align_val_t align) noexcept {
-    Heap::dealloc_aligned(ptr, size, static_cast<UnderlyingType<align_val_t>>(align));
+   Heap::rt_dealloc_aligned(ptr, size, static_cast<UnderlyingType<align_val_t>>(align));
 }
 
 void operator delete[](void* ptr, __SIZE_TYPE__ size) noexcept {
-    Heap::dealloc(ptr, size);
+    Heap::rt_dealloc(ptr, size);
 }

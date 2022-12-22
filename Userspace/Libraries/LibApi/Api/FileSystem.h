@@ -23,17 +23,16 @@ extern "C" {
 /**
  * @brief Types
  */
-typedef i32 FileHandle; /* Open file handle */
-typedef u32 FsVirtID;   /* VFS node id */
-typedef u64 FsPhysID;   /* Filesystem node id */
+typedef int FileHandle; /* Open file handle */
+typedef unsigned int FsVirtID;   /* VFS node id */
+typedef unsigned long long FsPhysID;   /* Filesystem node id */
 
 #define FD_NONE ((FileHandle)-1)
 
 /**
  * @brief Limits
  */
-CONST_VALUE(PATH_MAX, int, 4096);
-//#define PATH_MAX     4096
+#define PATH_MAX     4096
 #define FILENAME_MAX 512
 
 /**
@@ -75,7 +74,7 @@ typedef enum {
  * @brief Stat attributes
  */
 typedef struct {
-    u32 mode;
+    unsigned int mode;
 } A_PACKED FsStatAttributes;
 
 /**
@@ -90,7 +89,7 @@ typedef enum {
 /**
  * @brief Transaction IDs
  */
-typedef i64                  FsTransactionID;
+typedef long long                  FsTransactionID;
 static const FsTransactionID FS_TRANSACTION_NO_REPEAT_ID = -1;
 
 /**
@@ -268,7 +267,7 @@ typedef struct {
 
 typedef struct {
     FsVirtID         m_node_id;
-    u32              m_position;
+    unsigned int              m_position;
     FsDirectoryEntry m_entry_buffer;
 } FsDirectoryIterator;
 
@@ -288,7 +287,7 @@ typedef struct {
     int64_t  offset;
     int64_t  length;
     VirtAddr mappingStart;
-    i32      mappingPages;
+    int      mappingPages;
 
     int64_t      resultRead;
     FsReadStatus resultStatus;
@@ -300,7 +299,7 @@ typedef struct {
     int64_t  offset;
     int64_t  length;
     VirtAddr mappingStart;
-    i32      mappingPages;
+    int      mappingPages;
 
     int64_t       resultWrite;
     FsWriteStatus resultStatus;

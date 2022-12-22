@@ -16,6 +16,6 @@
 
 bool __atomic_lock(bool* atom1, bool* atom2, bool set_on_finish, bool try_only) {
     SyscallAtomicLock data{ atom1, atom2, set_on_finish, try_only, false };
-    do_syscall(SYSCALL_LOCK_ATOMIC, (usize)&data);
+    do_syscall(SYSCALL_LOCK_ATOMIC, (unsigned int)&data);
     return data.m_was_set;
 }

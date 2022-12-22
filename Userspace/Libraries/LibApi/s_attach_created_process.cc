@@ -14,5 +14,5 @@
 
 void s_attach_created_process(ProcessCreationIdentifier process, Address eip) {
     SyscallAttachCreatedProcess data{ eip, process };
-    do_syscall(SYSCALL_ATTACH_CREATED_PROCESS, (usize)&data);
+    do_syscall(SYSCALL_ATTACH_CREATED_PROCESS, (unsigned int)&data);
 }

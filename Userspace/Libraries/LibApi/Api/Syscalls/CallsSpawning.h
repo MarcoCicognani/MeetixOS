@@ -53,7 +53,7 @@ typedef struct {
 typedef struct {
     ProcessCreationIdentifier m_process_creation_identifier;
     Address                   m_target_space_virtual_address;
-    usize                     m_pages_count;
+    unsigned int              m_pages_count;
     Address                   m_shared_virtual_ptr;
 } A_PACKED SyscallCreatePagesInSpace;
 
@@ -62,10 +62,10 @@ typedef struct {
  */
 typedef struct {
     ProcessCreationIdentifier m_process_creation_identifier;
-    u8*                       m_tls_content;
-    usize                     m_copy_size;
-    usize                     m_total_size;
-    usize                     m_alignment;
+    unsigned char*            m_tls_content;
+    unsigned int              m_copy_size;
+    unsigned int              m_total_size;
+    unsigned int              m_alignment;
     bool                      m_success;
 } A_PACKED SyscallWriteTlsMasterForProcess;
 
@@ -120,8 +120,8 @@ typedef struct {
  * @brief s_cli_args_release system call data
  */
 typedef struct {
-    char* m_out_buffer;
-    usize m_len;
+    char*        m_out_buffer;
+    unsigned int m_len;
 } A_PACKED SyscallCliArgsRelease;
 
 #ifdef __cplusplus

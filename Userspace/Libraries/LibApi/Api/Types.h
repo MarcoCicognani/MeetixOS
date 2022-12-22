@@ -22,10 +22,10 @@ extern "C" {
 /**
  * @brief Address types
  */
-typedef usize   Address;
-typedef Address PhysAddr;
-typedef Address VirtAddr;
-typedef usize   FarPtr;
+typedef unsigned int Address;
+typedef Address      PhysAddr;
+typedef Address      VirtAddr;
+typedef unsigned int FarPtr;
 
 /**
  * @brief Far-pointers management

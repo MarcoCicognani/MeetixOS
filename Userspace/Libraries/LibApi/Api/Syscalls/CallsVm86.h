@@ -22,7 +22,7 @@ extern "C" {
  * @brief s_call_vm_86 system call data
  */
 typedef struct {
-    usize          m_interrupt;
+    unsigned int   m_interrupt;
     VM86Registers  m_in_registers;
     VM86Registers* m_out_registers;
     Vm86CallStatus m_call_status;

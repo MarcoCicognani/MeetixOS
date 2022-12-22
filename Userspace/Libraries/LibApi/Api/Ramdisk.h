@@ -48,7 +48,7 @@ typedef enum {
 typedef struct {
     RamdiskEntryType m_entry_type;
     char             m_name[512];
-    usize            m_name_len;
+    unsigned int     m_name_len;
 } RamdiskEntryInfo;
 
 #ifdef __cplusplus

@@ -14,15 +14,15 @@
 
 #include <Api/StdInt.h>
 
-void* memory_copy(void* dest, const void* src, usize len) {
-    auto byte_dest = reinterpret_cast<u8*>(dest);
-    auto byte_src  = reinterpret_cast<const u8*>(src);
+void* memory_copy(void* dest, const void* src, unsigned int len) {
+    auto byte_dest = reinterpret_cast<unsigned char*>(dest);
+    auto byte_src  = reinterpret_cast<const unsigned char*>(src);
     while ( len-- )
         *byte_dest++ = *byte_src++;
     return dest;
 }
 
-usize string_len(const char* str) {
+unsigned int string_len(const char* str) {
     auto len = 0;
     while ( *str++ )
         ++len;

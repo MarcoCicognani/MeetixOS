@@ -12,8 +12,8 @@
 
 #include <Api/User.h>
 
-void* s_alloc_mem(usize size) {
+void* s_alloc_mem(unsigned int size) {
     SyscallAllocMem data{ size };
-    do_syscall(SYSCALL_MEMORY_ALLOCATE, (usize)&data);
+    do_syscall(SYSCALL_MEMORY_ALLOCATE, (unsigned int )&data);
     return data.m_region_ptr;
 }

@@ -27,8 +27,9 @@ set(CCLANG_SOURCES
         ../../CCLang/Alloc/Text/FormatParser.cc
         ../../CCLang/Alloc/Text/Formatter.cc
         ../../CCLang/Alloc/Text/Lexer.cc
-        ../../CCLang/Core/Assertions.cc
+        ../../CCLang/Core/CharTypes.cc
         ../../CCLang/Core/Error.cc
+        ../../CCLang/Core/Find.cc
         ../../CCLang/Core/SourceLocation.cc
         ../../CCLang/Lang/Cxx.cc
         ../../CCLang/Lang/IntTypes/i8.cc
@@ -41,7 +42,8 @@ set(CCLANG_SOURCES
         ../../CCLang/Lang/IntTypes/u32.cc
         ../../CCLang/Lang/IntTypes/u64.cc
         ../../CCLang/Lang/IntTypes/usize.cc
-        ../../CCLang/Lang/StringView.cc ../../CCLang/Core/Find.cc ../../CCLang/Core/CharTypes.cc)
+        ../../CCLang/Lang/Panic.cc
+        ../../CCLang/Lang/StringView.cc ../../CCLang/Core/Assertions.cc)
 
 set(LIBC_SOURCES
         ../../Userspace/Libraries/LibC/errno.cc

@@ -12,11 +12,11 @@
 
 #pragma once
 
-#define __verify_internal$(expression, failure_message)                                                                                                        \
-    do {                                                                                                                                                       \
-        if ( !(expression) ) [[unlikely]] {                                                                                                                    \
-            panic(failure_message, __builtin_FILE(), __builtin_LINE());                                                                                        \
-        }                                                                                                                                                      \
+#define __verify_internal$(expression, failure_message)                                                 \
+    do {                                                                                                \
+        if ( !(expression) ) [[unlikely]] {                                                             \
+            Details::__verify_internal_has_failed(failure_message, __builtin_FILE(), __builtin_LINE()); \
+        }                                                                                               \
     } while ( false )
 
 #define verify_equal_with_msg$(lhs, rhs, msg)         __verify_internal$(lhs == rhs, msg)
@@ -44,12 +44,9 @@
 #define verify_null$(expr)     verify_equal$(expr, nullptr)
 #define verify_not_null$(expr) verify_not_equal$(expr, nullptr)
 
-[[noreturn]]
-auto panic(char const* msg, char const* file = __builtin_FILE(), int line = __builtin_LINE()) -> void;
-
 namespace Details {
 
 [[noreturn]]
-auto __assert_plug_panic(char const* expression, char const* file, int line) -> void;
+auto __verify_internal_has_failed(char const* msg, char const* file, int line) -> void;
 
 } /* namespace Details */

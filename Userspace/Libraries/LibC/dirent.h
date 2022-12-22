@@ -34,8 +34,8 @@ CONST_VALUE(DT_LNK, uint8_t, 7);     /* Entry type symlink */
 
 struct dirent {
     ino_t   d_fileno;             /* inode of the entry */
-    usize   d_reclen;             /* size of the entry */
-    usize   d_namlen;             /* name length of the entry */
+    size_t   d_reclen;             /* size of the entry */
+    size_t   d_namlen;             /* name length of the entry */
     dev_t   d_dev;                /* device identifier */
     uint8_t d_type;               /* node type (file/directory) */
     char    d_name[FILENAME_MAX]; /* entry name */

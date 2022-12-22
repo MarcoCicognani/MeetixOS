@@ -49,7 +49,7 @@ bool __atomic_lock(bool* atom1, bool* atom2, bool set_on_finish, bool try_only);
  * @param len:           the size of the source
  * @return the destination pointer
  */
-void* memory_copy(void* dest, const void* src, usize len);
+void* memory_copy(void* dest, const void* src, unsigned int len);
 
 /**
  * returns the length of the provided string
@@ -57,7 +57,7 @@ void* memory_copy(void* dest, const void* src, usize len);
  * @param str:      the string that we measure
  * @return the length of the string
  */
-usize string_len(const char* str);
+unsigned int string_len(const char* str);
 
 #ifdef __cplusplus
 }

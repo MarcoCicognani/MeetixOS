@@ -17,7 +17,7 @@
 #    include <CCLang/Lang/Cxx.hh>
 #    include <memory/KernelHeap.hpp>
 
-auto Details::__heap_plug_alloc_mem(usize size) -> ErrorOr<void*> {
+auto Details::__rt_heap_plugin_alloc_mem(usize size) -> ErrorOr<void*> {
     auto start_ptr = KernelHeap::allocate(size.unwrap());
     if ( start_ptr != nullptr ) {
         Cxx::memset(start_ptr, 0, size);
@@ -26,7 +26,7 @@ auto Details::__heap_plug_alloc_mem(usize size) -> ErrorOr<void*> {
         return Error::from_code(ErrorCode::NoMemory);
 }
 
-auto Details::__heap_plug_dealloc_mem(void* ptr, usize) -> void {
+auto Details::__rt_heap_plugin_dealloc_mem(void* ptr, usize) -> void {
     KernelHeap::free(ptr);
 }
 
@@ -34,12 +34,12 @@ auto Details::__heap_plug_dealloc_mem(void* ptr, usize) -> void {
 
 #    include <LibRT/Heap.hh>
 
-auto Details::__heap_plug_alloc_mem(usize size) -> ErrorOr<void*> {
-    return Heap::alloc(size, Heap::Clean::Yes);
+auto Details::__rt_heap_plugin_alloc_mem(usize size) -> ErrorOr<void*> {
+    return Heap::rt_alloc(size, Heap::CleanMem::Yes);
 }
 
-auto Details::__heap_plug_dealloc_mem(void* ptr, usize size) -> void {
-    Heap::dealloc(ptr, size);
+auto Details::__rt_heap_plugin_dealloc_mem(void* ptr, usize size) -> void {
+    Heap::rt_dealloc(ptr, size);
 }
 
 #endif

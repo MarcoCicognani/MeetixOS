@@ -124,7 +124,7 @@ RegisterAsServerStatus s_register_as_server(const char* server_identifier, Secur
  * @param data_len:					the length of the data buffer
  * @return one of the {ServerManageStatus} codes.
  */
-ServerManageStatus s_server_manage(const char* server_identifier, ServerManageCommand manage_command, void* data_ptr, usize data_len);
+ServerManageStatus s_server_manage(const char* server_identifier, ServerManageCommand manage_command, void* data_ptr, unsigned int data_len);
 
 /**
  * call spawner to reboot the computer
@@ -174,7 +174,7 @@ void s_log(const char* message);
  *
  * @security-level APPLICATION
  */
-void do_syscall(usize call, usize data);
+void do_syscall(unsigned int call, unsigned int data);
 
 /**
  * Opens a file.
@@ -188,9 +188,9 @@ void do_syscall(usize call, usize data);
  * @security-level APPLICATION
  */
 FileHandle s_open(const char* path);
-FileHandle s_open_f(const char* path, i32 flags);
-FileHandle s_open_fs(const char* path, i32 flags, FsOpenStatus* out_status);
-FileHandle s_open_fms(const char* path, i32 flags, i32 mode, FsOpenStatus* out_status);
+FileHandle s_open_f(const char* path, int flags);
+FileHandle s_open_fs(const char* path, int flags, FsOpenStatus* out_status);
+FileHandle s_open_fms(const char* path, int flags, int mode, FsOpenStatus* out_status);
 
 /**
  * Closes a file.
@@ -211,8 +211,8 @@ FsCloseStatus s_close(FileHandle fd);
  *
  * @security-level APPLICATION
  */
-i64 s_length(FileHandle fd);
-i64 s_length_s(FileHandle fd, FsLengthStatus* out_status);
+long long s_length(FileHandle fd);
+long long s_length_s(FileHandle fd, FsLengthStatus* out_status);
 
 /**
  * Opens a directory.
@@ -257,9 +257,9 @@ void s_close_directory(FsDirectoryIterator* iterator);
  *
  * @security-level APPLICATION
  */
-i64 s_flength(const char* path);
-i64 s_flength_s(const char* path, bool follow_symlinks);
-i64 s_flength_ss(const char* path, bool follow_symlinks, FsLengthStatus* out_status);
+long long s_flength(const char* path);
+long long s_flength_s(const char* path, bool follow_symlinks);
+long long s_flength_ss(const char* path, bool follow_symlinks, FsLengthStatus* out_status);
 
 /**
  * Repositions the offset within a file.
@@ -272,8 +272,8 @@ i64 s_flength_ss(const char* path, bool follow_symlinks, FsLengthStatus* out_sta
  *
  * @security-level APPLICATION
  */
-i64 s_seek(FileHandle fd, i64 off, FsSeekMode mode);
-i64 s_seek_s(FileHandle fd, i64 off, FsSeekMode mode, FsSeekStatus* out_status);
+long long s_seek(FileHandle fd, long long off, FsSeekMode mode);
+long long s_seek_s(FileHandle fd, long long off, FsSeekMode mode, FsSeekStatus* out_status);
 
 /**
  * Retrieves the current offset within a file.
@@ -284,8 +284,8 @@ i64 s_seek_s(FileHandle fd, i64 off, FsSeekMode mode, FsSeekStatus* out_status);
  *
  * @security-level APPLICATION
  */
-i64 s_tell(FileHandle fd);
-i64 s_tell_s(FileHandle fd, FsTellStatus* out_status);
+long long s_tell(FileHandle fd);
+long long s_tell_s(FileHandle fd, FsTellStatus* out_status);
 
 /**
  * Sets the working directory for the current process.
@@ -310,7 +310,7 @@ SetWorkingDirectoryStatus s_set_working_directory_p(const char* path, ProcessCre
  * @security-level APPLICATION
  */
 GetWorkingDirectoryStatus s_get_working_directory(char* buffer);
-GetWorkingDirectoryStatus s_get_working_directory_l(char* buffer, usize buffer_len);
+GetWorkingDirectoryStatus s_get_working_directory_l(char* buffer, unsigned int buffer_len);
 
 /**
  * Retrieves the directory of the executable when available, otherwise an empty
@@ -321,7 +321,7 @@ GetWorkingDirectoryStatus s_get_working_directory_l(char* buffer, usize buffer_l
  *
  * @security-level APPLICATION
  */
-usize s_get_executable_path(char* buffer);
+unsigned int s_get_executable_path(char* buffer);
 
 /**
  * Reads bytes from the file to the buffer.
@@ -334,8 +334,8 @@ usize s_get_executable_path(char* buffer);
  *
  * @security-level APPLICATION
  */
-usize s_read(FileHandle fd, void* buffer, usize buffer_len);
-usize s_read_s(FileHandle fd, void* buffer, usize buffer_len, FsReadStatus* out_status);
+unsigned int s_read(FileHandle fd, void* buffer, unsigned int buffer_len);
+unsigned int s_read_s(FileHandle fd, void* buffer, unsigned int buffer_len, FsReadStatus* out_status);
 
 /**
  * Writes bytes from the buffer to the file.
@@ -348,8 +348,8 @@ usize s_read_s(FileHandle fd, void* buffer, usize buffer_len, FsReadStatus* out_
  *
  * @security-level APPLICATION
  */
-usize s_write(FileHandle fd, const void* buffer, usize buffer_len);
-usize s_write_s(FileHandle fd, const void* buffer, usize buffer_len, FsWriteStatus* out_status);
+unsigned int s_write(FileHandle fd, const void* buffer, unsigned int buffer_len);
+unsigned int s_write_s(FileHandle fd, const void* buffer, unsigned int buffer_len, FsWriteStatus* out_status);
 
 /**
  * Returns the next transaction id that can be used for messaging.
@@ -375,7 +375,7 @@ MessageTransaction s_get_message_tx_id();
  *
  * @security-level APPLICATION
  */
-void* s_alloc_mem(usize size);
+void* s_alloc_mem(unsigned int size);
 
 /**
  * Shares a memory area with another process.
@@ -387,7 +387,7 @@ void* s_alloc_mem(usize size);
  *
  * @security-level APPLICATION
  */
-void* s_share_mem(void* memory, usize size, Pid proc_id);
+void* s_share_mem(void* memory, unsigned int size, Pid proc_id);
 
 /**
  * Yields, causing a switch to the next process.
@@ -403,7 +403,7 @@ void s_yield();
  *
  * @security-level APPLICATION
  */
-void s_sleep(usize ms);
+void s_sleep(unsigned int ms);
 
 /**
  * Retrieves the current process id.
@@ -493,10 +493,10 @@ Tid s_create_thread_dns(void* func_ptr, void* data, const char* name, CreateThre
  *
  * @security-level APPLICATION
  */
-MessageSendStatus s_send_message(Tid target, void* buffer, usize buffer_len);
-MessageSendStatus s_send_message_m(Tid target, void* buffer, usize buffer_len, MessageSendMode send_mode);
-MessageSendStatus s_send_message_t(Tid target, void* buffer, usize buffer_len, MessageTransaction tx);
-MessageSendStatus s_send_message_tm(Tid target, void* buffer, usize buffer_len, MessageTransaction tx, MessageSendMode send_mode);
+MessageSendStatus s_send_message(Tid target, void* buffer, unsigned int buffer_len);
+MessageSendStatus s_send_message_m(Tid target, void* buffer, unsigned int buffer_len, MessageSendMode send_mode);
+MessageSendStatus s_send_message_t(Tid target, void* buffer, unsigned int buffer_len, MessageTransaction tx);
+MessageSendStatus s_send_message_tm(Tid target, void* buffer, unsigned int buffer_len, MessageTransaction tx, MessageSendMode send_mode);
 
 /**
  * Receives a message. At maximum <max> bytes will be attempted to be copied to
@@ -526,11 +526,11 @@ MessageSendStatus s_send_message_tm(Tid target, void* buffer, usize buffer_len, 
  *
  * @security-level APPLICATION
  */
-MessageReceiveStatus s_receive_message(void* buffer, usize buffer_len);
-MessageReceiveStatus s_receive_message_m(void* buffer, usize buffer_len, MessageReceiveMode receive_mode);
-MessageReceiveStatus s_receive_message_t(void* buffer, usize buffer_len, MessageTransaction tx);
-MessageReceiveStatus s_receive_message_tm(void* buffer, usize buffer_len, MessageTransaction tx, MessageReceiveMode receive_mode);
-MessageReceiveStatus s_receive_message_tmb(void* buffer, usize buffer_len, MessageTransaction tx, MessageReceiveMode receive_mode, bool* break_condition);
+MessageReceiveStatus s_receive_message(void* buffer, unsigned int buffer_len);
+MessageReceiveStatus s_receive_message_m(void* buffer, unsigned int buffer_len, MessageReceiveMode receive_mode);
+MessageReceiveStatus s_receive_message_t(void* buffer, unsigned int buffer_len, MessageTransaction tx);
+MessageReceiveStatus s_receive_message_tm(void* buffer, unsigned int buffer_len, MessageTransaction tx, MessageReceiveMode receive_mode);
+MessageReceiveStatus s_receive_message_tmb(void* buffer, unsigned int buffer_len, MessageTransaction tx, MessageReceiveMode receive_mode, bool* break_condition);
 
 /**
  * Registers the executing task for the given identifier.
@@ -562,7 +562,7 @@ Tid s_task_get_id(const char* identifier);
  *
  * @security-level DRIVER
  */
-void s_wait_for_irq(u8 irq);
+void s_wait_for_irq(unsigned char irq);
 
 /**
  * Maps the given physical address to the executing processes address space so
@@ -574,7 +574,7 @@ void s_wait_for_irq(u8 irq);
  *
  * @security-level DRIVER
  */
-void* s_map_mmio(void* address, usize size);
+void* s_map_mmio(void* address, unsigned int size);
 
 /**
  * Unmaps the given memory area.
@@ -594,7 +594,7 @@ void s_unmap_mem(void* area);
  *
  * @security-level APPLICATION
  */
-bool s_set_break(isize amount, void** out_break);
+bool s_set_break(int amount, void** out_break);
 
 /**
  * Performs a Virtual 8086 BIOS interrupt call.
@@ -606,7 +606,7 @@ bool s_set_break(isize amount, void** out_break);
  *
  * @security-level DRIVER
  */
-Vm86CallStatus s_call_vm_86(usize interrupt, VM86Registers* in_regs, VM86Registers* out_regs);
+Vm86CallStatus s_call_vm_86(unsigned int interrupt, VM86Registers* in_regs, VM86Registers* out_regs);
 
 /**
  * Frees a memory area allocated with {s_lower_malloc}.
@@ -625,7 +625,7 @@ void s_lower_free(void* memory);
  *
  * @security-level DRIVER
  */
-void* s_lower_malloc(usize size);
+void* s_lower_malloc(unsigned int size);
 
 /**
  * Enables or disables logging to the video output.
@@ -644,14 +644,14 @@ void s_set_video_log(bool enabled);
  *
  * @security-level APPLICATION
  */
-u64 s_millis();
+unsigned long long s_millis();
 
 /**
  * s_test-call for kernel debugging.
  *
  * @security-level VARIOUS
  */
-usize s_test(usize test);
+unsigned int s_test(unsigned int test);
 
 /**
  * Forks the current process (only works from the main thread)
@@ -735,7 +735,7 @@ void s_cli_args_store(ProcessCreationIdentifier process, char* arguments);
  *
  * @security-level KERNEL
  */
-usize s_cli_args_release(char* buffer);
+unsigned int s_cli_args_release(char* buffer);
 
 /**
  * Creates an empty process.
@@ -768,7 +768,7 @@ void s_configure_process(ProcessCreationIdentifier process, ProcessConfiguration
  *
  * @security-level KERNEL
  */
-void* s_create_pages_in_spaces(ProcessCreationIdentifier process, Address virtual_address, usize pages_count);
+void* s_create_pages_in_spaces(ProcessCreationIdentifier process, Address virtual_address, unsigned int pages_count);
 
 /**
  * Creates a thread-local-storage area for a process and copies/zeroes the given amount of bytes
@@ -783,7 +783,7 @@ void* s_create_pages_in_spaces(ProcessCreationIdentifier process, Address virtua
  *
  * @security-level KERNEL
  */
-bool s_write_tls_master_for_process(ProcessCreationIdentifier process, u8* content, usize copy_size, usize total_size, usize alignment);
+bool s_write_tls_master_for_process(ProcessCreationIdentifier process, unsigned char* content, unsigned int copy_size, unsigned int total_size, unsigned int alignment);
 
 /**
  * Attaches and therefore starts a process during process creation at the given execution point.
@@ -850,7 +850,7 @@ void s_fs_set_transaction_status(FsTransactionID id, FsTransactionStatus status)
  *
  * @security-level DRIVER
  */
-FsCreateNodeStatus s_fs_create_node(usize parent, const char* name, FsNodeType type, usize fs_id, usize* out_created_id);
+FsCreateNodeStatus s_fs_create_node(unsigned int parent, const char* name, FsNodeType type, unsigned int fs_id, unsigned int* out_created_id);
 
 /**
  * Registers the <handler> routine as the handler for the <irq>.
@@ -861,7 +861,7 @@ FsCreateNodeStatus s_fs_create_node(usize parent, const char* name, FsNodeType t
  *
  * @security-level DRIVER
  */
-RegisterIrqHandlerStatus s_register_irq_handler(u8 irq, void (*handler)(u8));
+RegisterIrqHandlerStatus s_register_irq_handler(unsigned char irq, void (*handler)(unsigned char));
 
 /**
  * Restores the interruption state (for example after signal/irq handling) of the current thread.
@@ -916,8 +916,8 @@ void s_system_info(SystemInfo* system_info);
  * @param-opt type:		the type of thread that we want the count
  * @return the thread count
  */
-usize s_get_thread_count();
-usize s_get_thread_count_t(ThreadType thread_type);
+unsigned int s_get_thread_count();
+unsigned int s_get_thread_count_t(ThreadType thread_type);
 
 /**
  * Call the kernel to store on <buffer>,
@@ -929,8 +929,8 @@ usize s_get_thread_count_t(ThreadType thread_type);
  * @param-opt type:		the type of thread to get (default all threads)
  * @return the index of the last copied element
  */
-usize s_get_thread_ids(Tid* buffer, usize buffer_len);
-usize s_get_thread_ids_t(Tid* buffer, usize buffer_len, ThreadType thread_type);
+unsigned int s_get_thread_ids(Tid* buffer, unsigned int buffer_len);
+unsigned int s_get_thread_ids_t(Tid* buffer, unsigned int buffer_len, ThreadType thread_type);
 
 /**
  * Call the kernel to get the descriptor of a specific thread
@@ -946,7 +946,7 @@ bool s_get_thread_descriptor(Tid thread_id, ThreadDescriptor* descriptor);
  *
  * @return the process count
  */
-usize s_get_process_count();
+unsigned int s_get_process_count();
 
 /**
  * Call the kernel to store on <buffer>,
@@ -956,7 +956,7 @@ usize s_get_process_count();
  * @param buffer_len:	the size of the buffer, use the <s_get_thread_count> call to know the size
  * @return the index of the last copied element
  */
-usize s_get_process_ids(Pid* buffer, usize buffer_len);
+unsigned int s_get_process_ids(Pid* buffer, unsigned int buffer_len);
 
 /**
  * Call the kernel to get the descriptor of a specific thread
@@ -972,7 +972,7 @@ bool s_get_process_descriptor(Pid proc_id, ProcessDescriptor* descriptor);
  *
  * @return the pci devices count
  */
-usize s_get_pci_device_count();
+unsigned int s_get_pci_device_count();
 
 /**
  * Call the kernel to get the PCI device header by position
@@ -981,7 +981,7 @@ usize s_get_pci_device_count();
  * @param header:		a pointer to a valid {PciDeviceHeader} header
  * @return whether the operation success
  */
-bool s_get_pci_device(usize position, PCIDeviceHeader* header);
+bool s_get_pci_device(unsigned int position, PCIDeviceHeader* header);
 
 /**
  * @brief Fills the given <DateTime> with the current date-time

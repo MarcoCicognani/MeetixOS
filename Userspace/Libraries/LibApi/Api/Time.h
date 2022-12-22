@@ -22,14 +22,14 @@ extern "C" {
  * @brief Date-Time descriptor
  */
 typedef struct {
-    u32 m_seconds;
-    u32 m_minutes;
-    u32 m_hours;
-    u32 m_month_day;
-    u32 m_month;
-    u32 m_year;
-    u32 m_week_day;
-    u32 m_year_day;
+    unsigned int m_seconds;
+    unsigned int m_minutes;
+    unsigned int m_hours;
+    unsigned int m_month_day;
+    unsigned int m_month;
+    unsigned int m_year;
+    unsigned int m_week_day;
+    unsigned int m_year_day;
 } A_PACKED DateTime;
 
 #ifdef __cplusplus

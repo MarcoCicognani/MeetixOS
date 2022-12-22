@@ -25,8 +25,8 @@ extern "C" {
  */
 typedef struct {
     const char*  m_path;
-    i32          m_flags;
-    i32          m_mode;
+    int          m_flags;
+    int          m_mode;
     FsOpenStatus m_open_status;
     FileHandle   m_open_fd;
 } A_PACKED SyscallFsOpen;
@@ -35,22 +35,22 @@ typedef struct {
  * @brief s_read system call data
  */
 typedef struct {
-    FileHandle   m_open_fd;
-    u8*          m_out_buffer;
-    usize        m_out_buffer_len;
-    FsReadStatus m_read_status;
-    usize        m_read_bytes;
+    FileHandle     m_open_fd;
+    unsigned char* m_out_buffer;
+    unsigned int   m_out_buffer_len;
+    FsReadStatus   m_read_status;
+    unsigned int   m_read_bytes;
 } A_PACKED SyscallFsRead;
 
 /**
  * @brief s_write system call data
  */
 typedef struct {
-    FileHandle    m_open_fd;
-    const u8*     m_in_buffer;
-    usize         m_in_buffer_len;
-    FsWriteStatus m_write_status;
-    usize         m_write_bytes;
+    FileHandle           m_open_fd;
+    const unsigned char* m_in_buffer;
+    unsigned int         m_in_buffer_len;
+    FsWriteStatus        m_write_status;
+    unsigned int         m_write_bytes;
 } A_PACKED SyscallFsWrite;
 
 /**
@@ -68,7 +68,7 @@ typedef struct {
     const char*      m_path;
     bool             m_follow_symlinks;
     FsStatAttributes m_stat_attributes;
-    usize            m_result;
+    unsigned int     m_result;
 } A_PACKED SyscallFsStat;
 
 /**
@@ -77,7 +77,7 @@ typedef struct {
 typedef struct {
     FileHandle       m_open_fd;
     FsStatAttributes m_stat_attributes;
-    usize            m_result;
+    unsigned int     m_result;
 } A_PACKED SyscallFsFstat;
 
 /**
@@ -120,7 +120,7 @@ typedef struct {
     const char*         m_path;
     FileHandle          m_open_fd;
     FsLengthStatus      m_length_status;
-    i64                 m_length;
+    long long           m_length;
 } A_PACKED SyscallFsLength;
 
 /**
@@ -128,10 +128,10 @@ typedef struct {
  */
 typedef struct {
     FileHandle   m_open_fd;
-    i64          m_offset;
+    long long    m_offset;
     FsSeekMode   m_seek_mode;
     FsSeekStatus m_seek_status;
-    i64          m_result;
+    long long    m_result;
 } A_PACKED SyscallFsSeek;
 
 /**
@@ -140,7 +140,7 @@ typedef struct {
 typedef struct {
     FileHandle   m_open_fd;
     FsTellStatus m_tell_status;
-    i64          m_result;
+    long long    m_result;
 } A_PACKED SyscallFsTell;
 
 /**
@@ -157,7 +157,7 @@ typedef struct {
  */
 typedef struct {
     char*                     m_out_buffer;
-    usize                     m_out_buffer_len;
+    unsigned int              m_out_buffer_len;
     GetWorkingDirectoryStatus m_working_directory_status;
 } A_PACKED SyscallFsGetWorkingDirectory;
 
@@ -165,8 +165,8 @@ typedef struct {
  * @brief s_get_executable_path system call data
  */
 typedef struct {
-    char* m_out_buffer;
-    usize m_len;
+    char*        m_out_buffer;
+    unsigned int m_len;
 } A_PACKED SyscallFsGetExecutablePath;
 
 /**

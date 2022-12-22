@@ -29,7 +29,7 @@ typedef void* ProcessCreationIdentifier;
 /**
  * @brief Thread/Process unique identifier
  */
-typedef i32 Tid;
+typedef int Tid;
 typedef Tid Pid;
 
 /**
@@ -61,20 +61,20 @@ typedef enum {
  * @brief VM86 Registers
  */
 typedef struct {
-    u16 ax;
-    u16 bx;
-    u16 cx;
-    u16 dx;
-    u16 si;
-    u16 di;
-    u16 ds;
-    u16 es;
+    unsigned short ax;
+    unsigned short bx;
+    unsigned short cx;
+    unsigned short dx;
+    unsigned short si;
+    unsigned short di;
+    unsigned short ds;
+    unsigned short es;
 } A_PACKED VM86Registers;
 
 /**
  * @brief Thread types
  */
-typedef u8              ThreadType;
+typedef unsigned char              ThreadType;
 static const ThreadType THREAD_TYPE_MAIN = 1;
 static const ThreadType THREAD_TYPE_SUB  = 2;
 static const ThreadType THREAD_TYPE_VM86 = 4;

@@ -12,6 +12,6 @@
 
 #include <Api/User.h>
 
-void do_syscall(usize call, usize data) {
+void do_syscall(unsigned int call, unsigned int data) {
     asm("int $0x80" : : "a"(call), "b"(data) : "cc", "memory");
 }

@@ -25,7 +25,7 @@
 
 namespace Details {
 
-auto __heap_plug_alloc_mem(usize size) -> ErrorOr<void*>;
-auto __heap_plug_dealloc_mem(void* ptr, usize size) -> void;
+auto __rt_heap_plugin_alloc_mem(usize size) -> ErrorOr<void*>;
+auto __rt_heap_plugin_dealloc_mem(void* ptr, usize size) -> void;
 
 } /* namespace Details */

@@ -24,7 +24,7 @@ extern "C" {
 typedef struct {
     Tid                m_receiver_thread_id;
     void*              m_in_buffer;
-    usize              m_in_buffer_len;
+    unsigned int       m_in_buffer_len;
     MessageSendMode    m_send_mode;
     MessageTransaction m_message_transaction;
     MessageSendStatus  m_send_status;

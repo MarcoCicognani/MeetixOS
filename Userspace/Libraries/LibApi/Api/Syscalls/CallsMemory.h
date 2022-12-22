@@ -23,42 +23,42 @@ extern "C" {
  * @brief s_alloc_mem system call data
  */
 typedef struct {
-    usize m_region_size;
-    void* m_region_ptr;
+    unsigned int m_region_size;
+    void*        m_region_ptr;
 } A_PACKED SyscallAllocMem;
 
 /**
  * @brief s_share_mem system call data
  */
 typedef struct {
-    void* m_region_ptr;
-    usize m_size_to_share;
-    Pid   m_target_proc_id;
-    void* m_shared_ptr;
+    void*        m_region_ptr;
+    unsigned int m_size_to_share;
+    Pid          m_target_proc_id;
+    void*        m_shared_ptr;
 } A_PACKED SyscallShareMem;
 
 /**
  * @brief s_map_mmio system call data
  */
 typedef struct {
-    void* m_physical_address;
-    usize m_region_size;
-    void* m_mapped_ptr;
+    void*        m_physical_address;
+    unsigned int m_region_size;
+    void*        m_mapped_ptr;
 } A_PACKED SyscallMapMmio;
 
 /**
  * @brief s_unmap_mem system call data
  */
 typedef struct {
-    usize m_region_ptr;
+    unsigned int m_region_ptr;
 } A_PACKED SyscallUnmap;
 
 /**
  * @brief s_lower_malloc system call data
  */
 typedef struct {
-    usize m_region_size;
-    void* m_region_ptr;
+    unsigned int m_region_size;
+    void*        m_region_ptr;
 } A_PACKED SyscallLowerMalloc;
 
 /**
@@ -72,9 +72,9 @@ typedef struct {
  * @brief s_set_break system call data
  */
 typedef struct {
-    isize m_amount;
-    usize m_out_address;
-    bool  m_success;
+    int          m_amount;
+    unsigned int m_out_address;
+    bool         m_success;
 } A_PACKED SyscallSbrk;
 
 #ifdef __cplusplus

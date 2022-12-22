@@ -17,16 +17,16 @@
 
 namespace Heap {
 
-enum class Clean : bool {
+enum class CleanMem : bool {
     Yes,
     No
 };
 
-auto alloc(usize size, Clean) -> ErrorOr<void*>;
-auto realloc(void* ptr, usize new_size) -> ErrorOr<void*>;
-auto dealloc(void* ptr, usize size) -> void;
+auto rt_alloc(usize size, CleanMem clean_mem) -> ErrorOr<void*>;
+auto rt_realloc(void* ptr, usize new_size) -> ErrorOr<void*>;
+auto rt_dealloc(void* ptr, usize size) -> void;
 
-auto alloc_aligned(usize size, usize alignment, Clean) -> ErrorOr<void*>;
-auto dealloc_aligned(void* ptr, usize size, usize alignment) -> void;
+auto rt_alloc_aligned(usize size, usize alignment, CleanMem clean_mem) -> ErrorOr<void*>;
+auto rt_dealloc_aligned(void* ptr, usize size, usize alignment) -> void;
 
 } /* namespace Heap */

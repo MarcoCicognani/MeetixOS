@@ -14,11 +14,10 @@
 
 #include <Api/Common.h>
 #include <Api/User.h>
+#include <CCLang/Core/Assertions.hh>
+#include <CCLang/Lang/IntTypes.hh>
 #include <LibC/fenv.h>
 #include <LibMath/math.h>
-#include <CCLang/Core/Assertions.hh>
-#include <CCLang/Core/Math.hh>
-#include <CCLang/Lang/IntTypes.hh>
 
 namespace Details {
 
@@ -132,8 +131,9 @@ union FloatExtractor<float> {
 
 template<typename T>
 static T to_integer(T x, Details::RoundingMode rounding_mode) {
-    if ( !isfinite(x) )
+    if ( !isfinite(x) ) {
         return x;
+    }
 
     using Extractor = FloatExtractor<T>;
 
@@ -146,15 +146,17 @@ static T to_integer(T x, Details::RoundingMode rounding_mode) {
     bool has_nonhalf_fraction = false;
     if ( unbiased_exponent < 0 ) {
         /* it was easier to special case [0..1) as it saves us from handling sub-normals, under flows, etc */
-        if ( unbiased_exponent == -1 )
+        if ( unbiased_exponent == -1 ) {
             has_half_fraction = true;
+        }
 
         has_nonhalf_fraction = unbiased_exponent < -1 || extractor.m_mantissa != 0;
         extractor.m_mantissa = 0;
         extractor.m_exponent = 0;
     } else {
-        if ( unbiased_exponent >= Extractor::m_mantissa_bits )
+        if ( unbiased_exponent >= Extractor::m_mantissa_bits ) {
             return x;
+        }
 
         auto dead_bitcount = Extractor::m_mantissa_bits - unbiased_exponent;
         auto dead_mask     = (1ull << dead_bitcount) - 1;
@@ -172,12 +174,14 @@ static T to_integer(T x, Details::RoundingMode rounding_mode) {
             should_round = has_half_fraction;
             break;
         case Details::RoundingMode::Up:
-            if ( !extractor.m_sign )
+            if ( !extractor.m_sign ) {
                 should_round = has_nonhalf_fraction || has_half_fraction;
+            }
             break;
         case Details::RoundingMode::Down:
-            if ( extractor.m_sign )
+            if ( extractor.m_sign ) {
                 should_round = has_nonhalf_fraction || has_half_fraction;
+            }
             break;
         case Details::RoundingMode::ToZero:
             break;
@@ -185,18 +189,20 @@ static T to_integer(T x, Details::RoundingMode rounding_mode) {
 
     if ( should_round ) {
         /* we could do this ourselves, but this saves us from manually handling overflow */
-        if ( extractor.m_sign )
+        if ( extractor.m_sign ) {
             extractor.m_value -= static_cast<T>(1.0);
-        else
+        } else {
             extractor.m_value += static_cast<T>(1.0);
+        }
     }
     return extractor.m_value;
 }
 
 template<typename T>
 static T next_after(T x, bool up) {
-    if ( !isfinite(x) )
+    if ( !isfinite(x) ) {
         return x;
+    }
 
     using Extractor = FloatExtractor<T>;
 
@@ -235,14 +241,16 @@ static T next_after(T x, bool up) {
         if ( extractor.m_exponent ) {
             extractor.m_exponent--;
             extractor.m_mantissa = Extractor::m_mantissa_max;
-        } else
+        } else {
             extractor.m_value = 0;
+        }
         return extractor.m_value;
     }
 
     extractor.m_mantissa--;
-    if ( extractor.m_mantissa != Extractor::m_mantissa_max )
+    if ( extractor.m_mantissa != Extractor::m_mantissa_max ) {
         return extractor.m_value;
+    }
     if ( extractor.m_exponent ) {
         extractor.m_exponent--;
         /* normalize */
@@ -259,12 +267,15 @@ static T next_after(T x, bool up) {
 
 template<typename T>
 static i32 ilogb(T x) {
-    if ( x == 0 )
+    if ( x == 0 ) {
         return FP_ILOGB0;
-    if ( isnan(x) )
+    }
+    if ( isnan(x) ) {
         return FP_ILOGNAN;
-    if ( !isfinite(x) )
+    }
+    if ( !isfinite(x) ) {
         return INT_MAX;
+    }
 
     using Extractor = FloatExtractor<T>;
 
@@ -279,15 +290,17 @@ static T modf(T x, T* intpart) {
     auto integer_part = Details::to_integer(x, Details::RoundingMode::ToZero);
     *intpart          = integer_part;
     auto fraction     = x - integer_part;
-    if ( signbit(fraction) != signbit(x) )
+    if ( signbit(fraction) != signbit(x) ) {
         fraction = -fraction;
+    }
     return fraction;
 }
 
 template<typename T>
 static T scalbn(T x, i32 exponent) {
-    if ( x == 0 || !isfinite(x) || isnan(x) || exponent == 0 )
+    if ( x == 0 || !isfinite(x) || isnan(x) || exponent == 0 ) {
         return x;
+    }
 
     using Extractor = FloatExtractor<T>;
 
@@ -325,34 +338,37 @@ static T copy_sign(T x, T y) {
 
 template<typename T>
 static T gamma(T x) {
-    if ( isnan(x) )
+    if ( isnan(x) ) {
         return static_cast<T>(NAN);
+    }
 
-    if ( x == static_cast<T>(0.0) )
+    if ( x == static_cast<T>(0.0) ) {
         return signbit(x) ? static_cast<T>(-INFINITY) : static_cast<T>(INFINITY);
+    }
 
-    if ( x < static_cast<T>(0) && (rintl(x) == x || isinf(x)) )
+    if ( x < static_cast<T>(0) && (rintl(x) == x || isinf(x)) ) {
         return static_cast<T>(NAN);
+    }
 
-    if ( isinf(x) )
+    if ( isinf(x) ) {
         return static_cast<T>(INFINITY);
+    }
 
     using Extractor = FloatExtractor<T>;
 
     /* these constants were obtained through use of WolframAlpha */
-    constexpr long long max_integer_whose_factorial_fits
-        = (Extractor::m_mantissa_bits == FloatExtractor<long double>::m_mantissa_bits
-               ? 20
-               : (Extractor::m_mantissa_bits == FloatExtractor<double>::m_mantissa_bits
-                      ? 18
-                      : (Extractor::m_mantissa_bits == FloatExtractor<float>::m_mantissa_bits ? 10 : 0)));
-    static_assert(max_integer_whose_factorial_fits != 0,
-                  "Details::gamma needs to be aware of the integer factorial that fits in this floating point type.");
+    constexpr long long max_integer_whose_factorial_fits = (Extractor::m_mantissa_bits == FloatExtractor<long double>::m_mantissa_bits
+                                                                ? 20
+                                                                : (Extractor::m_mantissa_bits == FloatExtractor<double>::m_mantissa_bits
+                                                                       ? 18
+                                                                       : (Extractor::m_mantissa_bits == FloatExtractor<float>::m_mantissa_bits ? 10 : 0)));
+    static_assert(max_integer_whose_factorial_fits != 0, "Details::gamma needs to be aware of the integer factorial that fits in this floating point type.");
 
     if ( static_cast<i32>(x) == x && x <= max_integer_whose_factorial_fits + 1 ) {
         long long result = 1;
-        for ( long long cursor = 2; cursor < static_cast<long long>(x); cursor++ )
+        for ( long long cursor = 2; cursor < static_cast<long long>(x); cursor++ ) {
             result *= cursor;
+        }
 
         return static_cast<T>(result);
     }
@@ -414,57 +430,69 @@ long double fmodl(long double x, long double y) {
 }
 
 double fmax(double x, double y) {
-    if ( isnan(x) )
+    if ( isnan(x) ) {
         return y;
-    if ( isnan(y) )
+    }
+    if ( isnan(y) ) {
         return x;
-    else
+    } else {
         return x > y ? x : y;
+    }
 }
 
 float fmaxf(float x, float y) {
-    if ( isnan(x) )
+    if ( isnan(x) ) {
         return y;
-    if ( isnan(y) )
+    }
+    if ( isnan(y) ) {
         return x;
-    else
+    } else {
         return x > y ? x : y;
+    }
 }
 
 long double fmaxl(long double x, long double y) {
-    if ( isnan(x) )
+    if ( isnan(x) ) {
         return y;
-    if ( isnan(y) )
+    }
+    if ( isnan(y) ) {
         return x;
-    else
+    } else {
         return x > y ? x : y;
+    }
 }
 
 double fmin(double x, double y) {
-    if ( isnan(x) )
+    if ( isnan(x) ) {
         return y;
-    if ( isnan(y) )
+    }
+    if ( isnan(y) ) {
         return x;
-    else
+    } else {
         return x < y ? x : y;
+    }
 }
 
 float fminf(float x, float y) {
-    if ( isnan(x) )
+    if ( isnan(x) ) {
         return y;
-    if ( isnan(y) )
+    }
+    if ( isnan(y) ) {
         return x;
-    else
+    } else {
         return x < y ? x : y;
+    }
 }
 
 long double fminl(long double x, long double y) {
-    if ( isnan(x) )
+    if ( isnan(x) ) {
         return y;
-    if ( isnan(y) )
+    }
+    if ( isnan(y) ) {
         return x;
-    else
+    } else {
         return x < y ? x : y;
+    }
 }
 
 double remainder(double x, double y) {
@@ -717,23 +745,29 @@ long double log1pl(long double x) {
 }
 
 double pow(double x, double y) {
-    if ( isnan(y) )
+    if ( isnan(y) ) {
         return y;
-    if ( y == 0 )
+    }
+    if ( y == 0 ) {
         return 1;
-    if ( x == 0 )
+    }
+    if ( x == 0 ) {
         return 0;
-    if ( y == 1 )
+    }
+    if ( y == 1 ) {
         return x;
+    }
 
     auto y_as_int = static_cast<i32>(y);
     if ( y == static_cast<double>(y_as_int) ) {
         auto result = x;
-        for ( i32 i = 0; i < fabs(y) - 1; ++i )
+        for ( i32 i = 0; i < fabs(y) - 1; ++i ) {
             result *= x;
+        }
 
-        if ( y < 0 )
+        if ( y < 0 ) {
             result = 1.0 / result;
+        }
         return result;
     }
 
@@ -741,23 +775,29 @@ double pow(double x, double y) {
 }
 
 float powf(float x, float y) {
-    if ( isnan(y) )
+    if ( isnan(y) ) {
         return y;
-    if ( y == 0 )
+    }
+    if ( y == 0 ) {
         return 1;
-    if ( x == 0 )
+    }
+    if ( x == 0 ) {
         return 0;
-    if ( y == 1 )
+    }
+    if ( y == 1 ) {
         return x;
+    }
 
     auto y_as_int = static_cast<i32>(y);
     if ( y == static_cast<float>(y_as_int) ) {
         auto result = x;
-        for ( i32 i = 0; i < static_cast<i32>(fabsf(y) - 1); ++i )
+        for ( i32 i = 0; i < static_cast<i32>(fabsf(y) - 1); ++i ) {
             result *= x;
+        }
 
-        if ( y < 0 )
+        if ( y < 0 ) {
             result = 1.0f / result;
+        }
         return result;
     }
 
@@ -765,23 +805,29 @@ float powf(float x, float y) {
 }
 
 long double powl(long double x, long double y) {
-    if ( isnan(y) )
+    if ( isnan(y) ) {
         return y;
-    if ( y == 0 )
+    }
+    if ( y == 0 ) {
         return 1;
-    if ( x == 0 )
+    }
+    if ( x == 0 ) {
         return 0;
-    if ( y == 1 )
+    }
+    if ( y == 1 ) {
         return x;
+    }
 
     auto y_as_int = static_cast<i32>(y);
     if ( y == static_cast<long double>(y_as_int) ) {
         auto result = x;
-        for ( i32 i = 0; i < static_cast<i32>(fabsl(y) - 1); ++i )
+        for ( i32 i = 0; i < static_cast<i32>(fabsl(y) - 1); ++i ) {
             result *= x;
+        }
 
-        if ( y < 0 )
+        if ( y < 0 ) {
             result = 1.0L / result;
+        }
         return result;
     }
 
@@ -807,10 +853,12 @@ long double sqrtl(long double x) {
 }
 
 double cbrt(double x) {
-    if ( isinf(x) || x == 0 )
+    if ( isinf(x) || x == 0 ) {
         return x;
-    if ( x < 0 )
+    }
+    if ( x < 0 ) {
         return -cbrt(-x);
+    }
 
     double r  = x;
     double ex = 0;
@@ -843,10 +891,12 @@ double cbrt(double x) {
 }
 
 float cbrtf(float x) {
-    if ( isinf(x) || x == 0 )
+    if ( isinf(x) || x == 0 ) {
         return x;
-    if ( x < 0 )
+    }
+    if ( x < 0 ) {
         return -cbrtf(-x);
+    }
 
     float r  = x;
     float ex = 0;
@@ -879,10 +929,12 @@ float cbrtf(float x) {
 }
 
 long double cbrtl(long double x) {
-    if ( isinf(x) || x == 0 )
+    if ( isinf(x) || x == 0 ) {
         return x;
-    if ( x < 0 )
+    }
+    if ( x < 0 ) {
         return -cbrtl(-x);
+    }
 
     long double r  = x;
     long double ex = 0;
@@ -984,10 +1036,12 @@ long double tanl(long double angle) {
 }
 
 double asin(double x) {
-    if ( x > 1 || x < -1 )
+    if ( x > 1 || x < -1 ) {
         return nan("");
-    if ( x > 0.5 || x < -0.5 )
+    }
+    if ( x > 0.5 || x < -0.5 ) {
         return 2 * atan(x / (1 + sqrt(1 - x * x)));
+    }
 
     auto squared = x * x;
     auto value   = x;
@@ -1011,10 +1065,12 @@ double asin(double x) {
 }
 
 float asinf(float x) {
-    if ( x > 1 || x < -1 )
+    if ( x > 1 || x < -1 ) {
         return nanf("");
-    if ( x > 0.5f || x < -0.5f )
+    }
+    if ( x > 0.5f || x < -0.5f ) {
         return 2 * atanf(x / (1 + sqrtf(1 - x * x)));
+    }
 
     auto squared = x * x;
     auto value   = x;
@@ -1038,10 +1094,12 @@ float asinf(float x) {
 }
 
 long double asinl(long double x) {
-    if ( x > 1 || x < -1 )
+    if ( x > 1 || x < -1 ) {
         return nanl("");
-    if ( x > 0.5L || x < -0.5L )
+    }
+    if ( x > 0.5L || x < -0.5L ) {
         return 2 * atanl(x / (1 + sqrtl(1 - x * x)));
+    }
 
     auto squared = x * x;
     auto value   = x;
@@ -1123,50 +1181,56 @@ long double atan2l(long double y, long double x) {
 
 double sinh(double x) {
     auto exp_value = exp(x);
-    if ( x > 0 )
+    if ( x > 0 ) {
         return (exp_value * exp_value - 1) / 2 / exp_value;
-    else
+    } else {
         return (exp_value - 1 / exp_value) / 2;
+    }
 }
 
 float sinhf(float x) {
     auto exp_value = expf(x);
-    if ( x > 0 )
+    if ( x > 0 ) {
         return (exp_value * exp_value - 1) / 2 / exp_value;
-    else
+    } else {
         return (exp_value - 1 / exp_value) / 2;
+    }
 }
 
 long double sinhl(long double x) {
     auto exp_value = expl(x);
-    if ( x > 0 )
+    if ( x > 0 ) {
         return (exp_value * exp_value - 1) / 2 / exp_value;
-    else
+    } else {
         return (exp_value - 1 / exp_value) / 2;
+    }
 }
 
 double cosh(double x) {
     auto exp_value = exp(-x);
-    if ( x < 0 )
+    if ( x < 0 ) {
         return (1 + exp_value * exp_value) / 2 / exp_value;
-    else
+    } else {
         return (1 / exp_value + exp_value) / 2;
+    }
 }
 
 float coshf(float x) {
     auto exp_value = expf(-x);
-    if ( x < 0 )
+    if ( x < 0 ) {
         return (1 + exp_value * exp_value) / 2 / exp_value;
-    else
+    } else {
         return (1 / exp_value + exp_value) / 2;
+    }
 }
 
 long double coshl(long double x) {
     auto exponentiated = expl(-x);
-    if ( x < 0 )
+    if ( x < 0 ) {
         return (1 + exponentiated * exponentiated) / 2 / exponentiated;
-    else
+    } else {
         return (1 / exponentiated + exponentiated) / 2;
+    }
 }
 
 double tanh(double x) {
@@ -1242,30 +1306,33 @@ double erf(double x) {
     auto t      = 1 / (1 + 0.47047 * fabs(x));
     auto poly   = t * (0.3480242 + t * (-0.958798 + t * 0.7478556));
     auto answer = 1 - poly * exp(-x * x);
-    if ( x < 0 )
+    if ( x < 0 ) {
         return -answer;
-    else
+    } else {
         return answer;
+    }
 }
 
 float erff(float x) {
     auto t      = 1 / (1 + 0.47047f * fabsf(x));
     auto poly   = t * (0.3480242f + t * (-0.958798f + t * 0.7478556f));
     auto answer = 1 - poly * expf(-x * x);
-    if ( x < 0 )
+    if ( x < 0 ) {
         return -answer;
-    else
+    } else {
         return answer;
+    }
 }
 
 long double erfl(long double x) {
     auto t      = 1 / (1 + 0.47047L * fabsl(x));
     auto poly   = t * (0.3480242L + t * (-0.958798L + t * 0.7478556L));
     auto answer = 1 - poly * expl(-x * x);
-    if ( x < 0 )
+    if ( x < 0 ) {
         return -answer;
-    else
+    } else {
         return answer;
+    }
 }
 
 double erfc(double x) {
@@ -1311,10 +1378,12 @@ long double lgammal(long double value) {
 }
 
 double lgamma_r(double value, i32* sign) {
-    if ( value == 1.0 || value == 2.0 )
+    if ( value == 1.0 || value == 2.0 ) {
         return 0.0;
-    if ( isinf(value) || value == 0.0 )
+    }
+    if ( isinf(value) || value == 0.0 ) {
         return static_cast<double>(INFINITY);
+    }
 
     auto result = log(Details::gamma(value));
     *sign       = signbit(result) ? -1 : 1;
@@ -1322,10 +1391,12 @@ double lgamma_r(double value, i32* sign) {
 }
 
 float lgammaf_r(float value, i32* sign) {
-    if ( value == 1.0f || value == 2.0f )
+    if ( value == 1.0f || value == 2.0f ) {
         return 0.0f;
-    if ( isinf(value) || value == 0.0f )
+    }
+    if ( isinf(value) || value == 0.0f ) {
         return INFINITY;
+    }
 
     auto result = logf(Details::gamma(value));
     *sign       = signbit(result) ? -1 : 1;
@@ -1333,10 +1404,12 @@ float lgammaf_r(float value, i32* sign) {
 }
 
 long double lgammal_r(long double value, i32* sign) {
-    if ( value == 1.0L || value == 2.0L )
+    if ( value == 1.0L || value == 2.0L ) {
         return 0.0L;
-    if ( isinf(value) || value == 0.0L )
+    }
+    if ( isinf(value) || value == 0.0L ) {
         return static_cast<long double>(INFINITY);
+    }
 
     auto result = logl(Details::gamma(value));
     *sign       = signbit(result) ? -1 : 1;
@@ -1375,8 +1448,9 @@ double trunc(double x) {
             : "+t"(x)
             : [temp] "m"(temp));
         return x;
-    } else
+    } else {
         return Details::to_integer(x, Details::RoundingMode::ToZero);
+    }
 }
 
 float truncf(float x) {
@@ -1387,8 +1461,9 @@ float truncf(float x) {
             : "+t"(x)
             : [temp] "m"(temp));
         return x;
-    } else
+    } else {
         return Details::to_integer(x, Details::RoundingMode::ToZero);
+    }
 }
 
 long double truncl(long double x) {
@@ -1399,8 +1474,9 @@ long double truncl(long double x) {
             : "+t"(x)
             : [temp] "m"(temp));
         return x;
-    } else
+    } else {
         return Details::to_integer(x, Details::RoundingMode::ToZero);
+    }
 }
 
 double round(double value) {
@@ -1601,45 +1677,51 @@ long double logbl(long double x) {
 }
 
 double nextafter(double x, double target) {
-    if ( x == target )
+    if ( x == target ) {
         return target;
-    else
+    } else {
         return Details::next_after(x, target >= x);
+    }
 }
 
 float nextafterf(float x, float target) {
-    if ( x == target )
+    if ( x == target ) {
         return target;
-    else
+    } else {
         return Details::next_after(x, target >= x);
+    }
 }
 
 long double nextafterl(long double x, long double target) {
-    if ( x == target )
+    if ( x == target ) {
         return target;
-    else
+    } else {
         return Details::next_after(x, target >= x);
+    }
 }
 
 double nexttoward(double x, long double target) {
-    if ( x == static_cast<double>(target) )
+    if ( x == static_cast<double>(target) ) {
         return static_cast<double>(target);
-    else
+    } else {
         return Details::next_after(x, static_cast<double>(target) >= x);
+    }
 }
 
 float nexttowardf(float x, long double target) {
-    if ( x == static_cast<float>(target) )
+    if ( x == static_cast<float>(target) ) {
         return static_cast<float>(target);
-    else
+    } else {
         return Details::next_after(x, static_cast<float>(target) >= x);
+    }
 }
 
 long double nexttowardl(long double x, long double target) {
-    if ( x == target )
+    if ( x == target ) {
         return target;
-    else
+    } else {
         return Details::next_after(x, target >= x);
+    }
 }
 
 double copysign(double x, double y) {

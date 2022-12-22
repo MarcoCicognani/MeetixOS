@@ -49,7 +49,7 @@ typedef enum {
  * @brief Spawner command header
  */
 typedef struct {
-    u32 m_command;
+    unsigned int m_command;
 } A_PACKED SpawnCommandHeader;
 
 /**
@@ -58,9 +58,9 @@ typedef struct {
 typedef struct {
     SpawnCommandHeader m_command_header;
     SecurityLevel      m_security_level;
-    usize              m_path_len;
-    usize              m_args_len;
-    usize              m_workdir_len;
+    unsigned int       m_path_len;
+    unsigned int       m_args_len;
+    unsigned int       m_workdir_len;
     FileHandle         m_stdin;
     FileHandle         m_stdout;
     FileHandle         m_stderr;
@@ -131,15 +131,15 @@ typedef enum {
 } CreateThreadStatus;
 
 // for <RegisterAsServer>
-typedef u8 RegisterAsServerStatus;
+typedef unsigned char RegisterAsServerStatus;
 #define REGISTER_AS_SERVER_STATUS_UNKNOWN            ((RegisterAsServerStatus)0)
 #define REGISTER_AS_SERVER_STATUS_SUCCESS            ((RegisterAsServerStatus)1)
 #define REGISTER_AS_SERVER_STATUS_NON_MAIN           ((RegisterAsServerStatus)2)
 #define REGISTER_AS_SERVER_STATUS_ALREADY_REGISTERED ((RegisterAsServerStatus)3)
 
 // for <ServerManage>
-typedef u32 ServerManageCommand;
-typedef u8  ServerManageStatus;
+typedef unsigned int  ServerManageCommand;
+typedef unsigned char ServerManageStatus;
 #define SERVER_MANAGE_STATUS_INVALID_COMMAND      ((ServerManageStatus)0)
 #define SERVER_MANAGE_STATUS_COMMAND_SEND_SUCCESS ((ServerManageStatus)1)
 #define SERVER_MANAGE_STATUS_COMMAND_SEND_FAIL    ((ServerManageStatus)2)

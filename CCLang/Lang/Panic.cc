@@ -10,12 +10,18 @@
  * GNU General Public License version 3
  */
 
-#include <CCLang/Core/Assertions.hh>
 #include <CCLang/Lang/IntTypes.hh>
 #include <CCLang/Lang/Panic.hh>
 #include <CCLang/Lang/StringView.hh>
 
+extern "C++" {
+
 [[noreturn]]
-auto Details::__verify_internal_has_failed(char const* msg, char const* file, int line) -> void {
-    panic(StringView::from_cstr(msg), StringView::from_cstr(file), usize(line));
+auto __rt_panic_plugin(StringView msg, StringView file, usize line) -> void;
+
+} /* extern "C++" */
+
+[[noreturn]]
+auto panic(StringView msg, StringView file, usize line) -> void {
+    __rt_panic_plugin(msg, file, line);
 }
