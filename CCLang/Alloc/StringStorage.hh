@@ -20,7 +20,7 @@
 #include <CCLang/Core/ErrorOr.hh>
 #include <CCLang/Lang/IntTypes.hh>
 
-class StringStorage final : public DenyCopy, public DenyMove, public RefCounted {
+class StringStorage final : public RefCounted {
 public:
     /**
      * @brief Error safe Factory functions

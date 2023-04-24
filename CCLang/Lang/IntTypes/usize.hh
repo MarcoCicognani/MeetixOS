@@ -198,8 +198,6 @@ auto operator-(T* ptr, usize offset) -> T* {
 
 namespace Cxx {
 
-auto swap(usize& lhs, usize& rhs) -> void {
-    lhs.swap(rhs);
-}
+auto swap(usize& lhs, usize& rhs) -> void;
 
 } /* namespace Cxx */

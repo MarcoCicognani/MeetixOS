@@ -542,3 +542,11 @@ auto operator<<(__SIZE_TYPE__ lhs, usize rhs) -> usize {
 auto operator>>(__SIZE_TYPE__ lhs, usize rhs) -> usize {
     return usize(lhs) >> rhs;
 }
+
+namespace Cxx {
+
+auto swap(usize& lhs, usize& rhs) -> void {
+    lhs.swap(rhs);
+}
+
+} /* namespace Cxx */

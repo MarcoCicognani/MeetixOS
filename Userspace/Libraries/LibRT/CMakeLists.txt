@@ -56,7 +56,7 @@ add_library(LibRT
         CxxABI.cc
         crt0Impl.cc
         Heap.cc
-        ${CCLANG_SOURCES} Panic.cc)
+        ${CCLANG_SOURCES} Panic.cc API/Memory.cc)
 add_custom_command(
         TARGET LibRT
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LibRT> ${TOOLCHAIN_LIB}/librt.a
