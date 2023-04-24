@@ -3,15 +3,17 @@ Language: Cpp
 BasedOnStyle: LLVM
 AccessModifierOffset: -4
 AlignConsecutiveMacros: Consecutive
-AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveAssignments:
+  Enabled: false
 AlignConsecutiveBitFields: AcrossEmptyLinesAndComments
-AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveDeclarations:
+  Enabled: false
 AlignOperands: AlignAfterOperator
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortEnumsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: None
+AllowShortFunctionsOnASingleLine: InlineOnly
 AlwaysBreakAfterReturnType: None
 AlwaysBreakTemplateDeclarations: Yes
 AttributeMacros:
@@ -40,7 +42,7 @@ BraceWrapping:
   SplitEmptyRecord: true
   SplitEmptyNamespace: true
 BreakBeforeBinaryOperators: All
-BreakInheritanceList: AfterComma
+#BreakInheritanceList: AfterColon
 BreakAfterJavaFieldAnnotations: true
 ColumnLimit: 160
 Cpp11BracedListStyle: false
@@ -59,3 +61,4 @@ SpaceAfterTemplateKeyword: false
 SpacesInConditionalStatement: true
 BreakConstructorInitializers: BeforeComma
 InsertBraces: true
+AlignEscapedNewlines: Left
